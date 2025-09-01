@@ -43,6 +43,40 @@ export const useProfileStore = defineStore('profile', () => {
     }
   }
 
+  async function createProfile(profileData: Partial<Profile>) {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      const newProfile: Profile = {
+        id: 'me',
+        name: profileData.name || '',
+        age: profileData.age || 25,
+        gender: profileData.gender || 'male',
+        height: profileData.height || 170,
+        weight: profileData.weight || 70,
+        goal: profileData.goal || {
+          type: 'general_fitness',
+          description: ''
+        },
+        constraints: profileData.constraints || [],
+        equipment: profileData.equipment || [],
+        frequency: profileData.frequency || 3,
+        duration: profileData.duration || 30,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+      
+      await dbHelpers.saveProfile(newProfile)
+      profile.value = newProfile
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to create profile'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   async function updateProfile(updates: Partial<Profile>) {
     if (!profile.value) {
       throw new Error('No profile to update')
@@ -81,6 +115,56 @@ export const useProfileStore = defineStore('profile', () => {
     await updateProfile({ duration })
   }
 
+  async function importProfile(importedProfile: any) {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      // Validate required fields
+      if (!importedProfile.id || !importedProfile.gender || !importedProfile.age || 
+          !importedProfile.height || !importedProfile.weight || !importedProfile.goal) {
+        throw new Error('Invalid profile data: missing required fields')
+      }
+
+      // Transform imported profile to match our schema
+      const transformedProfile: Profile = {
+        id: importedProfile.id,
+        name: importedProfile.name || '',
+        age: importedProfile.age,
+        gender: importedProfile.gender,
+        height: importedProfile.height,
+        weight: importedProfile.weight,
+        goal: importedProfile.goal,
+        constraints: importedProfile.constraints || [],
+        equipment: importedProfile.equipment || [],
+        frequency: importedProfile.frequency || 3,
+        duration: importedProfile.duration || 30,
+        createdAt: importedProfile.createdAt || new Date(),
+        updatedAt: new Date()
+      }
+
+      await dbHelpers.saveProfile(transformedProfile)
+      profile.value = transformedProfile
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to import profile'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function exportProfile(): Promise<any> {
+    if (!profile.value) {
+      throw new Error('No profile to export')
+    }
+
+    return {
+      ...profile.value,
+      schemaVersion: 1,
+      exportedAt: new Date()
+    }
+  }
+
   function clearError() {
     error.value = null
   }
@@ -99,6 +183,7 @@ export const useProfileStore = defineStore('profile', () => {
     // Actions
     loadProfile,
     saveProfile,
+    createProfile,
     updateProfile,
     updateGoal,
     updateWeight,
@@ -106,6 +191,8 @@ export const useProfileStore = defineStore('profile', () => {
     updateEquipment,
     updateFrequency,
     updateDuration,
+    importProfile,
+    exportProfile,
     clearError
   }
 })

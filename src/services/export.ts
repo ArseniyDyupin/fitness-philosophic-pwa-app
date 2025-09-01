@@ -28,6 +28,20 @@ export class ExportService {
     return exportData
   }
 
+  async exportProfileOnly(): Promise<any> {
+    const profile = await dbHelpers.getProfile()
+
+    if (!profile) {
+      throw new Error('No profile found. Please complete onboarding first.')
+    }
+
+    return {
+      ...profile,
+      schemaVersion: SCHEMA_VERSION,
+      exportedAt: new Date()
+    }
+  }
+
   async importData(data: ExportData): Promise<void> {
     // Validate schema version
     if (data.schemaVersion !== SCHEMA_VERSION) {
@@ -62,6 +76,25 @@ export class ExportService {
         await db.aiPlans.put(aiPlan)
       }
     })
+  }
+
+  async importProfileOnly(profileData: any): Promise<void> {
+    // Validate schema version if present
+    if (profileData.schemaVersion && profileData.schemaVersion !== SCHEMA_VERSION) {
+      throw new Error(`Unsupported schema version: ${profileData.schemaVersion}. Expected: ${SCHEMA_VERSION}`)
+    }
+
+    // Validate required fields
+    if (!profileData.id || !profileData.gender || !profileData.age || 
+        !profileData.height || !profileData.weight || !profileData.goal) {
+      throw new Error('Invalid profile data: missing required fields')
+    }
+
+    // Clear existing profile
+    await db.profiles.clear()
+
+    // Import new profile
+    await db.profiles.put(profileData)
   }
 
   async downloadExport(): Promise<void> {

@@ -143,6 +143,7 @@ import { computed, onMounted } from 'vue'
 import { useWorkoutsStore } from '@/stores/workouts.store'
 import { useFoodStore } from '@/stores/food.store'
 import { useAIStore } from '@/stores/ai.store'
+import { useProfileStore } from '@/stores/profile.store'
 import { format } from 'date-fns'
 import PlanCard from '@/components/PlanCard.vue'
 import { useRouter } from 'vue-router'
@@ -151,6 +152,7 @@ import { useI18nStore } from '@/stores/i18n.store'
 const workoutsStore = useWorkoutsStore()
 const foodStore = useFoodStore()
 const aiStore = useAIStore()
+const profileStore = useProfileStore()
 const router = useRouter()
 const i18nStore = useI18nStore()
 
@@ -187,6 +189,15 @@ function formatDate(date: Date): string {
 
 // Lifecycle
 onMounted(async () => {
+  // Load profile first
+  await profileStore.loadProfile()
+  
+  // Check if profile exists, if not redirect to onboarding
+  if (!profileStore.hasCompletedOnboarding) {
+    router.push('/onboarding')
+    return
+  }
+  
   await Promise.all([
     workoutsStore.loadWorkouts(),
     foodStore.loadFoodLogs(),

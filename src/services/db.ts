@@ -26,11 +26,13 @@ export const db = new AITrainerDB()
 // Helper functions for common operations
 export const dbHelpers = {
   async getProfile(): Promise<Profile | undefined> {
-    return await db.profiles.orderBy('createdAt').reverse().first()
+    return await db.profiles.get('me')
   },
 
   async saveProfile(profile: Profile): Promise<void> {
-    await db.profiles.put(profile)
+    // Ensure profile has the correct ID
+    const profileWithId = { ...profile, id: 'me' }
+    await db.profiles.put(profileWithId)
   },
 
   async getWorkouts(limit?: number): Promise<Workout[]> {

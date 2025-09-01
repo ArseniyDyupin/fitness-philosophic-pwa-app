@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import HomePage from '@/pages/HomePage.vue'
 import SettingsPage from '@/pages/SettingsPage.vue'
 import NotFound from '@/pages/NotFound.vue'
+import OnboardingSelectionPage from '@/pages/OnboardingSelectionPage.vue'
 import OnboardingGoals from '@/features/onboarding/OnboardingGoals.vue'
 import OnboardingConstraints from '@/features/onboarding/OnboardingConstraints.vue'
 import OnboardingEquipment from '@/features/onboarding/OnboardingEquipment.vue'
@@ -18,6 +19,11 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     name: 'home',
     component: HomePage
+  },
+  {
+    path: '/onboarding',
+    name: 'onboarding-selection',
+    component: OnboardingSelectionPage
   },
   {
     path: '/onboarding/goals',
@@ -80,6 +86,36 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// Navigation guard to check if user has completed onboarding
+router.beforeEach(async (to, from, next) => {
+  // Skip guard for onboarding routes
+  if (to.path.startsWith('/onboarding')) {
+    return next()
+  }
+
+  // Skip guard for settings page
+  if (to.path === '/settings') {
+    return next()
+  }
+
+  // For all other routes, check if profile exists
+  try {
+    const { dbHelpers } = await import('@/services/db')
+    const profile = await dbHelpers.getProfile()
+    
+    if (!profile) {
+      // Redirect to onboarding if no profile exists
+      return next('/onboarding')
+    }
+    
+    next()
+  } catch (error) {
+    console.error('Navigation guard error:', error)
+    // In case of error, allow navigation but show error
+    next()
+  }
 })
 
 export default router

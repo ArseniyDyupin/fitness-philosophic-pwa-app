@@ -110,30 +110,24 @@ async function handleSubmit() {
     const equipmentData = JSON.parse(localStorage.getItem('onboarding-equipment') || '[]')
     const metricsData = JSON.parse(localStorage.getItem('onboarding-metrics') || '{}')
 
-    // Create profile
-    const profile = {
-      id: crypto.randomUUID(),
+    // Create profile using the store method
+    await profileStore.createProfile({
       name: metricsData.name,
       age: metricsData.age,
       gender: metricsData.gender,
       height: metricsData.height,
       weight: metricsData.weight,
       goal: {
-        type: goalData.type,
+        type: goalData.type || 'general_fitness',
         targetWeight: goalData.targetWeight,
         targetEvent: goalData.targetEvent,
-        description: goalData.description
+        description: goalData.description || ''
       },
       constraints: constraintsData,
       equipment: equipmentData,
       frequency: selectedFrequency.value,
-      duration: selectedDuration.value,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-
-    // Save profile
-    await profileStore.saveProfile(profile)
+      duration: selectedDuration.value
+    })
 
     // Clear onboarding data
     localStorage.removeItem('onboarding-goal')

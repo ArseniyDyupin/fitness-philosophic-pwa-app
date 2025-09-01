@@ -134,10 +134,10 @@ const isFormValid = computed(() => {
          formData.value.weight <= 250
 })
 
-function handleSubmit() {
+async function handleSubmit() {
   if (!isFormValid.value) return
 
-  // Store metrics data
+  // Store metrics data for the next step
   localStorage.setItem('onboarding-metrics', JSON.stringify(formData.value))
   
   // Navigate to next step

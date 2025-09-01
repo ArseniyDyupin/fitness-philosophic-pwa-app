@@ -181,6 +181,25 @@
           </div>
         </div>
 
+        <!-- Profile Export -->
+        <div class="card">
+          <h2 class="text-lg font-semibold text-gray-900 mb-6">Profile Export</h2>
+          <div class="space-y-4">
+            <div>
+              <p class="text-sm text-gray-600 mb-4">
+                Export your profile data as a JSON file that you can import on another device.
+              </p>
+              <button
+                @click="exportProfile"
+                :disabled="isExporting"
+                class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {{ isExporting ? 'Exporting...' : 'Export Profile' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Data Management -->
         <div class="card">
           <h2 class="text-lg font-semibold text-gray-900 mb-6">{{ t.dataManagement }}</h2>
@@ -260,6 +279,7 @@ const { t, currentLanguage, setLanguage } = i18nStore
 const isSaving = ref(false)
 const isTesting = ref(false)
 const isResetting = ref(false)
+const isExporting = ref(false)
 const showResetModal = ref(false)
 
 // Profile data
@@ -316,24 +336,32 @@ async function saveProfile() {
   isSaving.value = true
   try {
     if (!profileStore.profile) {
-      throw new Error('No profile found')
+      // Create new profile if none exists
+      await profileStore.createProfile({
+        name: profileData.value.name,
+        age: profileData.value.age,
+        gender: profileData.value.gender,
+        height: profileData.value.height,
+        weight: profileData.value.weight,
+        goal: profileData.value.goal
+      })
+    } else {
+      // Update existing profile
+      const updatedProfile = {
+        ...profileStore.profile,
+        name: profileData.value.name,
+        age: profileData.value.age,
+        gender: profileData.value.gender,
+        height: profileData.value.height,
+        weight: profileData.value.weight,
+        goal: profileData.value.goal,
+        constraints: [...profileStore.profile.constraints], // Clone readonly array
+        equipment: [...profileStore.profile.equipment], // Clone readonly array
+        updatedAt: new Date()
+      }
+      
+      await profileStore.saveProfile(updatedProfile)
     }
-    
-    // Ensure all required Profile fields are included
-    const updatedProfile = {
-      ...profileStore.profile,
-      name: profileData.value.name,
-      age: profileData.value.age,
-      gender: profileData.value.gender,
-      height: profileData.value.height,
-      weight: profileData.value.weight,
-      goal: profileData.value.goal,
-      constraints: [...profileStore.profile.constraints], // Clone readonly array
-      equipment: [...profileStore.profile.equipment], // Clone readonly array
-      updatedAt: new Date()
-    }
-    
-    await profileStore.saveProfile(updatedProfile)
     
     if ((window as any).showToast) {
       ;(window as any).showToast({
@@ -352,6 +380,42 @@ async function saveProfile() {
     }
   } finally {
     isSaving.value = false
+  }
+}
+
+// Export profile
+async function exportProfile() {
+  isExporting.value = true
+  try {
+    const profileData = await profileStore.exportProfile()
+    const blob = new Blob([JSON.stringify(profileData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `profile-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    
+    if ((window as any).showToast) {
+      ;(window as any).showToast({
+        type: 'success',
+        message: 'Profile exported successfully!'
+      })
+    }
+  } catch (error) {
+    console.error('Error exporting profile:', error)
+    
+    if ((window as any).showToast) {
+      ;(window as any).showToast({
+        type: 'error',
+        message: 'Failed to export profile'
+      })
+    }
+  } finally {
+    isExporting.value = false
   }
 }
 
