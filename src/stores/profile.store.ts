@@ -70,7 +70,7 @@ export const useProfileStore = defineStore('profile', () => {
         equipment: profileData.equipment || [],
         frequency: profileData.frequency || 3,
         duration: profileData.duration || 30,
-        language: profileData.language || 'en',
+        language: (profileData.language || localStorage.getItem('selectedLanguage') || 'en') as 'en' | 'ru',
         goalsDetailed: profileData.goalsDetailed || '',
         createdAt: new Date(),
         updatedAt: new Date()
@@ -78,6 +78,10 @@ export const useProfileStore = defineStore('profile', () => {
       
       await dbHelpers.saveProfile(newProfile)
       profile.value = newProfile
+      
+      // Set language in i18n store
+      const i18nStore = useI18nStore()
+      i18nStore.setLanguageFromProfile(newProfile.language)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to create profile'
       throw err
@@ -156,6 +160,10 @@ export const useProfileStore = defineStore('profile', () => {
 
       await dbHelpers.saveProfile(transformedProfile)
       profile.value = transformedProfile
+      
+      // Set language in i18n store
+      const i18nStore = useI18nStore()
+      i18nStore.setLanguageFromProfile(transformedProfile.language)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to import profile'
       throw err

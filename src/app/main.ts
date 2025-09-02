@@ -13,6 +13,6 @@ app.use(router)
 
 // Initialize i18n store
 const i18nStore = useI18nStore()
-i18nStore.loadLanguage()
+i18nStore.initializeLanguage()
 
 app.mount('#app')

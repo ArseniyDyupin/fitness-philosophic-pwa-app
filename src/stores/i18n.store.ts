@@ -6,6 +6,14 @@ export type Language = 'en' | 'ru'
 export const useI18nStore = defineStore('i18n', () => {
   const currentLanguage = ref<Language>('en')
 
+  // Initialize language from localStorage on store creation
+  function initializeLanguage() {
+    const saved = localStorage.getItem('selectedLanguage') as Language
+    if (saved && ['en', 'ru'].includes(saved)) {
+      currentLanguage.value = saved
+    }
+  }
+
   function setLanguageFromProfile(lang: Language) {
     currentLanguage.value = lang
   }
@@ -707,6 +715,7 @@ export const useI18nStore = defineStore('i18n', () => {
     t,
     setLanguage,
     loadLanguage,
-    setLanguageFromProfile
+    setLanguageFromProfile,
+    initializeLanguage
   }
 })

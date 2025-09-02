@@ -189,12 +189,22 @@ function formatDate(date: Date): string {
 
 // Lifecycle
 onMounted(async () => {
-  // Load profile first
+  // First, check if user has selected a language
+  const selectedLanguage = localStorage.getItem('selectedLanguage')
+  if (!selectedLanguage) {
+    router.push('/language-selection')
+    return
+  }
+
+  // Initialize i18n store with selected language
+  i18nStore.initializeLanguage()
+  
+  // Load profile
   await profileStore.loadProfile()
   
-  // Check if profile exists, if not redirect to language selection
+  // Check if profile exists, if not redirect to onboarding
   if (!profileStore.hasCompletedOnboarding) {
-    router.push('/language-selection')
+    router.push('/onboarding')
     return
   }
   

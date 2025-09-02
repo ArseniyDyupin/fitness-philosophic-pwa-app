@@ -87,6 +87,9 @@ function continueToOnboarding() {
   // Store language preference
   localStorage.setItem('selectedLanguage', selectedLanguage.value)
   
+  // Set language in i18n store
+  i18nStore.setLanguage(selectedLanguage.value)
+  
   // Navigate to onboarding selection
   router.push('/onboarding')
 }

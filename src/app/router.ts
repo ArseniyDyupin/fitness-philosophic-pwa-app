@@ -100,10 +100,10 @@ const router = createRouter({
   routes
 })
 
-// Navigation guard to check if user has completed onboarding
+// Navigation guard to check language and profile
 router.beforeEach(async (to, from, next) => {
-  // Skip guard for onboarding routes and language selection
-  if (to.path.startsWith('/onboarding') || to.path === '/language-selection') {
+  // Skip guard for language selection and onboarding routes
+  if (to.path === '/language-selection' || to.path.startsWith('/onboarding')) {
     return next()
   }
 
@@ -112,13 +112,21 @@ router.beforeEach(async (to, from, next) => {
     return next()
   }
 
-  // For all other routes, check if profile exists
   try {
+    // First, check if user has selected a language
+    const selectedLanguage = localStorage.getItem('selectedLanguage')
+    
+    if (!selectedLanguage) {
+      // If no language selected, redirect to language selection
+      return next('/language-selection')
+    }
+
+    // Then check if profile exists
     const { dbHelpers } = await import('@/services/db')
     const profile = await dbHelpers.getProfile()
     
     if (!profile) {
-      // Redirect to onboarding if no profile exists
+      // If no profile exists, redirect to onboarding
       return next('/onboarding')
     }
     
