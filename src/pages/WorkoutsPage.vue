@@ -5,12 +5,12 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-4">
           <h1 class="text-2xl font-bold text-gray-900">{{ t.workouts }}</h1>
-          <router-link 
-            to="/workouts/add" 
+          <button 
+            @click="showAddForm = true"
             class="btn-primary"
           >
             {{ t.addWorkout }}
-          </router-link>
+          </button>
         </div>
       </div>
     </header>
@@ -30,12 +30,12 @@
       <!-- Empty State -->
       <div v-else-if="workouts.length === 0" class="text-center py-8">
         <div class="text-gray-500 mb-4">{{ t.noWorkoutsFound }}</div>
-        <router-link 
-          to="/workouts/add" 
+        <button 
+          @click="showAddForm = true"
           class="btn-primary"
         >
           {{ t.addFirstWorkout }}
-        </router-link>
+        </button>
       </div>
 
       <!-- Workouts List -->
@@ -69,21 +69,48 @@
         </div>
       </div>
     </main>
+
+    <!-- Add Workout Modal -->
+    <div v-if="showAddForm" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+      <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium text-gray-900">{{ t.addWorkout }}</h3>
+            <button
+              @click="showAddForm = false"
+              class="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          <WorkoutForm 
+            @saved="handleWorkoutSaved"
+            @cancel="showAddForm = false"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWorkoutsStore } from '@/stores/workouts.store'
 import { useI18nStore } from '@/stores/i18n.store'
 import { format } from 'date-fns'
+import WorkoutForm from '@/components/WorkoutForm.vue'
 
 const router = useRouter()
 const workoutsStore = useWorkoutsStore()
 const i18nStore = useI18nStore()
 
 const { t } = i18nStore
+
+// State
+const showAddForm = ref(false)
 
 // Computed properties
 const workouts = computed(() => workoutsStore.workouts)
@@ -120,6 +147,13 @@ function getTotalDuration(workout: any) {
   return workout.exercises.reduce((total: number, exercise: any) => {
     return total + (exercise.details.durationMin || 0)
   }, 0)
+}
+
+// Methods
+function handleWorkoutSaved(workout: any) {
+  showAddForm.value = false
+  // Refresh workouts list
+  workoutsStore.loadWorkouts()
 }
 
 // Load data on mount

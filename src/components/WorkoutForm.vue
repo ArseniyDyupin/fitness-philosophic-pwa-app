@@ -530,14 +530,14 @@ async function handleSubmit() {
       const exercises = parsedExercises.map((exercise: any) => ({
         type: exercise.type as WorkoutType,
         details: {
-          distanceKm: exercise.details?.distanceKm,
+          distanceKm: exercise.details?.distanceKm || undefined,
           durationMin: exercise.details?.durationMin || 30,
-          sets: exercise.details?.sets,
-          repsPerSet: exercise.details?.repsPerSet,
-          seconds: exercise.details?.seconds,
+          sets: exercise.details?.sets || undefined,
+          repsPerSet: exercise.details?.repsPerSet || undefined,
+          seconds: exercise.details?.seconds || undefined,
           notes: exercise.details?.notes || ''
         },
-        kcalEstimated: exercise.kcalEstimated
+        kcalEstimated: exercise.kcalEstimated || undefined
       }))
       
       workoutData = {
@@ -550,7 +550,18 @@ async function handleSubmit() {
       // In form mode, use existing exercises
       workoutData = {
         date: new Date(formData.value.date),
-        exercises: exercises.value,
+        exercises: exercises.value.map(exercise => ({
+          type: exercise.type,
+          details: {
+            distanceKm: exercise.details.distanceKm || undefined,
+            durationMin: exercise.details.durationMin || 30,
+            sets: exercise.details.sets || undefined,
+            repsPerSet: exercise.details.repsPerSet || undefined,
+            seconds: exercise.details.seconds || undefined,
+            notes: exercise.details.notes || ''
+          },
+          kcalEstimated: exercise.kcalEstimated || undefined
+        })),
         rpe: formData.value.rpe,
         notes: formData.value.notes
       }
