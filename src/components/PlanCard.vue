@@ -2,13 +2,13 @@
   <div class="bg-gradient-to-r from-primary-50 to-blue-50 rounded-lg p-6 border border-primary-200">
     <!-- Analysis Section -->
     <div class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">AI Analysis</h3>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t.aiAnalysis }}</h3>
       <p class="text-gray-700 leading-relaxed">{{ plan.analysis }}</p>
     </div>
 
     <!-- Next Workout Section -->
     <div class="bg-white rounded-lg p-4 border border-gray-200">
-      <h4 class="text-md font-semibold text-gray-900 mb-3">Next Workout</h4>
+      <h4 class="text-md font-semibold text-gray-900 mb-3">{{ t.nextWorkout }}</h4>
       
       <div class="space-y-3">
         <!-- Workout Type and Duration -->
@@ -24,7 +24,7 @@
                 {{ formatWorkoutType(plan.nextWorkout.type) }}
               </div>
               <div class="text-xs text-gray-500">
-                {{ plan.nextWorkout.durationMin }} minutes
+                {{ plan.nextWorkout.durationMin }} {{ t.minutes }}
               </div>
             </div>
           </div>
@@ -32,7 +32,7 @@
             @click="startWorkout"
             class="btn-primary text-sm px-4 py-2"
           >
-            Start
+            {{ t.start }}
           </button>
         </div>
 
@@ -43,7 +43,7 @@
 
         <!-- Tips -->
         <div v-if="plan.nextWorkout.tips.length > 0">
-          <h5 class="text-sm font-medium text-gray-900 mb-2">Tips:</h5>
+          <h5 class="text-sm font-medium text-gray-900 mb-2">{{ t.tips }}:</h5>
           <ul class="space-y-1">
             <li
               v-for="(tip, index) in plan.nextWorkout.tips"
@@ -61,7 +61,11 @@
 </template>
 
 <script setup lang="ts">
+import { useI18nStore } from '@/stores/i18n.store'
 import type { AIPlan } from '@/types/models'
+
+const i18nStore = useI18nStore()
+const { t } = i18nStore
 
 interface Props {
   plan: AIPlan | any
@@ -72,11 +76,11 @@ defineProps<Props>()
 // Methods
 function formatWorkoutType(type: string): string {
   const types: Record<string, string> = {
-    run: 'Running',
-    pullups: 'Pull-ups',
-    pushups: 'Push-ups',
-    plank: 'Plank',
-    custom: 'Custom Exercise'
+    run: t.run,
+    pullups: t.pullups,
+    pushups: t.pushups,
+    plank: t.plank,
+    custom: t.custom
   }
   return types[type] || type
 }

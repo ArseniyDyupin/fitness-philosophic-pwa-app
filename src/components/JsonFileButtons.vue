@@ -14,17 +14,17 @@
         <svg v-else class="-ml-1 mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
-        {{ isExporting ? 'Exporting...' : 'Export Data' }}
+        {{ isExporting ? t.exporting : t.exportData }}
       </button>
       <p class="text-xs text-gray-500 mt-1">
-        Download all your data as a JSON file
+        {{ t.exportDataDescription }}
       </p>
     </div>
 
     <!-- Import Section -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">
-        Import Data
+        {{ t.importData }}
       </label>
       <div class="flex items-center space-x-2">
         <input
@@ -46,11 +46,11 @@
           <svg v-else class="-ml-1 mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
           </svg>
-          {{ isImporting ? 'Importing...' : 'Choose File' }}
+          {{ isImporting ? t.importing : t.chooseFile }}
         </button>
       </div>
       <p class="text-xs text-gray-500 mt-1">
-        Import data from a previously exported JSON file
+        {{ t.importDataDescription }}
       </p>
     </div>
 
@@ -59,25 +59,25 @@
       <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3 text-center">
           <h3 class="text-lg font-medium text-gray-900 mb-4">
-            Confirm Import
+            {{ t.confirmImport }}
           </h3>
           <div class="text-sm text-gray-500 mb-6">
-            <p class="mb-2">This will replace all your current data with the imported data.</p>
-            <p class="font-medium text-red-600">This action cannot be undone!</p>
+            <p class="mb-2">{{ t.importWarning }}</p>
+            <p class="font-medium text-red-600">{{ t.importCannotUndo }}</p>
           </div>
           <div class="flex justify-center space-x-3">
             <button
               @click="cancelImport"
               class="btn-secondary"
             >
-              Cancel
+              {{ t.cancel }}
             </button>
             <button
               @click="confirmImport"
               :disabled="isImporting"
               class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {{ isImporting ? 'Importing...' : 'Import Data' }}
+              {{ isImporting ? t.importing : t.importData }}
             </button>
           </div>
         </div>
@@ -89,7 +89,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { exportService } from '@/services/export'
+import { useI18nStore } from '@/stores/i18n.store'
 import { validateExportData } from '@/utils/json'
+
+const i18nStore = useI18nStore()
+const { t } = i18nStore
 
 const isExporting = ref(false)
 const isImporting = ref(false)

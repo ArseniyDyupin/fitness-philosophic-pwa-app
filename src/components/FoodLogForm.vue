@@ -13,9 +13,9 @@
         class="input-field"
         required
       />
-      <p class="text-xs text-gray-500 mt-1">
-        Enter total calories (0-10000)
-      </p>
+              <p class="text-xs text-gray-500 mt-1">
+          {{ t.enterTotalCalories }}
+        </p>
     </div>
 
     <!-- Macronutrients (Optional) -->
@@ -30,7 +30,7 @@
           min="0"
           max="1000"
           class="input-field"
-          placeholder="Optional"
+          :placeholder="t.optional"
         />
       </div>
       <div>
@@ -43,7 +43,7 @@
           min="0"
           max="1000"
           class="input-field"
-          placeholder="Optional"
+          :placeholder="t.optional"
         />
       </div>
       <div>
@@ -56,7 +56,7 @@
           min="0"
           max="1000"
           class="input-field"
-          placeholder="Optional"
+          :placeholder="t.optional"
         />
       </div>
     </div>
@@ -83,7 +83,7 @@
         v-model="formData.notes"
         rows="3"
         class="input-field"
-        placeholder="What did you eat? How did it make you feel?"
+        :placeholder="t.foodNotesPlaceholder"
       ></textarea>
     </div>
 
@@ -94,15 +94,15 @@
         @click="$emit('cancel')"
         class="btn-secondary"
       >
-        Cancel
+        {{ t.cancel }}
       </button>
       <button
         type="submit"
         :disabled="isSubmitting"
         class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span v-if="isSubmitting">Saving...</span>
-        <span v-else>{{ editMode ? 'Update' : 'Save' }} Food Log</span>
+        <span v-if="isSubmitting">{{ t.saving }}</span>
+        <span v-else>{{ editMode ? t.update : t.save }} {{ t.foodLog }}</span>
       </button>
     </div>
   </form>
@@ -111,7 +111,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useFoodStore } from '@/stores/food.store'
+import { useI18nStore } from '@/stores/i18n.store'
 import type { FoodLog } from '@/types/models'
+
+const i18nStore = useI18nStore()
+const { t } = i18nStore
 
 interface Props {
   foodLog?: FoodLog
@@ -184,7 +188,7 @@ async function handleSubmit() {
     if ((window as any).showToast) {
       ;(window as any).showToast({
         type: 'success',
-        message: props.editMode ? 'Food log updated successfully!' : 'Food log saved successfully!'
+        message: props.editMode ? t.foodLogUpdated : t.foodLogSaved
       })
     }
   } catch (error) {
@@ -194,7 +198,7 @@ async function handleSubmit() {
     if ((window as any).showToast) {
       ;(window as any).showToast({
         type: 'error',
-        message: 'Failed to save food log. Please try again.'
+        message: t.foodLogSaveFailed
       })
     }
   } finally {

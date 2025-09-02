@@ -343,16 +343,16 @@ function removeExercise(index: number) {
 
 function getRPEDescription(rpe: number): string {
   const descriptions: Record<number, string> = {
-    1: 'Very Easy',
-    2: 'Easy',
-    3: 'Light',
-    4: 'Moderate',
-    5: 'Somewhat Hard',
-    6: 'Hard',
-    7: 'Very Hard',
-    8: 'Extremely Hard',
-    9: 'Maximum Effort',
-    10: 'Absolute Maximum'
+    1: t.rpeVeryEasy,
+    2: t.rpeEasy,
+    3: t.rpeLight,
+    4: t.rpeModerate,
+    5: t.rpeSomewhatHard,
+    6: t.rpeHard,
+    7: t.rpeVeryHard,
+    8: t.rpeExtremelyHard,
+    9: t.rpeMaximumEffort,
+    10: t.rpeAbsoluteMaximum
   }
   return descriptions[rpe] || ''
 }

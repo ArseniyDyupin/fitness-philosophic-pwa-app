@@ -3,7 +3,7 @@
     <!-- Weight -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">
-        Current Weight (kg) *
+        {{ t.currentWeight }} (kg) *
       </label>
       <input
         v-model.number="formData.weight"
@@ -19,7 +19,7 @@
     <!-- Waist (optional) -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">
-        Waist Circumference (cm) - Optional
+        {{ t.waistCircumference }} (cm) - {{ t.optional }}
       </label>
       <input
         v-model.number="formData.waist"
@@ -28,33 +28,33 @@
         max="200"
         step="0.1"
         class="input-field"
-        placeholder="Optional"
+        :placeholder="t.optional"
       />
     </div>
 
     <!-- Notes -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">
-        Notes (optional)
+        {{ t.notes }} ({{ t.optional }})
       </label>
       <textarea
         v-model="formData.notes"
         rows="3"
         class="input-field"
-        placeholder="How was your week? Any observations about your progress, energy levels, or challenges?"
+        :placeholder="t.weeklyNotesPlaceholder"
       ></textarea>
     </div>
 
     <!-- Photo Section -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">
-        Progress Photo (optional)
+        {{ t.progressPhoto }} ({{ t.optional }})
       </label>
       <div class="space-y-3">
         <div v-if="formData.photo" class="relative">
           <img 
             :src="formData.photo" 
-            alt="Progress photo" 
+            :alt="t.progressPhoto" 
             class="w-full h-48 object-cover rounded-lg"
           />
           <button
@@ -78,7 +78,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
-            <span class="text-sm">Take a photo</span>
+            <span class="text-sm">{{ t.takePhoto }}</span>
           </div>
         </button>
       </div>
@@ -93,18 +93,18 @@
           </svg>
         </div>
         <div class="ml-3">
-          <h3 class="text-sm font-medium text-yellow-800">Photo Privacy</h3>
+          <h3 class="text-sm font-medium text-yellow-800">{{ t.photoPrivacy }}</h3>
           <div class="mt-2 text-sm text-yellow-700">
-            <p class="mb-2">Your photo is stored locally on your device. You can choose whether to allow AI analysis to include your photo for better recommendations.</p>
+            <p class="mb-2">{{ t.photoPrivacyDescription }}</p>
             <label class="flex items-center">
               <input
                 v-model="formData.allowPhotoInAI"
                 type="checkbox"
                 class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
               />
-              <span class="ml-2 text-sm">Allow AI to analyze this photo for better recommendations</span>
+              <span class="ml-2 text-sm">{{ t.allowPhotoInAIDescription }}</span>
             </label>
-            <p class="mt-2 text-xs">Note: This will send your photo to OpenAI's servers when requesting AI advice.</p>
+            <p class="mt-2 text-xs">{{ t.photoPrivacyNote }}</p>
           </div>
         </div>
       </div>
@@ -117,15 +117,15 @@
         @click="$emit('cancel')"
         class="btn-secondary"
       >
-        Cancel
+        {{ t.cancel }}
       </button>
       <button
         type="submit"
         :disabled="isSubmitting"
         class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span v-if="isSubmitting">Saving...</span>
-        <span v-else>Save Check-in</span>
+        <span v-if="isSubmitting">{{ t.saving }}</span>
+        <span v-else>{{ t.saveCheckin }}</span>
       </button>
     </div>
   </form>
@@ -134,8 +134,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useCheckinsStore } from '@/stores/checkins.store'
+import { useI18nStore } from '@/stores/i18n.store'
 import { photoService } from '@/services/photo'
 import type { WeeklyCheckin } from '@/types/models'
+
+const i18nStore = useI18nStore()
+const { t } = i18nStore
 
 interface Props {
   checkin?: WeeklyCheckin
@@ -187,7 +191,7 @@ async function capturePhoto() {
     if ((window as any).showToast) {
       ;(window as any).showToast({
         type: 'error',
-        message: 'Failed to capture photo. Please try again.'
+        message: t.photoCaptureFailed
       })
     }
   }
