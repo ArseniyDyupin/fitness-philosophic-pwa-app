@@ -6,6 +6,10 @@ export type Language = 'en' | 'ru'
 export const useI18nStore = defineStore('i18n', () => {
   const currentLanguage = ref<Language>('en')
 
+  function setLanguageFromProfile(lang: Language) {
+    currentLanguage.value = lang
+  }
+
   // Translations
   const translations = {
     en: {
@@ -47,6 +51,7 @@ export const useI18nStore = defineStore('i18n', () => {
       saving: 'Saving...',
       profileUpdated: 'Profile updated successfully!',
       profileUpdateFailed: 'Failed to save profile. Please try again.',
+
       
       // Goals
       weightLoss: 'Weight Loss',
@@ -54,6 +59,11 @@ export const useI18nStore = defineStore('i18n', () => {
       endurance: 'Endurance',
       strength: 'Strength',
       generalFitness: 'General Fitness',
+      weightLossDescription: 'Lose body fat and get leaner',
+      muscleGainDescription: 'Build strength and muscle mass',
+      enduranceDescription: 'Improve cardiovascular fitness',
+      strengthDescription: 'Increase overall strength',
+      generalFitnessDescription: 'Stay healthy and active',
       
       // AI Settings
       aiSettings: 'AI Settings',
@@ -61,6 +71,7 @@ export const useI18nStore = defineStore('i18n', () => {
       test: 'Test',
       testing: 'Testing...',
       connectionStatus: 'Connection Status',
+      apiKeyStoredLocally: 'Your API key is stored locally and never sent to our servers',
       notConfigured: 'Not configured',
       apiKeySet: 'API key set',
       connected: 'Connected ✓',
@@ -75,6 +86,10 @@ export const useI18nStore = defineStore('i18n', () => {
       exportData: 'Export Data',
       importData: 'Import Data',
       resetAllData: 'Reset All Data',
+      profileExport: 'Profile Export',
+      profileExportDescription: 'Export your profile data as a JSON file that you can import on another device.',
+      exporting: 'Exporting...',
+      exportProfile: 'Export Profile',
       resetting: 'Resetting...',
       confirmReset: 'Confirm Reset',
       resetDescription: 'This will permanently delete all your data:',
@@ -149,6 +164,10 @@ export const useI18nStore = defineStore('i18n', () => {
       
       // Home
       dailySummary: 'Daily Summary',
+      todaysSummary: 'Today\'s Summary',
+      burned: 'Burned',
+      consumed: 'Consumed',
+      balance: 'Balance',
       quickActions: 'Quick Actions',
       nextWorkout: 'Next Workout',
       recentWorkouts: 'Recent Workouts',
@@ -158,21 +177,61 @@ export const useI18nStore = defineStore('i18n', () => {
       thisWeekCalories: 'This Week\'s Calories',
       startWorkout: 'Start Workout',
       logFood: 'Log Food',
+      trackExercise: 'Track your exercise',
+      trackNutrition: 'Track your nutrition',
+      weeklyView: 'Weekly View',
+      checkProgress: 'Check your progress',
+      nextWorkoutPlan: 'Next Workout Plan',
+      viewAllWorkouts: 'View all workouts',
       homeWeeklyCheckin: 'Weekly Check-in',
       
       // Onboarding
       onboarding: 'Onboarding',
       welcome: 'Welcome to AI Trainer',
       welcomeSubtitle: 'Let\'s set up your fitness profile',
+      aiTrainer: 'AI Trainer',
       next: 'Next',
       previous: 'Previous',
       finish: 'Finish',
+      step: 'Step',
+      of: 'of',
+      importProfile: 'Import Profile',
+      importProfileDescription: 'Load your existing profile from a JSON file',
+      createNewProfile: 'Create New Profile',
+      createNewProfileDescription: 'Set up your profile with step-by-step guidance',
+      profileCreatedSuccess: 'Profile created successfully! Welcome to AI Trainer!',
+      profileCreationFailed: 'Failed to create profile. Please try again.',
+      
+      // Onboarding Selection
+      welcomeToOnboarding: 'Welcome! Let\'s get started',
+      chooseYourOption: 'Choose your option',
+      
+      // Import Modal
+      importProfileTitle: 'Import Profile',
+      chooseJsonFile: 'Choose JSON File',
+      selectJsonFile: 'Select a JSON file with your profile data',
+      selected: 'Selected:',
+      importing: 'Importing...',
+      import: 'Import',
+      
+      // Language Selection
+      selectLanguageTitle: 'Select Language / Выберите язык',
+      continueInEnglish: 'Continue in English',
+      continueInRussian: 'Продолжить на русском',
+      languageChangesApplied: 'Language changes will be applied immediately',
       
       // Onboarding Goals
       whatIsYourGoal: 'What is your main fitness goal?',
       selectYourGoal: 'Select your primary goal',
       describeYourGoal: 'Describe your goal in detail',
       goalPlaceholder: 'Tell us more about your fitness goals...',
+      targetWeight: 'Target Weight (kg) - Optional',
+      targetEvent: 'Target Event or Date - Optional',
+      fitnessGoal: 'Fitness Goal',
+      targetWeightOptional: 'Target Weight (kg) - Optional',
+      targetEventOptional: 'Target Event or Date - Optional',
+      targetWeightExample: 'e.g., 70',
+      targetEventExample: 'e.g., Summer vacation, Wedding, Marathon...',
       
       // Onboarding Constraints
       healthConstraints: 'Health Constraints',
@@ -180,6 +239,25 @@ export const useI18nStore = defineStore('i18n', () => {
       constraintsDescription: 'This helps us create safer workout plans',
       addConstraint: 'Add Constraint',
       constraintPlaceholder: 'e.g., knee injury, back pain, etc.',
+      selectConstraints: 'Select any that apply:',
+      otherConstraints: 'Other constraints (optional)',
+      otherConstraintsPlaceholder: 'Describe any other health conditions or limitations...',
+      backPain: 'Back Pain',
+      backPainDescription: 'Lower back or spine issues',
+      kneeProblems: 'Knee Problems',
+      kneeProblemsDescription: 'Knee pain or injuries',
+      shoulderIssues: 'Shoulder Issues',
+      shoulderIssuesDescription: 'Shoulder pain or limited mobility',
+      heartCondition: 'Heart Condition',
+      heartConditionDescription: 'Cardiovascular health concerns',
+      diabetes: 'Diabetes',
+      diabetesDescription: 'Type 1 or Type 2 diabetes',
+      asthma: 'Asthma',
+      asthmaDescription: 'Respiratory conditions',
+      pregnancy: 'Pregnancy',
+      pregnancyDescription: 'Currently pregnant',
+      recentSurgery: 'Recent Surgery',
+      recentSurgeryDescription: 'Recovering from surgery',
       
       // Onboarding Equipment
       availableEquipment: 'Available Equipment',
@@ -191,12 +269,31 @@ export const useI18nStore = defineStore('i18n', () => {
       pullUpBar: 'Pull-up Bar',
       yogaMat: 'Yoga Mat',
       treadmill: 'Treadmill',
+      bicycle: 'Bicycle',
+      gymAccess: 'Gym Access',
       otherEquipment: 'Other',
+      selectEquipment: 'Select all that apply:',
+      noEquipmentDescription: 'Bodyweight exercises only',
+      dumbbellsDescription: 'Free weights for strength training',
+      resistanceBandsDescription: 'Elastic bands for strength and mobility',
+      pullUpBarDescription: 'Bar for pull-ups and hanging exercises',
+      yogaMatDescription: 'Mat for floor exercises and stretching',
+      treadmillDescription: 'Cardio machine for running/walking',
+      bicycleDescription: 'Indoor or outdoor cycling',
+      gymAccessDescription: 'Full gym with various equipment',
       
       // Onboarding Metrics
       personalMetrics: 'Personal Metrics',
       enterYourMetrics: 'Please enter your personal metrics',
       metricsDescription: 'This helps us calculate calories and create personalized plans',
+      tellUsAboutYourself: 'Tell us about yourself',
+      yourName: 'Your name',
+      yourAge: 'Your age',
+      yourGender: 'Your gender',
+      selectGender: 'Select gender',
+      yourHeight: 'Height in centimeters',
+      yourWeight: 'Current Weight (kg)',
+      weightInKg: 'Weight in kilograms',
       
       // Onboarding Frequency
       workoutFrequency: 'Workout Frequency',
@@ -206,11 +303,32 @@ export const useI18nStore = defineStore('i18n', () => {
       workoutDuration: 'How long do you want each workout to be?',
       durationDescription: 'Select your preferred workout duration',
       minutes: 'minutes',
+      workoutsPerWeek: 'Workouts per week:',
+      beginner: 'Beginner',
+      light: 'Light',
+      moderate: 'Moderate',
+      active: 'Active',
+      veryActive: 'Very Active',
+      athlete: 'Athlete',
+      typicalWorkoutDuration: 'Typical workout duration (minutes)',
+      selectDuration: 'Select duration',
+      creatingProfile: 'Creating Profile...',
+      completeSetup: 'Complete Setup',
       
-      // Language
+      // Language Selection
       language: 'Language',
       english: 'English',
       russian: 'Russian',
+      selectLanguage: 'Select Language',
+      selectLanguageDescription: 'Choose your preferred language for the app interface',
+      languageSelection: 'Language Selection',
+      
+      // Detailed Goals
+      detailedGoals: 'Detailed Goals',
+      personalGoals: 'Personal Goals',
+      describeYourGoals: 'Describe your personal fitness goals in detail',
+      goalsPlaceholder: 'Tell us about your specific fitness goals, motivations, and what you want to achieve...',
+      goalsDescription: 'These details will help us provide more personalized AI recommendations',
       
       // Not Found
       pageNotFound: 'Page Not Found',
@@ -279,6 +397,11 @@ export const useI18nStore = defineStore('i18n', () => {
       endurance: 'Выносливость',
       strength: 'Сила',
       generalFitness: 'Общая физическая форма',
+      weightLossDescription: 'Сбросить жир и стать стройнее',
+      muscleGainDescription: 'Набрать силу и мышечную массу',
+      enduranceDescription: 'Улучшить сердечно-сосудистую выносливость',
+      strengthDescription: 'Увеличить общую силу',
+      generalFitnessDescription: 'Оставаться здоровым и активным',
       
       // AI Settings
       aiSettings: 'Настройки ИИ',
@@ -374,6 +497,10 @@ export const useI18nStore = defineStore('i18n', () => {
       
       // Home
       dailySummary: 'Дневная сводка',
+      todaysSummary: 'Сегодняшний обзор',
+      burned: 'Сожжено',
+      consumed: 'Потреблено',
+      balance: 'Баланс',
       quickActions: 'Быстрые действия',
       nextWorkout: 'Следующая тренировка',
       recentWorkouts: 'Недавние тренировки',
@@ -383,21 +510,55 @@ export const useI18nStore = defineStore('i18n', () => {
       thisWeekCalories: 'Калории за неделю',
       startWorkout: 'Начать тренировку',
       logFood: 'Записать питание',
+      trackExercise: 'Отслеживайте ваши упражнения',
+      trackNutrition: 'Отслеживайте ваше питание',
+      weeklyView: 'Недельный обзор',
+      checkProgress: 'Проверьте ваш прогресс',
+      nextWorkoutPlan: 'Следующий план тренировки',
+      viewAllWorkouts: 'Посмотреть все тренировки',
       homeWeeklyCheckin: 'Недельный отчет',
       
       // Onboarding
       onboarding: 'Настройка',
       welcome: 'Добро пожаловать в AI Тренер',
       welcomeSubtitle: 'Давайте настроим ваш фитнес-профиль',
+      aiTrainer: 'AI Тренер',
       next: 'Далее',
       previous: 'Назад',
       finish: 'Завершить',
+      step: 'Шаг',
+      of: 'из',
+      importProfile: 'Импорт профиля',
+      importProfileDescription: 'Загрузите ваш существующий профиль из JSON файла',
+      createNewProfile: 'Создать новый профиль',
+      createNewProfileDescription: 'Настройте ваш профиль с пошаговым руководством',
+      profileCreatedSuccess: 'Профиль успешно создан! Добро пожаловать в AI Тренер!',
+      profileCreationFailed: 'Не удалось создать профиль. Попробуйте еще раз.',
+      
+      // Onboarding Selection
+      welcomeToOnboarding: 'Добро пожаловать! Давайте начнем',
+      chooseYourOption: 'Выберите ваш вариант',
+      
+      // Import Modal
+      importProfileTitle: 'Импорт профиля',
+      chooseJsonFile: 'Выбрать JSON файл',
+      selectJsonFile: 'Выберите JSON файл с данными вашего профиля',
+      selected: 'Выбрано:',
+      importing: 'Импорт...',
+      import: 'Импорт',
       
       // Onboarding Goals
       whatIsYourGoal: 'Какова ваша основная фитнес-цель?',
       selectYourGoal: 'Выберите вашу основную цель',
       describeYourGoal: 'Опишите вашу цель подробно',
       goalPlaceholder: 'Расскажите больше о ваших фитнес-целях...',
+      targetWeight: 'Целевой вес (кг) - Необязательно',
+      targetEvent: 'Целевое событие или дата - Необязательно',
+      fitnessGoal: 'Фитнес-цель',
+      targetWeightOptional: 'Целевой вес (кг) - Необязательно',
+      targetEventOptional: 'Целевое событие или дата - Необязательно',
+      targetWeightExample: 'например, 70',
+      targetEventExample: 'например, Летний отпуск, Свадьба, Марафон...',
       
       // Onboarding Constraints
       healthConstraints: 'Ограничения по здоровью',
@@ -405,6 +566,25 @@ export const useI18nStore = defineStore('i18n', () => {
       constraintsDescription: 'Это поможет нам создать более безопасные планы тренировок',
       addConstraint: 'Добавить ограничение',
       constraintPlaceholder: 'например, травма колена, боль в спине и т.д.',
+      selectConstraints: 'Выберите все подходящие:',
+      otherConstraints: 'Другие ограничения (необязательно)',
+      otherConstraintsPlaceholder: 'Опишите любые другие проблемы со здоровьем или ограничения...',
+      backPain: 'Боль в спине',
+      backPainDescription: 'Проблемы с поясницей или позвоночником',
+      kneeProblems: 'Проблемы с коленями',
+      kneeProblemsDescription: 'Боль в коленях или травмы',
+      shoulderIssues: 'Проблемы с плечами',
+      shoulderIssuesDescription: 'Боль в плечах или ограниченная подвижность',
+      heartCondition: 'Проблемы с сердцем',
+      heartConditionDescription: 'Проблемы с сердечно-сосудистой системой',
+      diabetes: 'Диабет',
+      diabetesDescription: 'Диабет 1 или 2 типа',
+      asthma: 'Астма',
+      asthmaDescription: 'Проблемы с дыханием',
+      pregnancy: 'Беременность',
+      pregnancyDescription: 'В настоящее время беременны',
+      recentSurgery: 'Недавняя операция',
+      recentSurgeryDescription: 'Восстановление после операции',
       
       // Onboarding Equipment
       availableEquipment: 'Доступное оборудование',
@@ -416,12 +596,31 @@ export const useI18nStore = defineStore('i18n', () => {
       pullUpBar: 'Турник',
       yogaMat: 'Коврик для йоги',
       treadmill: 'Беговая дорожка',
+      bicycle: 'Велосипед',
+      gymAccess: 'Тренажерный зал',
       otherEquipment: 'Другое',
+      selectEquipment: 'Выберите все подходящие:',
+      noEquipmentDescription: 'Только упражнения с собственным весом',
+      dumbbellsDescription: 'Свободные веса для силовых тренировок',
+      resistanceBandsDescription: 'Эластичные ленты для силы и подвижности',
+      pullUpBarDescription: 'Перекладина для подтягиваний и висов',
+      yogaMatDescription: 'Коврик для упражнений на полу и растяжки',
+      treadmillDescription: 'Кардио-машина для бега/ходьбы',
+      bicycleDescription: 'Велотренажер или велосипед',
+      gymAccessDescription: 'Полный тренажерный зал с различным оборудованием',
       
       // Onboarding Metrics
       personalMetrics: 'Личные показатели',
       enterYourMetrics: 'Пожалуйста, введите ваши личные показатели',
       metricsDescription: 'Это поможет нам рассчитать калории и создать персонализированные планы',
+      tellUsAboutYourself: 'Расскажите о себе',
+      yourName: 'Ваше имя',
+      yourAge: 'Ваш возраст',
+      yourGender: 'Ваш пол',
+      selectGender: 'Выберите пол',
+      yourHeight: 'Рост в сантиметрах',
+      yourWeight: 'Текущий вес (кг)',
+      weightInKg: 'Вес в килограммах',
       
       // Onboarding Frequency
       workoutFrequency: 'Частота тренировок',
@@ -431,11 +630,32 @@ export const useI18nStore = defineStore('i18n', () => {
       workoutDuration: 'Как долго должна длиться каждая тренировка?',
       durationDescription: 'Выберите предпочитаемую длительность тренировки',
       minutes: 'минут',
+      workoutsPerWeek: 'Тренировок в неделю:',
+      beginner: 'Новичок',
+      light: 'Легкий',
+      moderate: 'Умеренный',
+      active: 'Активный',
+      veryActive: 'Очень активный',
+      athlete: 'Атлет',
+      typicalWorkoutDuration: 'Типичная длительность тренировки (минуты)',
+      selectDuration: 'Выберите длительность',
+      creatingProfile: 'Создание профиля...',
+      completeSetup: 'Завершить настройку',
       
-      // Language
+      // Language Selection
       language: 'Язык',
       english: 'English',
       russian: 'Русский',
+      selectLanguage: 'Выберите язык',
+      selectLanguageDescription: 'Выберите предпочитаемый язык для интерфейса приложения',
+      languageSelection: 'Выбор языка',
+      
+      // Detailed Goals
+      detailedGoals: 'Детальные цели',
+      personalGoals: 'Личные цели',
+      describeYourGoals: 'Опишите ваши личные фитнес-цели подробно',
+      goalsPlaceholder: 'Расскажите о ваших конкретных фитнес-целях, мотивации и о том, чего вы хотите достичь...',
+      goalsDescription: 'Эти детали помогут нам предоставить более персонализированные рекомендации ИИ',
       
       // Not Found
       pageNotFound: 'Страница не найдена',
@@ -450,6 +670,12 @@ export const useI18nStore = defineStore('i18n', () => {
       importConfirmTitle: 'Импорт данных',
       importConfirmMessage: 'Это заменит все ваши текущие данные. Вы уверены?',
       selectFile: 'Выбрать файл',
+      profileExport: 'Экспорт профиля',
+      profileExportDescription: 'Экспортируйте данные вашего профиля в JSON файл, который можно импортировать на другом устройстве.',
+      exporting: 'Экспорт...',
+      exportProfile: 'Экспорт профиля',
+      languageChangesApplied: 'Изменения языка будут применены немедленно',
+      apiKeyStoredLocally: 'Ваш API ключ хранится локально и никогда не отправляется на наши серверы',
       
       // Photo
       cameraNotAvailable: 'Камера недоступна',
@@ -480,6 +706,7 @@ export const useI18nStore = defineStore('i18n', () => {
     currentLanguage,
     t,
     setLanguage,
-    loadLanguage
+    loadLanguage,
+    setLanguageFromProfile
   }
 })

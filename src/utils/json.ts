@@ -21,6 +21,8 @@ const ExportDataSchema = z.object({
     equipment: z.array(z.string()),
     frequency: z.number().min(1).max(7),
     duration: z.number().min(10).max(300),
+    language: z.enum(['en', 'ru']),
+    goalsDetailed: z.string(),
     createdAt: z.string().or(z.date()),
     updatedAt: z.string().or(z.date())
   }),

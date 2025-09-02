@@ -4,8 +4,10 @@ import HomePage from '@/pages/HomePage.vue'
 import SettingsPage from '@/pages/SettingsPage.vue'
 import NotFound from '@/pages/NotFound.vue'
 import OnboardingSelectionPage from '@/pages/OnboardingSelectionPage.vue'
+import LanguageSelectionPage from '@/pages/LanguageSelectionPage.vue'
 import OnboardingGoals from '@/features/onboarding/OnboardingGoals.vue'
 import OnboardingConstraints from '@/features/onboarding/OnboardingConstraints.vue'
+import OnboardingDetailedGoals from '@/features/onboarding/OnboardingDetailedGoals.vue'
 import OnboardingEquipment from '@/features/onboarding/OnboardingEquipment.vue'
 import OnboardingMetrics from '@/features/onboarding/OnboardingMetrics.vue'
 import OnboardingFrequency from '@/features/onboarding/OnboardingFrequency.vue'
@@ -26,6 +28,11 @@ const routes: RouteRecordRaw[] = [
     component: OnboardingSelectionPage
   },
   {
+    path: '/language-selection',
+    name: 'language-selection',
+    component: LanguageSelectionPage
+  },
+  {
     path: '/onboarding/goals',
     name: 'onboarding-goals',
     component: OnboardingGoals
@@ -34,6 +41,11 @@ const routes: RouteRecordRaw[] = [
     path: '/onboarding/constraints',
     name: 'onboarding-constraints',
     component: OnboardingConstraints
+  },
+  {
+    path: '/onboarding/detailed-goals',
+    name: 'onboarding-detailed-goals',
+    component: OnboardingDetailedGoals
   },
   {
     path: '/onboarding/equipment',
@@ -90,8 +102,8 @@ const router = createRouter({
 
 // Navigation guard to check if user has completed onboarding
 router.beforeEach(async (to, from, next) => {
-  // Skip guard for onboarding routes
-  if (to.path.startsWith('/onboarding')) {
+  // Skip guard for onboarding routes and language selection
+  if (to.path.startsWith('/onboarding') || to.path === '/language-selection') {
     return next()
   }
 

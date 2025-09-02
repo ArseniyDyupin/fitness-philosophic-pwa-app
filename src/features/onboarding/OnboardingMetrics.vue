@@ -2,24 +2,24 @@
   <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
     <div class="max-w-md w-full">
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">AI Trainer</h1>
-        <p class="text-gray-600">Step 4 of 5</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ t.aiTrainer }}</h1>
+        <p class="text-gray-600">{{ t.step }} 5 {{ t.of }} 6</p>
       </div>
 
       <div class="card">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">Tell us about yourself</h2>
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">{{ t.tellUsAboutYourself }}</h2>
         
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <!-- Name -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Name *
+              {{ t.name }} *
             </label>
             <input
               v-model="formData.name"
               type="text"
               class="input-field"
-              placeholder="Your name"
+              :placeholder="t.yourName"
               required
             />
           </div>
@@ -27,7 +27,7 @@
           <!-- Age -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Age *
+              {{ t.age }} *
             </label>
             <input
               v-model.number="formData.age"
@@ -35,7 +35,7 @@
               min="12"
               max="90"
               class="input-field"
-              placeholder="Your age"
+              :placeholder="t.yourAge"
               required
             />
           </div>
@@ -43,20 +43,20 @@
           <!-- Gender -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Gender *
+              {{ t.gender }} *
             </label>
             <select v-model="formData.gender" class="input-field" required>
-              <option value="">Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="">{{ t.selectGender }}</option>
+              <option value="male">{{ t.male }}</option>
+              <option value="female">{{ t.female }}</option>
+              <option value="other">{{ t.other }}</option>
             </select>
           </div>
 
           <!-- Height -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Height (cm) *
+              {{ t.height }} *
             </label>
             <input
               v-model.number="formData.height"
@@ -64,7 +64,7 @@
               min="100"
               max="250"
               class="input-field"
-              placeholder="Height in centimeters"
+              :placeholder="t.yourHeight"
               required
             />
           </div>
@@ -72,7 +72,7 @@
           <!-- Weight -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Current Weight (kg) *
+              {{ t.yourWeight }} *
             </label>
             <input
               v-model.number="formData.weight"
@@ -81,7 +81,7 @@
               max="250"
               step="0.1"
               class="input-field"
-              placeholder="Weight in kilograms"
+              :placeholder="t.weightInKg"
               required
             />
           </div>
@@ -93,14 +93,14 @@
               @click="$router.push('/onboarding/equipment')"
               class="btn-secondary"
             >
-              Back
+              {{ t.back }}
             </button>
             <button
               type="submit"
               :disabled="!isFormValid"
               class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next
+              {{ t.next }}
             </button>
           </div>
         </form>
@@ -112,8 +112,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18nStore } from '@/stores/i18n.store'
 
 const router = useRouter()
+const i18nStore = useI18nStore()
+
+const { t } = i18nStore
 
 const formData = ref({
   name: '',

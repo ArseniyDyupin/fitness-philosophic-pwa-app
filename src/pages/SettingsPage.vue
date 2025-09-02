@@ -27,7 +27,7 @@
           <h2 class="text-lg font-semibold text-gray-900 mb-6">{{ t.language }}</h2>
           <div class="flex space-x-4">
             <button
-              @click="setLanguage('en')"
+              @click="setLanguageAndSave('en')"
               :class="[
                 'px-4 py-2 rounded-lg font-medium transition-colors',
                 currentLanguage === 'en' 
@@ -38,7 +38,7 @@
               {{ t.english }}
             </button>
             <button
-              @click="setLanguage('ru')"
+              @click="setLanguageAndSave('ru')"
               :class="[
                 'px-4 py-2 rounded-lg font-medium transition-colors',
                 currentLanguage === 'ru' 
@@ -49,6 +49,9 @@
               {{ t.russian }}
             </button>
           </div>
+          <p class="text-sm text-gray-500 mt-2">
+            {{ t.languageChangesApplied }}
+          </p>
         </div>
 
         <!-- Profile Section -->
@@ -125,6 +128,18 @@
               :placeholder="t.goalDescription"
             ></textarea>
           </div>
+          <div class="mt-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.detailedGoals }}</label>
+            <textarea
+              v-model="profileData.goalsDetailed"
+              rows="4"
+              class="input-field"
+              :placeholder="t.goalsPlaceholder"
+            ></textarea>
+            <p class="text-xs text-gray-500 mt-1">
+              {{ t.goalsDescription }}
+            </p>
+          </div>
           <div class="mt-6 flex justify-end">
             <button
               @click="saveProfile"
@@ -160,7 +175,7 @@
                 </button>
               </div>
               <p class="text-xs text-gray-500 mt-1">
-                Your API key is stored locally and never sent to our servers
+                {{ t.apiKeyStoredLocally }}
               </p>
             </div>
             <div class="flex justify-between items-center">
@@ -183,18 +198,18 @@
 
         <!-- Profile Export -->
         <div class="card">
-          <h2 class="text-lg font-semibold text-gray-900 mb-6">Profile Export</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-6">{{ t.profileExport }}</h2>
           <div class="space-y-4">
             <div>
               <p class="text-sm text-gray-600 mb-4">
-                Export your profile data as a JSON file that you can import on another device.
+                {{ t.profileExportDescription }}
               </p>
               <button
                 @click="exportProfile"
                 :disabled="isExporting"
                 class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {{ isExporting ? 'Exporting...' : 'Export Profile' }}
+                {{ isExporting ? t.exporting : t.exportProfile }}
               </button>
             </div>
           </div>
@@ -292,7 +307,8 @@ const profileData = ref({
   goal: {
     type: 'general_fitness' as any,
     description: ''
-  }
+  },
+  goalsDetailed: ''
 })
 
 // AI settings
@@ -314,7 +330,8 @@ onMounted(async () => {
       goal: {
         type: profileStore.profile.goal.type,
         description: profileStore.profile.goal.description
-      }
+      },
+      goalsDetailed: profileStore.profile.goalsDetailed || ''
     }
   }
   
@@ -331,6 +348,17 @@ function updateConnectionStatus() {
   }
 }
 
+// Save language preference to profile
+async function saveLanguagePreference(lang: 'en' | 'ru') {
+  if (profileStore.profile) {
+    try {
+      await profileStore.updateProfile({ language: lang })
+    } catch (error) {
+      console.error('Error saving language preference:', error)
+    }
+  }
+}
+
 // Save profile
 async function saveProfile() {
   isSaving.value = true
@@ -343,7 +371,8 @@ async function saveProfile() {
         gender: profileData.value.gender,
         height: profileData.value.height,
         weight: profileData.value.weight,
-        goal: profileData.value.goal
+        goal: profileData.value.goal,
+        goalsDetailed: profileData.value.goalsDetailed
       })
     } else {
       // Update existing profile
@@ -355,6 +384,7 @@ async function saveProfile() {
         height: profileData.value.height,
         weight: profileData.value.weight,
         goal: profileData.value.goal,
+        goalsDetailed: profileData.value.goalsDetailed,
         constraints: [...profileStore.profile.constraints], // Clone readonly array
         equipment: [...profileStore.profile.equipment], // Clone readonly array
         updatedAt: new Date()
@@ -417,6 +447,12 @@ async function exportProfile() {
   } finally {
     isExporting.value = false
   }
+}
+
+// Set language and save to profile
+async function setLanguageAndSave(lang: 'en' | 'ru') {
+  setLanguage(lang)
+  await saveLanguagePreference(lang)
 }
 
 // Test AI connection

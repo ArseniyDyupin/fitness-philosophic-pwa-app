@@ -2,16 +2,16 @@
   <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
     <div class="max-w-md w-full">
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">AI Trainer</h1>
-        <p class="text-gray-600">Step 2 of 5</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ t.aiTrainer }}</h1>
+        <p class="text-gray-600">{{ t.step }} 2 {{ t.of }} 6</p>
       </div>
 
       <div class="card">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">Do you have any health constraints?</h2>
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">{{ t.doYouHaveConstraints }}</h2>
         
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-3">Select any that apply:</label>
+            <label class="block text-sm font-medium text-gray-700 mb-3">{{ t.selectConstraints }}</label>
             <div class="space-y-3">
               <label 
                 v-for="constraint in constraints" 
@@ -36,13 +36,13 @@
           <!-- Custom Constraint -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Other constraints (optional)
+              {{ t.otherConstraints }}
             </label>
             <textarea
               v-model="customConstraints"
               rows="3"
               class="input-field"
-              placeholder="Describe any other health conditions or limitations..."
+              :placeholder="t.otherConstraintsPlaceholder"
             ></textarea>
           </div>
 
@@ -53,13 +53,13 @@
               @click="$router.push('/onboarding/goals')"
               class="btn-secondary"
             >
-              Back
+              {{ t.back }}
             </button>
             <button
               type="submit"
               class="btn-primary"
             >
-              Next
+              {{ t.next }}
             </button>
           </div>
         </form>
@@ -71,8 +71,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18nStore } from '@/stores/i18n.store'
 
 const router = useRouter()
+const i18nStore = useI18nStore()
+
+const { t } = i18nStore
 
 const selectedConstraints = ref<string[]>([])
 const customConstraints = ref('')
@@ -80,43 +84,43 @@ const customConstraints = ref('')
 const constraints = [
   {
     id: 'back_pain',
-    title: 'Back Pain',
-    description: 'Lower back or spine issues'
+    title: t.backPain,
+    description: t.backPainDescription
   },
   {
     id: 'knee_problems',
-    title: 'Knee Problems',
-    description: 'Knee pain or injuries'
+    title: t.kneeProblems,
+    description: t.kneeProblemsDescription
   },
   {
     id: 'shoulder_issues',
-    title: 'Shoulder Issues',
-    description: 'Shoulder pain or limited mobility'
+    title: t.shoulderIssues,
+    description: t.shoulderIssuesDescription
   },
   {
     id: 'heart_condition',
-    title: 'Heart Condition',
-    description: 'Cardiovascular health concerns'
+    title: t.heartCondition,
+    description: t.heartConditionDescription
   },
   {
     id: 'diabetes',
-    title: 'Diabetes',
-    description: 'Type 1 or Type 2 diabetes'
+    title: t.diabetes,
+    description: t.diabetesDescription
   },
   {
     id: 'asthma',
-    title: 'Asthma',
-    description: 'Respiratory conditions'
+    title: t.asthma,
+    description: t.asthmaDescription
   },
   {
     id: 'pregnancy',
-    title: 'Pregnancy',
-    description: 'Currently pregnant'
+    title: t.pregnancy,
+    description: t.pregnancyDescription
   },
   {
     id: 'recent_surgery',
-    title: 'Recent Surgery',
-    description: 'Recovering from surgery'
+    title: t.recentSurgery,
+    description: t.recentSurgeryDescription
   }
 ]
 
@@ -132,6 +136,6 @@ function handleSubmit() {
   localStorage.setItem('onboarding-constraints', JSON.stringify(allConstraints))
   
   // Navigate to next step
-  router.push('/onboarding/equipment')
+  router.push('/onboarding/detailed-goals')
 }
 </script>

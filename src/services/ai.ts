@@ -8,10 +8,14 @@ export class AIService {
     this.apiKey = key
   }
 
-  private async makeRequest(prompt: string, abortController?: AbortController): Promise<string> {
+  private async makeRequest(prompt: string, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<string> {
     if (!this.apiKey) {
       throw new Error('API key not set')
     }
+
+    const systemPrompt = language === 'ru' 
+      ? 'Вы - ИИ-тренер по фитнесу. Всегда отвечайте только валидным JSON. Никакого дополнительного текста.'
+      : 'You are a fitness coach AI. Always respond with valid JSON only. No additional text.'
 
     const response = await fetch(this.baseUrl, {
       method: 'POST',
@@ -24,7 +28,7 @@ export class AIService {
         messages: [
           {
             role: 'system',
-            content: 'You are a fitness coach AI. Always respond with valid JSON only. No additional text.'
+            content: systemPrompt
           },
           {
             role: 'user',
@@ -53,8 +57,25 @@ export class AIService {
     return data.choices[0]?.message?.content || ''
   }
 
-  async reviewWorkout(payload: AIWorkoutPayload, abortController?: AbortController): Promise<AIWorkoutReview> {
-    const prompt = `Analyze this workout and provide a JSON response with analysis and next workout recommendation.
+  async reviewWorkout(payload: AIWorkoutPayload, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<AIWorkoutReview> {
+    const prompt = language === 'ru' 
+      ? `Проанализируйте эту тренировку и предоставьте JSON-ответ с анализом и рекомендацией следующей тренировки.
+
+Тренировка: ${JSON.stringify(payload.workout)}
+Профиль: ${JSON.stringify(payload.profile)}
+Недавние тренировки: ${JSON.stringify(payload.recentWorkouts)}
+
+Ответьте JSON в точном формате:
+{
+  "analysis": "Краткий анализ производительности тренировки",
+  "nextWorkout": {
+    "type": "тип_тренировки",
+    "durationMin": 30,
+    "description": "Подробное описание следующей тренировки",
+    "tips": ["совет1", "совет2", "совет3"]
+  }
+}`
+      : `Analyze this workout and provide a JSON response with analysis and next workout recommendation.
 
 Workout: ${JSON.stringify(payload.workout)}
 Profile: ${JSON.stringify(payload.profile)}
@@ -72,7 +93,7 @@ Respond with JSON in this exact format:
 }`
 
     try {
-      const response = await this.makeRequest(prompt, abortController)
+      const response = await this.makeRequest(prompt, language, abortController)
       const parsed = JSON.parse(response)
       
       // Validate response structure
@@ -89,14 +110,20 @@ Respond with JSON in this exact format:
     }
   }
 
-  async getWeeklyAdvice(payload: AIWeeklyAdvicePayload, abortController?: AbortController): Promise<string> {
-    const prompt = `Provide weekly fitness advice based on this data. Respond with a brief, actionable advice paragraph.
+  async getWeeklyAdvice(payload: AIWeeklyAdvicePayload, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<string> {
+    const prompt = language === 'ru'
+      ? `Предоставьте недельный совет по фитнесу на основе этих данных. Ответьте кратким, практичным советом.
+
+Данные недели: ${JSON.stringify(payload)}
+
+Сделайте ответ кратким и практичным. Сосредоточьтесь на одной основной рекомендации.`
+      : `Provide weekly fitness advice based on this data. Respond with a brief, actionable advice paragraph.
 
 Week data: ${JSON.stringify(payload)}
 
 Keep the response concise and practical. Focus on one main recommendation.`
 
-    return await this.makeRequest(prompt, abortController)
+    return await this.makeRequest(prompt, language, abortController)
   }
 
   async testConnection(): Promise<boolean> {

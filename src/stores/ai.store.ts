@@ -114,7 +114,8 @@ export const useAIStore = defineStore('ai', () => {
             type: profile.goal.type,
             description: profile.goal.description
           },
-          constraints: [...profile.constraints]
+          constraints: [...profile.constraints],
+          goalsDetailed: profile.goalsDetailed || ''
         },
         recentWorkouts
       }

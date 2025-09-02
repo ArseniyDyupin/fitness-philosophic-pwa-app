@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
 import { dbHelpers } from '@/services/db'
+import { useI18nStore } from '@/stores/i18n.store'
 import type { Profile, Goal } from '@/types/models'
 
 export const useProfileStore = defineStore('profile', () => {
@@ -21,6 +22,12 @@ export const useProfileStore = defineStore('profile', () => {
     try {
       const loadedProfile = await dbHelpers.getProfile()
       profile.value = loadedProfile || null
+      
+      // Set language in i18n store if profile exists
+      if (loadedProfile) {
+        const i18nStore = useI18nStore()
+        i18nStore.setLanguageFromProfile(loadedProfile.language)
+      }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load profile'
     } finally {
@@ -63,6 +70,8 @@ export const useProfileStore = defineStore('profile', () => {
         equipment: profileData.equipment || [],
         frequency: profileData.frequency || 3,
         duration: profileData.duration || 30,
+        language: profileData.language || 'en',
+        goalsDetailed: profileData.goalsDetailed || '',
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -139,6 +148,8 @@ export const useProfileStore = defineStore('profile', () => {
         equipment: importedProfile.equipment || [],
         frequency: importedProfile.frequency || 3,
         duration: importedProfile.duration || 30,
+        language: importedProfile.language || 'en',
+        goalsDetailed: importedProfile.goalsDetailed || '',
         createdAt: importedProfile.createdAt || new Date(),
         updatedAt: new Date()
       }

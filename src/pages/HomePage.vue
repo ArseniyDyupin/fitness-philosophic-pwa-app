@@ -22,19 +22,19 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Daily Summary Card -->
       <div class="card mb-8">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Today's Summary</h2>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.todaysSummary }}</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="text-center">
             <div class="text-2xl font-bold text-primary-600">{{ todayCalories }} kcal</div>
-            <div class="text-sm text-gray-600">Burned</div>
+            <div class="text-sm text-gray-600">{{ t.burned }}</div>
           </div>
           <div class="text-center">
             <div class="text-2xl font-bold text-blue-600">{{ todayFoodCalories }} kcal</div>
-            <div class="text-sm text-gray-600">Consumed</div>
+            <div class="text-sm text-gray-600">{{ t.consumed }}</div>
           </div>
           <div class="text-center">
             <div class="text-2xl font-bold" :class="balanceClass">{{ dailyBalance }} kcal</div>
-            <div class="text-sm text-gray-600">Balance</div>
+            <div class="text-sm text-gray-600">{{ t.balance }}</div>
           </div>
         </div>
       </div>
@@ -54,8 +54,8 @@
               </div>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">Add Workout</h3>
-              <p class="text-sm text-gray-600">Track your exercise</p>
+              <h3 class="text-lg font-medium text-gray-900">{{ t.addWorkout }}</h3>
+              <p class="text-sm text-gray-600">{{ t.trackExercise }}</p>
             </div>
           </div>
         </router-link>
@@ -73,8 +73,8 @@
               </div>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">Log Food</h3>
-              <p class="text-sm text-gray-600">Track your nutrition</p>
+              <h3 class="text-lg font-medium text-gray-900">{{ t.logFood }}</h3>
+              <p class="text-sm text-gray-600">{{ t.trackNutrition }}</p>
             </div>
           </div>
         </router-link>
@@ -92,8 +92,8 @@
               </div>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">Weekly View</h3>
-              <p class="text-sm text-gray-600">Check your progress</p>
+              <h3 class="text-lg font-medium text-gray-900">{{ t.weeklyView }}</h3>
+              <p class="text-sm text-gray-600">{{ t.checkProgress }}</p>
             </div>
           </div>
         </router-link>
@@ -101,13 +101,13 @@
 
       <!-- Next AI Plan -->
       <div v-if="latestPlan" class="card">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Next Workout Plan</h2>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.nextWorkoutPlan }}</h2>
         <PlanCard :plan="latestPlan" />
       </div>
 
       <!-- Recent Workouts -->
       <div v-if="recentWorkouts.length > 0" class="card mt-8">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Workouts</h2>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.recentWorkouts }}</h2>
         <div class="space-y-3">
           <div 
             v-for="workout in recentWorkouts.slice(0, 3)" 
@@ -131,7 +131,7 @@
           to="/workouts" 
           class="mt-4 text-sm text-primary-600 hover:text-primary-700 font-medium"
         >
-          View all workouts →
+          {{ t.viewAllWorkouts }} →
         </router-link>
       </div>
     </main>
@@ -174,11 +174,11 @@ const latestPlan = computed(() => aiStore.latestPlan)
 // Methods
 function formatWorkoutType(type: string): string {
   const types: Record<string, string> = {
-    run: 'Running',
-    pullups: 'Pull-ups',
-    pushups: 'Push-ups',
-    plank: 'Plank',
-    custom: 'Custom'
+    run: t.run,
+    pullups: t.pullups,
+    pushups: t.pushups,
+    plank: t.plank,
+    custom: t.custom
   }
   return types[type] || type
 }
@@ -192,9 +192,9 @@ onMounted(async () => {
   // Load profile first
   await profileStore.loadProfile()
   
-  // Check if profile exists, if not redirect to onboarding
+  // Check if profile exists, if not redirect to language selection
   if (!profileStore.hasCompletedOnboarding) {
-    router.push('/onboarding')
+    router.push('/language-selection')
     return
   }
   

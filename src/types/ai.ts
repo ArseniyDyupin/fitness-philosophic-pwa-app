@@ -30,6 +30,7 @@ export interface AIWorkoutPayload {
       description: string
     }
     constraints: string[]
+    goalsDetailed: string
   }
   recentWorkouts: Array<{
     type: string
@@ -61,5 +62,6 @@ export interface AIWeeklyAdvicePayload {
       type: string
       description: string
     }
+    goalsDetailed: string
   }
 }

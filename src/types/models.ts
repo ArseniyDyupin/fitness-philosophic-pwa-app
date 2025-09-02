@@ -10,6 +10,8 @@ export interface Profile {
   equipment: string[]
   frequency: number // workouts per week
   duration: number // minutes per workout
+  language: 'en' | 'ru'
+  goalsDetailed: string
   createdAt: Date
   updatedAt: Date
 }

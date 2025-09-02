@@ -2,16 +2,16 @@
   <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
     <div class="max-w-md w-full">
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">AI Trainer</h1>
-        <p class="text-gray-600">Step 3 of 5</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ t.aiTrainer }}</h1>
+        <p class="text-gray-600">{{ t.step }} 4 {{ t.of }} 6</p>
       </div>
 
       <div class="card">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">What equipment do you have access to?</h2>
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">{{ t.whatEquipment }}</h2>
         
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-3">Select all that apply:</label>
+            <label class="block text-sm font-medium text-gray-700 mb-3">{{ t.selectEquipment }}</label>
             <div class="space-y-3">
               <label 
                 v-for="equipment in equipmentList" 
@@ -37,16 +37,16 @@
           <div class="flex justify-between">
             <button
               type="button"
-              @click="$router.push('/onboarding/constraints')"
+              @click="$router.push('/onboarding/detailed-goals')"
               class="btn-secondary"
             >
-              Back
+              {{ t.back }}
             </button>
             <button
               type="submit"
               class="btn-primary"
             >
-              Next
+              {{ t.next }}
             </button>
           </div>
         </form>
@@ -58,51 +58,55 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18nStore } from '@/stores/i18n.store'
 
 const router = useRouter()
+const i18nStore = useI18nStore()
+
+const { t } = i18nStore
 
 const selectedEquipment = ref<string[]>([])
 
 const equipmentList = [
   {
     id: 'none',
-    title: 'No Equipment',
-    description: 'Bodyweight exercises only'
+    title: t.noEquipment,
+    description: t.noEquipmentDescription
   },
   {
     id: 'dumbbells',
-    title: 'Dumbbells',
-    description: 'Free weights for strength training'
+    title: t.dumbbells,
+    description: t.dumbbellsDescription
   },
   {
     id: 'resistance_bands',
-    title: 'Resistance Bands',
-    description: 'Elastic bands for strength and mobility'
+    title: t.resistanceBands,
+    description: t.resistanceBandsDescription
   },
   {
     id: 'pull_up_bar',
-    title: 'Pull-up Bar',
-    description: 'Bar for pull-ups and hanging exercises'
+    title: t.pullUpBar,
+    description: t.pullUpBarDescription
   },
   {
     id: 'yoga_mat',
-    title: 'Yoga Mat',
-    description: 'Mat for floor exercises and stretching'
+    title: t.yogaMat,
+    description: t.yogaMatDescription
   },
   {
     id: 'treadmill',
-    title: 'Treadmill',
-    description: 'Cardio machine for running/walking'
+    title: t.treadmill,
+    description: t.treadmillDescription
   },
   {
     id: 'bicycle',
-    title: 'Bicycle',
-    description: 'Indoor or outdoor cycling'
+    title: t.bicycle,
+    description: t.bicycleDescription
   },
   {
     id: 'gym_access',
-    title: 'Gym Access',
-    description: 'Full gym with various equipment'
+    title: t.gymAccess,
+    description: t.gymAccessDescription
   }
 ]
 

@@ -2,17 +2,17 @@
   <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
     <div class="max-w-md w-full">
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome to AI Trainer</h1>
-        <p class="text-gray-600">Let's set up your fitness journey</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ t.aiTrainer }}</h1>
+        <p class="text-gray-600">{{ t.step }} 1 {{ t.of }} 6</p>
       </div>
 
       <div class="card">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">What's your main goal?</h2>
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">{{ t.whatIsYourGoal }}</h2>
         
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <!-- Goal Type -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-3">Fitness Goal</label>
+            <label class="block text-sm font-medium text-gray-700 mb-3">{{ t.selectYourGoal }}</label>
             <div class="space-y-3">
               <label 
                 v-for="goal in goals" 
@@ -37,13 +37,13 @@
           <!-- Goal Description -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Describe your goal in detail
+              {{ t.describeYourGoal }}
             </label>
             <textarea
               v-model="goalDescription"
               rows="3"
               class="input-field"
-              placeholder="e.g., I want to lose 10kg in 6 months to feel more confident..."
+              :placeholder="t.goalPlaceholder"
               required
             ></textarea>
           </div>
@@ -51,7 +51,7 @@
           <!-- Target Weight (optional) -->
           <div v-if="selectedGoal === 'weight_loss' || selectedGoal === 'muscle_gain'">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Target Weight (kg) - Optional
+              {{ t.targetWeight }}
             </label>
             <input
               v-model.number="targetWeight"
@@ -59,20 +59,20 @@
               min="30"
               max="250"
               class="input-field"
-              placeholder="e.g., 70"
+              :placeholder="t.targetWeightExample"
             />
           </div>
 
           <!-- Target Event (optional) -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Target Event or Date - Optional
+              {{ t.targetEvent }}
             </label>
             <input
               v-model="targetEvent"
               type="text"
               class="input-field"
-              placeholder="e.g., Summer vacation, Wedding, Marathon..."
+              :placeholder="t.targetEventExample"
             />
           </div>
 
@@ -83,7 +83,7 @@
               :disabled="!selectedGoal || !goalDescription"
               class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next
+              {{ t.next }}
             </button>
           </div>
         </form>
@@ -95,8 +95,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18nStore } from '@/stores/i18n.store'
 
 const router = useRouter()
+const i18nStore = useI18nStore()
+
+const { t } = i18nStore
 
 const selectedGoal = ref('')
 const goalDescription = ref('')
@@ -106,28 +110,28 @@ const targetEvent = ref('')
 const goals = [
   {
     type: 'weight_loss',
-    title: 'Weight Loss',
-    description: 'Lose body fat and get leaner'
+    title: t.weightLoss,
+    description: t.weightLossDescription
   },
   {
     type: 'muscle_gain',
-    title: 'Muscle Gain',
-    description: 'Build strength and muscle mass'
+    title: t.muscleGain,
+    description: t.muscleGainDescription
   },
   {
     type: 'endurance',
-    title: 'Endurance',
-    description: 'Improve cardiovascular fitness'
+    title: t.endurance,
+    description: t.enduranceDescription
   },
   {
     type: 'strength',
-    title: 'Strength',
-    description: 'Increase overall strength'
+    title: t.strength,
+    description: t.strengthDescription
   },
   {
     type: 'general_fitness',
-    title: 'General Fitness',
-    description: 'Stay healthy and active'
+    title: t.generalFitness,
+    description: t.generalFitnessDescription
   }
 ]
 
