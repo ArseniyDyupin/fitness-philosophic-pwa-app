@@ -112,6 +112,12 @@ router.beforeEach(async (to, from, next) => {
     return next()
   }
 
+  // If coming from onboarding, give some time for profile to be saved
+  if (from.path.startsWith('/onboarding') && to.path === '/') {
+    // Wait a bit to ensure profile is saved
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }
+
   try {
     // First, check if user has selected a language
     const selectedLanguage = localStorage.getItem('selectedLanguage')
@@ -130,6 +136,7 @@ router.beforeEach(async (to, from, next) => {
       return next('/onboarding')
     }
     
+    // Profile exists, allow navigation
     next()
   } catch (error) {
     console.error('Navigation guard error:', error)

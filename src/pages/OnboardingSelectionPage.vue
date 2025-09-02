@@ -105,7 +105,7 @@ const isImporting = ref(false)
 const fileInput = ref<HTMLInputElement>()
 
 function startNewProfile() {
-  router.push('/onboarding/metrics')
+  router.push('/onboarding/goals')
 }
 
 function handleFileSelect(event: Event) {

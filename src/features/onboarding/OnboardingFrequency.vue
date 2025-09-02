@@ -145,16 +145,18 @@ async function handleSubmit() {
     localStorage.removeItem('onboarding-metrics')
     localStorage.removeItem('selectedLanguage')
 
-    // Navigate to home
-    router.push('/')
-
     // Show success message
-          if ((window as any).showToast) {
-        ;(window as any).showToast({
-          type: 'success',
-          message: t.profileCreatedSuccess
-        })
-      }
+    if ((window as any).showToast) {
+      ;(window as any).showToast({
+        type: 'success',
+        message: t.profileCreatedSuccess
+      })
+    }
+
+    // Wait a bit to ensure profile is saved, then navigate to home
+    setTimeout(() => {
+      router.push('/')
+    }, 500)
   } catch (error) {
     console.error('Error creating profile:', error)
     
