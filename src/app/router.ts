@@ -115,7 +115,20 @@ router.beforeEach(async (to, from, next) => {
   // If coming from onboarding, give some time for profile to be saved
   if (from.path.startsWith('/onboarding') && to.path === '/') {
     // Wait a bit to ensure profile is saved
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
+    // Double-check that profile was actually created
+    try {
+      const { dbHelpers } = await import('@/services/db')
+      const profile = await dbHelpers.getProfile()
+      if (!profile) {
+        // If profile still doesn't exist, redirect back to onboarding
+        return next('/onboarding')
+      }
+    } catch (error) {
+      console.error('Error checking profile after onboarding:', error)
+      return next('/onboarding')
+    }
   }
 
   try {

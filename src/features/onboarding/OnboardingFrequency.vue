@@ -137,13 +137,13 @@ async function handleSubmit() {
       language: selectedLanguage
     })
 
-    // Clear onboarding data
+    // Clear onboarding data (but keep selectedLanguage)
     localStorage.removeItem('onboarding-goal')
     localStorage.removeItem('onboarding-constraints')
     localStorage.removeItem('onboarding-detailed-goals')
     localStorage.removeItem('onboarding-equipment')
     localStorage.removeItem('onboarding-metrics')
-    localStorage.removeItem('selectedLanguage')
+    // Don't remove selectedLanguage - it's needed for the app to work
 
     // Show success message
     if ((window as any).showToast) {
@@ -156,7 +156,7 @@ async function handleSubmit() {
     // Wait a bit to ensure profile is saved, then navigate to home
     setTimeout(() => {
       router.push('/')
-    }, 500)
+    }, 800)
   } catch (error) {
     console.error('Error creating profile:', error)
     
