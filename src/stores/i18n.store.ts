@@ -140,6 +140,39 @@ export const useI18nStore = defineStore('i18n', () => {
       workoutAnalyzed: 'Workout analyzed successfully!',
       workoutAnalysisFailed: 'Failed to analyze workout. Please try again.',
       
+      // Workouts - Additional
+      selectWorkoutType: 'Select workout type',
+      durationMinutes: 'Duration (minutes)',
+      workoutDurationDescription: 'Enter duration in minutes (1-480)',
+      distanceKm: 'Distance (km)',
+      distanceDescription: 'Optional: Enter distance for more accurate calorie calculation',
+      exerciseName: 'Exercise Name',
+      exerciseNamePlaceholder: 'e.g., Burpees, Mountain Climbers',
+      notesPlaceholder: 'How did the workout feel? Any observations?',
+      estimatedCalories: 'Estimated calories burned:',
+      update: 'Update',
+      addExercise: 'Add Exercise',
+      removeExercise: 'Remove Exercise',
+      combinedWorkout: 'Combined Workout',
+      totalCalories: 'Total Calories',
+      totalDuration: 'Total Duration',
+      rpe: 'Rate of Perceived Exertion (RPE)',
+      rpeDescription: 'How hard was this workout? (1-10 scale)',
+      aiReview: 'AI Review',
+      getAIReview: 'Get AI Review',
+      aiReviewing: 'AI is reviewing your workout...',
+      aiReviewSuccess: 'AI review completed!',
+            aiReviewFailed: 'Failed to get AI review. Please try again.',
+      
+      // Additional workout translations
+      exercises: 'Exercises',
+      exercise: 'Exercise',
+      seconds: 'Seconds',
+      workoutNotes: 'Workout Notes',
+      workoutNotesPlaceholder: 'How did the workout feel overall? Any observations?',
+      combinedWorkoutDescription: 'Add multiple exercises to create a comprehensive workout session.',
+      selectRPE: 'Select RPE',
+      
       // Food
       foodLog: 'Food Log',
       addFoodLog: 'Add Food Log',
@@ -474,7 +507,39 @@ export const useI18nStore = defineStore('i18n', () => {
       workoutAnalyzed: 'Тренировка успешно проанализирована!',
       workoutAnalysisFailed: 'Не удалось проанализировать тренировку. Попробуйте еще раз.',
       
-      // Food
+      // Workouts - Additional
+      selectWorkoutType: 'Выберите тип тренировки',
+      durationMinutes: 'Длительность (минуты)',
+      workoutDurationDescription: 'Введите длительность в минутах (1-480)',
+      distanceKm: 'Расстояние (км)',
+      distanceDescription: 'Необязательно: введите расстояние для более точного расчета калорий',
+      exerciseName: 'Название упражнения',
+      exerciseNamePlaceholder: 'например, Берпи, Альпинист',
+      notesPlaceholder: 'Как прошла тренировка? Какие наблюдения?',
+      estimatedCalories: 'Расчетные сожженные калории:',
+      update: 'Обновить',
+      addExercise: 'Добавить упражнение',
+      removeExercise: 'Убрать упражнение',
+      combinedWorkout: 'Комбинированная тренировка',
+      totalCalories: 'Общие калории',
+      totalDuration: 'Общая длительность',
+      rpe: 'Уровень воспринимаемой нагрузки (RPE)',
+      rpeDescription: 'Насколько тяжелой была эта тренировка? (шкала 1-10)',
+      aiReview: 'AI Анализ',
+      getAIReview: 'Получить AI анализ',
+      aiReviewing: 'AI анализирует вашу тренировку...',
+      aiReviewSuccess: 'AI анализ завершен!',
+                  aiReviewFailed: 'Не удалось получить AI анализ. Попробуйте еще раз.',
+      
+      // Additional workout translations
+      exercises: 'Упражнения',
+      exercise: 'Упражнение',
+      seconds: 'Секунды',
+      workoutNotes: 'Заметки о тренировке',
+      workoutNotesPlaceholder: 'Как прошла тренировка в целом? Какие наблюдения?',
+      combinedWorkoutDescription: 'Добавьте несколько упражнений для создания комплексной тренировки.',
+      selectRPE: 'Выберите RPE',
+      
       foodLog: 'Запись о питании',
       addFoodLog: 'Добавить запись',
       editFoodLog: 'Редактировать запись',
@@ -692,7 +757,9 @@ export const useI18nStore = defineStore('i18n', () => {
       photoCaptureFailed: 'Не удалось сделать фото',
       photoCompressionFailed: 'Не удалось сжать фото',
       photoTooLarge: 'Фото слишком большое',
-      photoInvalid: 'Неверный формат фото'
+      photoInvalid: 'Неверный формат фото',
+      
+
     }
   }
 

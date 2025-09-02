@@ -26,7 +26,12 @@ export const useWorkoutsStore = defineStore('workouts', () => {
   })
 
   const todayCalories = computed(() => {
-    return todayWorkouts.value.reduce((total, workout) => total + workout.calories, 0)
+    return todayWorkouts.value.reduce((total, workout) => {
+      const workoutCalories = workout.exercises.reduce((exerciseTotal, exercise) => {
+        return exerciseTotal + (exercise.kcalEstimated || 0)
+      }, 0)
+      return total + workoutCalories
+    }, 0)
   })
 
   const recentWorkouts = computed(() => {
@@ -47,28 +52,35 @@ export const useWorkoutsStore = defineStore('workouts', () => {
     }
   }
 
-  async function addWorkout(workoutData: Omit<Workout, 'id' | 'calories' | 'createdAt' | 'updatedAt'>) {
+  async function addWorkout(workoutData: Omit<Workout, 'id' | 'createdAt' | 'updatedAt'>) {
     isLoading.value = true
     error.value = null
     
     try {
-      // Calculate calories based on profile weight
+      // Calculate calories for each exercise
       const weight = profileStore.currentWeight
-      const calorieCalculation = calculateWorkoutCalories(
-        workoutData.type,
-        weight,
-        workoutData.durationMin,
-        {
-          distance: workoutData.distance,
-          reps: workoutData.reps,
-          sets: workoutData.sets
+      const exercisesWithCalories = workoutData.exercises.map(exercise => {
+        const calorieCalculation = calculateWorkoutCalories(
+          exercise.type,
+          weight,
+          exercise.details.durationMin || 0,
+          {
+            distance: exercise.details.distanceKm,
+            reps: exercise.details.repsPerSet ? exercise.details.repsPerSet.reduce((a, b) => a + b, 0) : undefined,
+            sets: exercise.details.sets
+          }
+        )
+        
+        return {
+          ...exercise,
+          kcalEstimated: calorieCalculation.calories
         }
-      )
+      })
 
       const newWorkout: Workout = {
         id: crypto.randomUUID(),
         ...workoutData,
-        calories: calorieCalculation.calories,
+        exercises: exercisesWithCalories,
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -95,27 +107,33 @@ export const useWorkoutsStore = defineStore('workouts', () => {
         throw new Error('Workout not found')
       }
 
-      // Recalculate calories if duration or type changed
-      let calories = existingWorkout.calories
-      if (updates.durationMin || updates.type) {
+      // Recalculate calories if exercises changed
+      let updatedExercises = existingWorkout.exercises
+      if (updates.exercises) {
         const weight = profileStore.currentWeight
-        const calorieCalculation = calculateWorkoutCalories(
-          updates.type || existingWorkout.type,
-          weight,
-          updates.durationMin || existingWorkout.durationMin,
-          {
-            distance: updates.distance || existingWorkout.distance,
-            reps: updates.reps || existingWorkout.reps,
-            sets: updates.sets || existingWorkout.sets
+        updatedExercises = updates.exercises.map(exercise => {
+          const calorieCalculation = calculateWorkoutCalories(
+            exercise.type,
+            weight,
+            exercise.details.durationMin || 0,
+            {
+              distance: exercise.details.distanceKm,
+              reps: exercise.details.repsPerSet ? exercise.details.repsPerSet.reduce((a, b) => a + b, 0) : undefined,
+              sets: exercise.details.sets
+            }
+          )
+          
+          return {
+            ...exercise,
+            kcalEstimated: calorieCalculation.calories
           }
-        )
-        calories = calorieCalculation.calories
+        })
       }
 
       const updatedWorkout: Workout = {
         ...existingWorkout,
         ...updates,
-        calories,
+        exercises: updatedExercises,
         updatedAt: new Date()
       }
 

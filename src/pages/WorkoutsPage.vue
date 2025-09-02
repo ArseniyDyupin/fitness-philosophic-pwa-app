@@ -54,13 +54,16 @@
                 </svg>
               </div>
               <div>
-                <div class="font-medium text-gray-900">{{ getWorkoutTypeLabel(workout.type) }}</div>
+                <div class="font-medium text-gray-900">{{ getWorkoutTypeLabel(workout.exercises[0]?.type || 'custom') }}</div>
                 <div class="text-sm text-gray-500">{{ formatDate(workout.date) }}</div>
+                <div v-if="workout.exercises.length > 1" class="text-xs text-gray-400">
+                  +{{ workout.exercises.length - 1 }} {{ workout.exercises.length === 2 ? 'exercise' : 'exercises' }}
+                </div>
               </div>
             </div>
             <div class="text-right">
-              <div class="font-medium text-gray-900">{{ workout.calories }} {{ t.calories }}</div>
-              <div class="text-sm text-gray-500">{{ workout.durationMin }} {{ t.duration }}</div>
+              <div class="font-medium text-gray-900">{{ getTotalCalories(workout) }} {{ t.calories }}</div>
+              <div class="text-sm text-gray-500">{{ getTotalDuration(workout) }} {{ t.duration }}</div>
             </div>
           </div>
         </div>
@@ -105,6 +108,18 @@ function getWorkoutTypeLabel(type: string) {
     custom: t.custom
   }
   return typeMap[type] || type
+}
+
+function getTotalCalories(workout: any) {
+  return workout.exercises.reduce((total: number, exercise: any) => {
+    return total + (exercise.kcalEstimated || 0)
+  }, 0)
+}
+
+function getTotalDuration(workout: any) {
+  return workout.exercises.reduce((total: number, exercise: any) => {
+    return total + (exercise.details.durationMin || 0)
+  }, 0)
 }
 
 // Load data on mount

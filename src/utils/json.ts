@@ -28,16 +28,21 @@ const ExportDataSchema = z.object({
   }),
   workouts: z.array(z.object({
     id: z.string(),
-    type: z.enum(['run', 'pullups', 'pushups', 'plank', 'custom']),
-    durationMin: z.number().min(1).max(480),
-    calories: z.number().min(0).max(10000),
     date: z.string().or(z.date()),
-    notes: z.string().optional(),
-    distance: z.number().optional(),
-    reps: z.number().optional(),
-    sets: z.number().optional(),
-    weight: z.number().optional(),
-    customExercise: z.string().optional(),
+    exercises: z.array(z.object({
+      type: z.enum(['run', 'pullups', 'pushups', 'plank', 'custom']),
+      details: z.object({
+        distanceKm: z.number().optional(),
+        durationMin: z.number().optional(),
+        sets: z.number().optional(),
+        repsPerSet: z.array(z.number()).optional(),
+        seconds: z.number().optional(),
+        notes: z.string().optional()
+      }),
+      kcalEstimated: z.number().optional()
+    })),
+    rpe: z.number().optional(),
+    aiReviewId: z.string().optional(),
     createdAt: z.string().or(z.date()),
     updatedAt: z.string().or(z.date())
   })),
@@ -68,8 +73,18 @@ const ExportDataSchema = z.object({
     workoutId: z.string(),
     analysis: z.string(),
     nextWorkout: z.object({
-      type: z.enum(['run', 'pullups', 'pushups', 'plank', 'custom']),
-      durationMin: z.number(),
+      exercises: z.array(z.object({
+        type: z.enum(['run', 'pullups', 'pushups', 'plank', 'custom']),
+        details: z.object({
+          distanceKm: z.number().optional(),
+          durationMin: z.number().optional(),
+          sets: z.number().optional(),
+          repsPerSet: z.array(z.number()).optional(),
+          seconds: z.number().optional(),
+          notes: z.string().optional()
+        }),
+        kcalEstimated: z.number().optional()
+      })),
       description: z.string(),
       tips: z.array(z.string())
     }),

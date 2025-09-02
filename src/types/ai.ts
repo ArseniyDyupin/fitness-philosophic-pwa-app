@@ -1,8 +1,18 @@
 export interface AIWorkoutReview {
   analysis: string
   nextWorkout: {
-    type: string
-    durationMin: number
+    exercises: Array<{
+      type: string
+      details: {
+        distanceKm?: number
+        durationMin?: number
+        sets?: number
+        repsPerSet?: number[]
+        seconds?: number
+        notes?: string
+      }
+      kcalEstimated?: number
+    }>
     description: string
     tips: string[]
   }
@@ -10,16 +20,20 @@ export interface AIWorkoutReview {
 
 export interface AIWorkoutPayload {
   workout: {
-    type: string
-    durationMin: number
-    calories: number
     date: string
-    notes?: string
-    distance?: number
-    reps?: number
-    sets?: number
-    weight?: number
-    customExercise?: string
+    exercises: Array<{
+      type: string
+      details: {
+        distanceKm?: number
+        durationMin?: number
+        sets?: number
+        repsPerSet?: number[]
+        seconds?: number
+        notes?: string
+      }
+      kcalEstimated?: number
+    }>
+    rpe?: number
   }
   profile: {
     age: number
@@ -33,20 +47,40 @@ export interface AIWorkoutPayload {
     goalsDetailed: string
   }
   recentWorkouts: Array<{
-    type: string
-    durationMin: number
-    calories: number
     date: string
+    exercises: Array<{
+      type: string
+      details: {
+        distanceKm?: number
+        durationMin?: number
+        sets?: number
+        repsPerSet?: number[]
+        seconds?: number
+        notes?: string
+      }
+      kcalEstimated?: number
+    }>
+    rpe?: number
   }>
 }
 
 export interface AIWeeklyAdvicePayload {
   weekStart: string
   workouts: Array<{
-    type: string
-    durationMin: number
-    calories: number
     date: string
+    exercises: Array<{
+      type: string
+      details: {
+        distanceKm?: number
+        durationMin?: number
+        sets?: number
+        repsPerSet?: number[]
+        seconds?: number
+        notes?: string
+      }
+      kcalEstimated?: number
+    }>
+    rpe?: number
   }>
   foodLogs: Array<{
     calories: number

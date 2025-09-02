@@ -23,19 +23,25 @@ export interface Goal {
   description: string
 }
 
+export interface WorkoutExercise {
+  type: WorkoutType
+  details: {
+    distanceKm?: number // km for running
+    durationMin?: number // minutes for this exercise
+    sets?: number // for strength exercises
+    repsPerSet?: number[] // array of reps for each set
+    seconds?: number // for plank and timed exercises
+    notes?: string // exercise-specific notes
+  }
+  kcalEstimated?: number // estimated calories for this exercise
+}
+
 export interface Workout {
   id: string
-  type: WorkoutType
-  durationMin: number
-  calories: number
   date: Date
-  notes?: string
-  // Type-specific fields
-  distance?: number // km for running
-  reps?: number // for strength exercises
-  sets?: number // for strength exercises
-  weight?: number // kg for strength exercises
-  customExercise?: string // for custom type
+  exercises: WorkoutExercise[]
+  rpe?: number // Rate of Perceived Exertion (1-10 scale)
+  aiReviewId?: string // ID of AI review if available
   createdAt: Date
   updatedAt: Date
 }
@@ -71,8 +77,7 @@ export interface AIPlan {
   workoutId: string
   analysis: string
   nextWorkout: {
-    type: WorkoutType
-    durationMin: number
+    exercises: WorkoutExercise[]
     description: string
     tips: string[]
   }

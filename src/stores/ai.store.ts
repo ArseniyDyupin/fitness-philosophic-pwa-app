@@ -4,7 +4,7 @@ import { db, dbHelpers } from '@/services/db'
 import { aiService } from '@/services/ai'
 import { useProfileStore } from './profile.store'
 import { useWorkoutsStore } from './workouts.store'
-import type { AIPlan } from '@/types/models'
+import type { AIPlan, WorkoutType } from '@/types/models'
 import type { AIWorkoutPayload, AIWeeklyAdvicePayload } from '@/types/ai'
 
 export const useAIStore = defineStore('ai', () => {
@@ -87,24 +87,38 @@ export const useAIStore = defineStore('ai', () => {
         .filter(w => w.id !== workoutId)
         .slice(0, 5)
         .map(w => ({
-          type: w.type,
-          durationMin: w.durationMin,
-          calories: w.calories,
-          date: w.date.toISOString()
+          date: w.date.toISOString(),
+          exercises: w.exercises.map(exercise => ({
+            type: exercise.type,
+            details: {
+              distanceKm: exercise.details.distanceKm,
+              durationMin: exercise.details.durationMin,
+              sets: exercise.details.sets,
+              repsPerSet: exercise.details.repsPerSet,
+              seconds: exercise.details.seconds,
+              notes: exercise.details.notes
+            },
+            kcalEstimated: exercise.kcalEstimated
+          })),
+          rpe: w.rpe
         }))
 
       const payload: AIWorkoutPayload = {
         workout: {
-          type: workout.type,
-          durationMin: workout.durationMin,
-          calories: workout.calories,
           date: workout.date.toISOString(),
-          notes: workout.notes,
-          distance: workout.distance,
-          reps: workout.reps,
-          sets: workout.sets,
-          weight: workout.weight,
-          customExercise: workout.customExercise
+          exercises: workout.exercises.map(exercise => ({
+            type: exercise.type,
+            details: {
+              distanceKm: exercise.details.distanceKm,
+              durationMin: exercise.details.durationMin,
+              sets: exercise.details.sets,
+              repsPerSet: exercise.details.repsPerSet,
+              seconds: exercise.details.seconds,
+              notes: exercise.details.notes
+            },
+            kcalEstimated: exercise.kcalEstimated
+          })),
+          rpe: workout.rpe
         },
         profile: {
           age: profile.age,
@@ -127,8 +141,18 @@ export const useAIStore = defineStore('ai', () => {
         workoutId,
         analysis: review.analysis,
         nextWorkout: {
-          type: review.nextWorkout.type as any,
-          durationMin: review.nextWorkout.durationMin,
+          exercises: (review.nextWorkout.exercises || []).map(exercise => ({
+            type: exercise.type as WorkoutType,
+            details: {
+              distanceKm: exercise.details.distanceKm,
+              durationMin: exercise.details.durationMin,
+              sets: exercise.details.sets,
+              repsPerSet: exercise.details.repsPerSet,
+              seconds: exercise.details.seconds,
+              notes: exercise.details.notes
+            },
+            kcalEstimated: exercise.kcalEstimated
+          })),
           description: review.nextWorkout.description,
           tips: review.nextWorkout.tips
         },
