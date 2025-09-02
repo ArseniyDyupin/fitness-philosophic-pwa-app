@@ -124,7 +124,7 @@ async function handleSubmit() {
       height: metricsData.height,
       weight: metricsData.weight,
       goal: {
-        type: goalData.type || 'general_fitness',
+        types: goalData.types || ['general_fitness'],
         targetWeight: goalData.targetWeight,
         targetEvent: goalData.targetEvent,
         description: goalData.description || ''

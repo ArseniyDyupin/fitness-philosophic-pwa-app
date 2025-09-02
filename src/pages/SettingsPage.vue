@@ -110,13 +110,55 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.goal }}</label>
-              <select v-model="profileData.goal.type" class="input-field">
-                <option value="weight_loss">{{ t.weightLoss }}</option>
-                <option value="muscle_gain">{{ t.muscleGain }}</option>
-                <option value="endurance">{{ t.endurance }}</option>
-                <option value="strength">{{ t.strength }}</option>
-                <option value="general_fitness">{{ t.generalFitness }}</option>
-              </select>
+              <div class="space-y-2">
+                <label class="flex items-center">
+                  <input
+                    type="checkbox"
+                    value="weight_loss"
+                    v-model="profileData.goal.types"
+                    class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">{{ t.weightLoss }}</span>
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="checkbox"
+                    value="muscle_gain"
+                    v-model="profileData.goal.types"
+                    class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">{{ t.muscleGain }}</span>
+                </label>
+                <label class="flex items-center">
+                  <label class="flex items-center">
+                    <input
+                      type="checkbox"
+                      value="endurance"
+                      v-model="profileData.goal.types"
+                      class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    />
+                    <span class="ml-2 text-sm text-gray-700">{{ t.endurance }}</span>
+                  </label>
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="checkbox"
+                    value="strength"
+                    v-model="profileData.goal.types"
+                    class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">{{ t.strength }}</span>
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="checkbox"
+                    value="general_fitness"
+                    v-model="profileData.goal.types"
+                    class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">{{ t.generalFitness }}</span>
+                </label>
+              </div>
             </div>
           </div>
           <div class="mt-6">
@@ -305,7 +347,7 @@ const profileData = ref({
   height: 170,
   weight: 70,
   goal: {
-    type: 'general_fitness' as any,
+    types: ['general_fitness'] as ('weight_loss' | 'muscle_gain' | 'endurance' | 'strength' | 'general_fitness')[],
     description: ''
   },
   goalsDetailed: ''
@@ -328,7 +370,7 @@ onMounted(async () => {
       height: profileStore.profile.height,
       weight: profileStore.profile.weight,
       goal: {
-        type: profileStore.profile.goal.type,
+        types: [...profileStore.profile.goal.types],
         description: profileStore.profile.goal.description
       },
       goalsDetailed: profileStore.profile.goalsDetailed || ''

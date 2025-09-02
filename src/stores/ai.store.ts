@@ -111,7 +111,7 @@ export const useAIStore = defineStore('ai', () => {
           gender: profile.gender,
           weight: profile.weight,
           goal: {
-            type: profile.goal.type,
+            types: [...profile.goal.types],
             description: profile.goal.description
           },
           constraints: [...profile.constraints],

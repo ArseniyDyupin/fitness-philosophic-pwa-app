@@ -12,19 +12,19 @@
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <!-- Goal Type -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-3">{{ t.selectYourGoal }}</label>
+            <label class="block text-sm font-medium text-gray-700 mb-3">{{ t.selectYourGoals }}</label>
             <div class="space-y-3">
               <label 
                 v-for="goal in goals" 
                 :key="goal.type"
                 class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                :class="selectedGoal === goal.type ? 'border-primary-500 bg-primary-50' : 'border-gray-200'"
+                :class="selectedGoal.includes(goal.type) ? 'border-primary-500 bg-primary-50' : 'border-gray-200'"
               >
                 <input
-                  type="radio"
+                  type="checkbox"
                   :value="goal.type"
                   v-model="selectedGoal"
-                  class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                  class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 />
                 <div class="ml-3">
                   <div class="text-sm font-medium text-gray-900">{{ goal.title }}</div>
@@ -49,7 +49,7 @@
           </div>
 
           <!-- Target Weight (optional) -->
-          <div v-if="selectedGoal === 'weight_loss' || selectedGoal === 'muscle_gain'">
+          <div v-if="selectedGoal.includes('weight_loss') || selectedGoal.includes('muscle_gain')">
             <label class="block text-sm font-medium text-gray-700 mb-2">
               {{ t.targetWeight }}
             </label>
@@ -80,7 +80,7 @@
           <div class="flex justify-end">
             <button
               type="submit"
-              :disabled="!selectedGoal || !goalDescription"
+              :disabled="selectedGoal.length === 0 || !goalDescription.trim()"
               class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ t.next }}
@@ -102,7 +102,7 @@ const i18nStore = useI18nStore()
 
 const { t } = i18nStore
 
-const selectedGoal = ref('')
+const selectedGoal = ref<string[]>([])
 const goalDescription = ref('')
 const targetWeight = ref<number | undefined>()
 const targetEvent = ref('')
@@ -136,11 +136,11 @@ const goals = [
 ]
 
 function handleSubmit() {
-  if (!selectedGoal.value || !goalDescription.value) return
+  if (selectedGoal.value.length === 0 || !goalDescription.value) return
 
   // Store goal data in localStorage for the onboarding flow
   const goalData = {
-    type: selectedGoal.value,
+    types: selectedGoal.value,
     description: goalDescription.value,
     targetWeight: targetWeight.value,
     targetEvent: targetEvent.value

@@ -26,7 +26,7 @@ export interface AIWorkoutPayload {
     gender: string
     weight: number
     goal: {
-      type: string
+      types: string[]
       description: string
     }
     constraints: string[]
@@ -59,7 +59,7 @@ export interface AIWeeklyAdvicePayload {
   }
   profile: {
     goal: {
-      type: string
+      types: string[]
       description: string
     }
     goalsDetailed: string

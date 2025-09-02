@@ -17,7 +17,7 @@ export interface Profile {
 }
 
 export interface Goal {
-  type: 'weight_loss' | 'muscle_gain' | 'endurance' | 'strength' | 'general_fitness'
+  types: ('weight_loss' | 'muscle_gain' | 'endurance' | 'strength' | 'general_fitness')[]
   targetWeight?: number
   targetEvent?: string
   description: string

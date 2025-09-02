@@ -231,6 +231,7 @@ export const useI18nStore = defineStore('i18n', () => {
       // Onboarding Goals
       whatIsYourGoal: 'What is your main fitness goal?',
       selectYourGoal: 'Select your primary goal',
+      selectYourGoals: 'Select your goals (you can choose multiple)',
       describeYourGoal: 'Describe your goal in detail',
       goalPlaceholder: 'Tell us more about your fitness goals...',
       targetWeight: 'Target Weight (kg) - Optional',
@@ -558,6 +559,7 @@ export const useI18nStore = defineStore('i18n', () => {
       // Onboarding Goals
       whatIsYourGoal: 'Какова ваша основная фитнес-цель?',
       selectYourGoal: 'Выберите вашу основную цель',
+      selectYourGoals: 'Выберите ваши цели (можно выбрать несколько)',
       describeYourGoal: 'Опишите вашу цель подробно',
       goalPlaceholder: 'Расскажите больше о ваших фитнес-целях...',
       targetWeight: 'Целевой вес (кг) - Необязательно',

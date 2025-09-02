@@ -12,7 +12,7 @@ const ExportDataSchema = z.object({
     height: z.number().min(100).max(250),
     weight: z.number().min(30).max(250),
     goal: z.object({
-      type: z.enum(['weight_loss', 'muscle_gain', 'endurance', 'strength', 'general_fitness']),
+      types: z.array(z.enum(['weight_loss', 'muscle_gain', 'endurance', 'strength', 'general_fitness'])),
       targetWeight: z.number().optional(),
       targetEvent: z.string().optional(),
       description: z.string()

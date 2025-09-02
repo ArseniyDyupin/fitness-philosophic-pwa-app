@@ -63,7 +63,7 @@ export const useProfileStore = defineStore('profile', () => {
         height: profileData.height || 170,
         weight: profileData.weight || 70,
         goal: profileData.goal || {
-          type: 'general_fitness',
+          types: ['general_fitness'],
           description: ''
         },
         constraints: profileData.constraints || [],
