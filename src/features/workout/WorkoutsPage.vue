@@ -13,13 +13,13 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
               </svg>
             </router-link>
-            <h1 class="text-2xl font-bold text-gray-900">Workouts</h1>
+            <h1 class="text-2xl font-bold text-gray-900">{{ t.workout }}</h1>
           </div>
           <button
             @click="showAddForm = true"
             class="btn-primary"
           >
-            Add Workout
+            {{ t.addWorkout }}
           </button>
         </div>
       </div>
@@ -31,7 +31,7 @@
       <div v-if="showAddForm" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div class="relative top-10 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
           <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Add New Workout</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t.addWorkout }}</h3>
             <WorkoutForm 
               @saved="handleWorkoutSaved"
               @cancel="showAddForm = false"
@@ -110,10 +110,14 @@ import { useAIStore } from '@/stores/ai.store'
 import { format } from 'date-fns'
 import WorkoutForm from '@/components/WorkoutForm.vue'
 import type { Workout } from '@/types/models'
+import { useI18nStore } from '@/stores/i18n.store'
 
 const router = useRouter()
 const workoutsStore = useWorkoutsStore()
 const aiStore = useAIStore()
+const i18nStore = useI18nStore()
+
+const { t } = i18nStore
 
 const showAddForm = ref(false)
 

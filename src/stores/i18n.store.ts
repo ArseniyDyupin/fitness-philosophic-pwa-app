@@ -208,6 +208,21 @@ export const useI18nStore = defineStore('i18n', () => {
       importCannotUndo: 'This action cannot be undone!',
       aiAnalysis: 'AI Analysis',
       
+      // Workout Details Page
+      loadingWorkoutDetails: 'Loading workout details...',
+      workoutDetailsTitle: 'Workout Details',
+      noNotesAdded: 'No notes added',
+      aiAnalysisDescription: 'Get AI-powered analysis and recommendations for your next workout.',
+      analyzeWithAI: 'Analyze with AI',
+      workoutNotFound: 'Workout not found',
+      workoutNotFoundDescription: 'The workout you\'re looking for doesn\'t exist or has been deleted.',
+      backToWorkouts: 'Back to Workouts',
+      failedToAnalyze: 'Failed to analyze workout. Please check your AI settings.',
+      deleteConfirm: 'Are you sure you want to delete this workout? This action cannot be undone.',
+      workoutDeleted: 'Workout deleted successfully!',
+      failedToDelete: 'Failed to delete workout. Please try again.',
+      workoutUpdated: 'Workout updated successfully!',
+      
       // Food
       foodLog: 'Food Log',
       addFoodLog: 'Add Food Log',
@@ -638,6 +653,21 @@ export const useI18nStore = defineStore('i18n', () => {
       importWarning: 'Это заменит все ваши текущие данные импортированными данными.',
       importCannotUndo: 'Это действие нельзя отменить!',
       aiAnalysis: 'AI Анализ',
+      
+      // Workout Details Page
+      loadingWorkoutDetails: 'Загрузка деталей тренировки...',
+      workoutDetailsTitle: 'Детали тренировки',
+      noNotesAdded: 'Заметки не добавлены',
+      aiAnalysisDescription: 'Получите анализ ИИ и рекомендации для следующей тренировки.',
+      analyzeWithAI: 'Анализировать с ИИ',
+      workoutNotFound: 'Тренировка не найдена',
+      workoutNotFoundDescription: 'Тренировка, которую вы ищете, не существует или была удалена.',
+      backToWorkouts: 'Назад к тренировкам',
+      failedToAnalyze: 'Не удалось проанализировать тренировку. Проверьте настройки ИИ.',
+      deleteConfirm: 'Вы уверены, что хотите удалить эту тренировку? Это действие нельзя отменить.',
+      workoutDeleted: 'Тренировка успешно удалена!',
+      failedToDelete: 'Не удалось удалить тренировку. Попробуйте еще раз.',
+      workoutUpdated: 'Тренировка успешно обновлена!',
       
       // Home
       dailySummary: 'Дневная сводка',

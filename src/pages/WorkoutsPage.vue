@@ -57,7 +57,7 @@
                 <div class="font-medium text-gray-900">{{ getWorkoutTypeLabel(workout.exercises[0]?.type || 'custom') }}</div>
                 <div class="text-sm text-gray-500">{{ formatDate(workout.date) }}</div>
                 <div v-if="workout.exercises.length > 1" class="text-xs text-gray-400">
-                  +{{ workout.exercises.length - 1 }} {{ workout.exercises.length === 2 ? 'exercise' : 'exercises' }}
+                  +{{ workout.exercises.length - 1 }} {{ workout.exercises.length === 2 ? t.exercise : t.exercises }}
                 </div>
               </div>
             </div>

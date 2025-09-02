@@ -173,10 +173,14 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useWorkoutsStore } from '@/stores/workouts.store'
 import { useAIStore } from '@/stores/ai.store'
+import { useI18nStore } from '@/stores/i18n.store'
 import { format } from 'date-fns'
 import WorkoutForm from '@/components/WorkoutForm.vue'
 import PlanCard from '@/components/PlanCard.vue'
 import type { Workout } from '@/types/models'
+
+const i18nStore = useI18nStore()
+const { t } = i18nStore
 
 const route = useRoute()
 const router = useRouter()
@@ -194,11 +198,11 @@ const aiPlan = computed(() => aiStore.aiPlans.find(p => p.workoutId === route.pa
 // Methods
 function formatWorkoutType(type: string): string {
   const types: Record<string, string> = {
-    run: 'Running',
-    pullups: 'Pull-ups',
-    pushups: 'Push-ups',
-    plank: 'Plank',
-    custom: 'Custom Exercise'
+    run: t.run,
+    pullups: t.pullups,
+    pushups: t.pushups,
+    plank: t.plank,
+    custom: t.custom
   }
   return types[type] || type
 }
@@ -229,7 +233,7 @@ async function evaluateWorkout() {
     if ((window as any).showToast) {
       ;(window as any).showToast({
         type: 'success',
-        message: 'Workout analyzed! Check the AI analysis below.'
+        message: t.workoutAnalyzed
       })
     }
   } catch (error) {
@@ -238,7 +242,7 @@ async function evaluateWorkout() {
     if ((window as any).showToast) {
       ;(window as any).showToast({
         type: 'error',
-        message: 'Failed to analyze workout. Please check your AI settings.'
+        message: t.failedToAnalyze
       })
     }
   } finally {
@@ -249,7 +253,7 @@ async function evaluateWorkout() {
 async function deleteWorkout() {
   if (!workout.value) return
   
-  if (!confirm('Are you sure you want to delete this workout? This action cannot be undone.')) {
+  if (!confirm(t.deleteConfirm)) {
     return
   }
   
@@ -259,7 +263,7 @@ async function deleteWorkout() {
     if ((window as any).showToast) {
       ;(window as any).showToast({
         type: 'success',
-        message: 'Workout deleted successfully!'
+        message: t.workoutDeleted
       })
     }
     
@@ -270,7 +274,7 @@ async function deleteWorkout() {
     if ((window as any).showToast) {
       ;(window as any).showToast({
         type: 'error',
-        message: 'Failed to delete workout. Please try again.'
+        message: t.failedToDelete
       })
     }
   }
@@ -282,7 +286,7 @@ function handleWorkoutUpdated(updatedWorkout: Workout) {
   if ((window as any).showToast) {
     ;(window as any).showToast({
       type: 'success',
-      message: 'Workout updated successfully!'
+              message: t.workoutUpdated
     })
   }
 }
