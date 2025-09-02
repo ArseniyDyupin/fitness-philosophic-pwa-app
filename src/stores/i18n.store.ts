@@ -223,6 +223,21 @@ export const useI18nStore = defineStore('i18n', () => {
       failedToDelete: 'Failed to delete workout. Please try again.',
       workoutUpdated: 'Workout updated successfully!',
       
+      // Workout Form Modes
+      workoutMode: 'Workout Mode',
+      formMode: 'Form Mode',
+      textMode: 'Text Mode',
+      textModeDescription: 'Describe your workout in natural language and let AI parse it into structured exercises.',
+      textModeExample: 'пробежал 5 км\nподтянулся 7-5-3-3-2 (всего 20)\nавстралийские подтягивания 15-15-15\nотжимания 20-20-15\nпланка 60-45-50',
+      workoutDescription: 'Workout Description',
+      workoutDescriptionPlaceholder: 'Describe your workout in natural language...',
+      workoutDescriptionHelp: 'Describe each exercise with sets, reps, duration, or distance.',
+      parseWorkout: 'Parse Workout',
+      parsing: 'Parsing...',
+      workoutParsedSuccess: 'Workout parsed successfully!',
+      workoutParsedFailed: 'Failed to parse workout. Please check your description.',
+      workoutSaveFailed: 'Failed to save workout. Please try again.',
+      
       // Food
       foodLog: 'Food Log',
       addFoodLog: 'Add Food Log',
@@ -668,6 +683,21 @@ export const useI18nStore = defineStore('i18n', () => {
       workoutDeleted: 'Тренировка успешно удалена!',
       failedToDelete: 'Не удалось удалить тренировку. Попробуйте еще раз.',
       workoutUpdated: 'Тренировка успешно обновлена!',
+      
+      // Workout Form Modes
+      workoutMode: 'Режим тренировки',
+      formMode: 'Режим формы',
+      textMode: 'Текстовый режим',
+      textModeDescription: 'Опишите вашу тренировку естественным языком, и ИИ преобразует её в структурированные упражнения.',
+      textModeExample: 'пробежал 5 км\nподтянулся 7-5-3-3-2 (всего 20)\nавстралийские подтягивания 15-15-15\nотжимания 20-20-15\nпланка 60-45-50',
+      workoutDescription: 'Описание тренировки',
+      workoutDescriptionPlaceholder: 'Опишите вашу тренировку естественным языком...',
+      workoutDescriptionHelp: 'Опишите каждое упражнение с подходами, повторениями, длительностью или дистанцией.',
+      parseWorkout: 'Разобрать тренировку',
+      parsing: 'Разбор...',
+      workoutParsedSuccess: 'Тренировка успешно разобрана!',
+      workoutParsedFailed: 'Не удалось разобрать тренировку. Проверьте описание.',
+      workoutSaveFailed: 'Не удалось сохранить тренировку. Попробуйте еще раз.',
       
       // Home
       dailySummary: 'Дневная сводка',

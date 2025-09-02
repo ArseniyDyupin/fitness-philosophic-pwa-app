@@ -179,6 +179,45 @@ export const useAIStore = defineStore('ai', () => {
     return await aiService.getWeeklyAdvice(payload)
   }
 
+  async function parseWorkoutText(text: string): Promise<any[]> {
+    if (!hasApiKey.value) {
+      throw new Error('API key not set')
+    }
+    
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      const prompt = `Ты — парсер. Преобразуй тренировку в JSON формата WorkoutExercise[].
+
+Формат WorkoutExercise:
+{
+  "type": "run" | "pullups" | "pushups" | "plank" | "custom",
+  "details": {
+    "distanceKm"?: number,
+    "durationMin"?: number,
+    "sets"?: number,
+    "repsPerSet"?: number[],
+    "seconds"?: number,
+    "notes"?: string
+  }
+}
+
+Тренировка для парсинга:
+${text}
+
+Верни только JSON массив без дополнительного текста.`
+
+      const response = await aiService.parseWorkoutText(prompt)
+      return response
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to parse workout text'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   async function getPlanByWorkout(workoutId: string): Promise<AIPlan | undefined> {
     return await dbHelpers.getAIPlanByWorkout(workoutId)
   }
@@ -206,6 +245,7 @@ export const useAIStore = defineStore('ai', () => {
     testConnection,
     reviewWorkout,
     getWeeklyAdvice,
+    parseWorkoutText,
     getPlanByWorkout,
     clearError
   }

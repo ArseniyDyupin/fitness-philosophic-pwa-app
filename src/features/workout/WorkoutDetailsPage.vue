@@ -111,25 +111,27 @@
         </div>
 
         <!-- AI Analysis -->
-        <div v-if="aiPlan" class="card">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">AI Analysis</h3>
-          <PlanCard :plan="aiPlan" />
-        </div>
+        <div v-if="aiStore.hasApiKey">
+          <div v-if="aiPlan" class="card">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ t.aiAnalysis }}</h3>
+            <PlanCard :plan="aiPlan" />
+          </div>
 
-        <!-- AI Analysis Button -->
-        <div v-else class="card">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">AI Analysis</h3>
-          <p class="text-gray-600 mb-4">
-            Get AI-powered analysis and recommendations for your next workout.
-          </p>
-          <button
-            @click="evaluateWorkout"
-            :disabled="isEvaluating"
-            class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <span v-if="isEvaluating">Analyzing...</span>
-            <span v-else>Analyze with AI</span>
-          </button>
+          <!-- AI Analysis Button -->
+          <div v-else class="card">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ t.aiAnalysis }}</h3>
+            <p class="text-gray-600 mb-4">
+              {{ t.aiAnalysisDescription }}
+            </p>
+            <button
+              @click="evaluateWorkout"
+              :disabled="isEvaluating"
+              class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span v-if="isEvaluating">{{ t.analyzing }}</span>
+              <span v-else>{{ t.analyzeWithAI }}</span>
+            </button>
+          </div>
         </div>
       </div>
 

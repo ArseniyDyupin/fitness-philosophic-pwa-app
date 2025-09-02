@@ -134,6 +134,25 @@ Keep the response concise and practical. Focus on one main recommendation.`
       return false
     }
   }
+
+  async parseWorkoutText(prompt: string, abortController?: AbortController): Promise<any[]> {
+    try {
+      const response = await this.makeRequest(prompt, 'ru', abortController)
+      const parsed = JSON.parse(response)
+      
+      // Validate response structure
+      if (!Array.isArray(parsed)) {
+        throw new Error('AI returned invalid response format - expected array')
+      }
+      
+      return parsed
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw new Error('AI returned invalid JSON response')
+      }
+      throw error
+    }
+  }
 }
 
 export const aiService = new AIService()

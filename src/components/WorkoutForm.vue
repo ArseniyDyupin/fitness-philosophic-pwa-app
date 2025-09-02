@@ -1,7 +1,79 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-6">
+    <!-- Mode Toggle -->
+    <div class="bg-gray-50 p-4 rounded-lg">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">{{ t.workoutMode }}</h3>
+        <div class="flex space-x-2">
+          <button
+            type="button"
+            @click="setMode('form')"
+            :class="[
+              'px-4 py-2 rounded-lg font-medium transition-colors',
+              mode === 'form' 
+                ? 'bg-primary-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            ]"
+          >
+            {{ t.formMode }}
+          </button>
+          <button
+            type="button"
+            @click="setMode('text')"
+            :class="[
+              'px-4 py-2 rounded-lg font-medium transition-colors',
+              mode === 'text' 
+                ? 'bg-primary-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            ]"
+          >
+            {{ t.textMode }}
+          </button>
+        </div>
+      </div>
+      
+      <!-- Text Mode Description -->
+      <div v-if="mode === 'text'" class="text-sm text-gray-600">
+        <p class="mb-2">{{ t.textModeDescription }}</p>
+        <div class="bg-white p-3 rounded border text-xs font-mono">
+          {{ t.textModeExample }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Text Mode Input -->
+    <div v-if="mode === 'text'" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          {{ t.workoutDescription }}
+        </label>
+        <textarea
+          v-model="workoutText"
+          rows="8"
+          class="input-field"
+          :placeholder="t.workoutDescriptionPlaceholder"
+          required
+        ></textarea>
+        <p class="text-xs text-gray-500 mt-1">
+          {{ t.workoutDescriptionHelp }}
+        </p>
+      </div>
+      
+      <div class="flex justify-end">
+        <button
+          type="button"
+          @click="parseWorkoutText"
+          :disabled="!workoutText.trim() || isParsing"
+          class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span v-if="isParsing">{{ t.parsing }}</span>
+          <span v-else>{{ t.parseWorkout }}</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Combined Workout Header -->
-    <div class="bg-blue-50 p-4 rounded-lg">
+    <div v-if="mode === 'form'" class="bg-blue-50 p-4 rounded-lg">
       <h3 class="text-lg font-medium text-blue-900 mb-2">{{ t.combinedWorkout }}</h3>
       <p class="text-sm text-blue-700">
         {{ t.combinedWorkoutDescription || 'Add multiple exercises to create a comprehensive workout session.' }}
@@ -9,7 +81,7 @@
     </div>
 
     <!-- Exercises List -->
-    <div class="space-y-4">
+    <div v-if="mode === 'form'" class="space-y-4">
       <div class="flex justify-between items-center">
         <h4 class="text-md font-medium text-gray-900">{{ t.exercises }}</h4>
         <button
@@ -237,6 +309,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useWorkoutsStore } from '@/stores/workouts.store'
 import { useProfileStore } from '@/stores/profile.store'
 import { useI18nStore } from '@/stores/i18n.store'
+import { useAIStore } from '@/stores/ai.store'
 import type { Workout, WorkoutExercise, WorkoutType } from '@/types/models'
 
 interface Props {
@@ -256,6 +329,7 @@ const emit = defineEmits<{
 const workoutsStore = useWorkoutsStore()
 const profileStore = useProfileStore()
 const i18nStore = useI18nStore()
+const aiStore = useAIStore()
 
 const { t } = i18nStore
 
@@ -267,6 +341,11 @@ const formData = ref({
   notes: '',
   rpe: undefined as number | undefined
 })
+
+// Form state
+const mode = ref<'form' | 'text'>('form')
+const workoutText = ref('')
+const isParsing = ref(false)
 
 // Exercises array
 const exercises = ref<WorkoutExercise[]>([
@@ -310,6 +389,10 @@ const totalDuration = computed(() => {
 })
 
 const isFormValid = computed(() => {
+  if (mode.value === 'text') {
+    return workoutText.value.trim().length > 0 && formData.value.date
+  }
+  
   return exercises.value.length > 0 && 
          exercises.value.every(exercise => 
            exercise.type && 
@@ -357,17 +440,120 @@ function getRPEDescription(rpe: number): string {
   return descriptions[rpe] || ''
 }
 
+function setMode(newMode: 'form' | 'text') {
+  mode.value = newMode
+  if (newMode === 'text') {
+    // Clear exercises when switching to text mode
+    exercises.value = []
+  } else {
+    // Initialize with default exercise when switching to form mode
+    if (exercises.value.length === 0) {
+      exercises.value = [{
+        type: 'run',
+        details: {
+          durationMin: 30,
+          distanceKm: undefined,
+          sets: undefined,
+          repsPerSet: undefined,
+          seconds: undefined,
+          notes: ''
+        },
+        kcalEstimated: undefined
+      }]
+    }
+  }
+}
+
+async function parseWorkoutText() {
+  if (!workoutText.value.trim()) return
+  
+  isParsing.value = true
+  
+  try {
+    const parsedExercises = await aiStore.parseWorkoutText(workoutText.value)
+    
+    // Transform parsed exercises to match our format
+    exercises.value = parsedExercises.map((exercise: any) => ({
+      type: exercise.type as WorkoutType,
+      details: {
+        distanceKm: exercise.details?.distanceKm,
+        durationMin: exercise.details?.durationMin || 30,
+        sets: exercise.details?.sets,
+        repsPerSet: exercise.details?.repsPerSet,
+        seconds: exercise.details?.seconds,
+        notes: exercise.details?.notes || ''
+      },
+      kcalEstimated: exercise.kcalEstimated
+    }))
+    
+    // Switch to form mode to show parsed exercises
+    mode.value = 'form'
+    
+    // Show success message
+    if ((window as any).showToast) {
+      ;(window as any).showToast({
+        type: 'success',
+        message: t.workoutParsedSuccess
+      })
+    }
+  } catch (error) {
+    console.error('Error parsing workout text:', error)
+    
+    if ((window as any).showToast) {
+      ;(window as any).showToast({
+        type: 'error',
+        message: t.workoutParsedFailed
+      })
+    }
+  } finally {
+    isParsing.value = false
+  }
+}
+
 async function handleSubmit() {
   if (!isFormValid.value) return
 
   isSubmitting.value = true
 
   try {
-    const workoutData = {
-      date: new Date(formData.value.date),
-      exercises: exercises.value,
-      rpe: formData.value.rpe,
-      notes: formData.value.notes
+    let workoutData: any
+
+    if (mode.value === 'text') {
+      // In text mode, we need to parse the text first
+      if (!workoutText.value.trim()) {
+        throw new Error('Workout text is required')
+      }
+      
+      const parsedExercises = await aiStore.parseWorkoutText(workoutText.value)
+      
+      // Transform parsed exercises to match our format
+      const exercises = parsedExercises.map((exercise: any) => ({
+        type: exercise.type as WorkoutType,
+        details: {
+          distanceKm: exercise.details?.distanceKm,
+          durationMin: exercise.details?.durationMin || 30,
+          sets: exercise.details?.sets,
+          repsPerSet: exercise.details?.repsPerSet,
+          seconds: exercise.details?.seconds,
+          notes: exercise.details?.notes || ''
+        },
+        kcalEstimated: exercise.kcalEstimated
+      }))
+      
+      workoutData = {
+        date: new Date(formData.value.date),
+        exercises,
+        rpe: formData.value.rpe,
+        notes: formData.value.notes
+      }
+    } else {
+      // In form mode, use existing exercises
+      workoutData = {
+        date: new Date(formData.value.date),
+        exercises: exercises.value,
+        rpe: formData.value.rpe,
+        notes: formData.value.notes
+      }
     }
 
     let savedWorkout: Workout
@@ -380,6 +566,13 @@ async function handleSubmit() {
     emit('saved', savedWorkout)
   } catch (error) {
     console.error('Error saving workout:', error)
+    
+    if ((window as any).showToast) {
+      ;(window as any).showToast({
+        type: 'error',
+        message: t.workoutSaveFailed
+      })
+    }
   } finally {
     isSubmitting.value = false
   }
