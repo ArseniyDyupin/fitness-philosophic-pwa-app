@@ -96,7 +96,8 @@ export const useAIStore = defineStore('ai', () => {
               sets: exercise.details.sets,
               repsPerSet: exercise.details.repsPerSet,
               seconds: exercise.details.seconds,
-              notes: exercise.details.notes
+              notes: exercise.details.notes,
+              customExercise: exercise.details.customExercise
             },
             kcalEstimated: exercise.kcalEstimated
           })),
@@ -114,7 +115,8 @@ export const useAIStore = defineStore('ai', () => {
               sets: exercise.details.sets,
               repsPerSet: exercise.details.repsPerSet,
               seconds: exercise.details.seconds,
-              notes: exercise.details.notes
+              notes: exercise.details.notes,
+              customExercise: exercise.details.customExercise
             },
             kcalEstimated: exercise.kcalEstimated
           })),
@@ -149,7 +151,8 @@ export const useAIStore = defineStore('ai', () => {
               sets: exercise.details.sets,
               repsPerSet: exercise.details.repsPerSet,
               seconds: exercise.details.seconds,
-              notes: exercise.details.notes
+              notes: exercise.details.notes,
+              customExercise: exercise.details.customExercise
             },
             kcalEstimated: exercise.kcalEstimated
           })),
@@ -198,8 +201,9 @@ export const useAIStore = defineStore('ai', () => {
     "durationMin"?: number,
     "sets"?: number,
     "repsPerSet"?: number[],
-    "seconds"?: number,
-    "notes"?: string
+    "seconds"?: number[],
+    "notes"?: string,
+    "customExercise"?: string
   }
 }
 

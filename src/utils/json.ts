@@ -36,8 +36,9 @@ const ExportDataSchema = z.object({
         durationMin: z.number().optional(),
         sets: z.number().optional(),
         repsPerSet: z.array(z.number()).optional(),
-        seconds: z.number().optional(),
-        notes: z.string().optional()
+        seconds: z.array(z.number()).optional(),
+        notes: z.string().optional(),
+        customExercise: z.string().optional()
       }),
       kcalEstimated: z.number().optional()
     })),
@@ -80,8 +81,9 @@ const ExportDataSchema = z.object({
           durationMin: z.number().optional(),
           sets: z.number().optional(),
           repsPerSet: z.array(z.number()).optional(),
-          seconds: z.number().optional(),
-          notes: z.string().optional()
+          seconds: z.array(z.number()).optional(),
+          notes: z.string().optional(),
+          customExercise: z.string().optional()
         }),
         kcalEstimated: z.number().optional()
       })),

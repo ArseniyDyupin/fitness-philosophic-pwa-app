@@ -8,8 +8,9 @@ export interface AIWorkoutReview {
         durationMin?: number
         sets?: number
         repsPerSet?: number[]
-        seconds?: number
+        seconds?: number[]
         notes?: string
+        customExercise?: string
       }
       kcalEstimated?: number
     }>
@@ -28,8 +29,9 @@ export interface AIWorkoutPayload {
         durationMin?: number
         sets?: number
         repsPerSet?: number[]
-        seconds?: number
+        seconds?: number[]
         notes?: string
+        customExercise?: string
       }
       kcalEstimated?: number
     }>
@@ -55,8 +57,9 @@ export interface AIWorkoutPayload {
         durationMin?: number
         sets?: number
         repsPerSet?: number[]
-        seconds?: number
+        seconds?: number[]
         notes?: string
+        customExercise?: string
       }
       kcalEstimated?: number
     }>
@@ -75,8 +78,9 @@ export interface AIWeeklyAdvicePayload {
         durationMin?: number
         sets?: number
         repsPerSet?: number[]
-        seconds?: number
+        seconds?: number[]
         notes?: string
+        customExercise?: string
       }
       kcalEstimated?: number
     }>

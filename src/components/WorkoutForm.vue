@@ -611,7 +611,8 @@ function addExercise() {
       customExercise: undefined
     },
     kcalEstimated: undefined,
-    showNotes: false
+    showNotes: false,
+    customMode: undefined
   }
   // Add to the beginning of the array (newest first)
   exercises.value.unshift(newExercise)
@@ -639,10 +640,10 @@ function onExerciseTypeChange(index: number) {
     repsPerSet: exercise.type === 'pullups' || exercise.type === 'pushups' ? [10] : undefined,
     seconds: exercise.type === 'plank' ? [60] : undefined,
     notes: exercise.details.notes || '',
-    customExercise: undefined
+    customExercise: exercise.type === 'custom' ? '' : undefined
   }
   exercise.kcalEstimated = undefined
-  exercise.customMode = undefined
+  exercise.customMode = exercise.type === 'custom' ? 'time_distance' : undefined
 }
 
 function addRep(exerciseIndex: number) {
@@ -714,13 +715,13 @@ async function parseWorkoutText() {
         durationMin: exercise.details?.durationMin || 30,
         sets: exercise.details?.sets || undefined,
         repsPerSet: exercise.details?.repsPerSet || undefined,
-        seconds: exercise.details?.seconds || undefined,
+        seconds: Array.isArray(exercise.details?.seconds) ? exercise.details.seconds : (exercise.details?.seconds ? [exercise.details.seconds] : undefined),
         notes: exercise.details?.notes || '',
-        customExercise: undefined
+        customExercise: exercise.details?.customExercise || undefined
       },
       kcalEstimated: exercise.kcalEstimated || undefined,
       showNotes: false,
-      customMode: undefined
+      customMode: exercise.type === 'custom' ? (exercise.details?.durationMin ? 'time_distance' : 'sets_reps') : undefined
     }))
     
     // Switch to form mode to show parsed exercises
@@ -771,9 +772,9 @@ async function handleSubmit() {
           durationMin: exercise.details?.durationMin || 30,
           sets: exercise.details?.sets || undefined,
           repsPerSet: exercise.details?.repsPerSet || undefined,
-          seconds: exercise.details?.seconds || undefined,
+          seconds: Array.isArray(exercise.details?.seconds) ? exercise.details.seconds : (exercise.details?.seconds ? [exercise.details.seconds] : undefined),
           notes: exercise.details?.notes || '',
-          customExercise: undefined
+          customExercise: exercise.details?.customExercise || undefined
         },
         kcalEstimated: exercise.kcalEstimated || undefined
       }))
