@@ -38,35 +38,43 @@
         </button>
       </div>
 
-      <!-- Workouts List -->
-      <div v-else class="space-y-4">
-        <div 
-          v-for="workout in workouts" 
-          :key="workout.id"
-          class="card hover:shadow-md transition-shadow cursor-pointer"
-          @click="viewWorkout(workout.id)"
-        >
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-              </div>
-              <div>
-                <div class="font-medium text-gray-900">{{ getWorkoutTypeLabel(workout.exercises[0]?.type || 'custom') }}</div>
-                <div class="text-sm text-gray-500">{{ formatDate(workout.date) }}</div>
-                <div v-if="workout.exercises.length > 1" class="text-xs text-gray-400">
-                  +{{ workout.exercises.length - 1 }} {{ workout.exercises.length === 2 ? t.exercise : t.exercises }}
-                </div>
-              </div>
+      <!-- Weekly Summary -->
+      <div v-else-if="weeklyStats" class="mb-8">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.weeklySummary }}</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-primary-600">{{ weeklyStats.workoutCount }}</div>
+              <div class="text-sm text-gray-600">{{ t.workouts }}</div>
             </div>
-            <div class="text-right">
-              <div class="font-medium text-gray-900">{{ getTotalCalories(workout) }} {{ t.calories }}</div>
-              <div class="text-sm text-gray-500">{{ getTotalDuration(workout) }} {{ t.duration }}</div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-green-600">{{ weeklyStats.totalCalories }}</div>
+              <div class="text-sm text-gray-600">{{ t.calories }}</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-orange-600">{{ weeklyStats.totalDuration }}</div>
+              <div class="text-sm text-gray-600">{{ t.minutes }}</div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Workouts List -->
+      <div v-else class="space-y-4">
+        <!-- Debug Info -->
+        <div class="bg-blue-100 p-4 text-sm text-blue-800 rounded-lg">
+          <div>Total workouts: {{ workouts.length }}</div>
+          <div>Sorted workouts: {{ sortedWorkouts.length }}</div>
+          <div v-if="sortedWorkouts.length > 0">
+            First workout: {{ JSON.stringify(sortedWorkouts[0], null, 2) }}
+          </div>
+        </div>
+        
+        <WorkoutCard
+          v-for="workout in sortedWorkouts"
+          :key="workout.id"
+          :workout="workout"
+        />
       </div>
     </main>
 
@@ -100,8 +108,8 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWorkoutsStore } from '@/stores/workouts.store'
 import { useI18nStore } from '@/stores/i18n.store'
-import { format } from 'date-fns'
 import WorkoutForm from '@/components/WorkoutForm.vue'
+import WorkoutCard from '@/components/WorkoutCard.vue'
 
 const router = useRouter()
 const workoutsStore = useWorkoutsStore()
@@ -117,37 +125,56 @@ const workouts = computed(() => workoutsStore.workouts)
 const isLoading = computed(() => workoutsStore.isLoading)
 const error = computed(() => workoutsStore.error)
 
-// Methods
-function viewWorkout(id: string) {
-  router.push(`/workouts/${id}`)
-}
+// Sort workouts by date (newest first)
+const sortedWorkouts = computed(() => {
+  return [...workouts.value].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) as any[]
+})
 
-function formatDate(date: Date) {
-  return format(date, 'MMM d, yyyy')
-}
-
-function getWorkoutTypeLabel(type: string) {
-  const typeMap: Record<string, string> = {
-    run: t.run,
-    pullups: t.pullups,
-    pushups: t.pushups,
-    plank: t.plank,
-    custom: t.custom
+// Weekly statistics
+const weeklyStats = computed(() => {
+  if (workouts.value.length === 0) return null
+  
+  const now = new Date()
+  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
+  const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+  
+  const weeklyWorkouts = workouts.value.filter(workout => {
+    const workoutDate = new Date(workout.date)
+    return workoutDate >= weekStart && workoutDate < weekEnd
+  })
+  
+  if (weeklyWorkouts.length === 0) return null
+  
+  const totalCalories = weeklyWorkouts.reduce((total, workout) => {
+    return total + workout.exercises.reduce((sum, exercise) => sum + (exercise.kcalEstimated || 0), 0)
+  }, 0)
+  
+  const totalDuration = weeklyWorkouts.reduce((total, workout) => {
+    return total + workout.exercises.reduce((sum, exercise) => {
+      if (exercise.type === 'run') {
+        return sum + (exercise.details.durationMin || 0)
+      } else if (exercise.type === 'pullups' || exercise.type === 'pushups') {
+        return sum + (exercise.details.sets || 0) * 2
+      } else if (exercise.type === 'plank') {
+        const totalSeconds = exercise.details.seconds?.reduce((a, b) => a + b, 0) || 0
+        return sum + Math.ceil(totalSeconds / 60)
+      } else if (exercise.type === 'custom') {
+        if (exercise.details.durationMin) {
+          return sum + exercise.details.durationMin
+        } else if (exercise.details.sets) {
+          return sum + (exercise.details.sets * 2)
+        }
+      }
+      return sum + 5
+    }, 0)
+  }, 0)
+  
+  return {
+    workoutCount: weeklyWorkouts.length,
+    totalCalories,
+    totalDuration
   }
-  return typeMap[type] || type
-}
-
-function getTotalCalories(workout: any) {
-  return workout.exercises.reduce((total: number, exercise: any) => {
-    return total + (exercise.kcalEstimated || 0)
-  }, 0)
-}
-
-function getTotalDuration(workout: any) {
-  return workout.exercises.reduce((total: number, exercise: any) => {
-    return total + (exercise.details.durationMin || 0)
-  }, 0)
-}
+})
 
 // Methods
 function handleWorkoutSaved(workout: any) {
@@ -158,6 +185,9 @@ function handleWorkoutSaved(workout: any) {
 
 // Load data on mount
 onMounted(async () => {
+  console.log('WorkoutsPage mounted, loading workouts...')
   await workoutsStore.loadWorkouts()
+  console.log('Workouts loaded:', workoutsStore.workouts)
+  console.log('Workouts length:', workoutsStore.workouts.length)
 })
 </script>

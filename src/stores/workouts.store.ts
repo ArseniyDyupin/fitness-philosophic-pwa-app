@@ -44,7 +44,14 @@ export const useWorkoutsStore = defineStore('workouts', () => {
     error.value = null
     
     try {
+      console.log('Loading workouts from database...')
       workouts.value = await dbHelpers.getWorkouts()
+      console.log('Workouts loaded from DB:', workouts.value)
+      console.log('Workouts length:', workouts.value.length)
+      if (workouts.value.length > 0) {
+        console.log('First workout:', workouts.value[0])
+        console.log('First workout exercises:', workouts.value[0].exercises)
+      }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load workouts'
     } finally {
@@ -98,8 +105,12 @@ export const useWorkoutsStore = defineStore('workouts', () => {
         createdAt: new Date(),
         updatedAt: new Date()
               }
+      console.log('Saving workout to DB:', newWorkout)
       await db.workouts.add(newWorkout)
+      console.log('Workout saved to DB successfully')
+      
       workouts.value.unshift(newWorkout)
+      console.log('Workout added to local state, total workouts:', workouts.value.length)
       
       return newWorkout
     } catch (err) {
