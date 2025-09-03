@@ -456,7 +456,18 @@ export const useI18nStore = defineStore('i18n', () => {
       photoCaptureFailed: 'Failed to capture photo',
       photoCompressionFailed: 'Failed to compress photo',
       photoTooLarge: 'Photo is too large',
-      photoInvalid: 'Invalid photo format'
+      photoInvalid: 'Invalid photo format',
+      
+      // Additional workout translations
+      cloneExercise: 'Clone Exercise',
+      addRep: 'Add Rep',
+      workoutSummary: 'Workout Summary',
+      repsPerSet: 'Reps per Set',
+      plankReps: 'Plank Repetitions',
+      addPlankRep: 'Add Plank Rep',
+      customExerciseMode: 'Custom Exercise Mode',
+      timeDistanceMode: 'Time/Distance',
+      setsRepsMode: 'Sets/Reps'
     },
     ru: {
       // Common
@@ -889,7 +900,16 @@ export const useI18nStore = defineStore('i18n', () => {
       photoTooLarge: 'Фото слишком большое',
       photoInvalid: 'Неверный формат фото',
       
-
+      // Additional workout translations
+      cloneExercise: 'Клонировать упражнение',
+      addRep: 'Добавить повторение',
+      workoutSummary: 'Сводка тренировки',
+      repsPerSet: 'Повторения в подходе',
+      plankReps: 'Повторения планки',
+      addPlankRep: 'Добавить повторение планки',
+      customExerciseMode: 'Режим упражнения',
+      timeDistanceMode: 'Время/Дистанция',
+      setsRepsMode: 'Подходы/Повторения'
     }
   }
 

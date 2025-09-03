@@ -30,8 +30,9 @@ export interface WorkoutExercise {
     durationMin?: number // minutes for this exercise
     sets?: number // for strength exercises
     repsPerSet?: number[] // array of reps for each set
-    seconds?: number // for plank and timed exercises
+    seconds?: number[] // array of seconds for plank repetitions
     notes?: string // exercise-specific notes
+    customExercise?: string // name for custom exercises
   }
   kcalEstimated?: number // estimated calories for this exercise
 }

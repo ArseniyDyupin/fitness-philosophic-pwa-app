@@ -189,7 +189,7 @@ export const useAIStore = defineStore('ai', () => {
     
     try {
       const prompt = `Ты — парсер. Преобразуй тренировку в JSON формата WorkoutExercise[].
-
+Прикинь сколько занимает по времени тренировка, тренировки не могут повторять, только custom
 Формат WorkoutExercise:
 {
   "type": "run" | "pullups" | "pushups" | "plank" | "custom",
