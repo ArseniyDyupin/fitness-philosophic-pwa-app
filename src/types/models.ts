@@ -43,8 +43,8 @@ export interface Workout {
   exercises: WorkoutExercise[]
   rpe?: number // Rate of Perceived Exertion (1-10 scale)
   aiReviewId?: string // ID of AI review if available
-  createdAt: Date
-  updatedAt: Date
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export type WorkoutType = 'run' | 'pullups' | 'pushups' | 'plank' | 'custom'

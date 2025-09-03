@@ -168,8 +168,7 @@ export const useI18nStore = defineStore('i18n', () => {
       exercises: 'Exercises',
       exercise: 'Exercise',
       seconds: 'Seconds',
-      workoutNotes: 'Workout Notes',
-      workoutNotesPlaceholder: 'How did the workout feel overall? Any observations?',
+      
       combinedWorkoutDescription: 'Add multiple exercises to create a comprehensive workout session.',
       selectRPE: 'Select RPE',
       
@@ -611,8 +610,7 @@ export const useI18nStore = defineStore('i18n', () => {
       exercises: 'Упражнения',
       exercise: 'Упражнение',
       seconds: 'Секунды',
-      workoutNotes: 'Заметки о тренировке',
-      workoutNotesPlaceholder: 'Как прошла тренировка в целом? Какие наблюдения?',
+      
       combinedWorkoutDescription: 'Добавьте несколько упражнений для создания комплексной тренировки.',
       selectRPE: 'Выберите RPE',
       

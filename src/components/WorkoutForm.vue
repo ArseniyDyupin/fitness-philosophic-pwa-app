@@ -1,11 +1,11 @@
 <template>
-  <div class="w-full" style="min-width: 100%;">
+  <div class="w-full" style="min-width: 100%">
     <!-- Header -->
     <div class="mb-6">
       <h2 class="text-xl font-semibold text-gray-900 mb-4">
         {{ props.editMode ? t.update : t.addWorkout }}
       </h2>
-      
+
       <!-- Mode Toggle -->
       <div class="flex items-center space-x-2">
         <span class="text-sm text-gray-600">{{ t.workoutMode }}:</span>
@@ -14,8 +14,8 @@
             @click="setMode('form')"
             :class="[
               'px-3 py-1 text-sm font-medium rounded-md transition-colors',
-              mode === 'form' 
-                ? 'bg-white text-primary-600 shadow-sm' 
+              mode === 'form'
+                ? 'bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             ]"
           >
@@ -25,8 +25,8 @@
             @click="setMode('text')"
             :class="[
               'px-3 py-1 text-sm font-medium rounded-md transition-colors',
-              mode === 'text' 
-                ? 'bg-white text-primary-600 shadow-sm' 
+              mode === 'text'
+                ? 'bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             ]"
           >
@@ -41,13 +41,13 @@
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
         <h3 class="text-sm font-medium text-blue-800 mb-2">{{ t.textModeDescription }}</h3>
         <p class="text-sm text-blue-700 mb-4">{{ t.textModeExample }}</p>
-        
+
         <textarea
           v-model="workoutText"
           :placeholder="t.workoutDescriptionPlaceholder"
           class="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
         ></textarea>
-        
+
         <div class="mt-3 flex justify-between items-center">
           <p class="text-xs text-blue-600">{{ t.workoutDescriptionHelp }}</p>
           <button
@@ -74,7 +74,7 @@
             class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
         </div>
-        
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             {{ t.rpe }} ({{ formData.rpe }}/10)
@@ -89,7 +89,7 @@
             />
             <!-- RPE Visual Indicator -->
             <div class="mt-2 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-              <div 
+              <div
                 class="h-full transition-all duration-200 rounded-full"
                 :class="getRPEColorClass(formData.rpe)"
                 :style="{ width: (formData.rpe / 10) * 100 + '%' }"
@@ -107,23 +107,30 @@
       <div class="space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-medium text-gray-900">{{ t.exercises }}</h3>
-          <button
-            @click="addExercise"
-            class="btn-secondary flex items-center space-x-2"
-          >
+          <button @click="addExercise" class="btn-secondary flex items-center space-x-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              ></path>
             </svg>
             <span>{{ t.addExercise }}</span>
           </button>
         </div>
 
         <!-- Exercise Cards -->
-        <div v-for="(exercise, index) in exercises" :key="index" class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <div
+          v-for="(exercise, index) in exercises"
+          :key="index"
+          class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm"
+        >
           <!-- Exercise Header -->
           <div class="flex justify-between items-center mb-4">
             <h4 class="text-lg font-medium text-gray-900">
-              {{ t.exercise }} {{ exercises.length - index }} — {{ getExerciseTypeLabel(exercise.type) }}
+              {{ t.exercise }} {{ exercises.length - index }} —
+              {{ getExerciseTypeLabel(exercise.type) }}
             </h4>
             <div class="flex items-center space-x-2">
               <button
@@ -132,7 +139,12 @@
                 :title="t.cloneExercise"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  ></path>
                 </svg>
               </button>
               <button
@@ -141,7 +153,12 @@
                 :title="t.removeExercise"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  ></path>
                 </svg>
               </button>
             </div>
@@ -168,7 +185,9 @@
             <!-- Run Type -->
             <div v-if="exercise.type === 'run'" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.durationMinutes }}</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                  t.durationMinutes
+                }}</label>
                 <input
                   v-model.number="exercise.details.durationMin"
                   type="number"
@@ -177,7 +196,9 @@
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.distanceKm }}</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                  t.distanceKm
+                }}</label>
                 <input
                   v-model.number="exercise.details.distanceKm"
                   type="number"
@@ -189,7 +210,10 @@
             </div>
 
             <!-- Strength Type -->
-            <div v-if="exercise.type === 'pullups' || exercise.type === 'pushups'" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div
+              v-if="exercise.type === 'pullups' || exercise.type === 'pushups'"
+              class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            >
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.sets }}</label>
                 <input
@@ -200,9 +224,15 @@
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.repsPerSet }}</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                  t.repsPerSet
+                }}</label>
                 <div class="space-y-2">
-                  <div v-for="(rep, repIndex) in exercise.details.repsPerSet" :key="repIndex" class="flex items-center space-x-2">
+                  <div
+                    v-for="(rep, repIndex) in exercise.details.repsPerSet"
+                    :key="repIndex"
+                    class="flex items-center space-x-2"
+                  >
                     <input
                       v-model.number="exercise.details.repsPerSet[repIndex]"
                       type="number"
@@ -214,7 +244,12 @@
                       class="text-red-500 hover:text-red-700 p-1"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        ></path>
                       </svg>
                     </button>
                   </div>
@@ -223,7 +258,12 @@
                     class="text-sm text-primary-600 hover:text-primary-800 flex items-center space-x-1"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      ></path>
                     </svg>
                     <span>{{ t.addRep }}</span>
                   </button>
@@ -234,9 +274,15 @@
             <!-- Plank Type -->
             <div v-if="exercise.type === 'plank'" class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.plankReps }}</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                  t.plankReps
+                }}</label>
                 <div class="space-y-2">
-                  <div v-for="(second, repIndex) in exercise.details.seconds" :key="repIndex" class="flex items-center space-x-2">
+                  <div
+                    v-for="(second, repIndex) in exercise.details.seconds"
+                    :key="repIndex"
+                    class="flex items-center space-x-2"
+                  >
                     <input
                       v-model.number="exercise.details.seconds[repIndex]"
                       type="number"
@@ -249,7 +295,12 @@
                       class="text-red-500 hover:text-red-700 p-1"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        ></path>
                       </svg>
                     </button>
                   </div>
@@ -258,7 +309,12 @@
                     class="text-sm text-primary-600 hover:text-primary-800 flex items-center space-x-1"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      ></path>
                     </svg>
                     <span>{{ t.addPlankRep }}</span>
                   </button>
@@ -269,7 +325,9 @@
             <!-- Custom Type -->
             <div v-if="exercise.type === 'custom'" class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.exerciseName }}</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                  t.exerciseName
+                }}</label>
                 <input
                   v-model="exercise.details.customExercise"
                   type="text"
@@ -277,10 +335,12 @@
                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
-              
+
               <!-- Custom Exercise Mode Selection -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-3">{{ t.customExerciseMode }}</label>
+                <label class="block text-sm font-medium text-gray-700 mb-3">{{
+                  t.customExerciseMode
+                }}</label>
                 <div class="flex space-x-4">
                   <label class="flex items-center">
                     <input
@@ -304,9 +364,14 @@
               </div>
 
               <!-- Time/Distance Mode Fields -->
-              <div v-if="exercise.details.customMode === 'time_distance'" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div
+                v-if="exercise.details.customMode === 'time_distance'"
+                class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+              >
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.durationMinutes }}</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                    t.durationMinutes
+                  }}</label>
                   <input
                     v-model.number="exercise.details.durationMin"
                     type="number"
@@ -315,7 +380,9 @@
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.distanceKm }}</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                    t.distanceKm
+                  }}</label>
                   <input
                     v-model.number="exercise.details.distanceKm"
                     type="number"
@@ -327,7 +394,10 @@
               </div>
 
               <!-- Sets/Reps Mode Fields -->
-              <div v-if="exercise.details.customMode === 'sets_reps'" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div
+                v-if="exercise.details.customMode === 'sets_reps'"
+                class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+              >
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.sets }}</label>
                   <input
@@ -338,9 +408,15 @@
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.repsPerSet }}</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                    t.repsPerSet
+                  }}</label>
                   <div class="space-y-2">
-                    <div v-for="(rep, repIndex) in exercise.details.repsPerSet" :key="repIndex" class="flex items-center space-x-2">
+                    <div
+                      v-for="(rep, repIndex) in exercise.details.repsPerSet"
+                      :key="repIndex"
+                      class="flex items-center space-x-2"
+                    >
                       <input
                         v-model.number="exercise.details.repsPerSet[repIndex]"
                         type="number"
@@ -352,7 +428,12 @@
                         class="text-red-500 hover:text-red-700 p-1"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          ></path>
                         </svg>
                       </button>
                     </div>
@@ -361,7 +442,12 @@
                       class="text-sm text-primary-600 hover:text-primary-800 flex items-center space-x-1"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                        ></path>
                       </svg>
                       <span>{{ t.addRep }}</span>
                     </button>
@@ -377,13 +463,18 @@
                 class="flex items-center justify-between w-full text-left text-sm font-medium text-gray-700 hover:text-gray-900"
               >
                 <span>{{ t.notes }}</span>
-                <svg 
+                <svg
                   :class="['w-4 h-4 transition-transform', exercise.showNotes ? 'rotate-180' : '']"
-                  fill="none" 
-                  stroke="currentColor" 
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
                 </svg>
               </button>
               <div v-if="exercise.showNotes" class="mt-3">
@@ -396,32 +487,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Workout Notes -->
-      <div class="border-t pt-6">
-        <button
-          @click="showWorkoutNotes = !showWorkoutNotes"
-          class="flex items-center justify-between w-full text-left text-sm font-medium text-gray-700 hover:text-gray-900"
-        >
-          <span>{{ t.workoutNotes }}</span>
-          <svg 
-            :class="['w-4 h-4 transition-transform', showWorkoutNotes ? 'rotate-180' : '']"
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <div v-if="showWorkoutNotes" class="mt-3">
-          <textarea
-            v-model="formData.notes"
-            :placeholder="t.workoutNotesPlaceholder"
-            rows="3"
-            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          ></textarea>
         </div>
       </div>
 
@@ -451,10 +516,7 @@
 
     <!-- Submit Button -->
     <div class="flex justify-end space-x-4 pt-8 border-t">
-      <button
-        @click="$emit('cancel')"
-        class="btn-secondary"
-      >
+      <button @click="$emit('cancel')" class="btn-secondary">
         {{ t.cancel }}
       </button>
       <button
@@ -497,20 +559,22 @@ const mode = ref<'form' | 'text'>('form')
 const workoutText = ref('')
 const isParsing = ref(false)
 const isSubmitting = ref(false)
-const showWorkoutNotes = ref(false)
 
 // Form data
 const formData = ref({
   date: new Date().toISOString().split('T')[0],
-  rpe: 5,
-  notes: ''
+  rpe: 5
 })
 
 // Exercises array
-const exercises = ref<Array<WorkoutExercise & { 
-  showNotes?: boolean
-  customMode?: 'time_distance' | 'sets_reps'
-}>>([])
+const exercises = ref<
+  Array<
+    WorkoutExercise & {
+      showNotes?: boolean
+      customMode?: 'time_distance' | 'sets_reps'
+    }
+  >
+>([])
 
 // Initialize form
 onMounted(() => {
@@ -518,12 +582,12 @@ onMounted(() => {
     // Edit mode - load existing workout
     formData.value.date = new Date(props.workout.date).toISOString().split('T')[0]
     formData.value.rpe = props.workout.rpe || 5
-    formData.value.notes = props.workout.notes || ''
-    
-    exercises.value = props.workout.exercises.map(ex => ({
+
+    exercises.value = props.workout.exercises.map((ex) => ({
       ...ex,
       showNotes: false,
-      customMode: ex.type === 'custom' ? (ex.details.durationMin ? 'time_distance' : 'sets_reps') : undefined
+      customMode:
+        ex.type === 'custom' ? (ex.details.durationMin ? 'time_distance' : 'sets_reps') : undefined
     }))
   } else {
     // Add mode - create default exercise
@@ -536,28 +600,38 @@ const isFormValid = computed(() => {
   if (mode.value === 'text') {
     return workoutText.value.trim().length > 0
   }
-  
-  return exercises.value.length > 0 && 
-         exercises.value.every(ex => {
-           if (ex.type === 'run') {
-             return ex.details.durationMin && ex.details.durationMin > 0
-           } else if (ex.type === 'pullups' || ex.type === 'pushups') {
-             return ex.details.sets && ex.details.sets > 0 && 
-                    ex.details.repsPerSet && ex.details.repsPerSet.length > 0
-           } else if (ex.type === 'plank') {
-             return ex.details.seconds && ex.details.seconds.length > 0
-           } else if (ex.type === 'custom') {
-             if (!ex.details.customExercise || !ex.details.customExercise.trim()) return false
-             if (ex.details.customMode === 'time_distance') {
-               return ex.details.durationMin && ex.details.durationMin > 0
-             } else if (ex.details.customMode === 'sets_reps') {
-               return ex.details.sets && ex.details.sets > 0 && 
-                      ex.details.repsPerSet && ex.details.repsPerSet.length > 0
-             }
-             return false
-           }
-           return false
-         })
+
+  return (
+    exercises.value.length > 0 &&
+    exercises.value.every((ex) => {
+      if (ex.type === 'run') {
+        return ex.details.durationMin && ex.details.durationMin > 0
+      } else if (ex.type === 'pullups' || ex.type === 'pushups') {
+        return (
+          ex.details.sets &&
+          ex.details.sets > 0 &&
+          ex.details.repsPerSet &&
+          ex.details.repsPerSet.length > 0
+        )
+      } else if (ex.type === 'plank') {
+        return ex.details.seconds && ex.details.seconds.length > 0
+      } else if (ex.type === 'custom') {
+        if (!ex.details.customExercise || !ex.details.customExercise.trim()) return false
+        if (ex.details.customMode === 'time_distance') {
+          return ex.details.durationMin && ex.details.durationMin > 0
+        } else if (ex.details.customMode === 'sets_reps') {
+          return (
+            ex.details.sets &&
+            ex.details.sets > 0 &&
+            ex.details.repsPerSet &&
+            ex.details.repsPerSet.length > 0
+          )
+        }
+        return false
+      }
+      return false
+    })
+  )
 })
 
 const totalDuration = computed(() => {
@@ -596,7 +670,7 @@ function setMode(newMode: 'form' | 'text') {
 }
 
 function addExercise() {
-  const newExercise: WorkoutExercise & { 
+  const newExercise: WorkoutExercise & {
     showNotes?: boolean
     customMode?: 'time_distance' | 'sets_reps'
   } = {
@@ -701,32 +775,47 @@ function getRPEColorClass(rpe: number): string {
 
 async function parseWorkoutText() {
   if (!workoutText.value.trim()) return
-  
+
   isParsing.value = true
-  
+
   try {
     const parsedExercises = await aiStore.parseWorkoutText(workoutText.value)
-    
+
     // Transform parsed exercises to match our format
-    exercises.value = parsedExercises.map((exercise: any) => ({
-      type: exercise.type as WorkoutType,
-      details: {
-        distanceKm: exercise.details?.distanceKm || undefined,
-        durationMin: exercise.details?.durationMin || 30,
-        sets: exercise.details?.sets || undefined,
-        repsPerSet: exercise.details?.repsPerSet || undefined,
-        seconds: Array.isArray(exercise.details?.seconds) ? exercise.details.seconds : (exercise.details?.seconds ? [exercise.details.seconds] : undefined),
-        notes: exercise.details?.notes || '',
-        customExercise: exercise.details?.customExercise || undefined
-      },
-      kcalEstimated: exercise.kcalEstimated || undefined,
-      showNotes: false,
-      customMode: exercise.type === 'custom' ? (exercise.details?.durationMin ? 'time_distance' : 'sets_reps') : undefined
-    }))
-    
+    exercises.value = parsedExercises.map((exercise: any) => {
+      const cleanExercise: WorkoutExercise & {
+        showNotes?: boolean
+        customMode?: 'time_distance' | 'sets_reps'
+      } = {
+        type: exercise.type as WorkoutType,
+        details: {
+          distanceKm: exercise.details?.distanceKm || undefined,
+          durationMin: exercise.details?.durationMin || 30,
+          sets: exercise.details?.sets || undefined,
+          repsPerSet: exercise.details?.repsPerSet ? [...exercise.details.repsPerSet] : undefined,
+          seconds: Array.isArray(exercise.details?.seconds)
+            ? [...exercise.details.seconds]
+            : exercise.details?.seconds
+              ? [exercise.details.seconds]
+              : undefined,
+          notes: exercise.details?.notes || '',
+          customExercise: exercise.details?.customExercise || undefined
+        },
+        kcalEstimated: exercise.kcalEstimated || undefined,
+        showNotes: false,
+        customMode:
+          exercise.type === 'custom'
+            ? exercise.details?.durationMin
+              ? 'time_distance'
+              : 'sets_reps'
+            : undefined
+      }
+      return cleanExercise
+    })
+
     // Switch to form mode to show parsed exercises
     mode.value = 'form'
-    
+
     // Show success message
     if ((window as any).showToast) {
       ;(window as any).showToast({
@@ -736,7 +825,7 @@ async function parseWorkoutText() {
     }
   } catch (error) {
     console.error('Error parsing workout text:', error)
-    
+
     if ((window as any).showToast) {
       ;(window as any).showToast({
         type: 'error',
@@ -761,63 +850,72 @@ async function handleSubmit() {
       if (!workoutText.value.trim()) {
         throw new Error('Workout text is required')
       }
-      
+
       const parsedExercises = await aiStore.parseWorkoutText(workoutText.value)
-      
+
       // Transform parsed exercises to match our format
-      const exercises = parsedExercises.map((exercise: any) => ({
-        type: exercise.type as WorkoutType,
-        details: {
-          distanceKm: exercise.details?.distanceKm || undefined,
-          durationMin: exercise.details?.durationMin || 30,
-          sets: exercise.details?.sets || undefined,
-          repsPerSet: exercise.details?.repsPerSet || undefined,
-          seconds: Array.isArray(exercise.details?.seconds) ? exercise.details.seconds : (exercise.details?.seconds ? [exercise.details.seconds] : undefined),
-          notes: exercise.details?.notes || '',
-          customExercise: exercise.details?.customExercise || undefined
-        },
-        kcalEstimated: exercise.kcalEstimated || undefined
-      }))
-      
+      const exercises = parsedExercises.map((exercise: any) => {
+        const cleanExercise: WorkoutExercise = {
+          type: exercise.type as WorkoutType,
+          details: {
+            distanceKm: exercise.details?.distanceKm || undefined,
+            durationMin: exercise.details?.durationMin || 30,
+            sets: exercise.details?.sets || undefined,
+            repsPerSet: exercise.details?.repsPerSet ? [...exercise.details.repsPerSet] : undefined,
+            seconds: Array.isArray(exercise.details?.seconds)
+              ? [...exercise.details.seconds]
+              : exercise.details?.seconds
+                ? [exercise.details.seconds]
+                : undefined,
+            notes: exercise.details?.notes || '',
+            customExercise: exercise.details?.customExercise || undefined
+          },
+          kcalEstimated: exercise.kcalEstimated || undefined
+        }
+        return cleanExercise
+      })
+
       workoutData = {
         date: new Date(formData.value.date),
         exercises,
-        rpe: formData.value.rpe,
-        notes: formData.value.notes
+        rpe: formData.value.rpe
       }
-    } else {
-      // In form mode, use existing exercises
+          } else {
+        // In form mode, use existing exercises
       workoutData = {
         date: new Date(formData.value.date),
-        exercises: exercises.value.map(exercise => ({
-          type: exercise.type,
-          details: {
-            distanceKm: exercise.details.distanceKm || undefined,
-            durationMin: exercise.details.durationMin || undefined,
-            sets: exercise.details.sets || undefined,
-            repsPerSet: exercise.details.repsPerSet || undefined,
-            seconds: exercise.details.seconds || undefined,
-            notes: exercise.details.notes || '',
-            customExercise: exercise.details.customExercise || undefined
-          },
-          kcalEstimated: exercise.kcalEstimated || undefined
-        })),
-        rpe: formData.value.rpe,
-        notes: formData.value.notes
+        exercises: exercises.value.map((exercise) => {
+          // Create clean exercise object without UI-specific fields and reactivity
+          const cleanExercise: WorkoutExercise = {
+            type: exercise.type,
+            details: {
+              distanceKm: exercise.details.distanceKm || undefined,
+              durationMin: exercise.details.durationMin || undefined,
+              sets: exercise.details.sets || undefined,
+              repsPerSet: exercise.details.repsPerSet ? [...exercise.details.repsPerSet] : undefined,
+              seconds: exercise.details.seconds ? [...exercise.details.seconds] : undefined,
+              notes: exercise.details.notes || '',
+              customExercise: exercise.details.customExercise || undefined
+            },
+            kcalEstimated: exercise.kcalEstimated || undefined
+          }
+          return cleanExercise
+        }),
+        rpe: formData.value.rpe
       }
-    }
+            }
 
-    let savedWorkout: Workout
-    if (props.editMode && props.workout) {
-      savedWorkout = await workoutsStore.updateWorkout(props.workout.id, workoutData)
-    } else {
-      savedWorkout = await workoutsStore.addWorkout(workoutData)
-    }
+          let savedWorkout: Workout
+      if (props.editMode && props.workout) {
+        savedWorkout = await workoutsStore.updateWorkout(props.workout.id, workoutData)
+      } else {
+        savedWorkout = await workoutsStore.addWorkout(workoutData)
+      }
 
     emit('saved', savedWorkout)
   } catch (error) {
     console.error('Error saving workout:', error)
-    
+
     if ((window as any).showToast) {
       ;(window as any).showToast({
         type: 'error',
@@ -845,7 +943,7 @@ async function handleSubmit() {
   width: 20px;
   border-radius: 50%;
   background: #3b82f6;
-  cursor:pointer;
+  cursor: pointer;
   border: none;
 }
 </style>

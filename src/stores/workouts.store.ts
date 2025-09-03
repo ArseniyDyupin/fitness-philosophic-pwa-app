@@ -20,7 +20,7 @@ export const useWorkoutsStore = defineStore('workouts', () => {
     tomorrow.setDate(tomorrow.getDate() + 1)
     
     return workouts.value.filter(workout => {
-      const workoutDate = new Date(workout.date)
+      const workoutDate = new Date(workout?.date)
       return workoutDate >= today && workoutDate < tomorrow
     })
   })
@@ -55,19 +55,18 @@ export const useWorkoutsStore = defineStore('workouts', () => {
   async function addWorkout(workoutData: Omit<Workout, 'id' | 'createdAt' | 'updatedAt'>) {
     isLoading.value = true
     error.value = null
-    
     try {
       // Calculate calories for each exercise
       const weight = profileStore.currentWeight
-      const exercisesWithCalories = workoutData.exercises.map(exercise => {
+      const exercisesWithCalories = workoutData?.exercises.map(exercise => {
         const calorieCalculation = calculateWorkoutCalories(
           exercise.type,
           weight,
-          exercise.details.durationMin || 0,
+          exercise?.details?.durationMin || 0,
           {
-            distance: exercise.details.distanceKm,
-            reps: exercise.details.repsPerSet ? exercise.details.repsPerSet.reduce((a, b) => a + b, 0) : undefined,
-            sets: exercise.details.sets
+            distance: exercise?.details?.distanceKm,
+            reps: exercise?.details?.repsPerSet ? exercise?.details?.repsPerSet.reduce((a, b) => a + b, 0) : undefined,
+            sets: exercise?.details?.sets
           }
         )
         
@@ -75,16 +74,30 @@ export const useWorkoutsStore = defineStore('workouts', () => {
           ...exercise,
           kcalEstimated: calorieCalculation.calories
         }
-      })
+              })
+      // Create deep copy without reactivity for IndexedDB
+      const exercisesForDB = exercisesWithCalories.map(exercise => ({
+        type: exercise.type,
+        details: {
+          distanceKm: exercise.details.distanceKm,
+          durationMin: exercise.details.durationMin,
+          sets: exercise.details.sets,
+          repsPerSet: exercise.details.repsPerSet ? [...exercise.details.repsPerSet] : undefined,
+          seconds: exercise.details.seconds ? [...exercise.details.seconds] : undefined,
+          notes: exercise.details.notes,
+          customExercise: exercise.details.customExercise
+        },
+        kcalEstimated: exercise.kcalEstimated
+      }))
 
       const newWorkout: Workout = {
         id: crypto.randomUUID(),
-        ...workoutData,
-        exercises: exercisesWithCalories,
+        date: workoutData.date,
+        exercises: exercisesForDB,
+        rpe: workoutData.rpe,
         createdAt: new Date(),
         updatedAt: new Date()
-      }
-
+              }
       await db.workouts.add(newWorkout)
       workouts.value.unshift(newWorkout)
       
@@ -130,10 +143,26 @@ export const useWorkoutsStore = defineStore('workouts', () => {
         })
       }
 
+      // Create deep copy without reactivity for IndexedDB
+      const exercisesForDB = updatedExercises.map(exercise => ({
+        type: exercise.type,
+        details: {
+          distanceKm: exercise.details.distanceKm,
+          durationMin: exercise.details.durationMin,
+          sets: exercise.details.sets,
+          repsPerSet: exercise.details.repsPerSet ? [...exercise.details.repsPerSet] : undefined,
+          seconds: exercise.details.seconds ? [...exercise.details.seconds] : undefined,
+          notes: exercise.details.notes,
+          customExercise: exercise.details.customExercise
+        },
+        kcalEstimated: exercise.kcalEstimated
+      }))
+
       const updatedWorkout: Workout = {
         ...existingWorkout,
-        ...updates,
-        exercises: updatedExercises,
+        date: updates.date || existingWorkout.date,
+        exercises: exercisesForDB,
+        rpe: updates.rpe !== undefined ? updates.rpe : existingWorkout.rpe,
         updatedAt: new Date()
       }
 
