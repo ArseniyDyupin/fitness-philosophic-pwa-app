@@ -25,7 +25,7 @@ const WorkoutsPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Loading...</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.loading}</h2>
         </div>
       </div>
     )
@@ -40,7 +40,7 @@ const WorkoutsPage: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{t.workouts}</h1>
             <p className="text-lg text-gray-600 mt-2">
-              Track your workouts and progress
+              {t.workoutsPage?.trackWorkoutsAndProgress || 'Track your workouts and progress'}
             </p>
           </div>
           <button
@@ -56,7 +56,7 @@ const WorkoutsPage: React.FC = () => {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading workouts...</p>
+            <p className="text-gray-600">{t.workoutsPage?.loadingWorkouts || 'Loading workouts...'}</p>
           </div>
         ) : workouts.length === 0 ? (
           <div className="text-center py-12">
@@ -65,7 +65,7 @@ const WorkoutsPage: React.FC = () => {
               {t.noWorkoutsFound}
             </h2>
             <p className="text-lg text-gray-600 mb-8">
-              Start your fitness journey by adding your first workout
+              {t.workoutsPage?.startFitnessJourney || 'Start your fitness journey by adding your first workout'}
             </p>
             <button
               onClick={() => setIsFormOpen(true)}

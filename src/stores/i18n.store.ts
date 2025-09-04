@@ -295,6 +295,40 @@ export const translations = {
       importDescription: 'Restore your data from a previously exported JSON file.',
       note: 'Note:',
       importNote: 'Importing will replace all existing data. Make sure to backup first.'
+    },
+    
+    // WorkoutsPage
+    workoutsPage: {
+      trackWorkoutsAndProgress: 'Track your workouts and progress',
+      loadingWorkouts: 'Loading workouts...',
+      startFitnessJourney: 'Start your fitness journey by adding your first workout'
+    },
+    
+    // WorkoutForm
+    workoutForm: {
+      formMode: 'Form Mode',
+      textMode: 'Text Mode',
+      date: 'Date',
+      rpe: 'RPE (Rate of Perceived Exertion)',
+      easy: 'Easy',
+      moderate: 'Moderate',
+      hard: 'Hard',
+      exercises: 'Exercises',
+      addExercise: 'Add Exercise',
+      noExercisesAdded: 'No exercises added yet. Click "Add Exercise" to get started.',
+      workoutSummary: 'Workout Summary',
+      totalCalories: 'Total Calories:',
+      duration: 'Duration:',
+      exercisesCount: 'Exercises:',
+      describeWorkout: 'Describe your workout',
+      workoutDescriptionPlaceholder: 'Example: пробежал 5 км, подтянулся 7-5-3-3-2, отжимания 20-20-15, планка 60-45-50',
+      workoutDescriptionHelp: 'Describe your workout in natural language. The AI will parse it into structured exercises.',
+      parseAndContinue: 'Parse and Continue',
+      parsing: 'Parsing...',
+      pleaseAddExercise: 'Please add at least one exercise',
+      failedToSave: 'Failed to save workout',
+      pleaseEnterDescription: 'Please enter workout description',
+      failedToParse: 'Failed to parse workout text. Please use the form mode instead.'
     }
   },
   
@@ -548,6 +582,40 @@ export const translations = {
       importDescription: 'Восстановите свои данные из ранее экспортированного JSON файла.',
       note: 'Примечание:',
       importNote: 'Импорт заменит все существующие данные. Убедитесь, что сначала сделайте резервную копию.'
+    },
+    
+    // WorkoutsPage
+    workoutsPage: {
+      trackWorkoutsAndProgress: 'Отслеживайте тренировки и прогресс',
+      loadingWorkouts: 'Загружаю тренировки...',
+      startFitnessJourney: 'Начните свой фитнес-путь, добавив первую тренировку'
+    },
+    
+    // WorkoutForm
+    workoutForm: {
+      formMode: 'Режим формы',
+      textMode: 'Текстовый режим',
+      date: 'Дата',
+      rpe: 'RPE (Уровень воспринимаемой нагрузки)',
+      easy: 'Легко',
+      moderate: 'Умеренно',
+      hard: 'Тяжело',
+      exercises: 'Упражнения',
+      addExercise: 'Добавить упражнение',
+      noExercisesAdded: 'Упражнения еще не добавлены. Нажмите "Добавить упражнение" чтобы начать.',
+      workoutSummary: 'Сводка тренировки',
+      totalCalories: 'Всего калорий:',
+      duration: 'Длительность:',
+      exercisesCount: 'Упражнения:',
+      describeWorkout: 'Опишите вашу тренировку',
+      workoutDescriptionPlaceholder: 'Пример: пробежал 5 км, подтянулся 7-5-3-3-2, отжимания 20-20-15, планка 60-45-50',
+      workoutDescriptionHelp: 'Опишите вашу тренировку естественным языком. ИИ разберет её на структурированные упражнения.',
+      parseAndContinue: 'Разобрать и продолжить',
+      parsing: 'Разбираю...',
+      pleaseAddExercise: 'Пожалуйста, добавьте хотя бы одно упражнение',
+      failedToSave: 'Не удалось сохранить тренировку',
+      pleaseEnterDescription: 'Пожалуйста, введите описание тренировки',
+      failedToParse: 'Не удалось разобрать текст тренировки. Пожалуйста, используйте режим формы.'
     }
   }
 }

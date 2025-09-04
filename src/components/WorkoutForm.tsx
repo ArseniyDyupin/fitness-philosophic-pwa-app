@@ -181,9 +181,9 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
   }
 
   const getRpeLabel = (rpeValue: number) => {
-    if (rpeValue <= 3) return 'Easy'
-    if (rpeValue <= 7) return 'Moderate'
-    return 'Hard'
+    if (rpeValue <= 3) return t.workoutForm?.easy || 'Easy'
+    if (rpeValue <= 7) return t.workoutForm?.moderate || 'Moderate'
+    return t.workoutForm?.hard || 'Hard'
   }
 
   if (!isOpen) return null
@@ -216,7 +216,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               }`}
             >
               <Edit3 size={16} />
-              <span>Form Mode</span>
+              <span>{t.workoutForm?.formMode || 'Form Mode'}</span>
             </button>
             <button
               onClick={() => setMode('text')}
@@ -227,7 +227,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               }`}
             >
               <FileText size={16} />
-              <span>Text Mode</span>
+              <span>{t.workoutForm?.textMode || 'Text Mode'}</span>
             </button>
           </div>
         </div>
@@ -239,7 +239,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date
+                  {t.workoutForm?.date || 'Date'}
                 </label>
                 <input
                   type="date"
@@ -251,7 +251,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  RPE (Rate of Perceived Exertion)
+                  {t.workoutForm?.rpe || 'RPE (Rate of Perceived Exertion)'}
                 </label>
                 <div className="space-y-2">
                   <input
@@ -263,11 +263,11 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                     className="w-full"
                   />
                   <div className="flex justify-between text-sm">
-                    <span className="text-green-600">1-3 Easy</span>
+                    <span className="text-green-600">1-3 {t.workoutForm?.easy || 'Easy'}</span>
                     <span className={`font-medium ${getRpeColor(rpe)}`}>
                       {rpe} - {getRpeLabel(rpe)}
                     </span>
-                    <span className="text-red-600">8-10 Hard</span>
+                    <span className="text-red-600">8-10 {t.workoutForm?.hard || 'Hard'}</span>
                   </div>
                 </div>
               </div>
@@ -276,13 +276,13 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
             {/* Exercises */}
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Exercises</h3>
+                <h3 className="text-lg font-medium text-gray-900">{t.workoutForm?.exercises || 'Exercises'}</h3>
                 <button
                   onClick={addExercise}
                   className="btn-primary flex items-center space-x-2"
                 >
                   <Plus size={16} />
-                  <span>Add Exercise</span>
+                  <span>{t.workoutForm?.addExercise || 'Add Exercise'}</span>
                 </button>
               </div>
 
@@ -301,7 +301,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
 
               {exercises.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
-                  <p>No exercises added yet. Click "Add Exercise" to get started.</p>
+                  <p>{t.workoutForm?.noExercisesAdded || 'No exercises added yet. Click "Add Exercise" to get started.'}</p>
                 </div>
               )}
             </div>
@@ -309,22 +309,22 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
             {/* Summary */}
             {exercises.length > 0 && profile?.weight && (
               <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-medium text-gray-900 mb-2">Workout Summary</h4>
+                <h4 className="font-medium text-gray-900 mb-2">{t.workoutForm?.workoutSummary || 'Workout Summary'}</h4>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">Total Calories:</span>
+                    <span className="text-gray-600">{t.workoutForm?.totalCalories || 'Total Calories:'}</span>
                     <div className="font-medium">
                       {calculateWorkoutCalories(exercises, profile.weight, rpe)} kcal
                     </div>
                   </div>
                   <div>
-                    <span className="text-gray-600">Duration:</span>
+                    <span className="text-gray-600">{t.workoutForm?.duration || 'Duration:'}</span>
                     <div className="font-medium">
                       {Math.round(calculateWorkoutDuration(exercises))} min
                     </div>
                   </div>
                   <div>
-                    <span className="text-gray-600">Exercises:</span>
+                    <span className="text-gray-600">{t.workoutForm?.exercisesCount || 'Exercises:'}</span>
                     <div className="font-medium">{exercises.length}</div>
                   </div>
                 </div>
@@ -336,17 +336,17 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
           <div className="p-6 space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Describe your workout
+                {t.workoutForm?.describeWorkout || 'Describe your workout'}
               </label>
               <textarea
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 rows={6}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Example: пробежал 5 км, подтянулся 7-5-3-3-2, отжимания 20-20-15, планка 60-45-50"
+                placeholder={t.workoutForm?.workoutDescriptionPlaceholder || "Example: пробежал 5 км, подтянулся 7-5-3-3-2, отжимания 20-20-15, планка 60-45-50"}
               />
               <p className="text-sm text-gray-500 mt-2">
-                Describe your workout in natural language. The AI will parse it into structured exercises.
+                {t.workoutForm?.workoutDescriptionHelp || "Describe your workout in natural language. The AI will parse it into structured exercises."}
               </p>
             </div>
 
@@ -355,7 +355,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               disabled={isProcessing || !textInput.trim()}
               className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isProcessing ? 'Parsing...' : 'Parse and Continue'}
+              {isProcessing ? (t.workoutForm?.parsing || 'Parsing...') : (t.workoutForm?.parseAndContinue || 'Parse and Continue')}
             </button>
           </div>
         )}
