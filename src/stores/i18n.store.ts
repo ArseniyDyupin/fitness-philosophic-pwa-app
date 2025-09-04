@@ -1,940 +1,222 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { create } from 'zustand'
+import { useProfileStore } from './profile.store'
 
-export type Language = 'en' | 'ru'
+type Language = 'en' | 'ru'
 
-export const useI18nStore = defineStore('i18n', () => {
-  const currentLanguage = ref<Language>('en')
-
-  // Initialize language from localStorage on store creation
-  function initializeLanguage() {
-    const saved = localStorage.getItem('selectedLanguage') as Language
-    if (saved && ['en', 'ru'].includes(saved)) {
-      currentLanguage.value = saved
-    }
-  }
-
-  function setLanguageFromProfile(lang: Language) {
-    currentLanguage.value = lang
-  }
-
-  // Translations
-  const translations = {
-    en: {
-      // Common
-      save: 'Save',
-      cancel: 'Cancel',
-      delete: 'Delete',
-      edit: 'Edit',
-      add: 'Add',
-      loading: 'Loading...',
-      error: 'Error',
-      success: 'Success',
-      back: 'Back',
-      close: 'Close',
-      confirm: 'Confirm',
-      yes: 'Yes',
-      no: 'No',
-      
-      // Navigation
-      home: 'Home',
-      workouts: 'Workouts',
-      food: 'Food',
-      weekly: 'Weekly',
-      settings: 'Settings',
-      
-      // Profile
-      profile: 'Profile',
-      name: 'Name',
-      age: 'Age',
-      gender: 'Gender',
-      male: 'Male',
-      female: 'Female',
-      other: 'Other',
-      height: 'Height (cm)',
-      weight: 'Weight (kg)',
-      goal: 'Goal',
-      goalDescription: 'Goal Description',
-      saveProfile: 'Save Profile',
-      saving: 'Saving...',
-      profileUpdated: 'Profile updated successfully!',
-      profileUpdateFailed: 'Failed to save profile. Please try again.',
-
-      
-      // Goals
-      weightLoss: 'Weight Loss',
-      muscleGain: 'Muscle Gain',
-      endurance: 'Endurance',
-      strength: 'Strength',
-      generalFitness: 'General Fitness',
-      weightLossDescription: 'Lose body fat and get leaner',
-      muscleGainDescription: 'Build strength and muscle mass',
-      enduranceDescription: 'Improve cardiovascular fitness',
-      strengthDescription: 'Increase overall strength',
-      generalFitnessDescription: 'Stay healthy and active',
-      
-      // AI Settings
-      aiSettings: 'AI Settings',
-      openaiApiKey: 'OpenAI API Key',
-      test: 'Test',
-      testing: 'Testing...',
-      connectionStatus: 'Connection Status',
-      apiKeyStoredLocally: 'Your API key is stored locally and never sent to our servers',
-      notConfigured: 'Not configured',
-      apiKeySet: 'API key set',
-      connected: 'Connected ✓',
-      connectionFailed: 'Connection failed ✗',
-      clearKey: 'Clear Key',
-      aiConnectionSuccess: 'AI connection successful!',
-      aiConnectionFailed: 'AI connection failed. Please check your API key.',
-      apiKeyCleared: 'API key cleared',
-      
-      // Data Management
-      dataManagement: 'Data Management',
-      exportData: 'Export Data',
-      importData: 'Import Data',
-      resetAllData: 'Reset All Data',
-      profileExport: 'Profile Export',
-      profileExportDescription: 'Export your profile data as a JSON file that you can import on another device.',
-      exporting: 'Exporting...',
-      exportProfile: 'Export Profile',
-      resetting: 'Resetting...',
-      confirmReset: 'Confirm Reset',
-      resetDescription: 'This will permanently delete all your data:',
-      resetItems: [
-        'All workouts',
-        'All food logs',
-        'All weekly check-ins',
-        'All AI plans',
-        'Your profile settings'
-      ],
-      resetWarning: 'This action cannot be undone!',
-      allDataReset: 'All data has been reset',
-      resetFailed: 'Failed to reset data. Please try again.',
-      
-      // Workouts
-      workout: 'Workout',
-      addWorkout: 'Add Workout',
-      editWorkout: 'Edit Workout',
-      workoutType: 'Workout Type',
-      duration: 'Duration (min)',
-      calories: 'Calories',
-      notes: 'Notes',
-      date: 'Date',
-      run: 'Run',
-      pullups: 'Pull-ups',
-      pushups: 'Push-ups',
-      plank: 'Plank',
-      custom: 'Custom',
-      distance: 'Distance (km)',
-      reps: 'Reps',
-      sets: 'Sets',
-      workoutWeight: 'Weight (kg)',
-      customExercise: 'Custom Exercise',
-      noWorkoutsFound: 'No workouts found',
-      workoutDetails: 'Workout Details',
-      workoutAnalysis: 'Workout Analysis',
-      nextWorkoutRecommendation: 'Next Workout Recommendation',
-      analyzeWorkout: 'Analyze Workout',
-      analyzing: 'Analyzing...',
-      workoutAnalyzed: 'Workout analyzed successfully!',
-      workoutAnalysisFailed: 'Failed to analyze workout. Please try again.',
-      
-      // Workouts - Additional
-      selectWorkoutType: 'Select workout type',
-      durationMinutes: 'Duration (minutes)',
-      workoutDurationDescription: 'Enter duration in minutes (1-480)',
-      distanceKm: 'Distance (km)',
-      km: 'km',
-      distanceDescription: 'Optional: Enter distance for more accurate calorie calculation',
-      exerciseName: 'Exercise Name',
-      exerciseNamePlaceholder: 'e.g., Burpees, Mountain Climbers',
-      notesPlaceholder: 'How did the workout feel? Any observations?',
-      estimatedCalories: 'Estimated calories burned:',
-      update: 'Update',
-      addExercise: 'Add Exercise',
-      removeExercise: 'Remove Exercise',
-      combinedWorkout: 'Combined Workout',
-      totalCalories: 'Total Calories',
-      totalDuration: 'Total Duration',
-      rpe: 'Rate of Perceived Exertion (RPE)',
-      rpeDescription: 'How hard was this workout? (1-10 scale)',
-      aiReview: 'AI Review',
-      getAIReview: 'Get AI Review',
-      aiReviewing: 'AI is reviewing your workout...',
-      aiReviewSuccess: 'AI review completed!',
-            aiReviewFailed: 'Failed to get AI review. Please try again.',
-      
-      // Additional workout translations
-      exercises: 'Exercises',
-      exercise: 'Exercise',
-      seconds: 'Seconds',
-      
-      combinedWorkoutDescription: 'Add multiple exercises to create a comprehensive workout session.',
-      selectRPE: 'Select RPE',
-      
-      // RPE Descriptions
-      rpeVeryEasy: 'Very Easy',
-      rpeEasy: 'Easy',
-      rpeLight: 'Light',
-      rpeModerate: 'Moderate',
-      rpeSomewhatHard: 'Somewhat Hard',
-      rpeHard: 'Hard',
-      rpeVeryHard: 'Very Hard',
-      rpeExtremelyHard: 'Extremely Hard',
-      rpeMaximumEffort: 'Maximum Effort',
-      rpeAbsoluteMaximum: 'Absolute Maximum',
-      
-      // Additional translations
-      currentWeight: 'Current Weight',
-      waistCircumference: 'Waist Circumference',
-      weeklyNotesPlaceholder: 'How was your week? Any observations about your progress, energy levels, or challenges?',
-      progressPhoto: 'Progress Photo',
-      photoPrivacy: 'Photo Privacy',
-      photoPrivacyDescription: 'Your photo is stored locally on your device. You can choose whether to allow AI analysis to include your photo for better recommendations.',
-      allowPhotoInAIDescription: 'Allow AI to analyze this photo for better recommendations',
-      photoPrivacyNote: 'Note: This will send your photo to OpenAI\'s servers when requesting AI advice.',
-      saveCheckin: 'Save Check-in',
-      enterTotalCalories: 'Enter total calories (0-10000)',
-      foodNotesPlaceholder: 'What did you eat? How did it make you feel?',
-      foodLogUpdated: 'Food log updated successfully!',
-      foodLogSaved: 'Food log saved successfully!',
-      foodLogSaveFailed: 'Failed to save food log. Please try again.',
-      exportDataDescription: 'Download all your data as a JSON file',
-      importDataDescription: 'Import data from a previously exported JSON file',
-      chooseFile: 'Choose File',
-      confirmImport: 'Confirm Import',
-      importWarning: 'This will replace all your current data with the imported data.',
-      importCannotUndo: 'This action cannot be undone!',
-      aiAnalysis: 'AI Analysis',
-      
-      // Workout Details Page
-      loadingWorkoutDetails: 'Loading workout details...',
-      workoutDetailsTitle: 'Workout Details',
-      noNotesAdded: 'No notes added',
-      aiAnalysisDescription: 'Get AI-powered analysis and recommendations for your next workout.',
-      analyzeWithAI: 'Analyze with AI',
-      workoutNotFound: 'Workout not found',
-      workoutNotFoundDescription: 'The workout you\'re looking for doesn\'t exist or has been deleted.',
-      backToWorkouts: 'Back to Workouts',
-      failedToAnalyze: 'Failed to analyze workout. Please check your AI settings.',
-      deleteConfirm: 'Are you sure you want to delete this workout? This action cannot be undone.',
-      workoutDeleted: 'Workout deleted successfully!',
-      failedToDelete: 'Failed to delete workout. Please try again.',
-      workoutUpdated: 'Workout updated successfully!',
-      
-      // Workout Form Modes
-      workoutMode: 'Workout Mode',
-      formMode: 'Form Mode',
-      textMode: 'Text Mode',
-      textModeDescription: 'Describe your workout in natural language and let AI parse it into structured exercises.',
-      textModeExample: 'пробежал 5 км\nподтянулся 7-5-3-3-2 (всего 20)\nавстралийские подтягивания 15-15-15\nотжимания 20-20-15\nпланка 60-45-50',
-      workoutDescription: 'Workout Description',
-      workoutDescriptionPlaceholder: 'Describe your workout in natural language...',
-      workoutDescriptionHelp: 'Describe each exercise with sets, reps, duration, or distance.',
-      parseWorkout: 'Parse Workout',
-      parsing: 'Parsing...',
-      workoutParsedSuccess: 'Workout parsed successfully!',
-      workoutParsedFailed: 'Failed to parse workout. Please check your description.',
-      workoutSaveFailed: 'Failed to save workout. Please try again.',
-      
-      // Food
-      foodLog: 'Food Log',
-      addFoodLog: 'Add Food Log',
-      editFoodLog: 'Edit Food Log',
-      protein: 'Protein (g)',
-      carbs: 'Carbs (g)',
-      fat: 'Fat (g)',
-      noFoodLogsFound: 'No food logs found',
-      dailyCalories: 'Daily Calories',
-      weeklyCalories: 'Weekly Calories',
-      calorieGoal: 'Calorie Goal',
-      calorieBalance: 'Calorie Balance',
-      
-      // Weekly
-      weeklyCheckin: 'Weekly Check-in',
-      weeklyWeight: 'Weight',
-      waist: 'Waist (cm)',
-      photo: 'Photo',
-      allowPhotoInAI: 'Allow photo in AI analysis',
-      takePhoto: 'Take Photo',
-      retakePhoto: 'Retake Photo',
-      weeklySummary: 'Weekly Summary',
-      weightTrend: 'Weight Trend',
-      weeklyAdvice: 'Weekly Advice',
-      getWeeklyAdvice: 'Get Weekly Advice',
-      gettingAdvice: 'Getting advice...',
-      weeklyAdviceReceived: 'Weekly advice received!',
-      weeklyAdviceFailed: 'Failed to get weekly advice. Please try again.',
-      noWeeklyCheckinsFound: 'No weekly check-ins found',
-      
-      // Home
-      dailySummary: 'Daily Summary',
-      todaysSummary: 'Today\'s Summary',
-      burned: 'Burned',
-      consumed: 'Consumed',
-      balance: 'Balance',
-      quickActions: 'Quick Actions',
-      nextWorkout: 'Next Workout',
-      recentWorkouts: 'Recent Workouts',
-      noWorkouts: 'No workouts yet',
-      addFirstWorkout: 'Add your first workout',
-      todayCalories: 'Today\'s Calories',
-      thisWeekCalories: 'This Week\'s Calories',
-      startWorkout: 'Start Workout',
-      logFood: 'Log Food',
-      trackExercise: 'Track your exercise',
-      trackNutrition: 'Track your nutrition',
-      weeklyView: 'Weekly View',
-      checkProgress: 'Check your progress',
-      nextWorkoutPlan: 'Next Workout Plan',
-      viewAllWorkouts: 'View all workouts',
-      homeWeeklyCheckin: 'Weekly Check-in',
-      
-      // Onboarding
-      onboarding: 'Onboarding',
-      welcome: 'Welcome to AI Trainer',
-      welcomeSubtitle: 'Let\'s set up your fitness profile',
-      aiTrainer: 'AI Trainer',
-      next: 'Next',
-      previous: 'Previous',
-      finish: 'Finish',
-      step: 'Step',
-      of: 'of',
-      importProfile: 'Import Profile',
-      importProfileDescription: 'Load your existing profile from a JSON file',
-      createNewProfile: 'Create New Profile',
-      createNewProfileDescription: 'Set up your profile with step-by-step guidance',
-      profileCreatedSuccess: 'Profile created successfully! Welcome to AI Trainer!',
-      profileCreationFailed: 'Failed to create profile. Please try again.',
-      
-      // Onboarding Selection
-      welcomeToOnboarding: 'Welcome! Let\'s get started',
-      chooseYourOption: 'Choose your option',
-      
-      // Import Modal
-      importProfileTitle: 'Import Profile',
-      chooseJsonFile: 'Choose JSON File',
-      selectJsonFile: 'Select a JSON file with your profile data',
-      selected: 'Selected:',
-      importing: 'Importing...',
-      import: 'Import',
-      
-      // Language Selection
-      selectLanguageTitle: 'Select Language / Выберите язык',
-      continueInEnglish: 'Continue in English',
-      continueInRussian: 'Продолжить на русском',
-      languageChangesApplied: 'Language changes will be applied immediately',
-      
-      // Onboarding Goals
-      whatIsYourGoal: 'What is your main fitness goal?',
-      selectYourGoal: 'Select your primary goal',
-      selectYourGoals: 'Select your goals (you can choose multiple)',
-      describeYourGoal: 'Describe your goal in detail',
-      goalPlaceholder: 'Tell us more about your fitness goals...',
-      targetWeight: 'Target Weight (kg) - Optional',
-      targetEvent: 'Target Event or Date - Optional',
-      fitnessGoal: 'Fitness Goal',
-      targetWeightOptional: 'Target Weight (kg) - Optional',
-      targetEventOptional: 'Target Event or Date - Optional',
-      targetWeightExample: 'e.g., 70',
-      targetEventExample: 'e.g., Summer vacation, Wedding, Marathon...',
-      
-      // Onboarding Constraints
-      healthConstraints: 'Health Constraints',
-      doYouHaveConstraints: 'Do you have any health constraints?',
-      constraintsDescription: 'This helps us create safer workout plans',
-      addConstraint: 'Add Constraint',
-      constraintPlaceholder: 'e.g., knee injury, back pain, etc.',
-      selectConstraints: 'Select any that apply:',
-      otherConstraints: 'Other constraints (optional)',
-      otherConstraintsPlaceholder: 'Describe any other health conditions or limitations...',
-      backPain: 'Back Pain',
-      backPainDescription: 'Lower back or spine issues',
-      kneeProblems: 'Knee Problems',
-      kneeProblemsDescription: 'Knee pain or injuries',
-      shoulderIssues: 'Shoulder Issues',
-      shoulderIssuesDescription: 'Shoulder pain or limited mobility',
-      heartCondition: 'Heart Condition',
-      heartConditionDescription: 'Cardiovascular health concerns',
-      diabetes: 'Diabetes',
-      diabetesDescription: 'Type 1 or Type 2 diabetes',
-      asthma: 'Asthma',
-      asthmaDescription: 'Respiratory conditions',
-      pregnancy: 'Pregnancy',
-      pregnancyDescription: 'Currently pregnant',
-      recentSurgery: 'Recent Surgery',
-      recentSurgeryDescription: 'Recovering from surgery',
-      
-      // Onboarding Equipment
-      availableEquipment: 'Available Equipment',
-      whatEquipment: 'What equipment do you have access to?',
-      equipmentDescription: 'Select all that apply',
-      noEquipment: 'No Equipment',
-      dumbbells: 'Dumbbells',
-      resistanceBands: 'Resistance Bands',
-      pullUpBar: 'Pull-up Bar',
-      yogaMat: 'Yoga Mat',
-      treadmill: 'Treadmill',
-      bicycle: 'Bicycle',
-      gymAccess: 'Gym Access',
-      otherEquipment: 'Other',
-      selectEquipment: 'Select all that apply:',
-      noEquipmentDescription: 'Bodyweight exercises only',
-      dumbbellsDescription: 'Free weights for strength training',
-      resistanceBandsDescription: 'Elastic bands for strength and mobility',
-      pullUpBarDescription: 'Bar for pull-ups and hanging exercises',
-      yogaMatDescription: 'Mat for floor exercises and stretching',
-      treadmillDescription: 'Cardio machine for running/walking',
-      bicycleDescription: 'Indoor or outdoor cycling',
-      gymAccessDescription: 'Full gym with various equipment',
-      
-      // Onboarding Metrics
-      personalMetrics: 'Personal Metrics',
-      enterYourMetrics: 'Please enter your personal metrics',
-      metricsDescription: 'This helps us calculate calories and create personalized plans',
-      tellUsAboutYourself: 'Tell us about yourself',
-      yourName: 'Your name',
-      yourAge: 'Your age',
-      yourGender: 'Your gender',
-      selectGender: 'Select gender',
-      yourHeight: 'Height in centimeters',
-      yourWeight: 'Current Weight (kg)',
-      weightInKg: 'Weight in kilograms',
-      
-      // Onboarding Frequency
-      workoutFrequency: 'Workout Frequency',
-      howOften: 'How often do you want to work out?',
-      frequencyDescription: 'Select your preferred workout frequency',
-      timesPerWeek: 'times per week',
-      workoutDuration: 'How long do you want each workout to be?',
-      durationDescription: 'Select your preferred workout duration',
-      minutes: 'minutes',
-      workoutsPerWeek: 'Workouts per week:',
-      beginner: 'Beginner',
-      light: 'Light',
-      moderate: 'Moderate',
-      active: 'Active',
-      veryActive: 'Very Active',
-      athlete: 'Athlete',
-      typicalWorkoutDuration: 'Typical workout duration (minutes)',
-      selectDuration: 'Select duration',
-      creatingProfile: 'Creating Profile...',
-      completeSetup: 'Complete Setup',
-      
-      // Language Selection
-      language: 'Language',
-      english: 'English',
-      russian: 'Russian',
-      selectLanguage: 'Select Language',
-      selectLanguageDescription: 'Choose your preferred language for the app interface',
-      languageSelection: 'Language Selection',
-      
-      // Detailed Goals
-      detailedGoals: 'Detailed Goals',
-      personalGoals: 'Personal Goals',
-      describeYourGoals: 'Describe your personal fitness goals in detail',
-      goalsPlaceholder: 'Tell us about your specific fitness goals, motivations, and what you want to achieve...',
-      goalsDescription: 'These details will help us provide more personalized AI recommendations',
-      
-      // Not Found
-      pageNotFound: 'Page Not Found',
-      pageNotFoundDescription: 'The page you are looking for does not exist.',
-      goHome: 'Go Home',
-      
-      // Export/Import
-      exportSuccess: 'Data exported successfully!',
-      exportFailed: 'Failed to export data. Please try again.',
-      importSuccess: 'Data imported successfully!',
-      importFailed: 'Failed to import data. Please check your file.',
-      importConfirmTitle: 'Import Data',
-      importConfirmMessage: 'This will replace all your current data. Are you sure?',
-      selectFile: 'Select File',
-      
-      // Photo
-      cameraNotAvailable: 'Camera not available',
-      photoCaptureFailed: 'Failed to capture photo',
-      photoCompressionFailed: 'Failed to compress photo',
-      photoTooLarge: 'Photo is too large',
-      photoInvalid: 'Invalid photo format',
-      
-      // Additional workout translations
-      cloneExercise: 'Clone Exercise',
-      addRep: 'Add Rep',
-      workoutSummary: 'Workout Summary',
-      repsPerSet: 'Reps per Set',
-      plankReps: 'Plank Repetitions',
-      addPlankRep: 'Add Plank Rep',
-      customExerciseMode: 'Custom Exercise Mode',
-      timeDistanceMode: 'Time/Distance',
-      setsRepsMode: 'Sets/Reps'
-    },
-    ru: {
-      // Common
-      save: 'Сохранить',
-      cancel: 'Отмена',
-      delete: 'Удалить',
-      edit: 'Редактировать',
-      add: 'Добавить',
-      loading: 'Загрузка...',
-      error: 'Ошибка',
-      success: 'Успешно',
-      back: 'Назад',
-      close: 'Закрыть',
-      confirm: 'Подтвердить',
-      yes: 'Да',
-      no: 'Нет',
-      
-      // Navigation
-      home: 'Главная',
-      workouts: 'Тренировки',
-      food: 'Питание',
-      weekly: 'Неделя',
-      settings: 'Настройки',
-      
-      // Profile
-      profile: 'Профиль',
-      name: 'Имя',
-      age: 'Возраст',
-      gender: 'Пол',
-      male: 'Мужской',
-      female: 'Женский',
-      other: 'Другой',
-      height: 'Рост (см)',
-      weight: 'Вес (кг)',
-      goal: 'Цель',
-      goalDescription: 'Описание цели',
-      saveProfile: 'Сохранить профиль',
-      saving: 'Сохранение...',
-      profileUpdated: 'Профиль успешно обновлен!',
-      profileUpdateFailed: 'Не удалось сохранить профиль. Попробуйте еще раз.',
-      
-      // Goals
-      weightLoss: 'Похудение',
-      muscleGain: 'Набор мышечной массы',
-      endurance: 'Выносливость',
-      strength: 'Сила',
-      generalFitness: 'Общая физическая форма',
-      weightLossDescription: 'Сбросить жир и стать стройнее',
-      muscleGainDescription: 'Набрать силу и мышечную массу',
-      enduranceDescription: 'Улучшить сердечно-сосудистую выносливость',
-      strengthDescription: 'Увеличить общую силу',
-      generalFitnessDescription: 'Оставаться здоровым и активным',
-      
-      // AI Settings
-      aiSettings: 'Настройки ИИ',
-      openaiApiKey: 'OpenAI API ключ',
-      test: 'Тест',
-      testing: 'Тестирование...',
-      connectionStatus: 'Статус подключения',
-      notConfigured: 'Не настроено',
-      apiKeySet: 'API ключ установлен',
-      connected: 'Подключено ✓',
-      connectionFailed: 'Подключение не удалось ✗',
-      clearKey: 'Очистить ключ',
-      aiConnectionSuccess: 'Подключение к ИИ успешно!',
-      aiConnectionFailed: 'Подключение к ИИ не удалось. Проверьте API ключ.',
-      apiKeyCleared: 'API ключ очищен',
-      
-      // Data Management
-      dataManagement: 'Управление данными',
-      exportData: 'Экспорт данных',
-      importData: 'Импорт данных',
-      resetAllData: 'Сбросить все данные',
-      resetting: 'Сброс...',
-      confirmReset: 'Подтвердить сброс',
-      resetDescription: 'Это навсегда удалит все ваши данные:',
-      resetItems: [
-        'Все тренировки',
-        'Все записи о питании',
-        'Все недельные отчеты',
-        'Все планы ИИ',
-        'Настройки профиля'
-      ],
-      resetWarning: 'Это действие нельзя отменить!',
-      allDataReset: 'Все данные сброшены',
-      resetFailed: 'Не удалось сбросить данные. Попробуйте еще раз.',
-      
-      // Workouts
-      workout: 'Тренировка',
-      addWorkout: 'Добавить тренировку',
-      editWorkout: 'Редактировать тренировку',
-      workoutType: 'Тип тренировки',
-      duration: 'Длительность (мин)',
-      calories: 'Калории',
-      notes: 'Заметки',
-      date: 'Дата',
-      run: 'Бег',
-      pullups: 'Подтягивания',
-      pushups: 'Отжимания',
-      plank: 'Планка',
-      custom: 'Своя',
-      distance: 'Расстояние (км)',
-      reps: 'Повторения',
-      sets: 'Подходы',
-      workoutWeight: 'Вес (кг)',
-      customExercise: 'Свое упражнение',
-      noWorkoutsFound: 'Тренировки не найдены',
-      workoutDetails: 'Детали тренировки',
-      workoutAnalysis: 'Анализ тренировки',
-      nextWorkoutRecommendation: 'Рекомендация следующей тренировки',
-      analyzeWorkout: 'Анализировать тренировку',
-      analyzing: 'Анализ...',
-      workoutAnalyzed: 'Тренировка успешно проанализирована!',
-      workoutAnalysisFailed: 'Не удалось проанализировать тренировку. Попробуйте еще раз.',
-      
-      // Workouts - Additional
-      selectWorkoutType: 'Выберите тип тренировки',
-      durationMinutes: 'Длительность (минуты)',
-      workoutDurationDescription: 'Введите длительность в минутах (1-480)',
-      distanceKm: 'Расстояние (км)',
-      km: 'км',
-      distanceDescription: 'Необязательно: введите расстояние для более точного расчета калорий',
-      exerciseName: 'Название упражнения',
-      exerciseNamePlaceholder: 'например, Берпи, Альпинист',
-      notesPlaceholder: 'Как прошла тренировка? Какие наблюдения?',
-      estimatedCalories: 'Расчетные сожженные калории:',
-      update: 'Обновить',
-      addExercise: 'Добавить упражнение',
-      removeExercise: 'Убрать упражнение',
-      combinedWorkout: 'Комбинированная тренировка',
-      totalCalories: 'Общие калории',
-      totalDuration: 'Общая длительность',
-      rpe: 'Уровень воспринимаемой нагрузки (RPE)',
-      rpeDescription: 'Насколько тяжелой была эта тренировка? (шкала 1-10)',
-      aiReview: 'AI Анализ',
-      getAIReview: 'Получить AI анализ',
-      aiReviewing: 'AI анализирует вашу тренировку...',
-      aiReviewSuccess: 'AI анализ завершен!',
-                  aiReviewFailed: 'Не удалось получить AI анализ. Попробуйте еще раз.',
-      
-      // Additional workout translations
-      exercises: 'Упражнения',
-      exercise: 'Упражнение',
-      seconds: 'Секунды',
-      
-      combinedWorkoutDescription: 'Добавьте несколько упражнений для создания комплексной тренировки.',
-      selectRPE: 'Выберите RPE',
-      
-      // RPE Descriptions
-      rpeVeryEasy: 'Очень легко',
-      rpeEasy: 'Легко',
-      rpeLight: 'Легкая нагрузка',
-      rpeModerate: 'Умеренная',
-      rpeSomewhatHard: 'Довольно тяжело',
-      rpeHard: 'Тяжело',
-      rpeVeryHard: 'Очень тяжело',
-      rpeExtremelyHard: 'Крайне тяжело',
-      rpeMaximumEffort: 'Максимальное усилие',
-      rpeAbsoluteMaximum: 'Абсолютный максимум',
-      
-      foodLog: 'Запись о питании',
-      addFoodLog: 'Добавить запись',
-      editFoodLog: 'Редактировать запись',
-      protein: 'Белки (г)',
-      carbs: 'Углеводы (г)',
-      fat: 'Жиры (г)',
-      noFoodLogsFound: 'Записи о питании не найдены',
-      dailyCalories: 'Дневные калории',
-      weeklyCalories: 'Недельные калории',
-      calorieGoal: 'Цель по калориям',
-      calorieBalance: 'Баланс калорий',
-      
-      // Weekly
-      weeklyCheckin: 'Недельный отчет',
-      weeklyWeight: 'Вес',
-      waist: 'Талия (см)',
-      photo: 'Фото',
-      allowPhotoInAI: 'Разрешить фото в анализе ИИ',
-      takePhoto: 'Сделать фото',
-      retakePhoto: 'Переснять фото',
-      weeklySummary: 'Недельная сводка',
-      weightTrend: 'Тренд веса',
-      weeklyAdvice: 'Недельный совет',
-      getWeeklyAdvice: 'Получить недельный совет',
-      gettingAdvice: 'Получение совета...',
-      weeklyAdviceReceived: 'Недельный совет получен!',
-      weeklyAdviceFailed: 'Не удалось получить недельный совет. Попробуйте еще раз.',
-      noWeeklyCheckinsFound: 'Недельные отчеты не найдены',
-      
-      // Additional translations
-      currentWeight: 'Текущий вес',
-      waistCircumference: 'Обхват талии',
-      weeklyNotesPlaceholder: 'Как прошла ваша неделя? Какие наблюдения о прогрессе, уровне энергии или проблемах?',
-      progressPhoto: 'Фото прогресса',
-      photoPrivacy: 'Приватность фото',
-      photoPrivacyDescription: 'Ваше фото хранится локально на устройстве. Вы можете выбрать, разрешить ли ИИ анализировать ваше фото для лучших рекомендаций.',
-      allowPhotoInAIDescription: 'Разрешить ИИ анализировать это фото для лучших рекомендаций',
-      photoPrivacyNote: 'Примечание: Это отправит ваше фото на серверы OpenAI при запросе совета ИИ.',
-      saveCheckin: 'Сохранить отчет',
-      enterTotalCalories: 'Введите общие калории (0-10000)',
-      foodNotesPlaceholder: 'Что вы ели? Как это заставило вас чувствовать себя?',
-      foodLogUpdated: 'Запись о питании успешно обновлена!',
-      foodLogSaved: 'Запись о питании успешно сохранена!',
-      foodLogSaveFailed: 'Не удалось сохранить запись о питании. Попробуйте еще раз.',
-      exportDataDescription: 'Скачайте все ваши данные в JSON файле',
-      importDataDescription: 'Импортируйте данные из ранее экспортированного JSON файла',
-      chooseFile: 'Выбрать файл',
-      confirmImport: 'Подтвердить импорт',
-      importWarning: 'Это заменит все ваши текущие данные импортированными данными.',
-      importCannotUndo: 'Это действие нельзя отменить!',
-      aiAnalysis: 'AI Анализ',
-      
-      // Workout Details Page
-      loadingWorkoutDetails: 'Загрузка деталей тренировки...',
-      workoutDetailsTitle: 'Детали тренировки',
-      noNotesAdded: 'Заметки не добавлены',
-      aiAnalysisDescription: 'Получите анализ ИИ и рекомендации для следующей тренировки.',
-      analyzeWithAI: 'Анализировать с ИИ',
-      workoutNotFound: 'Тренировка не найдена',
-      workoutNotFoundDescription: 'Тренировка, которую вы ищете, не существует или была удалена.',
-      backToWorkouts: 'Назад к тренировкам',
-      failedToAnalyze: 'Не удалось проанализировать тренировку. Проверьте настройки ИИ.',
-      deleteConfirm: 'Вы уверены, что хотите удалить эту тренировку? Это действие нельзя отменить.',
-      workoutDeleted: 'Тренировка успешно удалена!',
-      failedToDelete: 'Не удалось удалить тренировку. Попробуйте еще раз.',
-      workoutUpdated: 'Тренировка успешно обновлена!',
-      
-      // Workout Form Modes
-      workoutMode: 'Режим тренировки',
-      formMode: 'Режим формы',
-      textMode: 'Текстовый режим',
-      textModeDescription: 'Опишите вашу тренировку естественным языком, и ИИ преобразует её в структурированные упражнения.',
-      textModeExample: 'пробежал 5 км\nподтянулся 7-5-3-3-2 (всего 20)\nавстралийские подтягивания 15-15-15\nотжимания 20-20-15\nпланка 60-45-50',
-      workoutDescription: 'Описание тренировки',
-      workoutDescriptionPlaceholder: 'Опишите вашу тренировку естественным языком...',
-      workoutDescriptionHelp: 'Опишите каждое упражнение с подходами, повторениями, длительностью или дистанцией.',
-      parseWorkout: 'Разобрать тренировку',
-      parsing: 'Разбор...',
-      workoutParsedSuccess: 'Тренировка успешно разобрана!',
-      workoutParsedFailed: 'Не удалось разобрать тренировку. Проверьте описание.',
-      workoutSaveFailed: 'Не удалось сохранить тренировку. Попробуйте еще раз.',
-      
-      // Home
-      dailySummary: 'Дневная сводка',
-      todaysSummary: 'Сегодняшний обзор',
-      burned: 'Сожжено',
-      consumed: 'Потреблено',
-      balance: 'Баланс',
-      quickActions: 'Быстрые действия',
-      nextWorkout: 'Следующая тренировка',
-      recentWorkouts: 'Недавние тренировки',
-      noWorkouts: 'Пока нет тренировок',
-      addFirstWorkout: 'Добавьте первую тренировку',
-      todayCalories: 'Калории за сегодня',
-      thisWeekCalories: 'Калории за неделю',
-      startWorkout: 'Начать тренировку',
-      logFood: 'Записать питание',
-      trackExercise: 'Отслеживайте ваши упражнения',
-      trackNutrition: 'Отслеживайте ваше питание',
-      weeklyView: 'Недельный обзор',
-      checkProgress: 'Проверьте ваш прогресс',
-      nextWorkoutPlan: 'Следующий план тренировки',
-      viewAllWorkouts: 'Посмотреть все тренировки',
-      homeWeeklyCheckin: 'Недельный отчет',
-      
-      // Onboarding
-      onboarding: 'Настройка',
-      welcome: 'Добро пожаловать в AI Тренер',
-      welcomeSubtitle: 'Давайте настроим ваш фитнес-профиль',
-      aiTrainer: 'AI Тренер',
-      next: 'Далее',
-      previous: 'Назад',
-      finish: 'Завершить',
-      step: 'Шаг',
-      of: 'из',
-      importProfile: 'Импорт профиля',
-      importProfileDescription: 'Загрузите ваш существующий профиль из JSON файла',
-      createNewProfile: 'Создать новый профиль',
-      createNewProfileDescription: 'Настройте ваш профиль с пошаговым руководством',
-      profileCreatedSuccess: 'Профиль успешно создан! Добро пожаловать в AI Тренер!',
-      profileCreationFailed: 'Не удалось создать профиль. Попробуйте еще раз.',
-      
-      // Onboarding Selection
-      welcomeToOnboarding: 'Добро пожаловать! Давайте начнем',
-      chooseYourOption: 'Выберите ваш вариант',
-      
-      // Import Modal
-      importProfileTitle: 'Импорт профиля',
-      chooseJsonFile: 'Выбрать JSON файл',
-      selectJsonFile: 'Выберите JSON файл с данными вашего профиля',
-      selected: 'Выбрано:',
-      importing: 'Импорт...',
-      import: 'Импорт',
-      
-      // Onboarding Goals
-      whatIsYourGoal: 'Какова ваша основная фитнес-цель?',
-      selectYourGoal: 'Выберите вашу основную цель',
-      selectYourGoals: 'Выберите ваши цели (можно выбрать несколько)',
-      describeYourGoal: 'Опишите вашу цель подробно',
-      goalPlaceholder: 'Расскажите больше о ваших фитнес-целях...',
-      targetWeight: 'Целевой вес (кг) - Необязательно',
-      targetEvent: 'Целевое событие или дата - Необязательно',
-      fitnessGoal: 'Фитнес-цель',
-      targetWeightOptional: 'Целевой вес (кг) - Необязательно',
-      targetEventOptional: 'Целевое событие или дата - Необязательно',
-      targetWeightExample: 'например, 70',
-      targetEventExample: 'например, Летний отпуск, Свадьба, Марафон...',
-      
-      // Onboarding Constraints
-      healthConstraints: 'Ограничения по здоровью',
-      doYouHaveConstraints: 'Есть ли у вас ограничения по здоровью?',
-      constraintsDescription: 'Это поможет нам создать более безопасные планы тренировок',
-      addConstraint: 'Добавить ограничение',
-      constraintPlaceholder: 'например, травма колена, боль в спине и т.д.',
-      selectConstraints: 'Выберите все подходящие:',
-      otherConstraints: 'Другие ограничения (необязательно)',
-      otherConstraintsPlaceholder: 'Опишите любые другие проблемы со здоровьем или ограничения...',
-      backPain: 'Боль в спине',
-      backPainDescription: 'Проблемы с поясницей или позвоночником',
-      kneeProblems: 'Проблемы с коленями',
-      kneeProblemsDescription: 'Боль в коленях или травмы',
-      shoulderIssues: 'Проблемы с плечами',
-      shoulderIssuesDescription: 'Боль в плечах или ограниченная подвижность',
-      heartCondition: 'Проблемы с сердцем',
-      heartConditionDescription: 'Проблемы с сердечно-сосудистой системой',
-      diabetes: 'Диабет',
-      diabetesDescription: 'Диабет 1 или 2 типа',
-      asthma: 'Астма',
-      asthmaDescription: 'Проблемы с дыханием',
-      pregnancy: 'Беременность',
-      pregnancyDescription: 'В настоящее время беременны',
-      recentSurgery: 'Недавняя операция',
-      recentSurgeryDescription: 'Восстановление после операции',
-      
-      // Onboarding Equipment
-      availableEquipment: 'Доступное оборудование',
-      whatEquipment: 'Какое оборудование у вас есть?',
-      equipmentDescription: 'Выберите все подходящие варианты',
-      noEquipment: 'Нет оборудования',
-      dumbbells: 'Гантели',
-      resistanceBands: 'Резиновые ленты',
-      pullUpBar: 'Турник',
-      yogaMat: 'Коврик для йоги',
-      treadmill: 'Беговая дорожка',
-      bicycle: 'Велосипед',
-      gymAccess: 'Тренажерный зал',
-      otherEquipment: 'Другое',
-      selectEquipment: 'Выберите все подходящие:',
-      noEquipmentDescription: 'Только упражнения с собственным весом',
-      dumbbellsDescription: 'Свободные веса для силовых тренировок',
-      resistanceBandsDescription: 'Эластичные ленты для силы и подвижности',
-      pullUpBarDescription: 'Перекладина для подтягиваний и висов',
-      yogaMatDescription: 'Коврик для упражнений на полу и растяжки',
-      treadmillDescription: 'Кардио-машина для бега/ходьбы',
-      bicycleDescription: 'Велотренажер или велосипед',
-      gymAccessDescription: 'Полный тренажерный зал с различным оборудованием',
-      
-      // Onboarding Metrics
-      personalMetrics: 'Личные показатели',
-      enterYourMetrics: 'Пожалуйста, введите ваши личные показатели',
-      metricsDescription: 'Это поможет нам рассчитать калории и создать персонализированные планы',
-      tellUsAboutYourself: 'Расскажите о себе',
-      yourName: 'Ваше имя',
-      yourAge: 'Ваш возраст',
-      yourGender: 'Ваш пол',
-      selectGender: 'Выберите пол',
-      yourHeight: 'Рост в сантиметрах',
-      yourWeight: 'Текущий вес (кг)',
-      weightInKg: 'Вес в килограммах',
-      
-      // Onboarding Frequency
-      workoutFrequency: 'Частота тренировок',
-      howOften: 'Как часто вы хотите тренироваться?',
-      frequencyDescription: 'Выберите предпочитаемую частоту тренировок',
-      timesPerWeek: 'раз в неделю',
-      workoutDuration: 'Как долго должна длиться каждая тренировка?',
-      durationDescription: 'Выберите предпочитаемую длительность тренировки',
-      minutes: 'минут',
-      workoutsPerWeek: 'Тренировок в неделю:',
-      beginner: 'Новичок',
-      light: 'Легкий',
-      moderate: 'Умеренный',
-      active: 'Активный',
-      veryActive: 'Очень активный',
-      athlete: 'Атлет',
-      typicalWorkoutDuration: 'Типичная длительность тренировки (минуты)',
-      selectDuration: 'Выберите длительность',
-      creatingProfile: 'Создание профиля...',
-      completeSetup: 'Завершить настройку',
-      
-      // Language Selection
-      language: 'Язык',
-      english: 'English',
-      russian: 'Русский',
-      selectLanguage: 'Выберите язык',
-      selectLanguageDescription: 'Выберите предпочитаемый язык для интерфейса приложения',
-      languageSelection: 'Выбор языка',
-      
-      // Detailed Goals
-      detailedGoals: 'Детальные цели',
-      personalGoals: 'Личные цели',
-      describeYourGoals: 'Опишите ваши личные фитнес-цели подробно',
-      goalsPlaceholder: 'Расскажите о ваших конкретных фитнес-целях, мотивации и о том, чего вы хотите достичь...',
-      goalsDescription: 'Эти детали помогут нам предоставить более персонализированные рекомендации ИИ',
-      
-      // Not Found
-      pageNotFound: 'Страница не найдена',
-      pageNotFoundDescription: 'Страница, которую вы ищете, не существует.',
-      goHome: 'На главную',
-      
-      // Export/Import
-      exportSuccess: 'Данные успешно экспортированы!',
-      exportFailed: 'Не удалось экспортировать данные. Попробуйте еще раз.',
-      importSuccess: 'Данные успешно импортированы!',
-      importFailed: 'Не удалось импортировать данные. Проверьте файл.',
-      importConfirmTitle: 'Импорт данных',
-      importConfirmMessage: 'Это заменит все ваши текущие данные. Вы уверены?',
-      selectFile: 'Выбрать файл',
-      profileExport: 'Экспорт профиля',
-      profileExportDescription: 'Экспортируйте данные вашего профиля в JSON файл, который можно импортировать на другом устройстве.',
-      exporting: 'Экспорт...',
-      exportProfile: 'Экспорт профиля',
-      languageChangesApplied: 'Изменения языка будут применены немедленно',
-      apiKeyStoredLocally: 'Ваш API ключ хранится локально и никогда не отправляется на наши серверы',
-      
-      // Photo
-      cameraNotAvailable: 'Камера недоступна',
-      photoCaptureFailed: 'Не удалось сделать фото',
-      photoCompressionFailed: 'Не удалось сжать фото',
-      photoTooLarge: 'Фото слишком большое',
-      photoInvalid: 'Неверный формат фото',
-      
-      // Additional workout translations
-      cloneExercise: 'Клонировать упражнение',
-      addRep: 'Добавить повторение',
-      workoutSummary: 'Сводка тренировки',
-      repsPerSet: 'Повторения в подходе',
-      plankReps: 'Повторения планки',
-      addPlankRep: 'Добавить повторение планки',
-      customExerciseMode: 'Режим упражнения',
-      timeDistanceMode: 'Время/Дистанция',
-      setsRepsMode: 'Подходы/Повторения'
-    }
-  }
-
-  // Computed
-  const t = computed(() => translations[currentLanguage.value])
-
+interface I18nState {
+  currentLanguage: Language
+  
   // Actions
-  function setLanguage(lang: Language) {
-    currentLanguage.value = lang
-    localStorage.setItem('language', lang)
-  }
+  setLanguage: (lang: Language) => void
+  initializeLanguage: () => void
+  setLanguageFromProfile: () => void
+}
 
-  function loadLanguage() {
+export const useI18nStore = create<I18nState>((set) => ({
+  currentLanguage: 'en',
+
+  setLanguage: (lang: Language) => {
+    set({ currentLanguage: lang })
+    localStorage.setItem('language', lang)
+    
+    // Update profile language if profile exists
+    const profileStore = useProfileStore.getState()
+    if (profileStore.profile) {
+      profileStore.saveProfile({ language: lang })
+    }
+  },
+
+  initializeLanguage: () => {
     const saved = localStorage.getItem('language') as Language
     if (saved && ['en', 'ru'].includes(saved)) {
-      currentLanguage.value = saved
+      set({ currentLanguage: saved })
+    }
+  },
+
+  setLanguageFromProfile: () => {
+    const profileStore = useProfileStore.getState()
+    if (profileStore.profile?.language) {
+      set({ currentLanguage: profileStore.profile.language })
+      localStorage.setItem('language', profileStore.profile.language)
     }
   }
+}))
 
-  return {
-    currentLanguage,
-    t,
-    setLanguage,
-    loadLanguage,
-    setLanguageFromProfile,
-    initializeLanguage
+// Translations
+export const translations = {
+  en: {
+    // Common
+    save: 'Save',
+    cancel: 'Cancel',
+    delete: 'Delete',
+    edit: 'Edit',
+    add: 'Add',
+    loading: 'Loading...',
+    error: 'Error',
+    success: 'Success',
+    back: 'Back',
+    close: 'Close',
+    confirm: 'Confirm',
+    yes: 'Yes',
+    no: 'No',
+    home: 'Home',
+    
+    // Navigation
+    workouts: 'Workouts',
+    food: 'Food',
+    weekly: 'Weekly',
+    settings: 'Settings',
+    
+    // Profile
+    profile: 'Profile',
+    language: 'Language',
+    english: 'English',
+    russian: 'Русский',
+    selectLanguage: 'Select Language',
+    selectLanguageDescription: 'Choose your preferred language for the application interface',
+    languageSelection: 'Language Selection',
+    
+    // Onboarding
+    onboarding: 'Onboarding',
+    welcome: 'Welcome to AI Trainer',
+    welcomeSubtitle: 'Let\'s set up your fitness profile',
+    aiTrainer: 'AI Trainer',
+    next: 'Next',
+    previous: 'Previous',
+    
+    // Workouts
+    workout: 'Workout',
+    addWorkout: 'Add Workout',
+    editWorkout: 'Edit Workout',
+    noWorkoutsFound: 'No workouts found',
+    addFirstWorkout: 'Add your first workout',
+    
+    // Exercise types
+    run: 'Run',
+    pullups: 'Pull-ups',
+    pushups: 'Push-ups',
+    plank: 'Plank',
+    custom: 'Custom',
+    
+    // Exercise fields
+    durationMinutes: 'Duration (minutes)',
+    distanceKm: 'Distance (km)',
+    sets: 'Sets',
+    reps: 'Reps',
+    notes: 'Notes',
+    
+    // Units
+    minutes: 'minutes',
+    km: 'km',
+    calories: 'calories',
+    
+    // AI
+    analyzeWithAI: 'Analyze with AI',
+    analyzing: 'Analyzing...',
+    
+    // Common actions
+    viewDetails: 'View Details',
+    
+    // Weekly
+    weeklySummary: 'Weekly Summary',
+    
+    // Food
+    foodLog: 'Food Log',
+    addFoodLog: 'Add Food Log',
+    
+    // Settings
+    exportProfile: 'Export Profile',
+    importProfile: 'Import Profile'
+  },
+  
+  ru: {
+    // Common
+    save: 'Сохранить',
+    cancel: 'Отмена',
+    delete: 'Удалить',
+    edit: 'Редактировать',
+    add: 'Добавить',
+    loading: 'Загрузка...',
+    error: 'Ошибка',
+    success: 'Успешно',
+    back: 'Назад',
+    close: 'Закрыть',
+    confirm: 'Подтвердить',
+    yes: 'Да',
+    no: 'Нет',
+    home: 'Главная',
+    
+    // Navigation
+    workouts: 'Тренировки',
+    food: 'Питание',
+    weekly: 'Неделя',
+    settings: 'Настройки',
+    
+    // Profile
+    profile: 'Профиль',
+    language: 'Язык',
+    english: 'English',
+    russian: 'Русский',
+    selectLanguage: 'Выберите язык',
+    selectLanguageDescription: 'Выберите предпочитаемый язык для интерфейса приложения',
+    languageSelection: 'Выбор языка',
+    
+    // Onboarding
+    onboarding: 'Настройка',
+    welcome: 'Добро пожаловать в AI Тренер',
+    welcomeSubtitle: 'Давайте настроим ваш фитнес-профиль',
+    aiTrainer: 'AI Тренер',
+    next: 'Далее',
+    previous: 'Назад',
+    
+    // Workouts
+    workout: 'Тренировка',
+    addWorkout: 'Добавить тренировку',
+    editWorkout: 'Редактировать тренировку',
+    noWorkoutsFound: 'Тренировки не найдены',
+    addFirstWorkout: 'Добавить первую тренировку',
+    
+    // Exercise types
+    run: 'Бег',
+    pullups: 'Подтягивания',
+    pushups: 'Отжимания',
+    plank: 'Планка',
+    custom: 'Кастомное',
+    
+    // Exercise fields
+    durationMinutes: 'Длительность (минуты)',
+    distanceKm: 'Расстояние (км)',
+    sets: 'Подходы',
+    reps: 'Повторения',
+    notes: 'Заметки',
+    
+    // Units
+    minutes: 'минут',
+    km: 'км',
+    calories: 'калории',
+    
+    // AI
+    analyzeWithAI: 'Анализировать с AI',
+    analyzing: 'Анализирую...',
+    
+    // Common actions
+    viewDetails: 'Подробнее',
+    
+    // Weekly
+    weeklySummary: 'Сводка недели',
+    
+    // Food
+    foodLog: 'Дневник питания',
+    addFoodLog: 'Добавить запись',
+    
+    // Settings
+    exportProfile: 'Экспорт профиля',
+    importProfile: 'Импорт профиля'
   }
-})
+}
+
+// Hook to get translations
+export const useTranslations = () => {
+  const { currentLanguage } = useI18nStore()
+  return translations[currentLanguage]
+}

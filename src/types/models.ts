@@ -1,8 +1,7 @@
 export interface Profile {
   id: string
-  name: string
+  sex: 'male' | 'female' | 'other'
   age: number
-  gender: 'male' | 'female' | 'other'
   height: number // cm
   weight: number // kg
   goal: Goal
@@ -43,8 +42,8 @@ export interface Workout {
   exercises: WorkoutExercise[]
   rpe?: number // Rate of Perceived Exertion (1-10 scale)
   aiReviewId?: string // ID of AI review if available
-  createdAt?: Date
-  updatedAt?: Date
+  createdAt: Date
+  updatedAt: Date
 }
 
 export type WorkoutType = 'run' | 'pullups' | 'pushups' | 'plank' | 'custom'
@@ -70,7 +69,6 @@ export interface WeeklyCheckin {
   photo?: string // base64
   allowPhotoInAI: boolean
   createdAt: Date
-  updatedAt: Date
 }
 
 export interface AIPlan {

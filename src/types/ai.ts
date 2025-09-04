@@ -1,105 +1,62 @@
+import type { WorkoutExercise } from './models'
+
+export interface AIWorkoutPayload {
+  profile: {
+    sex: string
+    age: number
+    heightCm: number
+    weightKg: number
+    goal: {
+      types: string[]
+      description: string
+    }
+    goalsDetailed: string
+    language: string
+  }
+  workout: {
+    exercises: WorkoutExercise[]
+    rpe?: number
+  }
+  recentWorkouts: {
+    exercises: WorkoutExercise[]
+  }[]
+}
+
 export interface AIWorkoutReview {
-  analysis: string
+  review: string
   nextWorkout: {
-    exercises: Array<{
-      type: string
-      details: {
-        distanceKm?: number
-        durationMin?: number
-        sets?: number
-        repsPerSet?: number[]
-        seconds?: number[]
-        notes?: string
-        customExercise?: string
-      }
-      kcalEstimated?: number
-    }>
+    exercises: WorkoutExercise[]
     description: string
     tips: string[]
   }
 }
 
-export interface AIWorkoutPayload {
-  workout: {
-    date: string
-    exercises: Array<{
-      type: string
-      details: {
-        distanceKm?: number
-        durationMin?: number
-        sets?: number
-        repsPerSet?: number[]
-        seconds?: number[]
-        notes?: string
-        customExercise?: string
-      }
-      kcalEstimated?: number
-    }>
-    rpe?: number
-  }
+export interface AIWeeklyAdvicePayload {
   profile: {
+    sex: string
     age: number
-    gender: string
-    weight: number
+    heightCm: number
+    weightKg: number
     goal: {
       types: string[]
       description: string
     }
-    constraints: string[]
     goalsDetailed: string
+    language: string
   }
-  recentWorkouts: Array<{
+  workouts: {
+    exercises: WorkoutExercise[]
     date: string
-    exercises: Array<{
-      type: string
-      details: {
-        distanceKm?: number
-        durationMin?: number
-        sets?: number
-        repsPerSet?: number[]
-        seconds?: number[]
-        notes?: string
-        customExercise?: string
-      }
-      kcalEstimated?: number
-    }>
     rpe?: number
-  }>
+  }[]
+  currentWeek: {
+    startDate: string
+    endDate: string
+  }
 }
 
-export interface AIWeeklyAdvicePayload {
-  weekStart: string
-  workouts: Array<{
-    date: string
-    exercises: Array<{
-      type: string
-      details: {
-        distanceKm?: number
-        durationMin?: number
-        sets?: number
-        repsPerSet?: number[]
-        seconds?: number[]
-        notes?: string
-        customExercise?: string
-      }
-      kcalEstimated?: number
-    }>
-    rpe?: number
-  }>
-  foodLogs: Array<{
-    calories: number
-    date: string
-  }>
-  checkin: {
-    weight: number
-    waist?: number
-    notes?: string
-  }
-  profile: {
-    goal: {
-      types: string[]
-      description: string
-    }
-    goalsDetailed: string
-  }
+export interface AIWeeklyAdvice {
+  summary: string
+  recommendations: string[]
+  nextWeekPlan: string
 }

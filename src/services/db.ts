@@ -1,19 +1,18 @@
 import Dexie from 'dexie'
-import type { Table } from 'dexie'
-import type { Profile, Workout, FoodLog, WeeklyCheckin, AIPlan } from '@/types/models'
+import type { Profile, Workout, FoodLog, WeeklyCheckin, AIPlan } from '../types/models'
 
 export class AITrainerDB extends Dexie {
-  profiles!: Table<Profile>
-  workouts!: Table<Workout>
-  foodLogs!: Table<FoodLog>
-  checkins!: Table<WeeklyCheckin>
-  aiPlans!: Table<AIPlan>
+  profiles!: Dexie.Table<Profile, string>
+  workouts!: Dexie.Table<Workout, string>
+  foodLogs!: Dexie.Table<FoodLog, string>
+  checkins!: Dexie.Table<WeeklyCheckin, string>
+  aiPlans!: Dexie.Table<AIPlan, string>
 
   constructor() {
     super('AITrainerDB')
     this.version(1).stores({
       profiles: 'id, createdAt',
-      workouts: 'id, date, type, createdAt',
+      workouts: 'id, date, createdAt',
       foodLogs: 'id, date, createdAt',
       checkins: 'id, weekStart, createdAt',
       aiPlans: 'id, workoutId, createdAt'
