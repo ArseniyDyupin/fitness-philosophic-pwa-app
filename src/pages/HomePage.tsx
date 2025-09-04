@@ -1,15 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslations } from '../stores/i18n.store'
-import Header from '../components/Header'
 
 const HomePage: React.FC = () => {
   const t = useTranslations()
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">

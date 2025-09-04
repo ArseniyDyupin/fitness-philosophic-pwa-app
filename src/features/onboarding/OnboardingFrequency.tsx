@@ -1,127 +1,87 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useProfileStore } from '../../stores/profile.store'
-import { useI18nStore } from '../../stores/i18n.store'
-import { useTranslations } from '../../stores/i18n.store'
+import React, { useState, useEffect } from 'react'
+import { useOnboardingStore } from '../../stores/onboarding.store'
+import OnboardingLayout from '../../components/OnboardingLayout'
 
 const OnboardingFrequency: React.FC = () => {
-  const navigate = useNavigate()
-  const { saveProfile } = useProfileStore()
-  const { setLanguageFromProfile, currentLanguage } = useI18nStore()
-  const t = useTranslations()
+  const { draft, updateDraft } = useOnboardingStore()
   
-  const [frequency, setFrequency] = useState(3)
-  const [duration, setDuration] = useState(30)
+  const [frequency, setFrequency] = useState(draft.frequency?.toString() || '3')
+  const [duration, setDuration] = useState(draft.duration?.toString() || '45')
 
-  const handleComplete = async () => {
-    try {
-      // Update profile with final settings
-      await saveProfile({
-        frequency,
-        duration,
-        language: currentLanguage
-      })
+  useEffect(() => {
+    updateDraft({
+      frequency: parseInt(frequency),
+      duration: parseInt(duration)
+    })
+  }, [frequency, duration, updateDraft])
 
-      // Set language from profile
-      setLanguageFromProfile()
-
-      // Redirect to home page
-      setTimeout(() => {
-        navigate('/')
-      }, 500)
-    } catch (error) {
-      console.error('Failed to complete onboarding:', error)
-      alert('Failed to complete onboarding')
-    }
-  }
-
-  const handleBack = () => {
-    navigate('/onboarding/metrics')
-  }
+  const canProceed = frequency && duration
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Almost there!
-          </h1>
-          <p className="text-gray-600">
-            Set your workout preferences
+    <OnboardingLayout
+      stepNumber={4}
+      stepTitle="Workout Schedule"
+      stepDescription="How often and how long do you want to work out?"
+      canProceed={!!canProceed}
+    >
+      <div className="space-y-8">
+        {/* Frequency */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-4">
+            How many times per week do you want to work out?
+          </label>
+          <div className="grid grid-cols-3 gap-3">
+            {[1, 2, 3, 4, 5, 6].map(freq => (
+              <button
+                key={freq}
+                onClick={() => setFrequency(freq.toString())}
+                className={`p-4 rounded-lg border-2 transition-colors ${
+                  frequency === freq.toString()
+                    ? 'border-primary-500 bg-primary-50 text-primary-700'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="text-2xl font-bold">{freq}</div>
+                <div className="text-sm text-gray-600">
+                  {freq === 1 ? 'time' : 'times'} per week
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Duration */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-4">
+            How long should each workout session be?
+          </label>
+          <div className="grid grid-cols-3 gap-3">
+            {[30, 45, 60, 75, 90].map(dur => (
+              <button
+                key={dur}
+                onClick={() => setDuration(dur.toString())}
+                className={`p-4 rounded-lg border-2 transition-colors ${
+                  duration === dur.toString()
+                    ? 'border-primary-500 bg-primary-50 text-primary-700'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="text-2xl font-bold">{dur}</div>
+                <div className="text-sm text-gray-600">minutes</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Summary */}
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800">
+            You'll be working out <strong>{frequency} times per week</strong> for <strong>{duration} minutes</strong> per session.
+            This is a great starting point that we can adjust as you progress!
           </p>
         </div>
-
-        <div className="space-y-6">
-          {/* Workout Frequency */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              How many workouts per week?
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {[1, 2, 3, 4, 5, 6].map(num => (
-                <button
-                  key={num}
-                  onClick={() => setFrequency(num)}
-                  className={`py-2 px-3 rounded-lg border transition-colors ${
-                    frequency === num
-                      ? 'border-primary-500 bg-primary-50 text-primary-700'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Workout Duration */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              How long per workout? (minutes)
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {[15, 30, 45, 60, 75, 90].map(num => (
-                <button
-                  key={num}
-                  onClick={() => setDuration(num)}
-                  className={`py-2 px-3 rounded-lg border transition-colors ${
-                    duration === num
-                      ? 'border-primary-500 bg-primary-50 text-primary-700'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-medium text-gray-900 mb-2">Your Plan</h3>
-            <p className="text-gray-600">
-              {frequency} workout{frequency !== 1 ? 's' : ''} per week, {duration} minutes each
-            </p>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex justify-between space-x-4 pt-4">
-            <button
-              onClick={handleBack}
-              className="btn-secondary"
-            >
-              {t.previous}
-            </button>
-            <button
-              onClick={handleComplete}
-              className="btn-primary"
-            >
-              Complete Setup
-            </button>
-          </div>
-        </div>
       </div>
-    </div>
+    </OnboardingLayout>
   )
 }
 

@@ -2,7 +2,7 @@ import type { WorkoutExercise } from './models'
 
 export interface AIWorkoutPayload {
   profile: {
-    sex: string
+    gender: string
     age: number
     heightCm: number
     weightKg: number
@@ -33,7 +33,7 @@ export interface AIWorkoutReview {
 
 export interface AIWeeklyAdvicePayload {
   profile: {
-    sex: string
+    gender: string
     age: number
     heightCm: number
     weightKg: number

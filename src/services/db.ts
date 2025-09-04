@@ -1,21 +1,23 @@
 import Dexie from 'dexie'
-import type { Profile, Workout, FoodLog, WeeklyCheckin, AIPlan } from '../types/models'
+import type { Profile, Workout, FoodLog, WeeklyCheckin, AiMessage, PlanSuggestion } from '../types/models'
 
 export class AITrainerDB extends Dexie {
   profiles!: Dexie.Table<Profile, string>
   workouts!: Dexie.Table<Workout, string>
-  foodLogs!: Dexie.Table<FoodLog, string>
+  food!: Dexie.Table<FoodLog, string>
   checkins!: Dexie.Table<WeeklyCheckin, string>
-  aiPlans!: Dexie.Table<AIPlan, string>
+  ai!: Dexie.Table<AiMessage, string>
+  plans!: Dexie.Table<PlanSuggestion, string>
 
   constructor() {
     super('AITrainerDB')
     this.version(1).stores({
-      profiles: 'id, createdAt',
-      workouts: 'id, date, createdAt',
-      foodLogs: 'id, date, createdAt',
-      checkins: 'id, weekStart, createdAt',
-      aiPlans: 'id, workoutId, createdAt'
+      profiles: 'id',
+      workouts: 'id,date',
+      food: 'id,date',
+      checkins: 'id,weekStart',
+      ai: 'id,createdAt',
+      plans: 'id,createdAt,forDate'
     })
   }
 }
@@ -42,41 +44,42 @@ export const dbHelpers = {
     return await query.toArray()
   },
 
-  async getWorkoutsByDateRange(startDate: Date, endDate: Date): Promise<Workout[]> {
+  async getWorkoutsByDateRange(startDate: string, endDate: string): Promise<Workout[]> {
     return await db.workouts
       .where('date')
       .between(startDate, endDate)
       .toArray()
   },
 
-  async getFoodLogsByDateRange(startDate: Date, endDate: Date): Promise<FoodLog[]> {
-    return await db.foodLogs
+  async getFoodLogsByDateRange(startDate: string, endDate: Date): Promise<FoodLog[]> {
+    return await db.food
       .where('date')
       .between(startDate, endDate)
       .toArray()
   },
 
-  async getCheckinByWeek(weekStart: Date): Promise<WeeklyCheckin | undefined> {
+  async getCheckinByWeek(weekStart: string): Promise<WeeklyCheckin | undefined> {
     return await db.checkins
       .where('weekStart')
       .equals(weekStart)
       .first()
   },
 
-  async getAIPlanByWorkout(workoutId: string): Promise<AIPlan | undefined> {
-    return await db.aiPlans
+  async getAIPlanByWorkout(workoutId: string): Promise<AiMessage | undefined> {
+    return await db.ai
       .where('workoutId')
       .equals(workoutId)
       .first()
   },
 
   async clearAllData(): Promise<void> {
-    await db.transaction('rw', [db.profiles, db.workouts, db.foodLogs, db.checkins, db.aiPlans], async () => {
+    await db.transaction('rw', [db.profiles, db.workouts, db.food, db.checkins, db.ai, db.plans], async () => {
       await db.profiles.clear()
       await db.workouts.clear()
-      await db.foodLogs.clear()
+      await db.food.clear()
       await db.checkins.clear()
-      await db.aiPlans.clear()
+      await db.ai.clear()
+      await db.plans.clear()
     })
   }
 }

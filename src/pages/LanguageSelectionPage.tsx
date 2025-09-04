@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useI18nStore } from '../stores/i18n.store'
 import { useProfileStore } from '../stores/profile.store'
@@ -9,15 +9,29 @@ const LanguageSelectionPage: React.FC = () => {
   const { setLanguage } = useI18nStore()
   const { createProfile } = useProfileStore()
   const t = useTranslations()
+  const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'ru' | null>(null)
 
-  const handleLanguageSelect = async (language: 'en' | 'ru') => {
+  const handleLanguageSelect = (language: 'en' | 'ru') => {
+    setSelectedLanguage(language)
+  }
+
+  const handleContinue = async () => {
+    if (!selectedLanguage) return
+
     try {
       // Set language in i18n store
-      setLanguage(language)
+      setLanguage(selectedLanguage)
       
-      // Create basic profile with selected language
+      // Mark that app has been launched before and navigate first
+      localStorage.setItem('ai-trainer:has-launched', 'true')
+
+      // Navigate to entry step first
+      navigate('/entry')
+
+      // Then create basic profile with selected language
       await createProfile({
-        sex: 'male', // Will be updated in later steps
+        name: '', // Will be updated in later steps
+        gender: 'male', // Will be updated in later steps
         age: 0, // Will be updated in later steps
         height: 0, // Will be updated in later steps
         weight: 0, // Will be updated in later steps
@@ -29,12 +43,10 @@ const LanguageSelectionPage: React.FC = () => {
         equipment: [],
         frequency: 3,
         duration: 30,
-        language: language,
+        language: selectedLanguage,
         goalsDetailed: ''
       })
-      
-      // Navigate to first onboarding step
-      navigate('/onboarding/goals')
+
     } catch (error) {
       console.error('Failed to create profile:', error)
       alert('Failed to create profile')
@@ -52,10 +64,14 @@ const LanguageSelectionPage: React.FC = () => {
             {t.selectLanguageDescription}
           </p>
           
-          <div className="space-y-4">
+          <div className="space-y-4 mb-8">
             <button
               onClick={() => handleLanguageSelect('en')}
-              className="w-full py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              className={`w-full py-3 px-4 border rounded-lg hover:bg-gray-50 transition-colors text-left ${
+                selectedLanguage === 'en' 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-300'
+              }`}
             >
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">🇺🇸</span>
@@ -68,7 +84,11 @@ const LanguageSelectionPage: React.FC = () => {
             
             <button
               onClick={() => handleLanguageSelect('ru')}
-              className="w-full py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              className={`w-full py-3 px-4 border rounded-lg hover:bg-gray-50 transition-colors text-left ${
+                selectedLanguage === 'ru' 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-300'
+              }`}
             >
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">🇷🇺</span>
@@ -79,6 +99,19 @@ const LanguageSelectionPage: React.FC = () => {
               </div>
             </button>
           </div>
+
+          {/* Continue Button */}
+          <button
+            onClick={handleContinue}
+            disabled={!selectedLanguage}
+            className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+              selectedLanguage
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            {t.continue}
+          </button>
         </div>
       </div>
     </div>

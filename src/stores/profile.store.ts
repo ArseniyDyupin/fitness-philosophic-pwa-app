@@ -46,7 +46,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       const updatedProfile: Profile = {
         ...currentProfile,
         ...profileData,
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }
       
       await dbHelpers.saveProfile(updatedProfile)
@@ -65,8 +65,8 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       const newProfile: Profile = {
         ...profileData,
         id: 'me',
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       }
       
       await dbHelpers.saveProfile(newProfile)
@@ -85,7 +85,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       // Validate and transform imported data
       const importedProfile = jsonData.profile || jsonData
       
-      if (!importedProfile.id || !importedProfile.sex || !importedProfile.age || 
+      if (!importedProfile.id || !importedProfile.gender || !importedProfile.age || 
           !importedProfile.height || !importedProfile.weight || !importedProfile.goal) {
         throw new Error('Invalid profile data')
       }
@@ -95,8 +95,8 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         id: 'me', // Always use 'me' as ID
         language: importedProfile.language || 'en',
         goalsDetailed: importedProfile.goalsDetailed || '',
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       }
 
       await dbHelpers.saveProfile(transformedProfile)
@@ -117,7 +117,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
 
     return {
       schemaVersion: 1,
-      exportedAt: new Date(),
+      exportedAt: new Date().toISOString(),
       profile: currentProfile
     }
   },

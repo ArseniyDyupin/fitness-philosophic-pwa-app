@@ -1,18 +1,19 @@
 export interface Profile {
-  id: string
-  sex: 'male' | 'female' | 'other'
-  age: number
-  height: number // cm
-  weight: number // kg
-  goal: Goal
-  constraints: string[]
-  equipment: string[]
-  frequency: number // workouts per week
-  duration: number // minutes per workout
-  language: 'en' | 'ru'
-  goalsDetailed: string
-  createdAt: Date
-  updatedAt: Date
+  id: string                    // Always "me"
+  name: string                  // User's name
+  age: number                   // Age
+  gender: 'male' | 'female' | 'other'  // Gender
+  height: number                // Height in cm
+  weight: number                // Weight in kg
+  goal: Goal                    // Workout goals
+  constraints: string[]         // Physical constraints
+  equipment: string[]           // Available equipment
+  frequency: number             // Workout frequency per week
+  duration: number              // Workout duration in minutes
+  language: 'en' | 'ru'        // Interface language
+  goalsDetailed: string         // Detailed description of goals
+  createdAt: string            // ISO string
+  updatedAt: string            // ISO string
 }
 
 export interface Goal {
@@ -38,12 +39,12 @@ export interface WorkoutExercise {
 
 export interface Workout {
   id: string
-  date: Date
+  date: string                  // ISO string
   exercises: WorkoutExercise[]
   rpe?: number // Rate of Perceived Exertion (1-10 scale)
   aiReviewId?: string // ID of AI review if available
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string            // ISO string
+  updatedAt: string            // ISO string
 }
 
 export type WorkoutType = 'run' | 'pullups' | 'pushups' | 'plank' | 'custom'
@@ -54,21 +55,21 @@ export interface FoodLog {
   protein?: number // g
   carbs?: number // g
   fat?: number // g
-  date: Date
+  date: string                   // ISO string
   notes?: string
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string             // ISO string
+  updatedAt: string             // ISO string
 }
 
 export interface WeeklyCheckin {
   id: string
-  weekStart: Date // Monday of the week
+  weekStart: string             // ISO string (Monday of the week)
   weight: number
   waist?: number // cm
   notes?: string
   photo?: string // base64
   allowPhotoInAI: boolean
-  createdAt: Date
+  createdAt: string             // ISO string
 }
 
 export interface AIPlan {
@@ -80,17 +81,36 @@ export interface AIPlan {
     description: string
     tips: string[]
   }
-  createdAt: Date
+  createdAt: string             // ISO string
 }
 
-export interface ExportData {
+export interface ExportBundle {
   schemaVersion: number
-  profile: Profile
+  exportedAt: string            // ISO string
+  profile?: Profile
   workouts: Workout[]
-  foodLogs: FoodLog[]
+  food: FoodLog[]
   checkins: WeeklyCheckin[]
-  aiPlans: AIPlan[]
-  exportedAt: Date
+  ai: AiMessage[]
+  plans: PlanSuggestion[]
+}
+
+export interface AiMessage {
+  id: string
+  type: 'workout_review' | 'weekly_advice' | 'general'
+  content: string
+  metadata?: Record<string, any>
+  createdAt: string            // ISO string
+}
+
+export interface PlanSuggestion {
+  id: string
+  type: 'workout' | 'nutrition' | 'recovery'
+  title: string
+  description: string
+  forDate: string              // ISO string
+  exercises?: WorkoutExercise[]
+  createdAt: string            // ISO string
 }
 
 export interface Toast {

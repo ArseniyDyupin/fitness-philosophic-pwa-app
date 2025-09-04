@@ -1,17 +1,16 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useProfileStore } from '../stores/profile.store'
 import { useI18nStore } from '../stores/i18n.store'
 import { useTranslations } from '../stores/i18n.store'
+import JsonFileButtons from '../components/JsonFileButtons'
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate()
-  const { profile, saveProfile, exportProfile } = useProfileStore()
+  const { profile, saveProfile } = useProfileStore()
   const { setLanguage } = useI18nStore()
   const t = useTranslations()
   
-  const [isExporting, setIsExporting] = useState(false)
-
   if (!profile) {
     return <div>Loading...</div>
   }
@@ -23,27 +22,6 @@ const SettingsPage: React.FC = () => {
     } catch (error) {
       console.error('Failed to update language:', error)
       alert('Failed to update language')
-    }
-  }
-
-  const handleExportProfile = async () => {
-    setIsExporting(true)
-    try {
-      const exportData = await exportProfile()
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'ai-trainer-profile.json'
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    } catch (error) {
-      console.error('Failed to export profile:', error)
-      alert('Failed to export profile')
-    } finally {
-      setIsExporting(false)
     }
   }
 
@@ -102,6 +80,10 @@ const SettingsPage: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <p className="text-gray-900">{profile.name || 'Not set'}</p>
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
                 <p className="text-gray-900">{profile.age} years</p>
               </div>
@@ -114,9 +96,35 @@ const SettingsPage: React.FC = () => {
                 <p className="text-gray-900">{profile.weight} kg</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Sex</label>
-                <p className="text-gray-900">{profile.sex}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                <p className="text-gray-900">{profile.gender}</p>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Goals</label>
+                <p className="text-gray-900">{profile.goal?.types?.join(', ') || 'Not set'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Onboarding Reset */}
+          <div className="card">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Onboarding</h2>
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600">
+                Reset the onboarding process to start over with language selection and profile setup.
+              </p>
+              <button
+                onClick={() => {
+                  if (confirm('Are you sure you want to reset onboarding? This will clear your profile and start over.')) {
+                    localStorage.removeItem('ai-trainer:has-launched')
+                    localStorage.removeItem('ai-trainer:onboarding-draft')
+                    window.location.reload()
+                  }
+                }}
+                className="btn-secondary text-red-600 border-red-300 hover:bg-red-50"
+              >
+                Reset Onboarding
+              </button>
             </div>
           </div>
 
@@ -141,18 +149,7 @@ const SettingsPage: React.FC = () => {
           {/* Export/Import */}
           <div className="card">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Data Management</h2>
-            <div className="space-y-3">
-              <button
-                onClick={handleExportProfile}
-                disabled={isExporting}
-                className="btn-primary disabled:opacity-50"
-              >
-                {isExporting ? 'Exporting...' : t.exportProfile}
-              </button>
-              <p className="text-sm text-gray-600">
-                Export your profile data as a JSON file
-              </p>
-            </div>
+            <JsonFileButtons />
           </div>
         </div>
       </main>
