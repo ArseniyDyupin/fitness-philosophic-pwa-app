@@ -111,7 +111,7 @@ export const translations = {
       },
       navigation: {
         back: 'Back',
-        next: 'Next',
+    next: 'Next',
         save: 'Save & Exit',
         complete: 'Complete Setup'
       },
@@ -275,7 +275,22 @@ export const translations = {
       noGoalsSet: 'No goals set',
       dataManagement: 'Data Management',
       loading: 'Loading...',
-      failedToUpdateLanguage: 'Failed to update language'
+      failedToUpdateLanguage: 'Failed to update language',
+      editLanguage: 'Edit language',
+      editProfile: 'Edit profile',
+      editGoals: 'Edit goals',
+      nameRequired: 'Name is required',
+      ageInvalid: 'Age must be between 10 and 120',
+      heightInvalid: 'Height must be between 100 and 250 cm',
+      weightInvalid: 'Weight must be between 1 and 500 kg',
+      goalRequired: 'Goal is required',
+      changesSaved: 'Changes saved successfully',
+      failedToSave: 'Failed to save changes',
+      male: 'Male',
+      female: 'Female',
+      mainGoal: 'Main Goal',
+      goalPlaceholder: 'Describe your main fitness goal...',
+      detailedGoalsPlaceholder: 'Add more details about your fitness goals, timeline, preferences...'
     },
     
     // JsonFileButtons
@@ -494,7 +509,7 @@ export const translations = {
       },
       navigation: {
         back: 'Назад',
-        next: 'Далее',
+    next: 'Далее',
         save: 'Сохранить и выйти',
         complete: 'Завершить настройку'
       },
@@ -657,7 +672,22 @@ export const translations = {
       noGoalsSet: 'Цели не установлены',
       dataManagement: 'Управление данными',
       loading: 'Загрузка...',
-      failedToUpdateLanguage: 'Не удалось обновить язык'
+      failedToUpdateLanguage: 'Не удалось обновить язык',
+      editLanguage: 'Редактировать язык',
+      editProfile: 'Редактировать профиль',
+      editGoals: 'Редактировать цели',
+      nameRequired: 'Имя обязательно',
+      ageInvalid: 'Возраст должен быть от 10 до 120 лет',
+      heightInvalid: 'Рост должен быть от 100 до 250 см',
+      weightInvalid: 'Вес должен быть от 1 до 500 кг',
+      goalRequired: 'Цель обязательна',
+      changesSaved: 'Изменения успешно сохранены',
+      failedToSave: 'Не удалось сохранить изменения',
+      male: 'Мужской',
+      female: 'Женский',
+      mainGoal: 'Основная цель',
+      goalPlaceholder: 'Опишите вашу основную фитнес-цель...',
+      detailedGoalsPlaceholder: 'Добавьте подробности о ваших фитнес-целях, временных рамках, предпочтениях...'
     },
     
     // JsonFileButtons

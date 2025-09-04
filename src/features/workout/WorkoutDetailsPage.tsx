@@ -507,7 +507,7 @@ const WorkoutDetailsPage: React.FC = () => {
               <div className="text-3xl font-bold text-green-600 mb-2">{Math.round(totalDuration)}</div>
               <div className="text-sm text-gray-600">{t.workoutDetailsPage?.duration || 'Duration (minutes)'}</div>
             </div>
-            <div className="text-center">
+        <div className="text-center">
               <div className="text-3xl font-bold text-purple-600 mb-2">{workout.exercises.length}</div>
               <div className="text-sm text-gray-600">{t.workoutDetailsPage?.exercises || 'Exercises'}</div>
             </div>
@@ -594,8 +594,8 @@ const WorkoutDetailsPage: React.FC = () => {
                 <X size={16} className="text-red-600" />
               )}
               <span className="text-sm font-medium">{toast.message}</span>
-            </div>
-          </div>
+        </div>
+      </div>
         )}
       </main>
     </div>
