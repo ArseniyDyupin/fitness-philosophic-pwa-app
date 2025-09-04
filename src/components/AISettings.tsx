@@ -80,7 +80,12 @@ const AISettings: React.FC = () => {
   const getConnectionStatus = () => {
     if (!lastConnectionTest) return null
     
-    const isRecent = Date.now() - lastConnectionTest.getTime() < 5 * 60 * 1000 // 5 minutes
+    // Handle both Date object and string (from localStorage deserialization)
+    const testTime = lastConnectionTest instanceof Date 
+      ? lastConnectionTest.getTime() 
+      : new Date(lastConnectionTest).getTime()
+    
+    const isRecent = Date.now() - testTime < 5 * 60 * 1000 // 5 minutes
     if (!isRecent) return null
 
     return connectionTestResult

@@ -82,7 +82,22 @@ export const useAIStore = create<AIState>()(
         isConfigured: state.isConfigured,
         lastConnectionTest: state.lastConnectionTest,
         connectionTestResult: state.connectionTestResult
-      })
+      }),
+      // Custom serialization/deserialization for Date objects
+      serialize: (state) => JSON.stringify({
+        ...state.state,
+        lastConnectionTest: state.state.lastConnectionTest?.toISOString() || null
+      }),
+      deserialize: (str) => {
+        const parsed = JSON.parse(str)
+        return {
+          state: {
+            ...parsed,
+            lastConnectionTest: parsed.lastConnectionTest ? new Date(parsed.lastConnectionTest) : null
+          },
+          version: 0
+        }
+      }
     }
   )
 )
