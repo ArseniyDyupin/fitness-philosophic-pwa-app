@@ -5,6 +5,7 @@ import { useI18nStore } from '../stores/i18n.store'
 import { useTranslations } from '../stores/i18n.store'
 import JsonFileButtons from '../components/JsonFileButtons'
 import AISettings from '../components/AISettings'
+import DataImport from '../components/DataImport'
 import { Edit, Check, X } from 'lucide-react'
 
 const SettingsPage: React.FC = () => {
@@ -19,7 +20,7 @@ const SettingsPage: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const [isSaving, setIsSaving] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
-  
+
   if (!profile) {
     return <div>{t.settingsPage?.loading || 'Loading...'}</div>
   }
@@ -157,30 +158,30 @@ const SettingsPage: React.FC = () => {
             
             {editingSection === 'language' ? (
               <div className="space-y-4">
-                <div className="space-y-3">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
+            <div className="space-y-3">
+              <label className="flex items-center">
+                <input
+                  type="radio"
                       name="editLanguage"
-                      value="en"
+                  value="en"
                       checked={editedData.language === 'en'}
                       onChange={(e) => setEditedData({ ...editedData, language: e.target.value })}
-                      className="border-gray-300 text-primary-600 focus:ring-primary-500"
-                    />
+                  className="border-gray-300 text-primary-600 focus:ring-primary-500"
+                />
                     <span className="ml-3 text-gray-700">{t.english}</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
                       name="editLanguage"
-                      value="ru"
+                  value="ru"
                       checked={editedData.language === 'ru'}
                       onChange={(e) => setEditedData({ ...editedData, language: e.target.value })}
-                      className="border-gray-300 text-primary-600 focus:ring-primary-500"
-                    />
+                  className="border-gray-300 text-primary-600 focus:ring-primary-500"
+                />
                     <span className="ml-3 text-gray-700">{t.russian}</span>
-                  </label>
-                </div>
+              </label>
+            </div>
                 
                 <div className="flex space-x-2">
                   <button
@@ -227,8 +228,8 @@ const SettingsPage: React.FC = () => {
             
             {editingSection === 'profile' ? (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.name || 'Name'}</label>
                     <input
                       type="text"
@@ -335,16 +336,16 @@ const SettingsPage: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.age || 'Age'}</label>
                   <p className="text-gray-900">{profile.age} {t.settingsPage?.years || 'years'}</p>
-                </div>
-                <div>
+              </div>
+              <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.height || 'Height'}</label>
                   <p className="text-gray-900">{profile.height} {t.settingsPage?.cm || 'cm'}</p>
-                </div>
-                <div>
+              </div>
+              <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.weight || 'Weight'}</label>
                   <p className="text-gray-900">{profile.weight} {t.settingsPage?.kg || 'kg'}</p>
-                </div>
-                <div>
+              </div>
+              <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.gender || 'Gender'}</label>
                   <p className="text-gray-900 capitalize">{profile.gender}</p>
                 </div>
@@ -442,11 +443,11 @@ const SettingsPage: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.mainGoal || 'Main Goal'}</label>
                   <p className="text-gray-900">{profile.goal || (t.settingsPage?.noGoalsSet || 'No goals set')}</p>
-                </div>
-                {profile.goalsDetailed && (
+            </div>
+            {profile.goalsDetailed && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.detailedGoals || 'Detailed Goals'}</label>
-                    <p className="text-gray-900">{profile.goalsDetailed}</p>
+                <p className="text-gray-900">{profile.goalsDetailed}</p>
                   </div>
                 )}
               </div>
@@ -458,7 +459,12 @@ const SettingsPage: React.FC = () => {
             <AISettings />
           </div>
 
-          {/* Export/Import */}
+          {/* Data Import */}
+          <div className="card">
+            <DataImport />
+            </div>
+
+          {/* Export/Import (Legacy) */}
           <div className="card">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.dataManagement || 'Data Management'}</h2>
             <JsonFileButtons />

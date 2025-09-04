@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useOnboardingStore } from '../stores/onboarding.store'
 import { useTranslations } from '../stores/i18n.store'
 import { Upload, Play, FileText, User, CheckCircle, AlertCircle } from 'lucide-react'
-import { readFile, importData } from '../services/export'
-import type { ExportBundle } from '../types/models'
+import { validateFile, importData } from '../services/import'
+import type { ExportBundle } from '../types/export'
 
 const EntryStep: React.FC = () => {
   const navigate = useNavigate()
@@ -32,8 +32,8 @@ const EntryStep: React.FC = () => {
     setImportPreview(null)
 
     try {
-      const data = await readFile(file)
-      setImportPreview(data)
+      const bundle = await validateFile(file)
+      setImportPreview(bundle)
     } catch (error) {
       setImportError(error instanceof Error ? error.message : 'Failed to read file')
     } finally {

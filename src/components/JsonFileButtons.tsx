@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 
-import { exportData, importData, downloadData, readFile } from '../services/export'
+import { downloadExport } from '../services/export'
+import { validateFile, importData } from '../services/import'
 import { Download, Upload, AlertCircle, CheckCircle } from 'lucide-react'
 import { useTranslations } from '../stores/i18n.store'
 
@@ -20,8 +21,7 @@ const JsonFileButtons: React.FC<JsonFileButtonsProps> = ({ onImportSuccess }) =>
     setMessage(null)
     
     try {
-      const data = await exportData()
-      downloadData(data, `ai-trainer-backup-${new Date().toISOString().split('T')[0]}.json`)
+      await downloadExport()
       setMessage({ type: 'success', text: t.jsonFileButtons?.dataExportedSuccessfully || 'Data exported successfully!' })
     } catch (error) {
       setMessage({ 
@@ -47,8 +47,8 @@ const JsonFileButtons: React.FC<JsonFileButtonsProps> = ({ onImportSuccess }) =>
         throw new Error(t.jsonFileButtons?.fileSizeMustBeLessThan10MB || 'File size must be less than 10MB')
       }
 
-      const data = await readFile(file)
-      await importData(data)
+      const bundle = await validateFile(file)
+      await importData(bundle, 'replace')
       
       setMessage({ type: 'success', text: t.jsonFileButtons?.dataImportedSuccessfully || 'Data imported successfully!' })
       onImportSuccess?.()
