@@ -14,7 +14,7 @@ const ProfileSummary: React.FC = () => {
   const getProgressPercentage = () => {
     const requiredFields = ['name', 'age', 'height', 'weight', 'gender', 'goal', 'frequency', 'duration', 'language']
     const completedFields = requiredFields.filter(field => {
-      if (field === 'goal') return draft.goal?.types && draft.goal.types.length > 0
+      if (field === 'goal') return draft.goal && draft.goal.trim().length > 0
       return draft[field as keyof typeof draft] !== undefined && draft[field as keyof typeof draft] !== ''
     })
     return Math.round((completedFields.length / requiredFields.length) * 100)

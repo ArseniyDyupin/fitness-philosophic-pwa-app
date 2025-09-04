@@ -13,12 +13,7 @@ const ExportBundleSchema = z.object({
     gender: z.enum(['male', 'female', 'other']),
     height: z.number(),
     weight: z.number(),
-    goal: z.object({
-      types: z.array(z.enum(['weight_loss', 'muscle_gain', 'endurance', 'strength', 'general_fitness'])),
-      targetWeight: z.number().optional(),
-      targetEvent: z.string().optional(),
-      description: z.string()
-    }),
+    goal: z.string(),
     constraints: z.array(z.string()),
     equipment: z.array(z.string()),
     frequency: z.number(),

@@ -177,7 +177,18 @@ export const translations = {
         example4: 'How you want to feel or look',
         example5: 'Any specific challenges you\'re facing',
         great: 'Great!',
-        successMessage: 'We\'ll use this information to create more personalized workout recommendations and track your progress toward these specific goals.'
+        successMessage: 'We\'ll use this information to create more personalized workout recommendations and track your progress toward these specific goals.',
+        readyToComplete: 'Ready to complete your profile setup!'
+      },
+      frequency: {
+        title: 'Workout Schedule',
+        description: 'How often and how long do you want to work out?',
+        frequencyLabel: 'How many times per week do you want to work out?',
+        durationLabel: 'How long should each workout session be?',
+        timesPerWeek: 'times per week',
+        timePerWeek: 'time per week',
+        minutes: 'minutes',
+        summary: 'You\'ll be working out {{frequency}} times per week for {{duration}} minutes per session. This is a great starting point that we can adjust as you progress!'
       }
     },
     
@@ -367,6 +378,16 @@ export const translations = {
         example5: 'Любые конкретные проблемы, с которыми вы сталкиваетесь',
         great: 'Отлично!',
         successMessage: 'Мы будем использовать эту информацию для создания более персонализированных рекомендаций по тренировкам и отслеживания вашего прогресса к этим конкретным целям.'
+      },
+      frequency: {
+        title: 'Расписание тренировок',
+        description: 'Как часто и как долго вы хотите тренироваться?',
+        frequencyLabel: 'Сколько раз в неделю вы хотите тренироваться?',
+        durationLabel: 'Как долго должна быть каждая тренировочная сессия?',
+        timesPerWeek: 'раз в неделю',
+        timePerWeek: 'время в неделю',
+        minutes: 'минут',
+        summary: 'Вы будете тренироваться {{frequency}} раз в неделю по {{duration}} минут. Это отличная отправная точка, которую мы можем отрегулировать по мере вашего прогресса!'
       }
     },
     

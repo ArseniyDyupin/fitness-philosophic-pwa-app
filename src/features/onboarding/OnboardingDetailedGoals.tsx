@@ -26,7 +26,7 @@ const OnboardingDetailedGoals: React.FC = () => {
         gender: draft.gender || 'male',
         height: draft.height || 0,
         weight: draft.weight || 0,
-        goal: draft.goal || { types: [], description: '' },
+        goal: draft.goal || '',
         constraints: draft.constraints || [],
         equipment: draft.equipment || [],
         frequency: draft.frequency || 3,

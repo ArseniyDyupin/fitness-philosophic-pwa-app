@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Goal } from '../types/models'
 
 interface OnboardingDraft {
   name: string
@@ -8,7 +7,7 @@ interface OnboardingDraft {
   gender: 'male' | 'female' | 'other'
   height: number
   weight: number
-  goal: Goal
+  goal: string                  // Workout goals (simple text)
   constraints: string[]
   equipment: string[]
   sportsPreferences: string

@@ -101,7 +101,7 @@ const SettingsPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Goals</label>
-                <p className="text-gray-900">{profile.goal?.types?.join(', ') || 'Not set'}</p>
+                <p className="text-gray-900">{profile.goal || 'Not set'}</p>
               </div>
             </div>
           </div>
@@ -132,11 +132,7 @@ const SettingsPage: React.FC = () => {
           <div className="card">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Goals</h2>
             <div className="space-y-2">
-              {profile.goal.types.map(type => (
-                <span key={type} className="inline-block bg-primary-100 text-primary-800 px-2 py-1 rounded text-sm mr-2 mb-2">
-                  {type}
-                </span>
-              ))}
+              <p className="text-gray-900">{profile.goal || 'No goals set'}</p>
             </div>
             {profile.goalsDetailed && (
               <div className="mt-4">

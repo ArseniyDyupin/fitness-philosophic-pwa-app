@@ -35,10 +35,7 @@ const LanguageSelectionPage: React.FC = () => {
         age: 0, // Will be updated in later steps
         height: 0, // Will be updated in later steps
         weight: 0, // Will be updated in later steps
-        goal: {
-          types: [],
-          description: ''
-        },
+        goal: '', // Will be updated in later steps
         constraints: [],
         equipment: [],
         frequency: 3,

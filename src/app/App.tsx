@@ -71,7 +71,7 @@ function App() {
   }
 
   // If profile exists but incomplete, show entry step
-  if (!profile.name || !profile.age || !profile.height || !profile.weight || !profile.goal || !profile.goal.types || profile.goal.types.length === 0) {
+  if (!profile.name || !profile.age || !profile.height || !profile.weight || !profile.goal || profile.goal.trim().length === 0) {
     return (
       <Routes>
         <Route path="/" element={<EntryStep />} />
