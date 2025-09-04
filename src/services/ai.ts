@@ -4,8 +4,42 @@ export class AIService {
   private apiKey: string = ''
   private baseUrl = 'https://api.openai.com/v1/chat/completions'
 
+  constructor() {
+    // Initialize API key from environment variables or localStorage
+    this.initializeApiKey()
+  }
+
+  private initializeApiKey() {
+    // First, try to get API key from environment variables (for production)
+    const envApiKey = import.meta.env.VITE_OPENAI_API_KEY
+    if (envApiKey && envApiKey !== 'your_openai_api_key_here') {
+      this.apiKey = envApiKey
+      return
+    }
+
+    // Fallback to localStorage (for development/user input)
+    const storedApiKey = localStorage.getItem('ai-trainer:openai-api-key')
+    if (storedApiKey) {
+      this.apiKey = storedApiKey
+    }
+  }
+
   setApiKey(key: string) {
     this.apiKey = key
+    // Save to localStorage for persistence
+    if (key) {
+      localStorage.setItem('ai-trainer:openai-api-key', key)
+    } else {
+      localStorage.removeItem('ai-trainer:openai-api-key')
+    }
+  }
+
+  getApiKey(): string {
+    return this.apiKey
+  }
+
+  hasApiKey(): boolean {
+    return !!this.apiKey && this.apiKey !== 'your_openai_api_key_here'
   }
 
   private async makeRequest(prompt: string, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<string> {

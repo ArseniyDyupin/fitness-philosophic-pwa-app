@@ -4,6 +4,7 @@ import { useProfileStore } from '../stores/profile.store'
 import { useI18nStore } from '../stores/i18n.store'
 import { useTranslations } from '../stores/i18n.store'
 import JsonFileButtons from '../components/JsonFileButtons'
+import AISettings from '../components/AISettings'
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate()
@@ -140,6 +141,11 @@ const SettingsPage: React.FC = () => {
                 <p className="text-gray-900">{profile.goalsDetailed}</p>
               </div>
             )}
+          </div>
+
+          {/* AI Configuration */}
+          <div className="card">
+            <AISettings />
           </div>
 
           {/* Export/Import */}

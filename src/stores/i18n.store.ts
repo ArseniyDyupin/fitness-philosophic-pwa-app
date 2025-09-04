@@ -343,6 +343,72 @@ export const translations = {
       reps: 'reps',
       min: 'min',
       km: 'km'
+    },
+    
+    // Exercise types
+    exerciseTypes: {
+      run: 'Run',
+      pullups: 'Pull-ups',
+      pushups: 'Push-ups',
+      plank: 'Plank',
+      custom: 'Custom'
+    },
+    
+    // WorkoutDetailsPage
+    workoutDetailsPage: {
+      workoutNotFound: 'Workout not found',
+      backToWorkouts: 'Back to Workouts',
+      workoutDetails: 'Workout Details',
+      edit: 'Edit',
+      delete: 'Delete',
+      deleting: 'Deleting...',
+      deleteConfirm: 'Are you sure you want to delete this workout?',
+      failedToDelete: 'Failed to delete workout',
+      totalCalories: 'Total Calories',
+      duration: 'Duration (minutes)',
+      exercises: 'Exercises',
+      aiReviewed: 'AI Reviewed',
+      aiAnalysis: 'AI Analysis',
+      aiAnalysisDescription: 'This workout has been analyzed by AI. View the full analysis and recommendations in the AI section.',
+      noRepsSpecified: 'No reps specified',
+      noTimeSpecified: 'No time specified',
+      customExercise: 'Custom exercise',
+      exerciseDetails: 'Exercise details',
+      sets: 'sets',
+      total: 'total',
+      holds: 'holds',
+      minutes: 'minutes',
+      for: 'for'
+    },
+    
+    // AISettings
+    aiSettings: {
+      title: 'AI Configuration',
+      description: 'Configure your OpenAI API key to enable AI features like workout analysis and recommendations.',
+      apiKeyLabel: 'OpenAI API Key',
+      apiKeyPlaceholder: 'sk-...',
+      saveKey: 'Save Key',
+      clearKey: 'Clear Key',
+      testConnection: 'Test Connection',
+      testing: 'Testing...',
+      pleaseEnterKey: 'Please enter an API key',
+      keyNotChanged: 'Key was not changed',
+      keySaved: 'API key saved successfully',
+      keyCleared: 'API key cleared',
+      confirmClear: 'Are you sure you want to clear the API key?',
+      configureFirst: 'Please configure API key first',
+      connectionSuccess: 'Connection successful!',
+      connectionFailed: 'Connection failed. Please check your API key.',
+      lastTestSuccess: 'Last connection test: Success',
+      lastTestFailed: 'Last connection test: Failed',
+      configured: 'AI features are enabled',
+      notConfigured: 'AI features are disabled - API key required',
+      helpTitle: 'How to get an OpenAI API key:',
+      helpStep1: 'Visit OpenAI Platform (platform.openai.com)',
+      helpStep2: 'Sign up or log in to your account',
+      helpStep3: 'Go to API Keys section',
+      helpStep4: 'Create a new secret key',
+      helpStep5: 'Copy the key and paste it above'
     }
   },
   
@@ -644,6 +710,72 @@ export const translations = {
       reps: 'повт.',
       min: 'мин',
       km: 'км'
+    },
+    
+    // Exercise types
+    exerciseTypes: {
+      run: 'Бег',
+      pullups: 'Подтягивания',
+      pushups: 'Отжимания',
+      plank: 'Планка',
+      custom: 'Свое упражнение'
+    },
+    
+    // WorkoutDetailsPage
+    workoutDetailsPage: {
+      workoutNotFound: 'Тренировка не найдена',
+      backToWorkouts: 'Назад к тренировкам',
+      workoutDetails: 'Детали тренировки',
+      edit: 'Редактировать',
+      delete: 'Удалить',
+      deleting: 'Удаляю...',
+      deleteConfirm: 'Вы уверены, что хотите удалить эту тренировку?',
+      failedToDelete: 'Не удалось удалить тренировку',
+      totalCalories: 'Всего калорий',
+      duration: 'Длительность (минуты)',
+      exercises: 'Упражнения',
+      aiReviewed: 'Проанализировано ИИ',
+      aiAnalysis: 'Анализ ИИ',
+      aiAnalysisDescription: 'Эта тренировка была проанализирована ИИ. Посмотрите полный анализ и рекомендации в разделе ИИ.',
+      noRepsSpecified: 'Повторения не указаны',
+      noTimeSpecified: 'Время не указано',
+      customExercise: 'Свое упражнение',
+      exerciseDetails: 'Детали упражнения',
+      sets: 'подходов',
+      total: 'всего',
+      holds: 'удержаний',
+      minutes: 'минут',
+      for: 'в течение'
+    },
+    
+    // AISettings
+    aiSettings: {
+      title: 'Настройка ИИ',
+      description: 'Настройте ваш API ключ OpenAI для включения функций ИИ, таких как анализ тренировок и рекомендации.',
+      apiKeyLabel: 'API ключ OpenAI',
+      apiKeyPlaceholder: 'sk-...',
+      saveKey: 'Сохранить ключ',
+      clearKey: 'Очистить ключ',
+      testConnection: 'Проверить соединение',
+      testing: 'Проверяю...',
+      pleaseEnterKey: 'Пожалуйста, введите API ключ',
+      keyNotChanged: 'Ключ не был изменен',
+      keySaved: 'API ключ успешно сохранен',
+      keyCleared: 'API ключ очищен',
+      confirmClear: 'Вы уверены, что хотите очистить API ключ?',
+      configureFirst: 'Пожалуйста, сначала настройте API ключ',
+      connectionSuccess: 'Соединение успешно!',
+      connectionFailed: 'Соединение не удалось. Проверьте ваш API ключ.',
+      lastTestSuccess: 'Последняя проверка соединения: Успешно',
+      lastTestFailed: 'Последняя проверка соединения: Неудачно',
+      configured: 'Функции ИИ включены',
+      notConfigured: 'Функции ИИ отключены - требуется API ключ',
+      helpTitle: 'Как получить API ключ OpenAI:',
+      helpStep1: 'Посетите OpenAI Platform (platform.openai.com)',
+      helpStep2: 'Зарегистрируйтесь или войдите в свой аккаунт',
+      helpStep3: 'Перейдите в раздел API Keys',
+      helpStep4: 'Создайте новый секретный ключ',
+      helpStep5: 'Скопируйте ключ и вставьте его выше'
     }
   }
 }

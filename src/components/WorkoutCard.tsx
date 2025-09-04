@@ -46,6 +46,10 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
     return t.workoutForm?.hard || 'Hard'
   }
 
+  const getExerciseTypeName = (type: string) => {
+    return t.exerciseTypes?.[type as keyof typeof t.exerciseTypes] || type
+  }
+
   const renderExerciseSummary = () => {
     const exerciseCounts: Record<string, number> = {}
     
@@ -54,7 +58,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
     })
     
     return Object.entries(exerciseCounts)
-      .map(([type, count]) => `${count} ${type}`)
+      .map(([type, count]) => `${count} ${getExerciseTypeName(type)}`)
       .join(', ')
   }
 
@@ -113,7 +117,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
               <span className="text-gray-700 capitalize">
                 {exercise.type === 'custom' && exercise.details.customExercise
                   ? exercise.details.customExercise
-                  : exercise.type
+                  : getExerciseTypeName(exercise.type)
                 }
               </span>
               <span className="text-gray-500">
