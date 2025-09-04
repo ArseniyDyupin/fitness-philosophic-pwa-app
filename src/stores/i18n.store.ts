@@ -142,6 +142,15 @@ export const translations = {
         weight: 'Weight (kg)',
         weightPlaceholder: 'e.g., 70'
       },
+      constraints: {
+        title: 'Physical Constraints',
+        description: 'Tell us about any physical limitations or health conditions',
+        label: 'Describe any physical constraints or health conditions you have',
+        placeholder: 'For example: back pain, knee problems, diabetes, asthma... Describe in detail so we can take this into account when creating workouts.',
+        noProblems: 'I have no health problems or physical limitations',
+        noProblemsMessage: 'Great! This means you have more opportunities for various types of workouts.',
+        constraintsMessage: 'Thank you for the information! We will take these limitations into account when creating your personal training program.'
+      },
       detailedGoals: {
         title: 'Detailed Goals',
         description: 'Tell us more about your specific fitness journey',
@@ -308,6 +317,15 @@ export const translations = {
         heightPlaceholder: 'например, 175',
         weight: 'Вес (кг)',
         weightPlaceholder: 'например, 70'
+      },
+      constraints: {
+        title: 'Физические ограничения',
+        description: 'Расскажите нам о любых физических ограничениях или состояниях здоровья',
+        label: 'Опишите любые физические ограничения или состояния здоровья, которые у вас есть',
+        placeholder: 'Например: боль в спине, проблемы с коленями, диабет, астма... Опишите подробно, чтобы мы могли учесть это при создании тренировок.',
+        noProblems: 'У меня нет проблем со здоровьем или физических ограничений',
+        noProblemsMessage: 'Отлично! Это означает, что у вас больше возможностей для различных типов тренировок.',
+        constraintsMessage: 'Спасибо за информацию! Мы учтем эти ограничения при создании вашей персональной тренировочной программы.'
       },
       detailedGoals: {
         title: 'Детальные цели',

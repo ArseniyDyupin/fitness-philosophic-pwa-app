@@ -35,6 +35,9 @@ const ProfileSummary: React.FC = () => {
       case 'goal':
         return draft.goal?.types?.join(', ') || 'Not set'
       case 'constraints':
+        if (draft.constraints?.includes('none')) {
+          return 'Проблем нет'
+        }
         return draft.constraints?.length ? draft.constraints.join(', ') : 'None'
       case 'equipment':
         return draft.equipment?.length ? draft.equipment.join(', ') : 'None'

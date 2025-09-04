@@ -34,18 +34,14 @@ function App() {
     
     // Check if this is the first launch
     const hasLaunchedBefore = localStorage.getItem('ai-trainer:has-launched')
-    console.log('App useEffect - hasLaunchedBefore:', hasLaunchedBefore)
     if (hasLaunchedBefore) {
       setIsFirstLaunch(false)
     }
   }, [initializeLanguage, loadProfile])
 
-  // Debug logging
-  console.log('App render - isFirstLaunch:', isFirstLaunch, 'profile:', profile)
 
   // Always show language selection on first launch
   if (isFirstLaunch) {
-    console.log('App: Showing LanguageSelectionPage (first launch)')
     return (
       <Routes>
         <Route path="/" element={<LanguageSelectionPage />} />
@@ -56,7 +52,6 @@ function App() {
 
   // If no profile exists, show language selection
   if (!profile) {
-    console.log('App: Showing LanguageSelectionPage (no profile)')
     return (
       <Routes>
         <Route path="/" element={<LanguageSelectionPage />} />
@@ -67,7 +62,6 @@ function App() {
 
   // If profile exists but no language, redirect to language selection
   if (!profile.language) {
-    console.log('App: Showing LanguageSelectionPage (no language)')
     return (
       <Routes>
         <Route path="/" element={<LanguageSelectionPage />} />
@@ -78,7 +72,6 @@ function App() {
 
   // If profile exists but incomplete, show entry step
   if (!profile.name || !profile.age || !profile.height || !profile.weight || !profile.goal || !profile.goal.types || profile.goal.types.length === 0) {
-    console.log('App: Showing EntryStep/Onboarding (incomplete profile)')
     return (
       <Routes>
         <Route path="/" element={<EntryStep />} />
@@ -94,8 +87,6 @@ function App() {
     )
   }
 
-  // Main app routes
-  console.log('App: Showing main app routes (complete profile)')
   return (
     <>
       <Header />

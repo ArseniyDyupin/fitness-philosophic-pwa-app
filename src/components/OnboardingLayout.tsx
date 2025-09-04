@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useOnboardingStore } from '../stores/onboarding.store'
 import { useTranslations } from '../stores/i18n.store'
@@ -27,10 +27,15 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
   showSaveButton = false
 }) => {
   const navigate = useNavigate()
-  const { currentStep, totalSteps, isStepValid, isDraftComplete } = useOnboardingStore()
+  const { currentStep, totalSteps, isStepValid, isDraftComplete, setCurrentStep } = useOnboardingStore()
   const t = useTranslations()
 
+  useEffect(() => {
+    setCurrentStep(stepNumber)
+  }, [stepNumber])
+
   const handleNext = () => {
+    console.log(canProceed, currentStep, isStepValid(currentStep), '<<<< steper')
     if (canProceed && isStepValid(currentStep)) {
       // Navigate to next step instead of just updating store
       const nextStepNumber = currentStep + 1

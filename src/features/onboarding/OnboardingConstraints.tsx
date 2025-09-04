@@ -1,83 +1,81 @@
 import React, { useState, useEffect } from 'react'
 import { useOnboardingStore } from '../../stores/onboarding.store'
+import { useTranslations } from '../../stores/i18n.store'
 import OnboardingLayout from '../../components/OnboardingLayout'
 
 const OnboardingConstraints: React.FC = () => {
   const { draft, updateDraft } = useOnboardingStore()
+  const t = useTranslations()
   
-  const [constraints, setConstraints] = useState<string[]>(draft.constraints || [])
-
-  const constraintOptions = [
-    'back_pain',
-    'knee_problems', 
-    'shoulder_issues',
-    'heart_conditions',
-    'diabetes',
-    'asthma',
-    'pregnancy',
-    'recent_surgery',
-    'none'
-  ]
-
-  const constraintLabels: Record<string, string> = {
-    back_pain: 'Back pain',
-    knee_problems: 'Knee problems',
-    shoulder_issues: 'Shoulder issues',
-    heart_conditions: 'Heart conditions',
-    diabetes: 'Diabetes',
-    asthma: 'Asthma',
-    pregnancy: 'Pregnancy',
-    recent_surgery: 'Recent surgery',
-    none: 'No constraints'
-  }
+  const [constraints, setConstraints] = useState(draft.constraints?.join(', ') || '')
+  const [noProblems, setNoProblems] = useState(draft.constraints?.includes('none') || false)
 
   useEffect(() => {
-    updateDraft({ constraints })
-  }, [constraints, updateDraft])
-
-  const handleConstraintToggle = (constraint: string) => {
-    if (constraint === 'none') {
-      setConstraints([])
+    if (noProblems) {
+      updateDraft({ constraints: ['none'] })
     } else {
-      setConstraints(prev => 
-        prev.includes(constraint) 
-          ? prev.filter(c => c !== constraint)
-          : [...prev.filter(c => c !== 'none'), constraint]
-      )
+      const constraintsArray = constraints.trim() ? constraints.split(',').map(c => c.trim()).filter(c => c) : []
+      updateDraft({ constraints: constraintsArray })
+    }
+  }, [constraints, noProblems, updateDraft])
+
+  const handleNoProblemsChange = (checked: boolean) => {
+    setNoProblems(checked)
+    if (checked) {
+      setConstraints('')
     }
   }
 
   return (
     <OnboardingLayout
       stepNumber={1}
-      stepTitle="Physical Constraints"
-      stepDescription="Let us know about any physical limitations or health conditions"
+      stepTitle={t.onboarding?.constraints?.title || 'Физические ограничения'}
+      stepDescription={t.onboarding?.constraints?.description || 'Расскажите о своих физических ограничениях или проблемах со здоровьем'}
       canProceed={true}
     >
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-4">
-            Select any physical constraints or health conditions that apply to you
+            {t.onboarding?.constraints?.label || 'Опишите любые физические ограничения или проблемы со здоровьем, которые у вас есть'}
           </label>
-          <div className="space-y-3">
-            {constraintOptions.map(constraint => (
-              <label key={constraint} className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={constraints.includes(constraint)}
-                  onChange={() => handleConstraintToggle(constraint)}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-                <span className="ml-3 text-gray-700">{constraintLabels[constraint]}</span>
-              </label>
-            ))}
-          </div>
+          
+          <textarea
+            value={constraints}
+            onChange={(e) => setConstraints(e.target.value)}
+            disabled={noProblems}
+            rows={6}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:text-gray-500"
+            placeholder={t.onboarding?.constraints?.placeholder || 'Например: боль в спине, проблемы с коленями, диабет, астма... Опишите подробно, чтобы мы могли учесть это при составлении тренировок.'}
+          />
         </div>
 
-        {constraints.length > 0 && constraints.filter(c => c !== 'none').length > 0 && (
+        {/* No Problems Checkbox */}
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="noProblems"
+            checked={noProblems}
+            onChange={(e) => handleNoProblemsChange(e.target.checked)}
+            className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+          />
+          <label htmlFor="noProblems" className="ml-3 text-gray-700">
+            {t.onboarding?.constraints?.noProblems || 'У меня нет проблем со здоровьем или физических ограничений'}
+          </label>
+        </div>
+
+        {/* Conditional Messages */}
+        {noProblems && (
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-sm text-green-800">
+              {t.onboarding?.constraints?.noProblemsMessage || 'Отлично! Это означает, что у вас больше возможностей для различных типов тренировок.'}
+            </p>
+          </div>
+        )}
+
+        {constraints && !noProblems && (
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-800">
-              We'll tailor your workout recommendations to accommodate these constraints and ensure safe, effective training.
+              {t.onboarding?.constraints?.constraintsMessage || 'Спасибо за информацию! Мы учтем эти ограничения при составлении персональной программы тренировок.'}
             </p>
           </div>
         )}
