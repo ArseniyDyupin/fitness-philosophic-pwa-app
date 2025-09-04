@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
               {t.workouts}
             </h3>
             <p className="text-gray-600">
-              Track your workouts and get AI analysis
+              {t.homePage?.workoutsDescription || 'Track your workouts and get AI analysis'}
             </p>
           </Link>
 
@@ -42,7 +42,7 @@ const HomePage: React.FC = () => {
               {t.food}
             </h3>
             <p className="text-gray-600">
-              Log your nutrition and track calories
+              {t.homePage?.foodDescription || 'Log your nutrition and track calories'}
             </p>
           </Link>
 
@@ -55,7 +55,7 @@ const HomePage: React.FC = () => {
               {t.weekly}
             </h3>
             <p className="text-gray-600">
-              Weekly check-ins and progress tracking
+              {t.homePage?.weeklyDescription || 'Weekly check-ins and progress tracking'}
             </p>
           </Link>
 
@@ -68,7 +68,7 @@ const HomePage: React.FC = () => {
               {t.settings}
             </h3>
             <p className="text-gray-600">
-              Manage your profile and preferences
+              {t.homePage?.settingsDescription || 'Manage your profile and preferences'}
             </p>
           </Link>
         </div>

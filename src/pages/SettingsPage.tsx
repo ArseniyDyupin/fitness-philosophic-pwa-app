@@ -12,7 +12,7 @@ const SettingsPage: React.FC = () => {
   const t = useTranslations()
   
   if (!profile) {
-    return <div>Loading...</div>
+    return <div>{t.settingsPage?.loading || 'Loading...'}</div>
   }
 
   const handleLanguageChange = async (language: 'en' | 'ru') => {
@@ -21,7 +21,7 @@ const SettingsPage: React.FC = () => {
       setLanguage(language)
     } catch (error) {
       console.error('Failed to update language:', error)
-      alert('Failed to update language')
+      alert(t.settingsPage?.failedToUpdateLanguage || 'Failed to update language')
     }
   }
 
@@ -35,7 +35,7 @@ const SettingsPage: React.FC = () => {
               onClick={() => navigate('/')}
               className="text-gray-600 hover:text-gray-900"
             >
-              ← Back
+              {t.settingsPage?.back || '← Back'}
             </button>
             <h1 className="text-2xl font-bold text-gray-900">{t.settings}</h1>
             <div></div>
@@ -48,7 +48,7 @@ const SettingsPage: React.FC = () => {
         <div className="space-y-6">
           {/* Language Settings */}
           <div className="card">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Language</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.language || 'Language'}</h2>
             <div className="space-y-3">
               <label className="flex items-center">
                 <input
@@ -59,7 +59,7 @@ const SettingsPage: React.FC = () => {
                   onChange={() => handleLanguageChange('en')}
                   className="border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
-                <span className="ml-3 text-gray-700">English</span>
+                <span className="ml-3 text-gray-700">{t.english}</span>
               </label>
               <label className="flex items-center">
                 <input
@@ -70,52 +70,52 @@ const SettingsPage: React.FC = () => {
                   onChange={() => handleLanguageChange('ru')}
                   className="border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
-                <span className="ml-3 text-gray-700">Русский</span>
+                <span className="ml-3 text-gray-700">{t.russian}</span>
               </label>
             </div>
           </div>
 
           {/* Profile Information */}
           <div className="card">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.profileInformation || 'Profile Information'}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <p className="text-gray-900">{profile.name || 'Not set'}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.name || 'Name'}</label>
+                <p className="text-gray-900">{profile.name || (t.settingsPage?.notSet || 'Not set')}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
-                <p className="text-gray-900">{profile.age} years</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.age || 'Age'}</label>
+                <p className="text-gray-900">{profile.age} {t.settingsPage?.years || 'years'}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Height</label>
-                <p className="text-gray-900">{profile.height} cm</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.height || 'Height'}</label>
+                <p className="text-gray-900">{profile.height} {t.settingsPage?.cm || 'cm'}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
-                <p className="text-gray-900">{profile.weight} kg</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.weight || 'Weight'}</label>
+                <p className="text-gray-900">{profile.weight} {t.settingsPage?.kg || 'kg'}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.gender || 'Gender'}</label>
                 <p className="text-gray-900">{profile.gender}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Goals</label>
-                <p className="text-gray-900">{profile.goal || 'Not set'}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.goals || 'Goals'}</label>
+                <p className="text-gray-900">{profile.goal || (t.settingsPage?.notSet || 'Not set')}</p>
               </div>
             </div>
           </div>
 
           {/* Onboarding Reset */}
           <div className="card">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Onboarding</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.onboarding || 'Onboarding'}</h2>
             <div className="space-y-3">
               <p className="text-sm text-gray-600">
-                Reset the onboarding process to start over with language selection and profile setup.
+                {t.settingsPage?.onboardingDescription || 'Reset the onboarding process to start over with language selection and profile setup.'}
               </p>
               <button
                 onClick={() => {
-                  if (confirm('Are you sure you want to reset onboarding? This will clear your profile and start over.')) {
+                  if (confirm(t.settingsPage?.resetConfirmMessage || 'Are you sure you want to reset onboarding? This will clear your profile and start over.')) {
                     localStorage.removeItem('ai-trainer:has-launched')
                     localStorage.removeItem('ai-trainer:onboarding-draft')
                     window.location.reload()
@@ -123,20 +123,20 @@ const SettingsPage: React.FC = () => {
                 }}
                 className="btn-secondary text-red-600 border-red-300 hover:bg-red-50"
               >
-                Reset Onboarding
+                {t.settingsPage?.resetOnboarding || 'Reset Onboarding'}
               </button>
             </div>
           </div>
 
           {/* Goals */}
           <div className="card">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Goals</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.goals || 'Goals'}</h2>
             <div className="space-y-2">
-              <p className="text-gray-900">{profile.goal || 'No goals set'}</p>
+              <p className="text-gray-900">{profile.goal || (t.settingsPage?.noGoalsSet || 'No goals set')}</p>
             </div>
             {profile.goalsDetailed && (
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Detailed Goals</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.detailedGoals || 'Detailed Goals'}</label>
                 <p className="text-gray-900">{profile.goalsDetailed}</p>
               </div>
             )}
@@ -144,7 +144,7 @@ const SettingsPage: React.FC = () => {
 
           {/* Export/Import */}
           <div className="card">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Data Management</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.dataManagement || 'Data Management'}</h2>
             <JsonFileButtons />
           </div>
         </div>

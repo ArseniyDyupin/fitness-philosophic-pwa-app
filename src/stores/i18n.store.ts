@@ -241,7 +241,61 @@ export const translations = {
     
     // Settings
     exportProfile: 'Export Profile',
-    importProfile: 'Import Profile'
+    importProfile: 'Import Profile',
+    
+    // HomePage
+    homePage: {
+      workoutsDescription: 'Отслеживайте тренировки и получайте AI анализ',
+      foodDescription: 'Ведите дневник питания и отслеживайте калории',
+      weeklyDescription: 'Еженедельные проверки и отслеживание прогресса',
+      settingsDescription: 'Управляйте профилем и настройками'
+    },
+    
+    // SettingsPage
+    settingsPage: {
+      back: '← Back',
+      language: 'Language',
+      profileInformation: 'Profile Information',
+      name: 'Name',
+      age: 'Age',
+      height: 'Height',
+      weight: 'Weight',
+      gender: 'Gender',
+      goals: 'Goals',
+      notSet: 'Not set',
+      years: 'years',
+      cm: 'cm',
+      kg: 'kg',
+      onboarding: 'Onboarding',
+      onboardingDescription: 'Reset the onboarding process to start over with language selection and profile setup.',
+      resetOnboarding: 'Reset Onboarding',
+      resetConfirmMessage: 'Are you sure you want to reset onboarding? This will clear your profile and start over.',
+      detailedGoals: 'Detailed Goals',
+      noGoalsSet: 'No goals set',
+      dataManagement: 'Data Management',
+      loading: 'Loading...',
+      failedToUpdateLanguage: 'Failed to update language'
+    },
+    
+    // JsonFileButtons
+    jsonFileButtons: {
+      dataExportedSuccessfully: 'Data exported successfully!',
+      exportFailed: 'Export failed',
+      dataImportedSuccessfully: 'Data imported successfully!',
+      importFailed: 'Import failed',
+      pleaseSelectValidJsonFile: 'Please select a valid JSON file',
+      fileSizeMustBeLessThan10MB: 'File size must be less than 10MB',
+      exportAllData: 'Export All Data',
+      exporting: 'Exporting...',
+      importData: 'Import Data',
+      importing: 'Importing...',
+      export: 'Export:',
+      exportDescription: 'Download all your data as a JSON file for backup.',
+      import: 'Import:',
+      importDescription: 'Restore your data from a previously exported JSON file.',
+      note: 'Note:',
+      importNote: 'Importing will replace all existing data. Make sure to backup first.'
+    }
   },
   
   ru: {
@@ -440,7 +494,61 @@ export const translations = {
     
     // Settings
     exportProfile: 'Экспорт профиля',
-    importProfile: 'Импорт профиля'
+    importProfile: 'Импорт профиля',
+    
+    // HomePage
+    homePage: {
+      workoutsDescription: 'Отслеживайте тренировки и получайте AI анализ',
+      foodDescription: 'Ведите дневник питания и отслеживайте калории',
+      weeklyDescription: 'Еженедельные проверки и отслеживание прогресса',
+      settingsDescription: 'Управляйте профилем и настройками'
+    },
+    
+    // SettingsPage
+    settingsPage: {
+      back: '← Назад',
+      language: 'Язык',
+      profileInformation: 'Информация о профиле',
+      name: 'Имя',
+      age: 'Возраст',
+      height: 'Рост',
+      weight: 'Вес',
+      gender: 'Пол',
+      goals: 'Цели',
+      notSet: 'Не указано',
+      years: 'лет',
+      cm: 'см',
+      kg: 'кг',
+      onboarding: 'Настройка',
+      onboardingDescription: 'Сбросить процесс настройки, чтобы начать заново с выбора языка и настройки профиля.',
+      resetOnboarding: 'Сбросить настройку',
+      resetConfirmMessage: 'Вы уверены, что хотите сбросить настройку? Это очистит ваш профиль и начнет заново.',
+      detailedGoals: 'Детальные цели',
+      noGoalsSet: 'Цели не установлены',
+      dataManagement: 'Управление данными',
+      loading: 'Загрузка...',
+      failedToUpdateLanguage: 'Не удалось обновить язык'
+    },
+    
+    // JsonFileButtons
+    jsonFileButtons: {
+      dataExportedSuccessfully: 'Данные успешно экспортированы!',
+      exportFailed: 'Экспорт не удался',
+      dataImportedSuccessfully: 'Данные успешно импортированы!',
+      importFailed: 'Импорт не удался',
+      pleaseSelectValidJsonFile: 'Пожалуйста, выберите валидный JSON файл',
+      fileSizeMustBeLessThan10MB: 'Размер файла должен быть меньше 10MB',
+      exportAllData: 'Экспортировать все данные',
+      exporting: 'Экспортирую...',
+      importData: 'Импортировать данные',
+      importing: 'Импортирую...',
+      export: 'Экспорт:',
+      exportDescription: 'Скачайте все свои данные в виде JSON файла для резервного копирования.',
+      import: 'Импорт:',
+      importDescription: 'Восстановите свои данные из ранее экспортированного JSON файла.',
+      note: 'Примечание:',
+      importNote: 'Импорт заменит все существующие данные. Убедитесь, что сначала сделайте резервную копию.'
+    }
   }
 }
 
