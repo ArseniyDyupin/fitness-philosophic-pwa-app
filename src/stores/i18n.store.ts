@@ -329,6 +329,20 @@ export const translations = {
       failedToSave: 'Failed to save workout',
       pleaseEnterDescription: 'Please enter workout description',
       failedToParse: 'Failed to parse workout text. Please use the form mode instead.'
+    },
+    
+    // WorkoutCard
+    workoutCard: {
+      today: 'Today',
+      yesterday: 'Yesterday',
+      calories: 'Calories',
+      duration: 'Duration',
+      exercises: 'Exercises',
+      moreExercises: 'more exercises',
+      aiReviewed: 'AI Reviewed',
+      reps: 'reps',
+      min: 'min',
+      km: 'km'
     }
   },
   
@@ -616,6 +630,20 @@ export const translations = {
       failedToSave: 'Не удалось сохранить тренировку',
       pleaseEnterDescription: 'Пожалуйста, введите описание тренировки',
       failedToParse: 'Не удалось разобрать текст тренировки. Пожалуйста, используйте режим формы.'
+    },
+    
+    // WorkoutCard
+    workoutCard: {
+      today: 'Сегодня',
+      yesterday: 'Вчера',
+      calories: 'Калории',
+      duration: 'Длительность',
+      exercises: 'Упражнения',
+      moreExercises: 'еще упражнений',
+      aiReviewed: 'Проанализировано ИИ',
+      reps: 'повт.',
+      min: 'мин',
+      km: 'км'
     }
   }
 }

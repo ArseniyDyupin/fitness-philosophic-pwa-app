@@ -22,13 +22,13 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
     const workoutDate = new Date(date)
     
     if (workoutDate.toDateString() === today.toDateString()) {
-      return 'Today'
+      return t.workoutCard?.today || 'Today'
     }
     
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
     if (workoutDate.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday'
+      return t.workoutCard?.yesterday || 'Yesterday'
     }
     
     return format(workoutDate, 'MMM d, yyyy')
@@ -41,9 +41,9 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
   }
 
   const getRpeLabel = (rpe: number) => {
-    if (rpe <= 3) return 'Easy'
-    if (rpe <= 7) return 'Moderate'
-    return 'Hard'
+    if (rpe <= 3) return t.workoutForm?.easy || 'Easy'
+    if (rpe <= 7) return t.workoutForm?.moderate || 'Moderate'
+    return t.workoutForm?.hard || 'Hard'
   }
 
   const renderExerciseSummary = () => {
@@ -84,7 +84,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
           <div className="flex items-center space-x-2">
             <Flame className="text-orange-500" size={16} />
             <div>
-              <div className="text-sm text-gray-600">Calories</div>
+              <div className="text-sm text-gray-600">{t.workoutCard?.calories || 'Calories'}</div>
               <div className="font-medium text-gray-900">{totalCalories} kcal</div>
             </div>
           </div>
@@ -92,15 +92,15 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
           <div className="flex items-center space-x-2">
             <Clock className="text-blue-500" size={16} />
             <div>
-              <div className="text-sm text-gray-600">Duration</div>
-              <div className="font-medium text-gray-900">{Math.round(totalDuration)} min</div>
+              <div className="text-sm text-gray-600">{t.workoutCard?.duration || 'Duration'}</div>
+              <div className="font-medium text-gray-900">{Math.round(totalDuration)} {t.workoutCard?.min || 'min'}</div>
             </div>
           </div>
           
           <div className="flex items-center space-x-2">
             <TrendingUp className="text-green-500" size={16} />
             <div>
-              <div className="text-sm text-gray-600">Exercises</div>
+              <div className="text-sm text-gray-600">{t.workoutCard?.exercises || 'Exercises'}</div>
               <div className="font-medium text-gray-900">{workout.exercises.length}</div>
             </div>
           </div>
@@ -118,19 +118,19 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
               </span>
               <span className="text-gray-500">
                 {exercise.type === 'run' && exercise.details.distanceKm && (
-                  `${exercise.details.distanceKm} km`
+                  `${exercise.details.distanceKm} ${t.workoutCard?.km || 'km'}`
                 )}
                 {exercise.type === 'pullups' && exercise.details.repsPerSet && (
-                  `${exercise.details.repsPerSet.reduce((sum, reps) => sum + reps, 0)} reps`
+                  `${exercise.details.repsPerSet.reduce((sum, reps) => sum + reps, 0)} ${t.workoutCard?.reps || 'reps'}`
                 )}
                 {exercise.type === 'pushups' && exercise.details.repsPerSet && (
-                  `${exercise.details.repsPerSet.reduce((sum, reps) => sum + reps, 0)} reps`
+                  `${exercise.details.repsPerSet.reduce((sum, reps) => sum + reps, 0)} ${t.workoutCard?.reps || 'reps'}`
                 )}
                 {exercise.type === 'plank' && exercise.details.seconds && (
                   `${exercise.details.seconds.reduce((sum, seconds) => sum + seconds, 0)}s`
                 )}
                 {exercise.type === 'custom' && exercise.details.durationMin && (
-                  `${exercise.details.durationMin} min`
+                  `${exercise.details.durationMin} ${t.workoutCard?.min || 'min'}`
                 )}
               </span>
             </div>
@@ -138,7 +138,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
           
           {workout.exercises.length > 3 && (
             <div className="text-sm text-gray-500">
-              +{workout.exercises.length - 3} more exercises
+              +{workout.exercises.length - 3} {t.workoutCard?.moreExercises || 'more exercises'}
             </div>
           )}
         </div>
@@ -156,7 +156,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
           {workout.aiReviewId && (
             <div className="flex items-center space-x-2 text-sm text-primary-600">
               <TrendingUp size={16} />
-              <span>AI Reviewed</span>
+              <span>{t.workoutCard?.aiReviewed || 'AI Reviewed'}</span>
             </div>
           )}
         </div>
