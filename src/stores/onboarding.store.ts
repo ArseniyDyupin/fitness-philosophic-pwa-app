@@ -122,10 +122,8 @@ export const useOnboardingStore = create<OnboardingState>()(
           draft.weight &&
           draft.gender &&
           draft.goal &&
-          draft.goal.trim().length > 0 &&
           draft.frequency &&
-          draft.duration &&
-          draft.language
+          draft.duration
         )
       }
     }),

@@ -27,13 +27,14 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
   showSaveButton = false
 }) => {
   const navigate = useNavigate()
-  const { currentStep, totalSteps, isStepValid, isDraftComplete, setCurrentStep } = useOnboardingStore()
+  const { currentStep, totalSteps, isStepValid, isDraftComplete, setCurrentStep } =
+    useOnboardingStore()
   const t = useTranslations()
 
   useEffect(() => {
     setCurrentStep(stepNumber)
   }, [stepNumber])
-  console.log(canProceed, currentStep, isStepValid(currentStep), '<<<< steper')
+  console.log(isDraftComplete(), '<<<< isDraftComplete')
 
   const handleNext = () => {
     if (canProceed && isStepValid(currentStep)) {
@@ -82,21 +83,24 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
           {/* Step Title */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{stepTitle}</h1>
-            {stepDescription && (
-              <p className="text-lg text-gray-600">{stepDescription}</p>
-            )}
+            {stepDescription && <p className="text-lg text-gray-600">{stepDescription}</p>}
           </div>
 
           {/* Progress Bar */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-gray-700">
-                {t.onboarding?.progress?.stepOf?.replace('{{current}}', String(stepNumber + 1)).replace('{{total}}', String(totalSteps)) || `Step ${stepNumber + 1} of ${totalSteps}`}
+                {t.onboarding?.progress?.stepOf
+                  ?.replace('{{current}}', String(stepNumber + 1))
+                  .replace('{{total}}', String(totalSteps)) ||
+                  `Step ${stepNumber + 1} of ${totalSteps}`}
               </span>
-              <span className="text-sm text-gray-500">{Math.round(((stepNumber + 1) / totalSteps) * 100)}%</span>
+              <span className="text-sm text-gray-500">
+                {Math.round(((stepNumber + 1) / totalSteps) * 100)}%
+              </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
+              <div
                 className="bg-primary-600 h-3 rounded-full transition-all duration-300"
                 style={{ width: `${((stepNumber + 1) / totalSteps) * 100}%` }}
               ></div>
@@ -113,8 +117,8 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
                   index === stepNumber
                     ? 'bg-primary-100 text-primary-700 border-2 border-primary-300'
                     : index < stepNumber
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                 }`}
               >
                 <div className="flex items-center justify-center space-x-2">
@@ -126,7 +130,8 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
                     </span>
                   )}
                   <span className="hidden sm:inline">
-                    {t.onboarding?.steps?.[index as keyof typeof t.onboarding.steps] || `Step ${index + 1}`}
+                    {t.onboarding?.steps?.[index as keyof typeof t.onboarding.steps] ||
+                      `Step ${index + 1}`}
                   </span>
                 </div>
               </button>
@@ -139,10 +144,8 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Profile Summary Sidebar */}
         <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-          <div className="lg:col-span-2">
-            {children}
-          </div>
-          
+          <div className="lg:col-span-2">{children}</div>
+
           <div className="lg:col-span-1 mt-8 lg:mt-0">
             <ProfileSummary />
           </div>
