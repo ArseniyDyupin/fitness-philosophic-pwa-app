@@ -33,7 +33,7 @@ const ProfileSummary: React.FC = () => {
       case 'duration':
         return `${value} minutes`
       case 'goal':
-        return draft.goal?.types?.join(', ') || 'Not set'
+        return draft.goal || 'Не указано'
       case 'constraints':
         if (draft.constraints?.includes('none')) {
           return 'Проблем нет'

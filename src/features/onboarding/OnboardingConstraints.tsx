@@ -34,6 +34,7 @@ const OnboardingConstraints: React.FC = () => {
       canProceed={true}
     >
       <div className="space-y-6">
+        {/* Equipment Textarea */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-4">
             {t.onboarding?.constraints?.label || 'Опишите любые физические ограничения или проблемы со здоровьем, которые у вас есть'}

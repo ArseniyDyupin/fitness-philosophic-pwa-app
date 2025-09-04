@@ -118,10 +118,11 @@ export const translations = {
         title: 'What are your fitness goals?',
         description: 'Tell us about your primary fitness objectives',
         yourName: 'Your Name',
-        selectGoals: 'Select your primary fitness goals',
+        selectGoals: 'Describe your primary fitness goals',
         additionalDetails: 'Additional Details (Optional)',
         descriptionPlaceholder: 'Tell us more about your specific goals...',
         namePlaceholder: 'Enter your name',
+        goalsPlaceholder: 'For example: I want to lose 10 kg, gain muscle mass, improve endurance, become stronger, feel better... Describe in detail what you want to achieve.',
         weightLoss: 'Weight Loss',
         muscleGain: 'Muscle Gain',
         endurance: 'Endurance',
@@ -150,6 +151,18 @@ export const translations = {
         noProblems: 'I have no health problems or physical limitations',
         noProblemsMessage: 'Great! This means you have more opportunities for various types of workouts.',
         constraintsMessage: 'Thank you for the information! We will take these limitations into account when creating your personal training program.'
+      },
+      equipment: {
+        title: 'Available Equipment',
+        description: 'Tell us what fitness equipment you have and what sports you prefer',
+        equipmentLabel: 'Describe the sports equipment you have',
+        equipmentPlaceholder: 'For example: dumbbells, jump rope, yoga mat, exercise bike, pull-up bar... Describe everything you have.',
+        sportsLabel: 'What sports or physical activities do you prefer?',
+        sportsPlaceholder: 'For example: running, swimming, yoga, strength training, dancing, cycling, basketball... Tell us about what you like.',
+        noEquipment: 'I have no sports equipment',
+        noEquipmentMessage: 'No problem! We will focus on bodyweight exercises and minimal equipment workouts.',
+        equipmentMessage: 'Great! We will create workouts that make the most of your available equipment.',
+        sportsMessage: 'Thank you for the information about preferences! We will take this into account when creating your personal training program.'
       },
       detailedGoals: {
         title: 'Detailed Goals',
@@ -294,10 +307,11 @@ export const translations = {
         title: 'Какие у вас фитнес-цели?',
         description: 'Расскажите нам о ваших основных фитнес-целях',
         yourName: 'Ваше имя',
-        selectGoals: 'Выберите ваши основные фитнес-цели',
+        selectGoals: 'Опишите ваши основные фитнес-цели',
         additionalDetails: 'Дополнительные детали (Необязательно)',
         descriptionPlaceholder: 'Расскажите нам больше о ваших конкретных целях...',
         namePlaceholder: 'Введите ваше имя',
+        goalsPlaceholder: 'Например: я хочу потерять 10 кг, набрать мышечную массу, улучшить выносливость, стать сильнее, чувствовать себя лучше... Опишите подробно, чего вы хотите достичь.',
         weightLoss: 'Потеря веса',
         muscleGain: 'Набор мышечной массы',
         endurance: 'Выносливость',
@@ -326,6 +340,18 @@ export const translations = {
         noProblems: 'У меня нет проблем со здоровьем или физических ограничений',
         noProblemsMessage: 'Отлично! Это означает, что у вас больше возможностей для различных типов тренировок.',
         constraintsMessage: 'Спасибо за информацию! Мы учтем эти ограничения при создании вашей персональной тренировочной программы.'
+      },
+      equipment: {
+        title: 'Доступное оборудование',
+        description: 'Расскажите нам, какое фитнес-оборудование у вас есть и какие виды спорта вам нравятся',
+        equipmentLabel: 'Опишите спортивное оборудование, которое у вас есть',
+        equipmentPlaceholder: 'Например: гантели, скакалка, коврик для йоги, велосипед, подтягивающаяся перекладина... Опишите все, что у вас есть.',
+        sportsLabel: 'Какие виды спорта или физические активности вам нравятся?',
+        sportsPlaceholder: 'Например: бег, плавание, йога, силовая тренировка, танцы, велосипед, баскетбол... Расскажите нам, что вам нравится.',
+        noEquipment: 'У меня нет спортивного оборудования',
+        noEquipmentMessage: 'Никаких проблем! Мы сосредоточимся на упражнениях с собственным весом и тренировках с минимальным оборудованием.',
+        equipmentMessage: 'Отлично! Мы создадим тренировки, которые максимально используют ваше доступное оборудование.',
+        sportsMessage: 'Спасибо за информацию о предпочтениях! Мы учтем это при создании вашей персональной тренировочной программы.'
       },
       detailedGoals: {
         title: 'Детальные цели',

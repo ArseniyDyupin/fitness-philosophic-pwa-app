@@ -5,7 +5,7 @@ export interface Profile {
   gender: 'male' | 'female' | 'other'  // Gender
   height: number                // Height in cm
   weight: number                // Weight in kg
-  goal: Goal                    // Workout goals
+  goal: string                  // Workout goals (simple text)
   constraints: string[]         // Physical constraints
   equipment: string[]           // Available equipment
   frequency: number             // Workout frequency per week
@@ -14,13 +14,6 @@ export interface Profile {
   goalsDetailed: string         // Detailed description of goals
   createdAt: string            // ISO string
   updatedAt: string            // ISO string
-}
-
-export interface Goal {
-  types: ('weight_loss' | 'muscle_gain' | 'endurance' | 'strength' | 'general_fitness')[]
-  targetWeight?: number
-  targetEvent?: string
-  description: string
 }
 
 export interface WorkoutExercise {

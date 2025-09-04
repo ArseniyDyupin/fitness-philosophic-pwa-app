@@ -33,9 +33,9 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
   useEffect(() => {
     setCurrentStep(stepNumber)
   }, [stepNumber])
+  console.log(canProceed, currentStep, isStepValid(currentStep), '<<<< steper')
 
   const handleNext = () => {
-    console.log(canProceed, currentStep, isStepValid(currentStep), '<<<< steper')
     if (canProceed && isStepValid(currentStep)) {
       // Navigate to next step instead of just updating store
       const nextStepNumber = currentStep + 1

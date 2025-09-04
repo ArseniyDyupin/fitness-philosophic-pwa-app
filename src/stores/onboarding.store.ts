@@ -98,7 +98,7 @@ export const useOnboardingStore = create<OnboardingState>()(
         
         switch (step) {
           case 0: // Goals
-            return !!(draft.name && draft.goal?.types && draft.goal.types.length > 0)
+            return !!(draft.name && draft.goal && draft.goal.trim().length > 0)
           case 1: // Constraints
             return true // Optional step
           case 2: // Equipment
@@ -122,8 +122,8 @@ export const useOnboardingStore = create<OnboardingState>()(
           draft.height &&
           draft.weight &&
           draft.gender &&
-          draft.goal?.types &&
-          draft.goal.types.length > 0 &&
+          draft.goal &&
+          draft.goal.trim().length > 0 &&
           draft.frequency &&
           draft.duration &&
           draft.language

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useOnboardingStore } from '../../stores/onboarding.store'
+import { useTranslations } from '../../stores/i18n.store'
 import OnboardingLayout from '../../components/OnboardingLayout'
 
 const OnboardingEquipment: React.FC = () => {
   const { draft, updateDraft } = useOnboardingStore()
+  const t = useTranslations()
   
   const [equipment, setEquipment] = useState(draft.equipment?.join(', ') || '')
   const [sportsPreferences, setSportsPreferences] = useState(draft.sportsPreferences || '')
@@ -34,15 +36,15 @@ const OnboardingEquipment: React.FC = () => {
   return (
     <OnboardingLayout
       stepNumber={2}
-      stepTitle="Доступное оборудование"
-      stepDescription="Расскажите, какое спортивное оборудование у вас есть и какие виды спорта предпочитаете"
+      stepTitle={t.onboarding?.equipment?.title || 'Доступное оборудование'}
+      stepDescription={t.onboarding?.equipment?.description || 'Расскажите, какое спортивное оборудование у вас есть и какие виды спорта предпочитаете'}
       canProceed={true}
     >
       <div className="space-y-6">
         {/* Equipment Textarea */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-4">
-            Опишите спортивное оборудование, которое у вас есть
+            {t.onboarding?.equipment?.equipmentLabel || 'Опишите спортивное оборудование, которое у вас есть'}
           </label>
           
           <textarea
@@ -51,14 +53,14 @@ const OnboardingEquipment: React.FC = () => {
             disabled={noEquipment}
             rows={4}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:text-gray-500"
-            placeholder="Например: гантели, скакалка, коврик для йоги, велотренажер, турник... Опишите все, что у вас есть."
+            placeholder={t.onboarding?.equipment?.equipmentPlaceholder || 'Например: гантели, скакалка, коврик для йоги, велотренажер, турник... Опишите все, что у вас есть.'}
           />
         </div>
 
         {/* Sports Preferences */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-4">
-            Какие виды спорта или физические активности вы предпочитаете?
+            {t.onboarding?.equipment?.sportsLabel || 'Какие виды спорта или физические активности вы предпочитаете?'}
           </label>
           
           <textarea
@@ -66,7 +68,7 @@ const OnboardingEquipment: React.FC = () => {
             onChange={(e) => setSportsPreferences(e.target.value)}
             rows={4}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-            placeholder="Например: бег, плавание, йога, силовые тренировки, танцы, велоспорт, баскетбол... Расскажите о том, что вам нравится."
+            placeholder={t.onboarding?.equipment?.sportsPlaceholder || 'Например: бег, плавание, йога, силовые тренировки, танцы, велоспорт, баскетбол... Расскажите о том, что вам нравится.'}
           />
         </div>
 
@@ -80,7 +82,7 @@ const OnboardingEquipment: React.FC = () => {
             className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
           <label htmlFor="noEquipment" className="ml-3 text-gray-700">
-            У меня нет спортивного оборудования
+            {t.onboarding?.equipment?.noEquipment || 'У меня нет спортивного оборудования'}
           </label>
         </div>
 
@@ -88,7 +90,7 @@ const OnboardingEquipment: React.FC = () => {
         {noEquipment && (
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-800">
-              Не проблема! Мы сосредоточимся на упражнениях с собственным весом и минимальным оборудованием.
+              {t.onboarding?.equipment?.noEquipmentMessage || 'Не проблема! Мы сосредоточимся на упражнениях с собственным весом и минимальным оборудованием.'}
             </p>
           </div>
         )}
@@ -96,7 +98,7 @@ const OnboardingEquipment: React.FC = () => {
         {equipment && !noEquipment && (
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-sm text-green-800">
-              Отлично! Мы создадим тренировки, которые максимально используют ваше доступное оборудование.
+              {t.onboarding?.equipment?.equipmentMessage || 'Отлично! Мы создадим тренировки, которые максимально используют ваше доступное оборудование.'}
             </p>
           </div>
         )}
@@ -104,7 +106,7 @@ const OnboardingEquipment: React.FC = () => {
         {sportsPreferences && (
           <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
             <p className="text-sm text-purple-800">
-              Спасибо за информацию о предпочтениях! Мы учтем это при составлении персональной программы тренировок.
+              {t.onboarding?.equipment?.sportsMessage || 'Спасибо за информацию о предпочтениях! Мы учтем это при составлении персональной программы тренировок.'}
             </p>
           </div>
         )}
