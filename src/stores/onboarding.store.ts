@@ -11,6 +11,7 @@ interface OnboardingDraft {
   goal: Goal
   constraints: string[]
   equipment: string[]
+  sportsPreferences: string
   frequency: number
   duration: number
   language: 'en' | 'ru'

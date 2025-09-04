@@ -5,89 +5,106 @@ import OnboardingLayout from '../../components/OnboardingLayout'
 const OnboardingEquipment: React.FC = () => {
   const { draft, updateDraft } = useOnboardingStore()
   
-  const [equipment, setEquipment] = useState<string[]>(draft.equipment || [])
-
-  const equipmentOptions = [
-    'dumbbells',
-    'barbell',
-    'kettlebell',
-    'resistance_bands',
-    'pull_up_bar',
-    'bench',
-    'treadmill',
-    'bicycle',
-    'yoga_mat',
-    'none'
-  ]
-
-  const equipmentLabels: Record<string, string> = {
-    dumbbells: 'Dumbbells',
-    barbell: 'Barbell',
-    kettlebell: 'Kettlebell',
-    resistance_bands: 'Resistance Bands',
-    pull_up_bar: 'Pull-up Bar',
-    bench: 'Bench',
-    treadmill: 'Treadmill',
-    bicycle: 'Bicycle',
-    yoga_mat: 'Yoga Mat',
-    none: 'No equipment'
-  }
+  const [equipment, setEquipment] = useState(draft.equipment?.join(', ') || '')
+  const [sportsPreferences, setSportsPreferences] = useState(draft.sportsPreferences || '')
+  const [noEquipment, setNoEquipment] = useState(draft.equipment?.includes('none') || false)
 
   useEffect(() => {
-    updateDraft({ equipment })
-  }, [equipment, updateDraft])
-
-  const handleEquipmentToggle = (equipmentItem: string) => {
-    if (equipmentItem === 'none') {
-      setEquipment([])
+    if (noEquipment) {
+      updateDraft({ 
+        equipment: ['none'],
+        sportsPreferences: sportsPreferences || draft.sportsPreferences || ''
+      })
     } else {
-      setEquipment(prev => 
-        prev.includes(equipmentItem) 
-          ? prev.filter(e => e !== equipmentItem)
-          : [...prev.filter(e => e !== 'none'), equipmentItem]
-      )
+      const equipmentArray = equipment.trim() ? equipment.split(',').map(e => e.trim()).filter(e => e) : []
+      updateDraft({ 
+        equipment: equipmentArray,
+        sportsPreferences: sportsPreferences || draft.sportsPreferences || ''
+      })
+    }
+  }, [equipment, sportsPreferences, noEquipment, updateDraft, draft.sportsPreferences])
+
+  const handleNoEquipmentChange = (checked: boolean) => {
+    setNoEquipment(checked)
+    if (checked) {
+      setEquipment('')
     }
   }
 
   return (
     <OnboardingLayout
       stepNumber={2}
-      stepTitle="Available Equipment"
-      stepDescription="What fitness equipment do you have access to?"
+      stepTitle="Доступное оборудование"
+      stepDescription="Расскажите, какое спортивное оборудование у вас есть и какие виды спорта предпочитаете"
       canProceed={true}
     >
       <div className="space-y-6">
+        {/* Equipment Textarea */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-4">
-            Select all the equipment you have available for workouts
+            Опишите спортивное оборудование, которое у вас есть
           </label>
-          <div className="space-y-3">
-            {equipmentOptions.map(equipmentItem => (
-              <label key={equipmentItem} className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={equipment.includes(equipmentItem)}
-                  onChange={() => handleEquipmentToggle(equipmentItem)}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-                <span className="ml-3 text-gray-700">{equipmentLabels[equipmentItem]}</span>
-              </label>
-            ))}
-          </div>
+          
+          <textarea
+            value={equipment}
+            onChange={(e) => setEquipment(e.target.value)}
+            disabled={noEquipment}
+            rows={4}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:text-gray-500"
+            placeholder="Например: гантели, скакалка, коврик для йоги, велотренажер, турник... Опишите все, что у вас есть."
+          />
         </div>
 
-        {equipment.length > 0 && equipment.filter(e => e !== 'none').length > 0 && (
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-800">
-              Great! We'll create workouts that make the most of your available equipment.
+        {/* Sports Preferences */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-4">
+            Какие виды спорта или физические активности вы предпочитаете?
+          </label>
+          
+          <textarea
+            value={sportsPreferences}
+            onChange={(e) => setSportsPreferences(e.target.value)}
+            rows={4}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+            placeholder="Например: бег, плавание, йога, силовые тренировки, танцы, велоспорт, баскетбол... Расскажите о том, что вам нравится."
+          />
+        </div>
+
+        {/* No Equipment Checkbox */}
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="noEquipment"
+            checked={noEquipment}
+            onChange={(e) => handleNoEquipmentChange(e.target.checked)}
+            className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+          />
+          <label htmlFor="noEquipment" className="ml-3 text-gray-700">
+            У меня нет спортивного оборудования
+          </label>
+        </div>
+
+        {/* Conditional Messages */}
+        {noEquipment && (
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              Не проблема! Мы сосредоточимся на упражнениях с собственным весом и минимальным оборудованием.
             </p>
           </div>
         )}
 
-        {equipment.includes('none') && (
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
-              No problem! We'll focus on bodyweight exercises and minimal equipment workouts.
+        {equipment && !noEquipment && (
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-sm text-green-800">
+              Отлично! Мы создадим тренировки, которые максимально используют ваше доступное оборудование.
+            </p>
+          </div>
+        )}
+
+        {sportsPreferences && (
+          <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+            <p className="text-sm text-purple-800">
+              Спасибо за информацию о предпочтениях! Мы учтем это при составлении персональной программы тренировок.
             </p>
           </div>
         )}

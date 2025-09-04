@@ -159,6 +159,12 @@ const ProfileSummary: React.FC = () => {
               <span className="text-gray-600 font-medium">Equipment:</span> 
               <span className="text-gray-900">{formatValue('equipment', draft.equipment)}</span>
             </div>
+            {draft.sportsPreferences && (
+              <div className="flex justify-between items-center py-1">
+                <span className="text-gray-600 font-medium">Sports Preferences:</span> 
+                <span className="text-gray-900">{draft.sportsPreferences}</span>
+              </div>
+            )}
             {draft.goalsDetailed && (
               <div className="flex justify-between items-center py-1">
                 <span className="text-gray-600 font-medium">Details:</span> 
