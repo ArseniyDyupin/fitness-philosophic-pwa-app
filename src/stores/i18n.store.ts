@@ -47,6 +47,7 @@ export const translations = {
   en: {
     // Common
     save: 'Save',
+    saving: 'Saving...',
     cancel: 'Cancel',
     delete: 'Delete',
     edit: 'Edit',
@@ -380,7 +381,19 @@ export const translations = {
       total: 'total',
       holds: 'holds',
       minutes: 'minutes',
-      for: 'for'
+      for: 'for',
+      workoutUpdated: 'Workout updated successfully',
+      exerciseUpdated: 'Exercise updated successfully',
+      updateFailed: 'Failed to update',
+      editWorkout: 'Edit workout',
+      editExercise: 'Edit exercise',
+      exerciseType: 'Exercise Type',
+      distance: 'Distance',
+      repsPerSet: 'Reps per set',
+      commaSeparated: 'comma separated',
+      seconds: 'Seconds',
+      exerciseName: 'Exercise Name',
+      notes: 'Notes'
     },
     
     // AISettings
@@ -417,6 +430,7 @@ export const translations = {
   ru: {
     // Common
     save: 'Сохранить',
+    saving: 'Сохраняю...',
     cancel: 'Отмена',
     delete: 'Удалить',
     edit: 'Редактировать',
@@ -749,7 +763,19 @@ export const translations = {
       total: 'всего',
       holds: 'удержаний',
       minutes: 'минут',
-      for: 'в течение'
+      for: 'в течение',
+      workoutUpdated: 'Тренировка успешно обновлена',
+      exerciseUpdated: 'Упражнение успешно обновлено',
+      updateFailed: 'Не удалось обновить',
+      editWorkout: 'Редактировать тренировку',
+      editExercise: 'Редактировать упражнение',
+      exerciseType: 'Тип упражнения',
+      distance: 'Расстояние',
+      repsPerSet: 'Повторения в подходе',
+      commaSeparated: 'через запятую',
+      seconds: 'Секунды',
+      exerciseName: 'Название упражнения',
+      notes: 'Заметки'
     },
     
     // AISettings
