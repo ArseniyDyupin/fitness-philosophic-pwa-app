@@ -321,14 +321,16 @@ export const translations = {
       duration: 'Duration:',
       exercisesCount: 'Exercises:',
       describeWorkout: 'Describe your workout',
-      workoutDescriptionPlaceholder: 'Example: пробежал 5 км, подтянулся 7-5-3-3-2, отжимания 20-20-15, планка 60-45-50',
+      workoutDescriptionPlaceholder: 'Example: ran 5 km, pull-ups 7-5-3-3-2, push-ups 20-20-15, plank 60-45-50',
       workoutDescriptionHelp: 'Describe your workout in natural language. The AI will parse it into structured exercises.',
       parseAndContinue: 'Parse and Continue',
       parsing: 'Parsing...',
       pleaseAddExercise: 'Please add at least one exercise',
       failedToSave: 'Failed to save workout',
       pleaseEnterDescription: 'Please enter workout description',
-      failedToParse: 'Failed to parse workout text. Please use the form mode instead.'
+      failedToParse: 'Failed to parse workout text. Please use the form mode instead.',
+      aiNotConfigured: 'AI is not configured. Please set up your OpenAI API key in Settings.',
+      aiParseFailed: 'AI parsing failed. Please try again or use form mode.'
     },
     
     // WorkoutCard
@@ -695,7 +697,9 @@ export const translations = {
       pleaseAddExercise: 'Пожалуйста, добавьте хотя бы одно упражнение',
       failedToSave: 'Не удалось сохранить тренировку',
       pleaseEnterDescription: 'Пожалуйста, введите описание тренировки',
-      failedToParse: 'Не удалось разобрать текст тренировки. Пожалуйста, используйте режим формы.'
+      failedToParse: 'Не удалось разобрать текст тренировки. Пожалуйста, используйте режим формы.',
+      aiNotConfigured: 'ИИ не настроен. Пожалуйста, настройте ваш OpenAI API ключ в Настройках.',
+      aiParseFailed: 'Парсинг ИИ не удался. Попробуйте еще раз или используйте режим формы.'
     },
     
     // WorkoutCard

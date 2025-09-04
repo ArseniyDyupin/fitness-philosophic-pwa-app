@@ -169,14 +169,106 @@ Keep the response concise and practical. Focus on one main recommendation.`
     }
   }
 
-  async parseWorkoutText(prompt: string, abortController?: AbortController): Promise<any[]> {
+  async parseWorkoutText(workoutText: string, language: 'en' | 'ru' = 'ru', abortController?: AbortController): Promise<any[]> {
+    const exerciseSchema = {
+      type: "string (run|pullups|pushups|plank|custom)",
+      details: {
+        // For run
+        distanceKm: "number (optional)",
+        durationMin: "number (optional)",
+        // For pullups/pushups
+        sets: "number (optional)",
+        repsPerSet: "number[] (optional)",
+        // For plank
+        seconds: "number[] (optional)",
+        // For custom
+        customExercise: "string (optional)",
+        // Common
+        notes: "string (optional)"
+      },
+      kcalEstimated: "number (always 0 - will be calculated later)"
+    }
+
+    const prompt = language === 'ru'
+      ? `Проанализируйте описание тренировки и верните JSON массив упражнений в точном формате.
+
+Текст тренировки: "${workoutText}"
+
+Верните JSON массив объектов, где каждый объект имеет структуру:
+${JSON.stringify(exerciseSchema, null, 2)}
+
+Правила парсинга:
+1. Тип упражнения (type):
+   - "run" для бега/пробежки
+   - "pullups" для подтягиваний
+   - "pushups" для отжиманий
+   - "plank" для планки
+   - "custom" для других упражнений
+
+2. Детали (details):
+   - Для бега: distanceKm (расстояние в км), durationMin (время в минутах)
+   - Для подтягиваний/отжиманий: sets (количество подходов), repsPerSet (массив повторений)
+   - Для планки: seconds (массив времени удержания в секундах)
+   - Для custom: customExercise (название упражнения), durationMin или repsPerSet
+
+3. kcalEstimated всегда равно 0
+
+Примеры:
+- "пробежал 5 км" → [{"type": "run", "details": {"distanceKm": 5}, "kcalEstimated": 0}]
+- "подтягивания 10-8-6" → [{"type": "pullups", "details": {"sets": 3, "repsPerSet": [10, 8, 6]}, "kcalEstimated": 0}]
+- "планка 60 секунд" → [{"type": "plank", "details": {"seconds": [60]}, "kcalEstimated": 0}]
+
+Верните ТОЛЬКО валидный JSON массив, никакого дополнительного текста.`
+      : `Analyze the workout description and return a JSON array of exercises in the exact format.
+
+Workout text: "${workoutText}"
+
+Return a JSON array of objects where each object has the structure:
+${JSON.stringify(exerciseSchema, null, 2)}
+
+Parsing rules:
+1. Exercise type (type):
+   - "run" for running/jogging
+   - "pullups" for pull-ups
+   - "pushups" for push-ups
+   - "plank" for plank holds
+   - "custom" for other exercises
+
+2. Details (details):
+   - For running: distanceKm (distance in km), durationMin (time in minutes)
+   - For pullups/pushups: sets (number of sets), repsPerSet (array of repetitions)
+   - For plank: seconds (array of hold times in seconds)
+   - For custom: customExercise (exercise name), durationMin or repsPerSet
+
+3. kcalEstimated is always 0
+
+Examples:
+- "ran 5 km" → [{"type": "run", "details": {"distanceKm": 5}, "kcalEstimated": 0}]
+- "pull-ups 10-8-6" → [{"type": "pullups", "details": {"sets": 3, "repsPerSet": [10, 8, 6]}, "kcalEstimated": 0}]
+- "plank 60 seconds" → [{"type": "plank", "details": {"seconds": [60]}, "kcalEstimated": 0}]
+
+Return ONLY valid JSON array, no additional text.`
+
     try {
-      const response = await this.makeRequest(prompt, 'ru', abortController)
+      const response = await this.makeRequest(prompt, language, abortController)
       const parsed = JSON.parse(response)
       
       // Validate response structure
       if (!Array.isArray(parsed)) {
         throw new Error('AI returned invalid response format - expected array')
+      }
+
+      // Validate each exercise object
+      for (const exercise of parsed) {
+        if (!exercise.type || typeof exercise.type !== 'string') {
+          throw new Error('Invalid exercise format - missing or invalid type')
+        }
+        if (!exercise.details || typeof exercise.details !== 'object') {
+          throw new Error('Invalid exercise format - missing or invalid details')
+        }
+        if (typeof exercise.kcalEstimated !== 'number') {
+          exercise.kcalEstimated = 0 // Fix if missing
+        }
       }
       
       return parsed

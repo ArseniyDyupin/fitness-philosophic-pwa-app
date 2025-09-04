@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useWorkoutStore } from '../stores/workout.store'
 import { useProfileStore } from '../stores/profile.store'
-import { useTranslations } from '../stores/i18n.store'
+import { useTranslations, useI18nStore } from '../stores/i18n.store'
+import { useAIStore } from '../stores/ai.store'
+import { aiService } from '../services/ai'
 import { calculateWorkoutCalories, calculateWorkoutDuration } from '../services/kcal'
 import type { WorkoutExercise } from '../types/models'
-import { X, Plus, FileText, Edit3 } from 'lucide-react'
+import { X, Plus, Edit3, Bot } from 'lucide-react'
 import ExerciseCard from './ExerciseCard'
 
 interface WorkoutFormProps {
@@ -15,8 +17,10 @@ interface WorkoutFormProps {
 
 const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess }) => {
   const t = useTranslations()
+  const { currentLanguage } = useI18nStore()
   const { addWorkout } = useWorkoutStore()
   const { profile } = useProfileStore()
+  const { isConfigured: isAIConfigured } = useAIStore()
   
   const [mode, setMode] = useState<'form' | 'text'>('form')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -93,86 +97,31 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
 
   const handleTextParse = async () => {
     if (!textInput.trim()) {
-      alert('Please enter workout description')
+      alert(t.workoutForm?.pleaseEnterDescription || 'Please enter workout description')
+      return
+    }
+
+    if (!isAIConfigured) {
+      alert(t.workoutForm?.aiNotConfigured || 'AI is not configured. Please set up your OpenAI API key in Settings.')
       return
     }
 
     setIsProcessing(true)
     try {
-      // For now, we'll use a simple regex-based parser
-      // In the future, this could be replaced with AI parsing
-      const parsedExercises = parseWorkoutText(textInput)
-      setExercises(parsedExercises)
+      // Use AI to parse workout text
+      const parsedExercises = await aiService.parseWorkoutText(textInput, currentLanguage)
+      console.log(parsedExercises, '<<<parsedExercises')
+      setExercises(parsedExercises as WorkoutExercise[])
       setMode('form')
     } catch (error) {
       console.error('Failed to parse workout text:', error)
-      alert('Failed to parse workout text. Please use the form mode instead.')
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      alert(t.workoutForm?.aiParseFailed || `AI parsing failed: ${errorMessage}`)
     } finally {
       setIsProcessing(false)
     }
   }
 
-  // Simple regex-based parser for workout text
-  const parseWorkoutText = (text: string): WorkoutExercise[] => {
-    const exercises: WorkoutExercise[] = []
-    
-    // Parse running
-    const runMatch = text.match(/(?:пробежал|ran|run)\s+(\d+(?:\.\d+)?)\s*(?:км|km)/i)
-    if (runMatch) {
-      const distance = parseFloat(runMatch[1])
-      exercises.push({
-        type: 'run',
-        details: {
-          distanceKm: distance,
-          durationMin: Math.round(distance * 6) // Estimate 6 min/km pace
-        },
-        kcalEstimated: 0
-      })
-    }
-
-    // Parse pull-ups
-    const pullupMatch = text.match(/(?:подтянулся|pull.?ups?)\s+([\d-]+)/i)
-    if (pullupMatch) {
-      const reps = pullupMatch[1].split('-').map(r => parseInt(r)).filter(r => !isNaN(r))
-      exercises.push({
-        type: 'pullups',
-        details: {
-          sets: reps.length,
-          repsPerSet: reps
-        },
-        kcalEstimated: 0
-      })
-    }
-
-    // Parse push-ups
-    const pushupMatch = text.match(/(?:отжимания|push.?ups?)\s+([\d-]+)/i)
-    if (pushupMatch) {
-      const reps = pushupMatch[1].split('-').map(r => parseInt(r)).filter(r => !isNaN(r))
-      exercises.push({
-        type: 'pushups',
-        details: {
-          sets: reps.length,
-          repsPerSet: reps
-        },
-        kcalEstimated: 0
-      })
-    }
-
-    // Parse plank
-    const plankMatch = text.match(/(?:планка|plank)\s+([\d-]+)/i)
-    if (plankMatch) {
-      const seconds = plankMatch[1].split('-').map(s => parseInt(s)).filter(s => !isNaN(s))
-      exercises.push({
-        type: 'plank',
-        details: {
-          seconds
-        },
-        kcalEstimated: 0
-      })
-    }
-
-    return exercises
-  }
 
   const getRpeColor = (rpeValue: number) => {
     if (rpeValue <= 3) return 'text-green-600'
@@ -220,14 +169,20 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
             </button>
             <button
               onClick={() => setMode('text')}
+              disabled={!isAIConfigured}
               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                 mode === 'text'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : isAIConfigured 
+                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-50 text-gray-400 cursor-not-allowed'
               }`}
             >
-              <FileText size={16} />
+              <Bot size={16} />
               <span>{t.workoutForm?.textMode || 'Text Mode'}</span>
+              {!isAIConfigured && (
+                <span className="text-xs">(AI required)</span>
+              )}
             </button>
           </div>
         </div>
