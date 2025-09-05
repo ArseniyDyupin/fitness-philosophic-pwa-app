@@ -423,7 +423,9 @@ export const translations = {
       },
       progress: {
         title: 'Exercise Progress',
-        noData: 'No exercise data for this week'
+        noData: 'No exercise data for this week',
+        openDetails: 'Click to view chart',
+        totalWeek: 'Total for week'
       },
       metrics: {
         distance: 'Distance',
@@ -434,17 +436,26 @@ export const translations = {
         holds: 'Holds'
       },
       loading: 'Loading analytics...',
+      addWorkout: 'Add some workouts to see your activity chart',
       charts: {
         activity: 'Activity by Day',
         completed: 'Workout Calories',
-        planned: 'Planned (AI)'
+        planned: 'Planned (AI)',
+        duration: 'Duration (min)',
+        runKm: 'Distance (km)',
+        runMin: 'Duration (min)',
+        reps: 'Reps',
+        seconds: 'Seconds'
       },
       tooltip: {
         date: 'Date',
         completedKcal: 'Workouts (kcal)',
         plannedKcal: 'Planned (kcal)',
         foodKcal: 'Food (kcal)',
-        workouts: 'Workouts'
+        workouts: 'Workouts',
+        minutesTotal: 'Total Minutes',
+        workoutsCount: 'Workouts',
+        workout: 'Workout Details'
       },
       status: {
         planned: 'Planned',
@@ -980,7 +991,9 @@ export const translations = {
       },
       progress: {
         title: 'Прогресс по упражнениям',
-        noData: 'Нет данных об упражнениях за эту неделю'
+        noData: 'Нет данных об упражнениях за эту неделю',
+        openDetails: 'Открыть график',
+        totalWeek: 'Всего за неделю'
       },
       metrics: {
         distance: 'Дистанция',
@@ -991,17 +1004,26 @@ export const translations = {
         holds: 'Удержания'
       },
       loading: 'Загрузка аналитики...',
+      addWorkout: 'Добавьте тренировки, чтобы увидеть график активности',
       charts: {
         activity: 'Активность по дням',
         completed: 'Калории тренировок',
-        planned: 'План (ИИ)'
+        planned: 'План (ИИ)',
+        duration: 'Длительность (мин)',
+        runKm: 'Дистанция (км)',
+        runMin: 'Длительность бега (мин)',
+        reps: 'Повторения',
+        seconds: 'Секунды'
       },
       tooltip: {
         date: 'Дата',
         completedKcal: 'Тренировки (ккал)',
         plannedKcal: 'План (ккал)',
         foodKcal: 'Питание (ккал)',
-        workouts: 'Тренировки'
+        workouts: 'Тренировки',
+        minutesTotal: 'Всего минут',
+        workoutsCount: 'Тренировок',
+        workout: 'Детали тренировки'
       },
       status: {
         planned: 'План',

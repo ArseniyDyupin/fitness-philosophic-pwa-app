@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { WeekStats } from '../../services/stats.week'
 import { useTranslations } from '../../stores/i18n.store'
 import { TrendingUp, TrendingDown } from 'lucide-react'
+import ExerciseProgressModal from './ExerciseProgressModal'
 
 interface ExerciseProgressSectionProps {
   stats: WeekStats
@@ -10,6 +11,18 @@ interface ExerciseProgressSectionProps {
 
 const ExerciseProgressSection: React.FC<ExerciseProgressSectionProps> = ({ stats, deltas }) => {
   const t = useTranslations()
+  const [selectedExercise, setSelectedExercise] = useState<'run' | 'pullups' | 'pushups' | 'plank' | null>(null)
+
+  const weekStart = new Date(stats.range.startISO)
+  const weekEnd = new Date(stats.range.endISO)
+
+  const handleExerciseClick = (exerciseType: 'run' | 'pullups' | 'pushups' | 'plank') => {
+    setSelectedExercise(exerciseType)
+  }
+
+  const handleCloseModal = () => {
+    setSelectedExercise(null)
+  }
 
   const exercises = [
     {
@@ -130,10 +143,19 @@ const ExerciseProgressSection: React.FC<ExerciseProgressSectionProps> = ({ stats
           const metrics = getExerciseMetrics(exercise)
           
           return (
-            <div key={exercise.key} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center space-x-3 mb-4">
-                <span className="text-2xl">{exercise.icon}</span>
-                <h4 className="text-lg font-semibold text-gray-900">{exercise.title}</h4>
+            <button
+              key={exercise.key}
+              onClick={() => handleExerciseClick(exercise.key)}
+              className="border border-gray-200 rounded-lg p-4 w-full text-left hover:shadow-md transition-shadow cursor-pointer"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{exercise.icon}</span>
+                  <h4 className="text-lg font-semibold text-gray-900">{exercise.title}</h4>
+                </div>
+                <span className="text-xs text-blue-600 font-medium">
+                  {t.weeklyPage?.progress?.openDetails || 'Click to view chart'}
+                </span>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -149,10 +171,21 @@ const ExerciseProgressSection: React.FC<ExerciseProgressSectionProps> = ({ stats
                   </div>
                 ))}
               </div>
-            </div>
+            </button>
           )
         })}
       </div>
+
+      {/* Exercise Progress Modal */}
+      {selectedExercise && (
+        <ExerciseProgressModal
+          isOpen={!!selectedExercise}
+          onClose={handleCloseModal}
+          exerciseType={selectedExercise}
+          weekStart={weekStart}
+          weekEnd={weekEnd}
+        />
+      )}
     </div>
   )
 }

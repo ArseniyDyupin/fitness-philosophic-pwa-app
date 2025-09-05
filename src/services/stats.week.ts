@@ -6,6 +6,12 @@ export interface WeekRange {
   endISO: string
 }
 
+export interface ExerciseDailyPoint { 
+  date: string
+  valuePrimary: number
+  valueSecondary?: number
+}
+
 export interface WeekStats {
   range: WeekRange
   workoutsCount: number
@@ -20,12 +26,21 @@ export interface WeekStats {
     foodKcal: number
     workouts: number          // completed count
     planned: number           // planned count
+    durationMinTotal: number  // NEW: сумма минут по completed-тренировкам за день
     items: Array<{            // для tooltip-а
       id: string
       status: WorkoutStatus
       kcal: number
       rpe?: number
       exercisesShort: string  // 1-2 строки summary
+    }>
+    // для tooltip деталей:
+    details: Array<{
+      id: string
+      rpe?: number
+      kcal: number
+      durationMin: number
+      exercisesShort: string  // 1–2 строки: "Бег 5 км; Подтягивания 25; ..."
     }>
   }>
   volume: {
@@ -58,6 +73,7 @@ export async function getWeekStats(
     .where('date')
     .between(startISO, endISO, true, true)
     .toArray()
+
 
   // Get food logs for the week
   const foodLogs = await db.food
@@ -117,6 +133,45 @@ export async function getWeekStats(
     
     const dayFoodKcal = dayFoodLogs.reduce((total: number, log: FoodLog) => total + log.calories, 0)
     
+    // Calculate total duration for completed workouts
+    const durationMinTotal = completedWorkouts.reduce((total: number, workout: Workout) => {
+      const workoutDuration = workout.exercises.reduce((sum: number, exercise: WorkoutExercise) => {
+        // Try to get duration from details, or calculate from exercise type
+        let duration = exercise.details.durationMin || 0
+        
+        // If no duration specified, estimate based on exercise type
+        if (duration === 0) {
+          switch (exercise.type) {
+            case 'run':
+              // Estimate 6 min/km for running
+              duration = (exercise.details.distanceKm || 0) * 6
+              break
+            case 'pullups':
+            case 'pushups':
+              // Estimate 2 minutes per set
+              duration = (exercise.details.sets || 0) * 2
+              break
+            case 'plank':
+              // Estimate total seconds / 60
+              if (exercise.details.seconds) {
+                const totalSeconds = Array.isArray(exercise.details.seconds) 
+                  ? exercise.details.seconds.reduce((sum: number, sec: number) => sum + sec, 0)
+                  : exercise.details.seconds
+                duration = totalSeconds / 60
+              }
+              break
+            case 'custom':
+              // Default 10 minutes for custom exercises
+              duration = 10
+              break
+          }
+        }
+        return sum + duration
+      }, 0)
+      
+      return total + workoutDuration
+    }, 0)
+    
     // Create items for tooltip
     const items = dayWorkouts.map(workout => ({
       id: workout.id,
@@ -126,15 +181,66 @@ export async function getWeekStats(
       exercisesShort: createExerciseSummary(workout.exercises)
     }))
     
-    days.push({
+    // Create details for completed workouts only
+    const details = completedWorkouts.map(workout => {
+      const workoutDuration = workout.exercises.reduce((sum: number, exercise: WorkoutExercise) => {
+        // Try to get duration from details, or calculate from exercise type
+        let duration = exercise.details.durationMin || 0
+        
+        // If no duration specified, estimate based on exercise type
+        if (duration === 0) {
+          switch (exercise.type) {
+            case 'run':
+              // Estimate 6 min/km for running
+              duration = (exercise.details.distanceKm || 0) * 6
+              break
+            case 'pullups':
+            case 'pushups':
+              // Estimate 2 minutes per set
+              duration = (exercise.details.sets || 0) * 2
+              break
+            case 'plank':
+              // Estimate total seconds / 60
+              if (exercise.details.seconds) {
+                const totalSeconds = Array.isArray(exercise.details.seconds) 
+                  ? exercise.details.seconds.reduce((sum: number, sec: number) => sum + sec, 0)
+                  : exercise.details.seconds
+                duration = totalSeconds / 60
+              }
+              break
+            case 'custom':
+              // Default 10 minutes for custom exercises
+              duration = 10
+              break
+          }
+        }
+        
+        return sum + duration
+      }, 0)
+
+      return {
+        id: workout.id,
+        rpe: workout.rpe,
+        kcal: workout.exercises.reduce((sum: number, exercise: WorkoutExercise) => sum + (exercise.kcalEstimated || 0), 0),
+        durationMin: workoutDuration,
+        exercisesShort: createExerciseSummary(workout.exercises)
+      }
+    })
+    
+    const dayData = {
       date: dateStr,
       workoutKcal: dayWorkoutKcal,
       plannedKcal: dayPlannedKcal,
       foodKcal: dayFoodKcal,
       workouts: completedWorkouts.length,
       planned: plannedWorkouts.length,
-      items
-    })
+      durationMinTotal,
+      items,
+      details
+    }
+
+
+    days.push(dayData)
     
     currentDate.setDate(currentDate.getDate() + 1)
   }
@@ -303,4 +409,93 @@ export function calculateDeltas(current: WeekStats, previous: WeekStats | null):
   })
 
   return deltas
+}
+
+export function buildExerciseDailySeries(
+  _range: WeekRange, 
+  _type: 'run' | 'pullups' | 'pushups' | 'plank' | 'custom'
+): ExerciseDailyPoint[] {
+  // This function would need access to workouts data
+  // For now, return empty array - will be implemented when needed
+  return []
+}
+
+export async function getExerciseDailySeries(
+  weekStart: Date,
+  weekEnd: Date,
+  type: 'run' | 'pullups' | 'pushups' | 'plank' | 'custom'
+): Promise<ExerciseDailyPoint[]> {
+  const startISO = weekStart.toISOString().split('T')[0]
+  const endISO = weekEnd.toISOString().split('T')[0]
+
+  // Get workouts for the week
+  const workouts = await db.workouts
+    .where('date')
+    .between(startISO, endISO, true, true)
+    .toArray()
+
+  // Helper function to get workout status (default to 'completed' for old data)
+  const getWorkoutStatus = (workout: Workout): WorkoutStatus => {
+    return workout.status || 'completed'
+  }
+
+  // Filter only completed workouts
+  const completedWorkouts = workouts.filter(w => getWorkoutStatus(w) === 'completed')
+
+  // Create daily data points
+  const days = []
+  const currentDate = new Date(weekStart)
+  while (currentDate <= weekEnd) {
+    const dateStr = currentDate.toISOString().split('T')[0]
+    const dayWorkouts = completedWorkouts.filter((w: Workout) => w.date === dateStr)
+    
+    let valuePrimary = 0
+    let valueSecondary = 0
+    
+    dayWorkouts.forEach((workout: Workout) => {
+      workout.exercises.forEach((exercise: WorkoutExercise) => {
+        if (exercise.type === type) {
+          switch (type) {
+            case 'run':
+              if (exercise.details.distanceKm) {
+                valuePrimary += exercise.details.distanceKm
+              }
+              // Use actual duration or estimate from distance
+              let duration = exercise.details.durationMin || 0
+              if (duration === 0 && exercise.details.distanceKm) {
+                duration = exercise.details.distanceKm * 6 // Estimate 6 min/km
+              }
+              if (duration > 0) {
+                valueSecondary += duration
+              }
+              break
+            case 'pullups':
+            case 'pushups':
+              if (exercise.details.repsPerSet) {
+                valuePrimary += exercise.details.repsPerSet.reduce((sum: number, reps: number) => sum + reps, 0)
+              }
+              break
+            case 'plank':
+              if (exercise.details.seconds) {
+                const totalSeconds = Array.isArray(exercise.details.seconds) 
+                  ? exercise.details.seconds.reduce((sum: number, sec: number) => sum + sec, 0)
+                  : exercise.details.seconds
+                valuePrimary += totalSeconds
+              }
+              break
+          }
+        }
+      })
+    })
+    
+    days.push({
+      date: dateStr,
+      valuePrimary,
+      valueSecondary: valueSecondary > 0 ? valueSecondary : undefined
+    })
+    
+    currentDate.setDate(currentDate.getDate() + 1)
+  }
+
+  return days
 }

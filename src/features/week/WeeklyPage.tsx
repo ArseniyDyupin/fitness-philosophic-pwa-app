@@ -46,6 +46,7 @@ const WeeklyPage: React.FC = () => {
         getPreviousWeekStats(weekStart, weekEnd, profile?.weight)
       ])
       
+      
       setWeekStats(currentStats)
       setPreviousWeekStats(prevStats)
     } catch (error) {
