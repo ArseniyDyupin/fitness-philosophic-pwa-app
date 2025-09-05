@@ -284,7 +284,7 @@ Return ONLY valid JSON array, no additional text.`
   }
 
   // Generate next workout plan
-  async generateNextWorkout(profile: Profile, recentWorkouts: Workout[], language: string = 'ru'): Promise<PlanSuggestion> {
+  async generateNextWorkout(profile: Profile, recentWorkouts: Workout[], language: string = 'ru', additionalPrompt?: string): Promise<PlanSuggestion> {
     if (!this.hasApiKey()) {
       throw new Error('API key not configured')
     }
@@ -340,7 +340,7 @@ No comments outside JSON.`
   `${w.exercises.map(e => e.type).join(', ')} (RPE ${w.rpe || 'не указан'})`
 ).join('; ')}
 
-Создай разнообразную тренировку с учетом прогресса и целей.`
+Создай разнообразную тренировку с учетом прогресса и целей.${additionalPrompt ? `\n\nДополнительные требования:\n${additionalPrompt}` : ''}`
       : `Create a workout plan for user:
 - Age: ${profile.age} years
 - Gender: ${profile.gender}
@@ -355,7 +355,7 @@ Recent workouts (${recentWorkouts.length}): ${recentWorkouts.slice(0, 3).map(w =
   `${w.exercises.map(e => e.type).join(', ')} (RPE ${w.rpe || 'not specified'})`
 ).join('; ')}
 
-Create a varied workout considering progress and goals.`
+Create a varied workout considering progress and goals.${additionalPrompt ? `\n\nAdditional requirements:\n${additionalPrompt}` : ''}`
 
     try {
       const response = await fetch(this.baseUrl, {

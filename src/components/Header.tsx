@@ -1,24 +1,19 @@
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useTranslations, useI18nStore } from '../stores/i18n.store'
-import { useProfileStore } from '../stores/profile.store'
-import { useWorkoutStore } from '../stores/workout.store'
+import { useTranslations } from '../stores/i18n.store'
 import { useAIStore } from '../stores/ai.store'
 import { downloadExport } from '../services/export'
-import { aiService } from '../services/ai'
-import { ArrowLeft, Download, Check, X, Sparkles, Loader } from 'lucide-react'
+import { ArrowLeft, Download, Check, X, Sparkles } from 'lucide-react'
+import GenerateWorkoutModal from './GenerateWorkoutModal'
 
 const Header: React.FC = () => {
   const t = useTranslations()
   const location = useLocation()
   const navigate = useNavigate()
-  const { currentLanguage } = useI18nStore()
-  const { profile } = useProfileStore()
-  const { workouts } = useWorkoutStore()
   const { isConfigured } = useAIStore()
   
   const [isExporting, setIsExporting] = useState(false)
-  const [isGenerating, setIsGenerating] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   const showToast = (message: string, type: 'success' | 'error') => {
@@ -47,30 +42,17 @@ const Header: React.FC = () => {
     }
   }
 
-  const handleGeneratePlan = async () => {
-    if (!profile) {
-      showToast(t.error || 'Profile not found', 'error')
-      return
-    }
+  const handleGeneratePlan = () => {
+    setIsModalOpen(true)
+  }
 
-    setIsGenerating(true)
-    try {
-      const recentWorkouts = workouts.slice(0, 5) // Get last 5 workouts
-      const plan = await aiService.generateNextWorkout(profile, recentWorkouts, currentLanguage)
-      
-      showToast(t.plan?.planGenerated || 'Plan generated successfully', 'success')
-      
-      // Navigate to plan realization page
-      setTimeout(() => {
-        navigate(`/plan/${plan.id}`)
-      }, 1000)
-      
-    } catch (error) {
-      console.error('Failed to generate plan:', error)
-      showToast(t.error || 'Failed to generate plan', 'error')
-    } finally {
-      setIsGenerating(false)
-    }
+  const handlePlanGenerated = (plan: any) => {
+    showToast(t.plan?.planGenerated || 'Plan generated successfully', 'success')
+    
+    // Navigate to plan realization page
+    setTimeout(() => {
+      navigate(`/plan/${plan.id}`)
+    }, 1000)
   }
 
   // Check if back button should be shown
@@ -161,20 +143,12 @@ const Header: React.FC = () => {
             {isConfigured && (
               <button
                 onClick={handleGeneratePlan}
-                disabled={isGenerating}
                 className="btn-primary flex items-center space-x-2 text-sm"
                 title={t.header?.generate || 'Generate Workout'}
               >
-                {isGenerating ? (
-                  <Loader className="animate-spin" size={16} />
-                ) : (
-                  <Sparkles size={16} />
-                )}
+                <Sparkles size={16} />
                 <span className="hidden sm:inline">
-                  {isGenerating 
-                    ? (t.header?.generating || 'Generating...') 
-                    : (t.header?.generate || 'Generate Workout')
-                  }
+                  {t.header?.generate || 'Generate Workout'}
                 </span>
               </button>
             )}
@@ -263,6 +237,13 @@ const Header: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Generate Workout Modal */}
+      <GenerateWorkoutModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onPlanGenerated={handlePlanGenerated}
+      />
     </header>
   )
 }

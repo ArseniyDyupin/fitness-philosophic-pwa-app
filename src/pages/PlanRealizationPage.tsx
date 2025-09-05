@@ -5,10 +5,11 @@ import { useProfileStore } from '../stores/profile.store'
 import { useWorkoutStore } from '../stores/workout.store'
 import { calculateWorkoutCalories } from '../services/kcal'
 import { db } from '../services/db'
+import { aiService } from '../services/ai'
 import PlanSummary from '../components/PlanSummary'
 import PlanExerciseCard from '../components/PlanExerciseCard'
 import type { PlanSuggestion, ExerciseEdit, Workout } from '../types/models'
-import { ArrowLeft, Save, X } from 'lucide-react'
+import { ArrowLeft, Save, X, RotateCcw, Loader } from 'lucide-react'
 
 const PlanRealizationPage: React.FC = () => {
   const { planId } = useParams<{ planId: string }>()
@@ -22,6 +23,9 @@ const PlanRealizationPage: React.FC = () => {
   const [rpe, setRpe] = useState<number>(5)
   const [workoutComment, setWorkoutComment] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [isAdjusting, setIsAdjusting] = useState(false)
+  const [adjustmentText, setAdjustmentText] = useState('')
+  const [showAdjustment, setShowAdjustment] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
@@ -107,10 +111,10 @@ const PlanRealizationPage: React.FC = () => {
       await addWorkout(workout)
 
       showToast(t.plan?.save || 'Workout saved successfully', 'success')
-
-      // Navigate to workout details
+      
+      // Navigate to workouts list
       setTimeout(() => {
-        navigate(`/workouts/${workout.id}`)
+        navigate('/workouts')
       }, 1500)
     } catch (error) {
       console.error('Failed to save workout:', error)
@@ -122,6 +126,44 @@ const PlanRealizationPage: React.FC = () => {
 
   const handleCancel = () => {
     navigate('/')
+  }
+
+  const handleAdjustPlan = async () => {
+    if (!plan || !profile || !adjustmentText.trim()) return
+
+    setIsAdjusting(true)
+    try {
+      const recentWorkouts = await db.workouts.orderBy('date').reverse().limit(5).toArray()
+      
+      // Generate new plan with adjustment
+      const newPlan = await aiService.generateNextWorkout(
+        profile, 
+        recentWorkouts, 
+        profile.language || 'ru',
+        `Корректировка плана: ${adjustmentText}`
+      )
+
+      // Update current plan with new data
+      setPlan(newPlan)
+      setRpe(newPlan.workoutTemplate?.rpe || 5)
+      
+      // Reset exercise edits
+      const newEdits: ExerciseEdit[] = newPlan.workoutTemplate?.exercises.map((_, index) => ({
+        index,
+        status: 'as_planned' as const
+      })) || []
+      setExerciseEdits(newEdits)
+      
+      setShowAdjustment(false)
+      setAdjustmentText('')
+      showToast(t.plan?.adjust?.apply || 'Plan adjusted successfully', 'success')
+      
+    } catch (error) {
+      console.error('Failed to adjust plan:', error)
+      showToast(t.error || 'Failed to adjust plan', 'error')
+    } finally {
+      setIsAdjusting(false)
+    }
   }
 
   if (!plan || !plan.workoutTemplate) {
@@ -199,6 +241,20 @@ const PlanRealizationPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Analysis */}
+        {plan.notes && (
+          <div className="card mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {t.plan?.analysis || 'Workout Analysis'}
+            </h3>
+            <div className="prose prose-sm max-w-none">
+              <p className="text-gray-700 whitespace-pre-line">
+                {plan.notes.split('\n\nСоветы:')[0]}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Summary */}
         <PlanSummary workout={plan.workoutTemplate} profile={profile || undefined} />
 
@@ -231,6 +287,62 @@ const PlanRealizationPage: React.FC = () => {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             placeholder={t.plan?.workoutComment || 'Add a comment about your workout...'}
           />
+        </div>
+
+        {/* Plan Adjustment */}
+        <div className="card mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {t.plan?.adjust?.button || 'Adjust Plan'}
+            </h3>
+            <button
+              onClick={() => setShowAdjustment(!showAdjustment)}
+              className="btn-secondary flex items-center space-x-2"
+            >
+              <RotateCcw size={16} />
+              <span>{t.plan?.adjust?.button || 'Adjust Plan'}</span>
+            </button>
+          </div>
+          
+          {showAdjustment && (
+            <div className="space-y-4">
+              <textarea
+                value={adjustmentText}
+                onChange={(e) => setAdjustmentText(e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                placeholder={t.plan?.adjust?.placeholder || 'Specify what needs to be changed...'}
+              />
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => {
+                    setShowAdjustment(false)
+                    setAdjustmentText('')
+                  }}
+                  className="btn-secondary"
+                >
+                  {t.cancel || 'Cancel'}
+                </button>
+                <button
+                  onClick={handleAdjustPlan}
+                  disabled={isAdjusting || !adjustmentText.trim()}
+                  className="btn-primary flex items-center space-x-2"
+                >
+                  {isAdjusting ? (
+                    <Loader className="animate-spin" size={16} />
+                  ) : (
+                    <RotateCcw size={16} />
+                  )}
+                  <span>
+                    {isAdjusting 
+                      ? (t.loading || 'Loading...') 
+                      : (t.plan?.adjust?.apply || 'Apply Changes')
+                    }
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}

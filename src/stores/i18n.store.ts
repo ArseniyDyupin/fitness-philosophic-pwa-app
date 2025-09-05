@@ -344,7 +344,23 @@ export const translations = {
       regenerate: 'Generate Another Plan',
       generatePlan: 'Generate Plan',
       noPlanAvailable: 'No plan available',
-      planGenerated: 'Plan generated successfully'
+      planGenerated: 'Plan generated successfully',
+      generateModal: {
+        title: 'New Workout',
+        date: 'Workout Date',
+        preferences: 'Preferences',
+        preferencesPlaceholder: 'Describe your preferences for this workout...',
+        lastWorkout: 'Last Workout',
+        cancel: 'Cancel',
+        generate: 'Generate',
+        generating: 'Generating...'
+      },
+      analysis: 'Workout Analysis',
+      adjust: {
+        button: 'Adjust Plan',
+        placeholder: 'Specify what needs to be changed...',
+        apply: 'Apply Changes'
+      }
     },
     
     // JsonFileButtons
@@ -795,7 +811,23 @@ export const translations = {
       regenerate: 'Сгенерировать другой план',
       generatePlan: 'Сгенерировать план',
       noPlanAvailable: 'План недоступен',
-      planGenerated: 'План успешно сгенерирован'
+      planGenerated: 'План успешно сгенерирован',
+      generateModal: {
+        title: 'Новая тренировка',
+        date: 'Дата тренировки',
+        preferences: 'Предпочтения',
+        preferencesPlaceholder: 'Опишите ваши предпочтения для этой тренировки...',
+        lastWorkout: 'Прошлая тренировка',
+        cancel: 'Отмена',
+        generate: 'Сгенерировать',
+        generating: 'Генерация...'
+      },
+      analysis: 'Анализ прошлой тренировки',
+      adjust: {
+        button: 'Скорректировать план',
+        placeholder: 'Уточните, что нужно изменить...',
+        apply: 'Применить изменения'
+      }
     },
     
     // JsonFileButtons
