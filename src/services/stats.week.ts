@@ -1,5 +1,5 @@
 import { db } from './db'
-import { Workout, WorkoutExercise, FoodLog } from '../types/models'
+import { Workout, WorkoutExercise, FoodLog, WorkoutStatus } from '../types/models'
 
 export interface WeekRange {
   startISO: string
@@ -15,9 +15,18 @@ export interface WeekStats {
   avgRPE: number | null
   days: Array<{
     date: string
-    workoutKcal: number
+    workoutKcal: number       // completed only
+    plannedKcal: number       // planned only
     foodKcal: number
-    workouts: number
+    workouts: number          // completed count
+    planned: number           // planned count
+    items: Array<{            // для tooltip-а
+      id: string
+      status: WorkoutStatus
+      kcal: number
+      rpe?: number
+      exercisesShort: string  // 1-2 строки summary
+    }>
   }>
   volume: {
     run: { distanceKm: number; durationMin: number; sessions: number }
@@ -56,6 +65,32 @@ export async function getWeekStats(
     .between(startISO, endISO, true, true)
     .toArray()
 
+  // Helper function to get workout status (default to 'completed' for old data)
+  const getWorkoutStatus = (workout: Workout): WorkoutStatus => {
+    return workout.status || 'completed'
+  }
+
+  // Helper function to create exercise summary
+  const createExerciseSummary = (exercises: WorkoutExercise[]): string => {
+    const summaries = exercises.map(ex => {
+      switch (ex.type) {
+        case 'run':
+          return ex.details.distanceKm ? `${ex.details.distanceKm}км бег` : 'Бег'
+        case 'pullups':
+          return ex.details.repsPerSet ? `${ex.details.repsPerSet.reduce((a, b) => a + b, 0)} подтягиваний` : 'Подтягивания'
+        case 'pushups':
+          return ex.details.repsPerSet ? `${ex.details.repsPerSet.reduce((a, b) => a + b, 0)} отжиманий` : 'Отжимания'
+        case 'plank':
+          return ex.details.seconds ? `${Math.round(Array.isArray(ex.details.seconds) ? ex.details.seconds.reduce((a, b) => a + b, 0) / 60 : ex.details.seconds / 60)}мин планка` : 'Планка'
+        case 'custom':
+          return ex.details.customExercise || 'Свое упражнение'
+        default:
+          return 'Упражнение'
+      }
+    })
+    return summaries.slice(0, 2).join(', ') + (summaries.length > 2 ? '...' : '')
+  }
+
   // Calculate daily breakdown
   const days = []
   const currentDate = new Date(weekStart)
@@ -64,7 +99,17 @@ export async function getWeekStats(
     const dayWorkouts = workouts.filter((w: Workout) => w.date === dateStr)
     const dayFoodLogs = foodLogs.filter((f: FoodLog) => f.date === dateStr)
     
-    const dayWorkoutKcal = dayWorkouts.reduce((total: number, workout: Workout) => {
+    // Separate completed and planned workouts
+    const completedWorkouts = dayWorkouts.filter(w => getWorkoutStatus(w) === 'completed')
+    const plannedWorkouts = dayWorkouts.filter(w => getWorkoutStatus(w) === 'planned')
+    
+    const dayWorkoutKcal = completedWorkouts.reduce((total: number, workout: Workout) => {
+      return total + workout.exercises.reduce((sum: number, exercise: WorkoutExercise) => {
+        return sum + (exercise.kcalEstimated || 0)
+      }, 0)
+    }, 0)
+    
+    const dayPlannedKcal = plannedWorkouts.reduce((total: number, workout: Workout) => {
       return total + workout.exercises.reduce((sum: number, exercise: WorkoutExercise) => {
         return sum + (exercise.kcalEstimated || 0)
       }, 0)
@@ -72,18 +117,31 @@ export async function getWeekStats(
     
     const dayFoodKcal = dayFoodLogs.reduce((total: number, log: FoodLog) => total + log.calories, 0)
     
+    // Create items for tooltip
+    const items = dayWorkouts.map(workout => ({
+      id: workout.id,
+      status: getWorkoutStatus(workout),
+      kcal: workout.exercises.reduce((sum: number, exercise: WorkoutExercise) => sum + (exercise.kcalEstimated || 0), 0),
+      rpe: workout.rpe,
+      exercisesShort: createExerciseSummary(workout.exercises)
+    }))
+    
     days.push({
       date: dateStr,
       workoutKcal: dayWorkoutKcal,
+      plannedKcal: dayPlannedKcal,
       foodKcal: dayFoodKcal,
-      workouts: dayWorkouts.length
+      workouts: completedWorkouts.length,
+      planned: plannedWorkouts.length,
+      items
     })
     
     currentDate.setDate(currentDate.getDate() + 1)
   }
 
-  // Calculate totals
-  const workoutKcalTotal = workouts.reduce((total: number, workout: Workout) => {
+  // Calculate totals (only completed workouts)
+  const completedWorkouts = workouts.filter(w => getWorkoutStatus(w) === 'completed')
+  const workoutKcalTotal = completedWorkouts.reduce((total: number, workout: Workout) => {
     return total + workout.exercises.reduce((sum: number, exercise: WorkoutExercise) => {
       return sum + (exercise.kcalEstimated || 0)
     }, 0)
@@ -92,10 +150,10 @@ export async function getWeekStats(
   const foodKcalTotal = foodLogs.reduce((total: number, log: FoodLog) => total + log.calories, 0)
   const weeklyBalance = foodKcalTotal - workoutKcalTotal
 
-  // Calculate average RPE
-  const workoutsWithRPE = workouts.filter((w: Workout) => w.rpe !== undefined)
-  const avgRPE = workoutsWithRPE.length > 0 
-    ? workoutsWithRPE.reduce((sum: number, w: Workout) => sum + (w.rpe || 0), 0) / workoutsWithRPE.length
+  // Calculate average RPE (only completed workouts)
+  const completedWorkoutsWithRPE = completedWorkouts.filter((w: Workout) => w.rpe !== undefined)
+  const avgRPE = completedWorkoutsWithRPE.length > 0 
+    ? completedWorkoutsWithRPE.reduce((sum: number, w: Workout) => sum + (w.rpe || 0), 0) / completedWorkoutsWithRPE.length
     : null
 
   // Calculate volume by exercise type
@@ -115,8 +173,8 @@ export async function getWeekStats(
     longestPlankSec: undefined as number | undefined
   }
 
-  // Process each workout
-  workouts.forEach((workout: Workout) => {
+  // Process each completed workout (for volume and PRs)
+  completedWorkouts.forEach((workout: Workout) => {
     workout.exercises.forEach((exercise: WorkoutExercise) => {
       switch (exercise.type) {
         case 'run':
@@ -190,7 +248,7 @@ export async function getWeekStats(
 
   return {
     range: { startISO, endISO },
-    workoutsCount: workouts.length,
+    workoutsCount: completedWorkouts.length,
     workoutKcalTotal,
     foodKcalTotal,
     weeklyBalance,

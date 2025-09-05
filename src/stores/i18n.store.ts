@@ -433,7 +433,24 @@ export const translations = {
         sessions: 'Sessions',
         holds: 'Holds'
       },
-      loading: 'Loading analytics...'
+      loading: 'Loading analytics...',
+      charts: {
+        activity: 'Activity by Day',
+        completed: 'Workout Calories',
+        planned: 'Planned (AI)'
+      },
+      tooltip: {
+        date: 'Date',
+        completedKcal: 'Workouts (kcal)',
+        plannedKcal: 'Planned (kcal)',
+        foodKcal: 'Food (kcal)',
+        workouts: 'Workouts'
+      },
+      status: {
+        planned: 'Planned',
+        completed: 'Completed',
+        skipped: 'Skipped'
+      }
     },
     
     // JsonFileButtons
@@ -973,7 +990,24 @@ export const translations = {
         sessions: 'Сессии',
         holds: 'Удержания'
       },
-      loading: 'Загрузка аналитики...'
+      loading: 'Загрузка аналитики...',
+      charts: {
+        activity: 'Активность по дням',
+        completed: 'Калории тренировок',
+        planned: 'План (ИИ)'
+      },
+      tooltip: {
+        date: 'Дата',
+        completedKcal: 'Тренировки (ккал)',
+        plannedKcal: 'План (ккал)',
+        foodKcal: 'Питание (ккал)',
+        workouts: 'Тренировки'
+      },
+      status: {
+        planned: 'План',
+        completed: 'Завершена',
+        skipped: 'Пропущена'
+      }
     },
     
     // JsonFileButtons

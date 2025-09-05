@@ -108,6 +108,7 @@ const PlanRealizationPage: React.FC = () => {
         exercises: exercisesWithCalories,
         rpe,
         aiReviewId: plan.id, // Link to the original plan
+        status: 'completed', // Mark as completed when saved
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       }

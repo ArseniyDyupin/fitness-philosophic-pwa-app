@@ -83,7 +83,8 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
       const workoutData = {
         date: new Date(date).toISOString(),
         exercises,
-        rpe: rpe > 0 ? rpe : undefined
+        rpe: rpe > 0 ? rpe : undefined,
+        status: 'completed' as const
       }
 
       await addWorkout(workoutData)

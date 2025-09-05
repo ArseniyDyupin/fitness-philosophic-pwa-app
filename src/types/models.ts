@@ -36,11 +36,13 @@ export interface Workout {
   exercises: WorkoutExercise[]
   rpe?: number // Rate of Perceived Exertion (1-10 scale)
   aiReviewId?: string // ID of AI review if available
+  status?: WorkoutStatus // NEW: default "completed" for old data
   createdAt: string            // ISO string
   updatedAt: string            // ISO string
 }
 
 export type WorkoutType = 'run' | 'pullups' | 'pushups' | 'plank' | 'custom'
+export type WorkoutStatus = 'planned' | 'completed' | 'skipped'
 
 export interface FoodLog {
   id: string
