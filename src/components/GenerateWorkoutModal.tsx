@@ -62,10 +62,21 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
       )
 
       // Update plan with future date
+      console.log('Updating plan with future date:', futureDate)
+      console.log('Original plan forDate:', plan.forDate)
+      console.log('Original plan workoutTemplate date:', plan.workoutTemplate?.date)
+      
       const updatedPlan: PlanSuggestion = {
         ...plan,
-        forDate: futureDate
+        forDate: futureDate,
+        workoutTemplate: {
+          ...plan.workoutTemplate!,
+          date: futureDate
+        }
       }
+      
+      console.log('Updated plan forDate:', updatedPlan.forDate)
+      console.log('Updated plan workoutTemplate date:', updatedPlan.workoutTemplate?.date)
 
       onPlanGenerated(updatedPlan)
       onClose()

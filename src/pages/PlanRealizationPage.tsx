@@ -97,9 +97,14 @@ const PlanRealizationPage: React.FC = () => {
           : undefined
       }))
 
+      const workoutDate = plan.workoutTemplate?.date || plan.forDate
+      console.log('Saving workout with date:', workoutDate)
+      console.log('Plan forDate:', plan.forDate)
+      console.log('Plan workoutTemplate date:', plan.workoutTemplate?.date)
+
       const workout: Workout = {
         id: `workout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        date: plan.forDate,
+        date: workoutDate,
         exercises: exercisesWithCalories,
         rpe,
         aiReviewId: plan.id, // Link to the original plan
