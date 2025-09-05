@@ -1,5 +1,5 @@
 import Dexie from 'dexie'
-import type { Profile, Workout, FoodLog, WeeklyCheckin, AiMessage, PlanSuggestion } from '../types/models'
+import type { Profile, Workout, FoodLog, WeeklyCheckin, AiMessage, PlanSuggestion, ExerciseEstimate } from '../types/models'
 
 export class AITrainerDB extends Dexie {
   profiles!: Dexie.Table<Profile, string>
@@ -8,6 +8,7 @@ export class AITrainerDB extends Dexie {
   checkins!: Dexie.Table<WeeklyCheckin, string>
   ai!: Dexie.Table<AiMessage, string>
   plans!: Dexie.Table<PlanSuggestion, string>
+  exercise_estimates!: Dexie.Table<ExerciseEstimate, string>
 
   constructor() {
     super('AITrainerDB')
@@ -17,7 +18,8 @@ export class AITrainerDB extends Dexie {
       food: 'id,date',
       checkins: 'id,weekStart',
       ai: 'id,createdAt',
-      plans: 'id,createdAt,forDate'
+      plans: 'id,createdAt,forDate',
+      exercise_estimates: 'id,signature,type,createdAt'
     })
   }
 }

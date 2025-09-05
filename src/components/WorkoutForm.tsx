@@ -4,7 +4,7 @@ import { useProfileStore } from '../stores/profile.store'
 import { useTranslations, useI18nStore } from '../stores/i18n.store'
 import { useAIStore } from '../stores/ai.store'
 import { aiService } from '../services/ai'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '../services/kcal'
+import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../services/ai.estimate'
 import type { WorkoutExercise } from '../types/models'
 import { X, Plus, Edit3, Bot } from 'lucide-react'
 import ExerciseCard from './ExerciseCard'
@@ -28,6 +28,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
   const [exercises, setExercises] = useState<WorkoutExercise[]>([])
   const [textInput, setTextInput] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isEstimating, setIsEstimating] = useState(false)
 
   // Reset form when opening
   useEffect(() => {
@@ -80,6 +81,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
     }
 
     try {
+      // First, save the workout without AI estimates
       const workoutData = {
         date: new Date(date).toISOString(),
         exercises,
@@ -88,6 +90,61 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
       }
 
       await addWorkout(workoutData)
+      
+      // Then, get AI estimates for exercises that need them
+      if (profile && isAIConfigured) {
+        setIsEstimating(true)
+        try {
+          const exercisesNeedingEstimation = exercises.filter(needsAIEstimation)
+          
+          if (exercisesNeedingEstimation.length > 0) {
+            const estimateInputs = exercisesNeedingEstimation.map(exercise => 
+              createEstimateInput(exercise, {
+                weightKg: profile.weight,
+                age: profile.age,
+                gender: profile.gender
+              })
+            )
+            
+            const estimates = await getBatchEstimates(estimateInputs)
+            
+            // Update exercises with estimates
+            const updatedExercises = exercises.map(exercise => {
+              const needsEstimate = needsAIEstimation(exercise)
+              if (needsEstimate) {
+                const estimateIndex = exercisesNeedingEstimation.findIndex(e => e === exercise)
+                const estimate = estimates[estimateIndex]
+                
+                if (estimate) {
+                  return {
+                    ...exercise,
+                    kcalEstimated: estimate.kcal,
+                    estimateMeta: {
+                      source: 'ai' as const,
+                      updatedAt: new Date().toISOString()
+                    }
+                  }
+                }
+              }
+              return exercise
+            })
+            
+            // Update the workout with estimates
+            const updatedWorkoutData = {
+              ...workoutData,
+              exercises: updatedExercises
+            }
+            
+            await addWorkout(updatedWorkoutData)
+          }
+        } catch (error) {
+          console.error('Failed to get AI estimates:', error)
+          // Don't block the user - workout is already saved
+        } finally {
+          setIsEstimating(false)
+        }
+      }
+      
       onSuccess?.()
       onClose()
     } catch (error) {
@@ -268,15 +325,9 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                 <h4 className="font-medium text-gray-900 mb-2">{t.workoutForm?.workoutSummary || 'Workout Summary'}</h4>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">{t.workoutForm?.totalCalories || 'Total Calories:'}</span>
-                    <div className="font-medium">
-                      {calculateWorkoutCalories(exercises, profile.weight, rpe)} kcal
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">{t.workoutForm?.duration || 'Duration:'}</span>
-                    <div className="font-medium">
-                      {Math.round(calculateWorkoutDuration(exercises))} min
+                    <span className="text-gray-600">Estimates will be calculated after saving</span>
+                    <div className="font-medium text-sm text-gray-500">
+                      {isEstimating ? 'AI estimation in progress...' : 'Calories and duration will be estimated automatically'}
                     </div>
                   </div>
                   <div>
@@ -327,10 +378,17 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
           {mode === 'form' && (
             <button
               onClick={handleSave}
-              disabled={exercises.length === 0}
-              className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={exercises.length === 0 || isEstimating}
+              className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
-              {t.save}
+              {isEstimating ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>AI estimation...</span>
+                </>
+              ) : (
+                <span>{t.save}</span>
+              )}
             </button>
           )}
         </div>

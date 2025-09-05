@@ -418,6 +418,16 @@ export const translations = {
           error: 'Failed to save profile'
         }
       },
+      aiEstimate: {
+        badge: 'AI',
+        calculating: 'AI estimation...',
+        recalculate: 'Update estimate',
+        estimatedByAI: 'Estimated by AI model',
+        alwaysUseAI: 'Always estimate through AI',
+        savedWithEstimates: 'Workout saved. Estimates will be added.',
+        error: 'Failed to get AI estimate',
+        tooltip: 'Estimated by gpt-4o-mini model'
+      },
       previousCheckins: 'Previous Check-ins',
       weight: 'Weight',
       waist: 'Waist',
@@ -1028,6 +1038,16 @@ export const translations = {
           saved: 'Профиль обновлён',
           error: 'Не удалось сохранить профиль'
         }
+      },
+      aiEstimate: {
+        badge: 'ИИ',
+        calculating: 'Оценка ИИ…',
+        recalculate: 'Обновить оценку',
+        estimatedByAI: 'Оценено моделью ИИ',
+        alwaysUseAI: 'Всегда оценивать через ИИ',
+        savedWithEstimates: 'Тренировка сохранена. Оценки будут добавлены.',
+        error: 'Не удалось получить оценку ИИ',
+        tooltip: 'Оценено моделью gpt-4o-mini'
       },
       previousCheckins: 'Предыдущие проверки',
       weight: 'Вес',

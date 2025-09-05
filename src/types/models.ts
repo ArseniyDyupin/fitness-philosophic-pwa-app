@@ -26,8 +26,14 @@ export interface WorkoutExercise {
     seconds?: number[] // array of seconds for plank repetitions
     notes?: string // exercise-specific notes
     customExercise?: string // name for custom exercises
+    weightKg?: number // additional weight for exercises
   }
   kcalEstimated?: number // estimated calories for this exercise
+  estimateMeta?: { 
+    source?: "ai" | "local"
+    cacheId?: string
+    updatedAt?: string
+  }
 }
 
 export interface Workout {
@@ -134,4 +140,17 @@ export interface PlanRealizationDraft {
   rpe?: number
   exerciseEdits: ExerciseEdit[]
   workoutComment?: string     // общий комментарий к тренировке
+}
+
+export interface ExerciseEstimate {
+  id: string                 // hash(signature) — см. ниже
+  signature: string          // канонизированная строка описания упражнения
+  type: WorkoutType | "custom"
+  model: "gpt-4o-mini"
+  kcal: number               // оценка ккал за указанную единицу объёма
+  durationMin?: number       // оценка длительности (мин) за указанный объём
+  unit: "per-session" | "per-set" | "per-rep" | "per-km" | "per-minute" // что именно оценено
+  meta?: { source: "ai" | "manual"; notes?: string }
+  createdAt: string
+  updatedAt: string
 }
