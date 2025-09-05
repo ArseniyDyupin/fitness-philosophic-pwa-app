@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { WeekStats } from '../../services/stats.week'
 import { useTranslations } from '../../stores/i18n.store'
-import { format } from 'date-fns'
+import { useWorkoutStore } from '../../stores/workout.store'
+import { format, eachDayOfInterval } from 'date-fns'
+import { WorkoutExercise } from '../../types/models'
 import {
   ResponsiveContainer,
   BarChart,
@@ -12,9 +14,44 @@ import {
   Tooltip,
   Legend
 } from 'recharts'
+import { calculateWorkoutDuration } from '@/services/kcal'
 
 interface WeeklyActivityChartProps {
   stats: WeekStats
+}
+
+interface DayData {
+  date: string
+  durationMinTotal: number
+  workouts: number
+  details: Array<{
+    id: string
+    rpe?: number
+    kcal: number
+    durationMin: number
+    exercisesShort: string
+  }>
+}
+
+// Helper function to create exercise summary
+const createExerciseSummary = (exercises: WorkoutExercise[]): string => {
+  const summaries = exercises.map(ex => {
+    switch (ex.type) {
+      case 'run':
+        return ex.details.distanceKm ? `${ex.details.distanceKm}км бег` : 'Бег'
+      case 'pullups':
+        return ex.details.repsPerSet ? `${ex.details.repsPerSet.reduce((a, b) => a + b, 0)} подтягиваний` : 'Подтягивания'
+      case 'pushups':
+        return ex.details.repsPerSet ? `${ex.details.repsPerSet.reduce((a, b) => a + b, 0)} отжиманий` : 'Отжимания'
+      case 'plank':
+        return ex.details.seconds ? `${Math.round(Array.isArray(ex.details.seconds) ? ex.details.seconds.reduce((a, b) => a + b, 0) / 60 : ex.details.seconds / 60)}мин планка` : 'Планка'
+      case 'custom':
+        return ex.details.customExercise || 'Свое упражнение'
+      default:
+        return 'Упражнение'
+    }
+  })
+  return summaries.slice(0, 2).join(', ') + (summaries.length > 2 ? '...' : '')
 }
 
 // Custom tooltip component
@@ -78,23 +115,80 @@ const WeeklyTooltip: React.FC<any> = ({ active, payload, label }) => {
 
 const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ stats }) => {
   const t = useTranslations()
+  const { workouts, isLoading: workoutsLoading, loadWorkouts } = useWorkoutStore()
+  const [chartData, setChartData] = useState<DayData[]>([])
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  // Prepare data for recharts
-  const chartData = stats.days.map(day => ({
-    date: day.date,
-    durationMinTotal: Math.round(day.durationMinTotal),
-    workouts: day.workouts,
-    details: day.details
-  }))
+  useEffect(() => {
+    loadWorkouts()
+  }, [])
+
+  useEffect(() => {
+    if (workouts.length > 0) {
+      processChartData()
+    }
+  }, [workouts, stats.range])
+
+  const processChartData = () => {
+    setIsProcessing(true)
+    try {
+      const weekStart = new Date(stats.range.startISO)
+      const weekEnd = new Date(stats.range.endISO)
+      
+      // Get workouts for the week from store
+      const weekWorkouts = workouts.filter(w => 
+        w.date >= stats.range.startISO && w.date <= stats.range.endISO
+      )
+
+      // Create day data
+      const days = eachDayOfInterval({ start: weekStart, end: weekEnd })
+      const dayData: DayData[] = days.map(day => {
+        const dateStr = day.toISOString().split('T')[0]
+        const dayWorkouts = weekWorkouts.filter(w => {
+          return w.date.split('T')[0] === dateStr
+        })
+        
+        // Filter only completed workouts
+        const completedWorkouts = dayWorkouts.filter(w => (w.status || 'completed') === 'completed')
+        
+        // Calculate total duration
+        const durationMinTotal = completedWorkouts.reduce((total, workout) => {
+          return total + calculateWorkoutDuration(workout.exercises)
+        }, 0)
+
+        // Create details for tooltip
+        const details = completedWorkouts.map(workout => ({
+          id: workout.id,
+          rpe: workout.rpe,
+          kcal: workout.exercises.reduce((sum, exercise) => sum + (exercise.kcalEstimated || 0), 0),
+          durationMin: calculateWorkoutDuration(workout.exercises),
+          exercisesShort: createExerciseSummary(workout.exercises)
+        }))
+        
+        return {
+          date: dateStr,
+          durationMinTotal: Math.round(durationMinTotal),
+          workouts: completedWorkouts.length,
+          details
+        }
+      })
+
+      setChartData(dayData)
+    } catch (error) {
+      console.error('Failed to process chart data:', error)
+    } finally {
+      setIsProcessing(false)
+    }
+  }
 
   const maxValue = Math.max(
-    ...stats.days.map(day => day.durationMinTotal)
+    ...chartData.map(day => day.durationMinTotal)
   )
 
   // Check if there's any data to display
-  const hasData = stats.days.some(day => day.workouts > 0 || day.workoutKcal > 0 || day.planned > 0)
+  const hasData = chartData.some(day => day.workouts > 0 || day.durationMinTotal > 0)
+  const isLoading = workoutsLoading || isProcessing
   
-
   return (
     <div className="card mb-8">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -102,7 +196,17 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ stats }) => {
       </h3>
       
       <div className="space-y-4">
-        {hasData ? (
+        {isLoading ? (
+          <div className="h-80 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+            <span className="ml-3 text-gray-600">
+              {workoutsLoading 
+                ? (t.weeklyPage?.loading || 'Loading workouts...')
+                : (t.weeklyPage?.processing || 'Processing chart data...')
+              }
+            </span>
+          </div>
+        ) : hasData ? (
           <>
             {/* Chart */}
             <div className="h-80">
@@ -156,12 +260,12 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ stats }) => {
         <div className="flex justify-between text-sm text-gray-600 pt-4 border-t">
           <div>
             <span className="font-medium">{t.weeklyPage?.totalWorkouts || 'Total Workouts'}: </span>
-            {stats.workoutsCount}
+            {chartData.reduce((sum, day) => sum + day.workouts, 0)}
           </div>
           <div>
             <span className="font-medium">{t.weeklyPage?.charts?.duration || 'Total Duration'}: </span>
             <span className="text-blue-600">
-              {Math.round(stats.days.reduce((sum, day) => sum + day.durationMinTotal, 0))} мин
+              {Math.round(chartData.reduce((sum, day) => sum + day.durationMinTotal, 0))} мин
             </span>
           </div>
         </div>
