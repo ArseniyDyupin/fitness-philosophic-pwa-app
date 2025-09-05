@@ -57,7 +57,7 @@ const Header: React.FC = () => {
 
   // Check if back button should be shown
   const shouldShowBackButton = () => {
-    const rootPaths = ['/', '/workouts', '/food', '/weekly', '/settings']
+    const rootPaths = ['/', '/workouts', '/weekly', '/settings'] // Removed '/food' temporarily
     return !rootPaths.includes(location.pathname) && !location.pathname.startsWith('/onboarding')
   }
 
@@ -102,7 +102,8 @@ const Header: React.FC = () => {
             >
               {t.header?.workouts || t.workouts}
             </Link>
-            <Link 
+            {/* Temporarily hidden - will be implemented later */}
+            {/* <Link 
               to="/food" 
               className={`px-3 py-2 rounded-md transition-colors ${
                 isActive('/food')
@@ -112,7 +113,7 @@ const Header: React.FC = () => {
               aria-current={isActive('/food') ? 'page' : undefined}
             >
               {t.header?.food || t.food}
-            </Link>
+            </Link> */}
             <Link 
               to="/weekly" 
               className={`px-3 py-2 rounded-md transition-colors ${
@@ -183,7 +184,8 @@ const Header: React.FC = () => {
             >
               <span className="text-xs">{t.header?.workouts || t.workouts}</span>
             </Link>
-            <Link 
+            {/* Temporarily hidden - will be implemented later */}
+            {/* <Link 
               to="/food" 
               className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors ${
                 isActive('/food')
@@ -193,7 +195,7 @@ const Header: React.FC = () => {
               aria-current={isActive('/food') ? 'page' : undefined}
             >
               <span className="text-xs">{t.header?.food || t.food}</span>
-            </Link>
+            </Link> */}
             <Link 
               to="/weekly" 
               className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors ${

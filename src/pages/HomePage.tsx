@@ -77,7 +77,8 @@ const HomePage: React.FC = () => {
             </p>
           </Link>
 
-          <Link
+          {/* Temporarily hidden - will be implemented later */}
+          {/* <Link
             to="/food"
             className="card hover:shadow-md transition-shadow cursor-pointer text-center"
           >
@@ -88,7 +89,7 @@ const HomePage: React.FC = () => {
             <p className="text-gray-600">
               {t.homePage?.foodDescription || 'Log your nutrition and track calories'}
             </p>
-          </Link>
+          </Link> */}
 
           <Link
             to="/weekly"

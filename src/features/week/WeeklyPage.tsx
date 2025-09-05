@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useTranslations } from '../../stores/i18n.store'
 import { useWeeklyStore } from '../../stores/weekly.store'
 import { useWorkoutStore } from '../../stores/workout.store'
-import { useFoodStore } from '../../stores/food.store'
+// Temporarily disabled - will be implemented later
+// import { useFoodStore } from '../../stores/food.store'
 import { useProfileStore } from '../../stores/profile.store'
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { format, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns'
@@ -11,7 +12,9 @@ const WeeklyPage: React.FC = () => {
   const t = useTranslations()
   const { checkins, loadCheckins, addCheckin, updateCheckin, getCurrentWeekCheckin } = useWeeklyStore()
   const { workouts, loadWorkouts } = useWorkoutStore()
-  const { foodLogs, loadFoodLogs } = useFoodStore()
+  // Temporarily disabled - will be implemented later
+  // const { foodLogs, loadFoodLogs } = useFoodStore()
+  const foodLogs: any[] = [] // Empty array for now
   const { profile } = useProfileStore()
   
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -27,8 +30,8 @@ const WeeklyPage: React.FC = () => {
   useEffect(() => {
     loadCheckins()
     loadWorkouts()
-    loadFoodLogs()
-  }, [loadCheckins, loadWorkouts, loadFoodLogs])
+    // loadFoodLogs() // Temporarily disabled
+  }, [loadCheckins, loadWorkouts]) // Removed loadFoodLogs from dependencies
 
   const currentWeekCheckin = getCurrentWeekCheckin()
   const weekStart = startOfWeek(selectedWeek, { weekStartsOn: 1 }) // Monday
