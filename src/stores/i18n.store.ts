@@ -363,6 +363,79 @@ export const translations = {
       }
     },
     
+    // Weekly
+    weeklyPage: {
+      description: 'Weekly check-ins and progress tracking',
+      addCheckin: 'Add Check-in',
+      previousWeek: 'Previous Week',
+      nextWeek: 'Next Week',
+      weeklyOverview: 'Weekly Overview',
+      workoutsCount: 'Workouts',
+      workoutCalories: 'Workout Calories',
+      foodCalories: 'Food Calories',
+      weeklyBalance: 'Weekly Balance',
+      thisWeekCheckin: 'This Week\'s Check-in',
+      previousCheckins: 'Previous Check-ins',
+      weight: 'Weight',
+      waist: 'Waist',
+      notes: 'Notes',
+      progressPhoto: 'Progress Photo',
+      photoAvailable: '📷 Photo available',
+      updateCheckin: 'Update Check-in',
+      addCheckinModal: 'Add Check-in',
+      weightRequired: 'Weight (kg) *',
+      waistOptional: 'Waist (cm) - Optional',
+      progressPhotoOptional: 'Progress Photo - Optional',
+      notesOptional: 'Notes - Optional',
+      allowPhotoInAI: 'Allow photo to be used in AI analysis',
+      weightPlaceholder: 'e.g., 70.5',
+      waistPlaceholder: 'e.g., 80',
+      notesPlaceholder: 'How was your week? Any observations?',
+      pleaseEnterWeight: 'Please enter your weight',
+      failedToSaveCheckin: 'Failed to save checkin',
+      workout: 'workout',
+      workouts: 'workouts',
+      foodLog: 'food log',
+      foodLogs: 'food logs',
+      // New weekly analytics keys
+      activityChart: 'Activity by Day',
+      typesChart: 'Exercise Types Distribution',
+      noData: 'No workout data for this week',
+      totalSessions: 'Total Sessions',
+      totalWorkouts: 'Total Workouts',
+      balance: 'Balance',
+      avgRpe: 'Avg RPE',
+      types: {
+        run: 'Run',
+        pullups: 'Pull-ups',
+        pushups: 'Push-ups',
+        plank: 'Plank',
+        custom: 'Custom'
+      },
+      prs: {
+        title: 'Personal Records',
+        longestRun: 'Longest Run',
+        fastestPace: 'Fastest Pace',
+        maxPullups: 'Max Pull-ups',
+        maxPushups: 'Max Push-ups',
+        longestPlank: 'Longest Plank',
+        noRecords: 'No personal records this week'
+      },
+      progress: {
+        title: 'Exercise Progress',
+        noData: 'No exercise data for this week'
+      },
+      metrics: {
+        distance: 'Distance',
+        duration: 'Duration',
+        reps: 'Reps',
+        sets: 'Sets',
+        sessions: 'Sessions',
+        holds: 'Holds'
+      },
+      loading: 'Loading analytics...'
+    },
+    
     // JsonFileButtons
     jsonFileButtons: {
       dataExportedSuccessfully: 'Data exported successfully!',
@@ -828,6 +901,79 @@ export const translations = {
         placeholder: 'Уточните, что нужно изменить...',
         apply: 'Применить изменения'
       }
+    },
+    
+    // Weekly
+    weeklyPage: {
+      description: 'Еженедельные проверки и отслеживание прогресса',
+      addCheckin: 'Добавить проверку',
+      previousWeek: 'Предыдущая неделя',
+      nextWeek: 'Следующая неделя',
+      weeklyOverview: 'Обзор недели',
+      workoutsCount: 'Тренировки',
+      workoutCalories: 'Калории тренировок',
+      foodCalories: 'Калории питания',
+      weeklyBalance: 'Недельный баланс',
+      thisWeekCheckin: 'Проверка этой недели',
+      previousCheckins: 'Предыдущие проверки',
+      weight: 'Вес',
+      waist: 'Талия',
+      notes: 'Заметки',
+      progressPhoto: 'Фото прогресса',
+      photoAvailable: '📷 Фото доступно',
+      updateCheckin: 'Обновить проверку',
+      addCheckinModal: 'Добавить проверку',
+      weightRequired: 'Вес (кг) *',
+      waistOptional: 'Талия (см) - необязательно',
+      progressPhotoOptional: 'Фото прогресса - необязательно',
+      notesOptional: 'Заметки - необязательно',
+      allowPhotoInAI: 'Разрешить использование фото в ИИ анализе',
+      weightPlaceholder: 'например, 70.5',
+      waistPlaceholder: 'например, 80',
+      notesPlaceholder: 'Как прошла неделя? Есть наблюдения?',
+      pleaseEnterWeight: 'Пожалуйста, введите ваш вес',
+      failedToSaveCheckin: 'Не удалось сохранить проверку',
+      workout: 'тренировка',
+      workouts: 'тренировки',
+      foodLog: 'запись питания',
+      foodLogs: 'записи питания',
+      // New weekly analytics keys
+      activityChart: 'Активность по дням',
+      typesChart: 'Распределение по типам упражнений',
+      noData: 'Нет данных о тренировках за эту неделю',
+      totalSessions: 'Всего сессий',
+      totalWorkouts: 'Всего тренировок',
+      balance: 'Баланс',
+      avgRpe: 'Средний RPE',
+      types: {
+        run: 'Бег',
+        pullups: 'Подтягивания',
+        pushups: 'Отжимания',
+        plank: 'Планка',
+        custom: 'Другое'
+      },
+      prs: {
+        title: 'Личные рекорды',
+        longestRun: 'Самый длинный бег',
+        fastestPace: 'Самый быстрый темп',
+        maxPullups: 'Максимум подтягиваний',
+        maxPushups: 'Максимум отжиманий',
+        longestPlank: 'Самая долгая планка',
+        noRecords: 'Нет личных рекордов на этой неделе'
+      },
+      progress: {
+        title: 'Прогресс по упражнениям',
+        noData: 'Нет данных об упражнениях за эту неделю'
+      },
+      metrics: {
+        distance: 'Дистанция',
+        duration: 'Длительность',
+        reps: 'Повторения',
+        sets: 'Подходы',
+        sessions: 'Сессии',
+        holds: 'Удержания'
+      },
+      loading: 'Загрузка аналитики...'
     },
     
     // JsonFileButtons
