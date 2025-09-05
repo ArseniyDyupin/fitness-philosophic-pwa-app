@@ -1,4 +1,7 @@
 import type { AIWorkoutReview, AIWorkoutPayload, AIWeeklyAdvicePayload } from '@/types/ai'
+import type { Profile, Workout, PlanSuggestion } from '../types/models'
+import { db } from './db'
+import { z } from 'zod'
 
 export class AIService {
   private apiKey: string = ''
@@ -277,6 +280,177 @@ Return ONLY valid JSON array, no additional text.`
         throw new Error('AI returned invalid JSON response')
       }
       throw error
+    }
+  }
+
+  // Generate next workout plan
+  async generateNextWorkout(profile: Profile, recentWorkouts: Workout[], language: string = 'ru'): Promise<PlanSuggestion> {
+    if (!this.hasApiKey()) {
+      throw new Error('API key not configured')
+    }
+
+    const systemPrompt = language === 'ru' 
+      ? `Ты — персональный тренер. Верни ТОЛЬКО JSON без текста.
+Формат:
+{
+  "review": string,
+  "next_workout": {
+    "date": "YYYY-MM-DD" | null,
+    "rpe": number | null,
+    "exercises": WorkoutExercise[]
+  },
+  "tips": string[]
+}
+
+Где WorkoutExercise:
+{ "type":"run"|"pullups"|"pushups"|"plank"|"custom",
+  "details":{ "distanceKm"?:number, "durationMin"?:number, "sets"?:number, "repsPerSet"?:number[], "seconds"?:number[], "customExercise"?:string, "notes"?:string }
+}
+Никаких комментариев вне JSON.`
+      : `You are a personal trainer. Return ONLY JSON without any text.
+Format:
+{
+  "review": string,
+  "next_workout": {
+    "date": "YYYY-MM-DD" | null,
+    "rpe": number | null,
+    "exercises": WorkoutExercise[]
+  },
+  "tips": string[]
+}
+
+Where WorkoutExercise:
+{ "type":"run"|"pullups"|"pushups"|"plank"|"custom",
+  "details":{ "distanceKm"?:number, "durationMin"?:number, "sets"?:number, "repsPerSet"?:number[], "seconds"?:number[], "customExercise"?:string, "notes"?:string }
+}
+No comments outside JSON.`
+
+    const userPrompt = language === 'ru'
+      ? `Создай план тренировки для пользователя:
+- Возраст: ${profile.age} лет
+- Пол: ${profile.gender}
+- Рост: ${profile.height} см
+- Вес: ${profile.weight} кг
+- Цели: ${profile.goal}
+- Ограничения: ${profile.constraints?.join(', ') || 'нет'}
+- Оборудование: ${profile.equipment?.join(', ') || 'нет'}
+- Предпочтения в спорте: ${(profile as any).sportsPreferences || 'не указаны'}
+
+Последние тренировки (${recentWorkouts.length}): ${recentWorkouts.slice(0, 3).map(w => 
+  `${w.exercises.map(e => e.type).join(', ')} (RPE ${w.rpe || 'не указан'})`
+).join('; ')}
+
+Создай разнообразную тренировку с учетом прогресса и целей.`
+      : `Create a workout plan for user:
+- Age: ${profile.age} years
+- Gender: ${profile.gender}
+- Height: ${profile.height} cm
+- Weight: ${profile.weight} kg
+- Goals: ${profile.goal}
+- Constraints: ${profile.constraints?.join(', ') || 'none'}
+- Equipment: ${profile.equipment?.join(', ') || 'none'}
+- Sports preferences: ${(profile as any).sportsPreferences || 'not specified'}
+
+Recent workouts (${recentWorkouts.length}): ${recentWorkouts.slice(0, 3).map(w => 
+  `${w.exercises.map(e => e.type).join(', ')} (RPE ${w.rpe || 'not specified'})`
+).join('; ')}
+
+Create a varied workout considering progress and goals.`
+
+    try {
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 2000,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`)
+      }
+
+      const data = await response.json()
+      const content = data.choices[0]?.message?.content
+
+      if (!content) {
+        throw new Error('No content in AI response')
+      }
+
+      // Try to extract JSON from response
+      let jsonContent = content.trim()
+      
+      // If response contains text with JSON, extract the JSON part
+      const jsonMatch = jsonContent.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        jsonContent = jsonMatch[0]
+      }
+
+      // Validate JSON structure
+      const aiResponseSchema = z.object({
+        review: z.string(),
+        next_workout: z.object({
+          date: z.string().nullable(),
+          rpe: z.number().nullable(),
+          exercises: z.array(z.object({
+            type: z.enum(['run', 'pullups', 'pushups', 'plank', 'custom']),
+            details: z.object({
+              distanceKm: z.number().optional(),
+              durationMin: z.number().optional(),
+              sets: z.number().optional(),
+              repsPerSet: z.array(z.number()).optional(),
+              seconds: z.array(z.number()).optional(),
+              customExercise: z.string().optional(),
+              notes: z.string().optional()
+            })
+          }))
+        }),
+        tips: z.array(z.string())
+      })
+
+      const parsedResponse = aiResponseSchema.parse(JSON.parse(jsonContent))
+
+      // Create PlanSuggestion
+      const today = new Date().toISOString().split('T')[0]
+      const planId = `plan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
+      const workoutTemplate: Workout = {
+        id: `template_${planId}`,
+        date: parsedResponse.next_workout.date || today,
+        exercises: parsedResponse.next_workout.exercises,
+        rpe: parsedResponse.next_workout.rpe || undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+
+      const plan: PlanSuggestion = {
+        id: planId,
+        type: 'workout',
+        title: language === 'ru' ? 'План тренировки' : 'Workout Plan',
+        description: parsedResponse.review,
+        forDate: parsedResponse.next_workout.date || today,
+        workoutTemplate,
+        notes: `${parsedResponse.review}\n\nСоветы:\n${parsedResponse.tips.join('\n')}`,
+        createdAt: new Date().toISOString()
+      }
+
+      // Save to database
+      await db.plans.put(plan)
+
+      return plan
+
+    } catch (error) {
+      console.error('Failed to generate workout plan:', error)
+      throw new Error('Failed to generate workout plan')
     }
   }
 }

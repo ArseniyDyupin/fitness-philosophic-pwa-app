@@ -1,0 +1,281 @@
+import React, { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslations } from '../stores/i18n.store'
+import { useProfileStore } from '../stores/profile.store'
+import { useWorkoutStore } from '../stores/workout.store'
+import { calculateWorkoutCalories } from '../services/kcal'
+import { db } from '../services/db'
+import PlanSummary from '../components/PlanSummary'
+import PlanExerciseCard from '../components/PlanExerciseCard'
+import type { PlanSuggestion, ExerciseEdit, Workout } from '../types/models'
+import { ArrowLeft, Save, X } from 'lucide-react'
+
+const PlanRealizationPage: React.FC = () => {
+  const { planId } = useParams<{ planId: string }>()
+  const navigate = useNavigate()
+  const t = useTranslations()
+  const { profile } = useProfileStore()
+  const { addWorkout } = useWorkoutStore()
+
+  const [plan, setPlan] = useState<PlanSuggestion | null>(null)
+  const [exerciseEdits, setExerciseEdits] = useState<ExerciseEdit[]>([])
+  const [rpe, setRpe] = useState<number>(5)
+  const [workoutComment, setWorkoutComment] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
+  useEffect(() => {
+    if (planId) {
+      loadPlan()
+    }
+  }, [planId])
+
+  const loadPlan = async () => {
+    try {
+      const loadedPlan = await db.plans.get(planId!)
+      if (loadedPlan) {
+        setPlan(loadedPlan)
+        setRpe(loadedPlan.workoutTemplate?.rpe || 5)
+
+        // Initialize exercise edits
+        const edits: ExerciseEdit[] =
+          loadedPlan.workoutTemplate?.exercises.map((_, index) => ({
+            index,
+            status: 'as_planned' as const
+          })) || []
+        setExerciseEdits(edits)
+      } else {
+        setToast({ message: t.plan?.noPlanAvailable || 'Plan not found', type: 'error' })
+        navigate('/')
+      }
+    } catch (error) {
+      console.error('Failed to load plan:', error)
+      setToast({ message: t.error || 'Failed to load plan', type: 'error' })
+    }
+  }
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  const handleExerciseEditChange = (index: number, edit: ExerciseEdit) => {
+    setExerciseEdits((prev) => prev.map((e, i) => (i === index ? edit : e)))
+  }
+
+  const createWorkoutFromPlan = async () => {
+    if (!plan || !plan.workoutTemplate) return
+
+    setIsSaving(true)
+    try {
+      // Filter out skipped exercises and apply edits
+      const finalExercises = plan.workoutTemplate.exercises
+        .map((exercise, index) => {
+          const edit = exerciseEdits[index]
+          if (!edit || edit.status === 'skipped') return null
+
+          // Apply edits if any
+          if (edit.edited) {
+            return {
+              ...exercise,
+              details: { ...exercise.details, ...edit.edited }
+            }
+          }
+          return exercise
+        })
+        .filter(Boolean)
+
+      // Recalculate calories for each exercise
+      const exercisesWithCalories = finalExercises.map((exercise) => ({
+        ...exercise!,
+        kcalEstimated: profile?.weight
+          ? calculateWorkoutCalories([exercise!], profile.weight, rpe)
+          : undefined
+      }))
+
+      const workout: Workout = {
+        id: `workout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        date: plan.forDate,
+        exercises: exercisesWithCalories,
+        rpe,
+        aiReviewId: plan.id, // Link to the original plan
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+
+      // Save workout
+      await addWorkout(workout)
+
+      showToast(t.plan?.save || 'Workout saved successfully', 'success')
+
+      // Navigate to workout details
+      setTimeout(() => {
+        navigate(`/workouts/${workout.id}`)
+      }, 1500)
+    } catch (error) {
+      console.error('Failed to save workout:', error)
+      showToast(t.error || 'Failed to save workout', 'error')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleCancel = () => {
+    navigate('/')
+  }
+
+  if (!plan || !plan.workoutTemplate) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.loading || 'Loading...'}</h2>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <button onClick={handleCancel} className="btn-secondary flex items-center space-x-2">
+                <ArrowLeft size={20} />
+                <span>{t.back || 'Back'}</span>
+              </button>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {t.plan?.title || 'Plan for Today'}
+              </h1>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <span className="text-sm text-gray-600">
+                {new Date(plan.forDate).toLocaleDateString()}
+              </span>
+              <span
+                className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                  rpe <= 3
+                    ? 'text-green-600 bg-green-100'
+                    : rpe <= 7
+                      ? 'text-yellow-600 bg-yellow-100'
+                      : 'text-red-600 bg-red-100'
+                }`}
+              >
+                RPE {rpe}
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* RPE Selection */}
+        <div className="card mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t.plan?.rpe || 'RPE'}</h3>
+              <p className="text-sm text-gray-600">
+                {t.plan?.rpe === 'RPE'
+                  ? 'Rate of Perceived Exertion (1-10 scale)'
+                  : 'Уровень воспринимаемой нагрузки (шкала 1-10)'}
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={rpe}
+                onChange={(e) => setRpe(parseInt(e.target.value))}
+                className="w-32"
+              />
+              <span className="text-lg font-semibold text-gray-900 min-w-[2rem] text-center">
+                {rpe}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Summary */}
+        <PlanSummary workout={plan.workoutTemplate} profile={profile || undefined} />
+
+        {/* Exercises */}
+        <div className="space-y-4 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900">
+            {t.plan?.summary?.exercises || 'Exercises'}
+          </h3>
+
+          {plan.workoutTemplate.exercises.map((exercise, index) => (
+            <PlanExerciseCard
+              key={index}
+              exercise={exercise}
+              index={index}
+              edit={exerciseEdits[index] || { index, status: 'as_planned' }}
+              onEditChange={(edit) => handleExerciseEditChange(index, edit)}
+            />
+          ))}
+        </div>
+
+        {/* Workout Comment */}
+        <div className="card mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            {t.plan?.workoutComment || 'Workout Comment'}
+          </h3>
+          <textarea
+            value={workoutComment}
+            onChange={(e) => setWorkoutComment(e.target.value)}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+            placeholder={t.plan?.workoutComment || 'Add a comment about your workout...'}
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-between items-center">
+          <button onClick={handleCancel} className="btn-secondary flex items-center space-x-2">
+            <X size={16} />
+            <span>{t.plan?.cancel || 'Cancel'}</span>
+          </button>
+
+          <button
+            onClick={createWorkoutFromPlan}
+            disabled={isSaving}
+            className="btn-primary flex items-center space-x-2"
+          >
+            {isSaving ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            ) : (
+              <Save size={16} />
+            )}
+            <span>{isSaving ? t.saving || 'Saving...' : t.plan?.save || 'Save as Workout'}</span>
+          </button>
+        </div>
+      </main>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+            toast.type === 'success'
+              ? 'bg-green-100 border border-green-200 text-green-800'
+              : 'bg-red-100 border border-red-200 text-red-800'
+          }`}
+        >
+          <div className="flex items-center space-x-2">
+            {toast.type === 'success' ? (
+              <Save size={16} className="text-green-600" />
+            ) : (
+              <X size={16} className="text-red-600" />
+            )}
+            <span className="text-sm font-medium">{toast.message}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default PlanRealizationPage

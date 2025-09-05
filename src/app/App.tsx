@@ -11,6 +11,7 @@ import WorkoutDetailsPage from '../features/workout/WorkoutDetailsPage'
 import FoodPage from '../features/food/FoodPage'
 import WeeklyPage from '../features/week/WeeklyPage'
 import SettingsPage from '../pages/SettingsPage'
+import PlanRealizationPage from '../pages/PlanRealizationPage'
 import NotFound from '../pages/NotFound'
 
 // Onboarding
@@ -94,6 +95,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/workouts" element={<WorkoutsPage />} />
         <Route path="/workouts/:id" element={<WorkoutDetailsPage />} />
+        <Route path="/plan/:planId" element={<PlanRealizationPage />} />
         <Route path="/food" element={<FoodPage />} />
         <Route path="/weekly" element={<WeeklyPage />} />
         <Route path="/settings" element={<SettingsPage />} />

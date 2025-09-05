@@ -309,6 +309,32 @@ export const translations = {
       detailedGoalsPlaceholder: 'Add more details about your fitness goals, timeline, preferences...'
     },
     
+    // Plan
+    plan: {
+      title: 'Plan for Today',
+      summary: {
+        kcal: 'Total Calories',
+        minutes: 'Duration (min)',
+        exercises: 'Exercises'
+      },
+      rpe: 'RPE',
+      status: {
+        as_planned: 'As Planned',
+        skipped: 'Skipped',
+        less: 'Less',
+        more: 'More',
+        edited: 'Edited'
+      },
+      exerciseComment: 'Exercise Comment',
+      workoutComment: 'Workout Comment',
+      save: 'Save as Workout',
+      cancel: 'Cancel',
+      regenerate: 'Generate Another Plan',
+      generatePlan: 'Generate Plan',
+      noPlanAvailable: 'No plan available',
+      planGenerated: 'Plan generated successfully'
+    },
+    
     // JsonFileButtons
     jsonFileButtons: {
       dataExportedSuccessfully: 'Data exported successfully!',
@@ -720,6 +746,32 @@ export const translations = {
       mainGoal: 'Основная цель',
       goalPlaceholder: 'Опишите вашу основную фитнес-цель...',
       detailedGoalsPlaceholder: 'Добавьте подробности о ваших фитнес-целях, временных рамках, предпочтениях...'
+    },
+    
+    // Plan
+    plan: {
+      title: 'План на сегодня',
+      summary: {
+        kcal: 'Всего калорий',
+        minutes: 'Длительность (мин)',
+        exercises: 'Упражнения'
+      },
+      rpe: 'RPE',
+      status: {
+        as_planned: 'Как план',
+        skipped: 'Пропустил',
+        less: 'Меньше',
+        more: 'Больше',
+        edited: 'Отредактировано'
+      },
+      exerciseComment: 'Комментарий к упражнению',
+      workoutComment: 'Комментарий к тренировке',
+      save: 'Сохранить как тренировку',
+      cancel: 'Отменить',
+      regenerate: 'Сгенерировать другой план',
+      generatePlan: 'Сгенерировать план',
+      noPlanAvailable: 'План недоступен',
+      planGenerated: 'План успешно сгенерирован'
     },
     
     // JsonFileButtons

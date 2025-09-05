@@ -103,6 +103,9 @@ export interface PlanSuggestion {
   description: string
   forDate: string              // ISO string
   exercises?: WorkoutExercise[]
+  workoutTemplate?: Workout    // заготовка "следующая тренировка"
+  notes?: string
+  kcalTargetDay?: number
   createdAt: string            // ISO string
 }
 
@@ -111,4 +114,22 @@ export interface Toast {
   type: 'success' | 'error' | 'info' | 'warning'
   message: string
   duration?: number
+}
+
+// Plan realization types (UI-only, not persisted to DB)
+export type ExerciseStatus = 'as_planned' | 'skipped' | 'less' | 'more' | 'edited'
+
+export interface ExerciseEdit {
+  index: number               // индекс упражнения в шаблоне
+  status: ExerciseStatus
+  edited?: Partial<WorkoutExercise['details']> // изменённые поля
+  comment?: string            // комментарий к упражнению
+}
+
+export interface PlanRealizationDraft {
+  planId: string
+  date: string                // ISO
+  rpe?: number
+  exerciseEdits: ExerciseEdit[]
+  workoutComment?: string     // общий комментарий к тренировке
 }
