@@ -376,6 +376,48 @@ export const translations = {
       weeklyBalance: 'Weekly Balance',
       thisWeekCheckin: 'This Week\'s Check-in',
       processing: 'Processing chart data...',
+      profile: {
+        title: 'Profile Information',
+        viewAll: 'View all details',
+        edit: 'Edit',
+        detailsTitle: 'Profile Details',
+        tabs: {
+          general: 'General',
+          goals: 'Goals & Preferences'
+        },
+        fields: {
+          name: 'Name',
+          age: 'Age',
+          gender: 'Gender',
+          height: 'Height (cm)',
+          weight: 'Weight (kg)',
+          language: 'Language',
+          goalTypes: 'Goal Types',
+          targetWeight: 'Target Weight (kg)',
+          targetEvent: 'Target Event',
+          goalDescription: 'Goal Description',
+          goalsDetailed: 'Detailed Goals',
+          constraints: 'Constraints',
+          equipment: 'Equipment',
+          frequency: 'Workouts per week',
+          duration: 'Workout duration (min)',
+          nameRequired: 'Name is required',
+          ageInvalid: 'Age must be between 10 and 100',
+          heightInvalid: 'Height must be between 100 and 250 cm',
+          weightInvalid: 'Weight must be between 30 and 300 kg',
+          frequencyInvalid: 'Frequency must be between 1 and 14',
+          durationInvalid: 'Duration must be between 5 and 300 minutes'
+        },
+        actions: {
+          close: 'Close',
+          update: 'Update',
+          save: 'Save'
+        },
+        toast: {
+          saved: 'Profile updated successfully',
+          error: 'Failed to save profile'
+        }
+      },
       previousCheckins: 'Previous Check-ins',
       weight: 'Weight',
       waist: 'Waist',
@@ -945,6 +987,48 @@ export const translations = {
       weeklyBalance: 'Недельный баланс',
       thisWeekCheckin: 'Проверка этой недели',
       processing: 'Обработка данных графика...',
+      profile: {
+        title: 'Информация о профиле',
+        viewAll: 'Показать все детали',
+        edit: 'Редактировать',
+        detailsTitle: 'Детали профиля',
+        tabs: {
+          general: 'Общее',
+          goals: 'Цели и предпочтения'
+        },
+        fields: {
+          name: 'Имя',
+          age: 'Возраст',
+          gender: 'Пол',
+          height: 'Рост (см)',
+          weight: 'Вес (кг)',
+          language: 'Язык',
+          goalTypes: 'Типы целей',
+          targetWeight: 'Целевой вес (кг)',
+          targetEvent: 'Целевое событие',
+          goalDescription: 'Описание целей',
+          goalsDetailed: 'Детальные цели',
+          constraints: 'Ограничения',
+          equipment: 'Оборудование',
+          frequency: 'Тренировок в неделю',
+          duration: 'Длительность тренировки (мин)',
+          nameRequired: 'Имя обязательно',
+          ageInvalid: 'Возраст должен быть от 10 до 100 лет',
+          heightInvalid: 'Рост должен быть от 100 до 250 см',
+          weightInvalid: 'Вес должен быть от 30 до 300 кг',
+          frequencyInvalid: 'Частота должна быть от 1 до 14 раз в неделю',
+          durationInvalid: 'Длительность должна быть от 5 до 300 минут'
+        },
+        actions: {
+          close: 'Закрыть',
+          update: 'Обновить',
+          save: 'Сохранить'
+        },
+        toast: {
+          saved: 'Профиль обновлён',
+          error: 'Не удалось сохранить профиль'
+        }
+      },
       previousCheckins: 'Предыдущие проверки',
       weight: 'Вес',
       waist: 'Талия',

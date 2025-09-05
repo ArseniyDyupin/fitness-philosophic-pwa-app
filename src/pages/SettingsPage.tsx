@@ -6,7 +6,8 @@ import { useTranslations } from '../stores/i18n.store'
 import JsonFileButtons from '../components/JsonFileButtons'
 import AISettings from '../components/AISettings'
 import DataImport from '../components/DataImport'
-import { Edit, Check, X } from 'lucide-react'
+import ProfileDetailsModal from '../components/ProfileDetailsModal'
+import { Edit, Check, X, Eye } from 'lucide-react'
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate()
@@ -20,6 +21,10 @@ const SettingsPage: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const [isSaving, setIsSaving] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  
+  // Profile modal states
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+  const [profileModalEditMode, setProfileModalEditMode] = useState(false)
 
   if (!profile) {
     return <div>{t.settingsPage?.loading || 'Loading...'}</div>
@@ -43,12 +48,6 @@ const SettingsPage: React.FC = () => {
           height: profile.height || 170,
           weight: profile.weight || 70,
           gender: profile.gender || 'male'
-        })
-        break
-      case 'goals':
-        setEditedData({
-          goal: profile.goal || '',
-          goalsDetailed: profile.goalsDetailed || ''
         })
         break
     }
@@ -78,11 +77,6 @@ const SettingsPage: React.FC = () => {
       }
     }
     
-    if (section === 'goals') {
-      if (!data.goal?.trim()) {
-        errors.goal = t.settingsPage?.goalRequired || 'Goal is required'
-      }
-    }
     
     return errors
   }
@@ -118,6 +112,17 @@ const SettingsPage: React.FC = () => {
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type })
     setTimeout(() => setToast(null), 3000)
+  }
+
+  // Profile modal functions
+  const openProfileModal = (editMode: boolean = false) => {
+    setProfileModalEditMode(editMode)
+    setIsProfileModalOpen(true)
+  }
+
+  const closeProfileModal = () => {
+    setIsProfileModalOpen(false)
+    setProfileModalEditMode(false)
   }
 
   return (
@@ -214,12 +219,12 @@ const SettingsPage: React.FC = () => {
           {/* Profile Information */}
           <div className={`card ${editingSection === 'profile' ? 'ring-2 ring-primary-500 bg-primary-50' : ''}`}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">{t.settingsPage?.profileInformation || 'Profile Information'}</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Profile Information</h2>
               {editingSection !== 'profile' && (
                 <button
-                  onClick={() => startEditing('profile')}
+                  onClick={() => openProfileModal(true)}
                   className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                  title={t.settingsPage?.editProfile || 'Edit profile'}
+                  title="Edit profile"
                 >
                   <Edit size={16} />
                 </button>
@@ -351,6 +356,19 @@ const SettingsPage: React.FC = () => {
                 </div>
               </div>
             )}
+            
+            {/* View All Details Button */}
+            {editingSection !== 'profile' && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => openProfileModal(false)}
+                  className="btn-secondary flex items-center space-x-2 w-full justify-center"
+                >
+                  <Eye size={16} />
+                  <span>View all details</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Onboarding Reset */}
@@ -375,84 +393,6 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Goals */}
-          <div className={`card ${editingSection === 'goals' ? 'ring-2 ring-primary-500 bg-primary-50' : ''}`}>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">{t.settingsPage?.goals || 'Goals'}</h2>
-              {editingSection !== 'goals' && (
-                <button
-                  onClick={() => startEditing('goals')}
-                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                  title={t.settingsPage?.editGoals || 'Edit goals'}
-                >
-                  <Edit size={16} />
-                </button>
-              )}
-            </div>
-            
-            {editingSection === 'goals' ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.mainGoal || 'Main Goal'}</label>
-                  <textarea
-                    value={editedData.goal || ''}
-                    onChange={(e) => setEditedData({ ...editedData, goal: e.target.value })}
-                    rows={3}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                      validationErrors.goal ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                    }`}
-                    placeholder={t.settingsPage?.goalPlaceholder || 'Describe your main fitness goal...'}
-                  />
-                  {validationErrors.goal && (
-                    <p className="text-sm text-red-600 mt-1">{validationErrors.goal}</p>
-                  )}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.detailedGoals || 'Detailed Goals'}</label>
-                  <textarea
-                    value={editedData.goalsDetailed || ''}
-                    onChange={(e) => setEditedData({ ...editedData, goalsDetailed: e.target.value })}
-                    rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                    placeholder={t.settingsPage?.detailedGoalsPlaceholder || 'Add more details about your fitness goals, timeline, preferences...'}
-                  />
-                </div>
-                
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => saveSection('goals')}
-                    disabled={isSaving}
-                    className="btn-primary flex items-center space-x-1"
-                  >
-                    <Check size={16} />
-                    <span>{isSaving ? (t.saving || 'Saving...') : (t.save || 'Save')}</span>
-                  </button>
-                  <button
-                    onClick={cancelEditing}
-                    disabled={isSaving}
-                    className="btn-secondary flex items-center space-x-1"
-                  >
-                    <X size={16} />
-                    <span>{t.cancel || 'Cancel'}</span>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.mainGoal || 'Main Goal'}</label>
-                  <p className="text-gray-900">{profile.goal || (t.settingsPage?.noGoalsSet || 'No goals set')}</p>
-            </div>
-            {profile.goalsDetailed && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.detailedGoals || 'Detailed Goals'}</label>
-                <p className="text-gray-900">{profile.goalsDetailed}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
 
           {/* AI Configuration */}
           <div className="card">
@@ -488,6 +428,13 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Profile Details Modal */}
+        <ProfileDetailsModal
+          isOpen={isProfileModalOpen}
+          onClose={closeProfileModal}
+          initialEditMode={profileModalEditMode}
+        />
       </main>
     </div>
   )
