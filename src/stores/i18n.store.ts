@@ -84,6 +84,18 @@ export const translations = {
     weekly: 'Weekly',
     settings: 'Settings',
     
+    // Header
+    header: {
+      back: 'Back',
+      workouts: 'Workouts',
+      food: 'Food',
+      week: 'Week',
+      settings: 'Settings',
+      export: 'Export Data',
+      generate: 'Generate Workout',
+      generating: 'Generating...'
+    },
+    
     // Profile
     profile: 'Profile',
     language: 'Language',
@@ -523,6 +535,18 @@ export const translations = {
     food: 'Питание',
     weekly: 'Неделя',
     settings: 'Настройки',
+    
+    // Header
+    header: {
+      back: 'Назад',
+      workouts: 'Тренировки',
+      food: 'Питание',
+      week: 'Неделя',
+      settings: 'Настройки',
+      export: 'Выгрузить данные',
+      generate: 'Сгенерировать тренировку',
+      generating: 'Генерация…'
+    },
     
     // Profile
     profile: 'Профиль',
