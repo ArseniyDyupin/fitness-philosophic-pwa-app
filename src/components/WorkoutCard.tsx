@@ -13,7 +13,7 @@ interface WorkoutCardProps {
 
 const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
   const t = useTranslations()
-  
+  console.log(workout, userWeight, '<<<workout, userWeight ')
   const totalCalories = calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
   const totalDuration = calculateWorkoutDuration(workout.exercises)
   
@@ -97,7 +97,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, userWeight }) => {
             <Clock className="text-blue-500" size={16} />
             <div>
               <div className="text-sm text-gray-600">{t.workoutCard?.duration || 'Duration'}</div>
-              <div className="font-medium text-gray-900">{Math.round(totalDuration)} {t.workoutCard?.min || 'min'}</div>
+              <div className="font-medium text-gray-900">{workout?.durationMin ? workout.durationMin : Math.round(totalDuration)} {t.workoutCard?.min || 'min'}</div>
             </div>
           </div>
           
