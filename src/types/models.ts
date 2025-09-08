@@ -41,6 +41,7 @@ export interface Workout {
   date: string                  // ISO string
   exercises: WorkoutExercise[]
   rpe?: number // Rate of Perceived Exertion (1-10 scale)
+  durationMin?: number // Total workout duration in minutes (user-specified)
   aiReviewId?: string // ID of AI review if available
   status?: WorkoutStatus // NEW: default "completed" for old data
   createdAt: string            // ISO string

@@ -135,6 +135,11 @@ export async function getWeekStats(
     
     // Calculate total duration for completed workouts
     const durationMinTotal = completedWorkouts.reduce((total: number, workout: Workout) => {
+      // Use workout's total duration if specified, otherwise calculate from exercises
+      if (workout.durationMin) {
+        return total + workout.durationMin
+      }
+      
       const workoutDuration = workout.exercises.reduce((sum: number, exercise: WorkoutExercise) => {
         // Try to get duration from details, or calculate from exercise type
         let duration = exercise.details.durationMin || 0

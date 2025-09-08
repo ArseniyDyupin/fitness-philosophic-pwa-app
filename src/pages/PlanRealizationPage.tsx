@@ -3,12 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslations } from '../stores/i18n.store'
 import { useProfileStore } from '../stores/profile.store'
 import { useWorkoutStore } from '../stores/workout.store'
+import { useAIStore } from '../stores/ai.store'
 import { calculateWorkoutCalories } from '../services/kcal'
+import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../services/ai.estimate'
 import { db } from '../services/db'
 import { aiService } from '../services/ai'
 import PlanSummary from '../components/PlanSummary'
 import PlanExerciseCard from '../components/PlanExerciseCard'
-import type { PlanSuggestion, ExerciseEdit, Workout } from '../types/models'
+import type { PlanSuggestion, ExerciseEdit, Workout, WorkoutExercise } from '../types/models'
 import { ArrowLeft, Save, X, RotateCcw, Loader } from 'lucide-react'
 
 const PlanRealizationPage: React.FC = () => {
@@ -17,6 +19,7 @@ const PlanRealizationPage: React.FC = () => {
   const t = useTranslations()
   const { profile } = useProfileStore()
   const { addWorkout } = useWorkoutStore()
+  const { isConfigured: isAIConfigured } = useAIStore()
 
   const [plan, setPlan] = useState<PlanSuggestion | null>(null)
   const [exerciseEdits, setExerciseEdits] = useState<ExerciseEdit[]>([])
@@ -89,13 +92,68 @@ const PlanRealizationPage: React.FC = () => {
         })
         .filter(Boolean)
 
-      // Recalculate calories for each exercise
-      const exercisesWithCalories = finalExercises.map((exercise) => ({
-        ...exercise!,
-        kcalEstimated: profile?.weight
-          ? calculateWorkoutCalories([exercise!], profile.weight, rpe)
-          : undefined
-      }))
+      // Get AI estimates for exercises that need them
+      let exercisesWithEstimates = finalExercises as WorkoutExercise[]
+      
+      if (profile && isAIConfigured) {
+        const exercisesNeedingEstimation = finalExercises.filter(exercise => needsAIEstimation(exercise!))
+        
+        if (exercisesNeedingEstimation.length > 0) {
+          const estimateInputs = exercisesNeedingEstimation.map(exercise => 
+            createEstimateInput(exercise!, {
+              weightKg: profile.weight,
+              age: profile.age,
+              gender: profile.gender
+            })
+          )
+          
+          const estimates = await getBatchEstimates(estimateInputs)
+          
+          // Update exercises with estimates
+          exercisesWithEstimates = finalExercises.map(exercise => {
+            const needsEstimate = needsAIEstimation(exercise!)
+            if (needsEstimate) {
+              const estimateIndex = exercisesNeedingEstimation.findIndex(e => e === exercise)
+              const estimate = estimates[estimateIndex]
+              
+              if (estimate) {
+                return {
+                  ...exercise!,
+                  kcalEstimated: estimate.kcal,
+                  estimateMeta: {
+                    source: 'ai' as const,
+                    updatedAt: new Date().toISOString()
+                  }
+                } as WorkoutExercise
+              }
+            }
+            
+            // Fallback to local calculation if no AI estimate
+            return {
+              ...exercise!,
+              kcalEstimated: profile?.weight
+                ? calculateWorkoutCalories([exercise!], profile.weight, rpe)
+                : undefined
+            } as WorkoutExercise
+          })
+        } else {
+          // No AI estimates needed, use local calculation
+          exercisesWithEstimates = finalExercises.map((exercise) => ({
+            ...exercise!,
+            kcalEstimated: profile?.weight
+              ? calculateWorkoutCalories([exercise!], profile.weight, rpe)
+              : undefined
+          })) as WorkoutExercise[]
+        }
+      } else {
+        // No AI configured, use local calculation
+        exercisesWithEstimates = finalExercises.map((exercise) => ({
+          ...exercise!,
+          kcalEstimated: profile?.weight
+            ? calculateWorkoutCalories([exercise!], profile.weight, rpe)
+            : undefined
+        })) as WorkoutExercise[]
+      }
 
       const workoutDate = plan.workoutTemplate?.date || plan.forDate
       console.log('Saving workout with date:', workoutDate)
@@ -105,7 +163,7 @@ const PlanRealizationPage: React.FC = () => {
       const workout: Workout = {
         id: `workout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         date: workoutDate,
-        exercises: exercisesWithCalories,
+        exercises: exercisesWithEstimates,
         rpe,
         aiReviewId: plan.id, // Link to the original plan
         status: 'completed', // Mark as completed when saved

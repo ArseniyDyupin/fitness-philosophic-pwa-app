@@ -25,6 +25,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
   const [mode, setMode] = useState<'form' | 'text'>('form')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [rpe, setRpe] = useState(5)
+  const [durationMin, setDurationMin] = useState<number | undefined>(undefined)
   const [exercises, setExercises] = useState<WorkoutExercise[]>([])
   const [textInput, setTextInput] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
@@ -35,6 +36,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
     if (isOpen) {
       setDate(new Date().toISOString().split('T')[0])
       setRpe(5)
+      setDurationMin(undefined)
       setExercises([])
       setTextInput('')
       setMode('form')
@@ -86,6 +88,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
         date: new Date(date).toISOString(),
         exercises,
         rpe: rpe > 0 ? rpe : undefined,
+        durationMin: durationMin && durationMin > 0 ? durationMin : undefined,
         status: 'completed' as const
       }
 
@@ -283,6 +286,29 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                     <span className="text-red-600">8-10 {t.workoutForm?.hard || 'Hard'}</span>
                   </div>
                 </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t.workoutForm?.totalDuration || 'Total Workout Duration'}
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="number"
+                    min="1"
+                    max="300"
+                    value={durationMin || ''}
+                    onChange={(e) => setDurationMin(e.target.value ? parseInt(e.target.value) : undefined)}
+                    placeholder="Optional"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <span className="text-sm text-gray-500">
+                    {t.workoutForm?.durationMinutes || 'minutes'}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Optional: Total time spent on the workout including rest
+                </p>
               </div>
             </div>
 

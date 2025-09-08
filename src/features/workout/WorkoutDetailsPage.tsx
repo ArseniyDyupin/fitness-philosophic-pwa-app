@@ -4,9 +4,11 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useWorkoutStore } from '../../stores/workout.store'
 import { useProfileStore } from '../../stores/profile.store'
 import { useTranslations } from '../../stores/i18n.store'
+import { useAIStore } from '../../stores/ai.store'
 import { calculateWorkoutCalories, calculateWorkoutDuration } from '../../services/kcal'
+import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../../services/ai.estimate'
 import { format } from 'date-fns'
-import { ArrowLeft, Edit, Trash2, TrendingUp, Check, X } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, TrendingUp, Check, X, Bot } from 'lucide-react'
 import type { WorkoutExercise } from '../../types/models'
 
 const WorkoutDetailsPage: React.FC = () => {
@@ -16,6 +18,7 @@ const WorkoutDetailsPage: React.FC = () => {
 
   const { getWorkoutById, deleteWorkout, updateWorkout } = useWorkoutStore()
   const { profile } = useProfileStore()
+  const { isConfigured: isAIConfigured } = useAIStore()
   
   const [workout, setWorkout] = useState(getWorkoutById(id!))
   const [isDeleting, setIsDeleting] = useState(false)
@@ -25,8 +28,10 @@ const WorkoutDetailsPage: React.FC = () => {
   const [editingExercise, setEditingExercise] = useState<number | null>(null)
   const [editedDate, setEditedDate] = useState('')
   const [editedRpe, setEditedRpe] = useState(5)
+  const [editedDurationMin, setEditedDurationMin] = useState<number | undefined>(undefined)
   const [editedExercise, setEditedExercise] = useState<WorkoutExercise | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [isEstimating, setIsEstimating] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
@@ -54,7 +59,7 @@ const WorkoutDetailsPage: React.FC = () => {
   const totalCalories = profile?.weight 
     ? calculateWorkoutCalories(workout.exercises, profile.weight, workout.rpe)
     : 0
-  const totalDuration = calculateWorkoutDuration(workout.exercises)
+  const totalDuration = workout.durationMin || calculateWorkoutDuration(workout.exercises)
 
   const getRpeColor = (rpe: number) => {
     if (rpe <= 3) return 'text-green-600 bg-green-100'
@@ -91,6 +96,7 @@ const WorkoutDetailsPage: React.FC = () => {
   const startEditingHeader = () => {
     setEditedDate(workout!.date.split('T')[0])
     setEditedRpe(workout!.rpe || 5)
+    setEditedDurationMin(workout!.durationMin)
     setEditingHeader(true)
   }
 
@@ -113,7 +119,8 @@ const WorkoutDetailsPage: React.FC = () => {
       const updatedWorkout = {
         ...workout,
         date: new Date(editedDate).toISOString(),
-        rpe: editedRpe
+        rpe: editedRpe,
+        durationMin: editedDurationMin && editedDurationMin > 0 ? editedDurationMin : undefined
       }
       
       await updateWorkout(workout.id, updatedWorkout)
@@ -133,8 +140,41 @@ const WorkoutDetailsPage: React.FC = () => {
     
     setIsSaving(true)
     try {
+      let updatedExercise = editedExercise
+      
+      // Get AI estimates if needed and AI is configured
+      if (profile && isAIConfigured && needsAIEstimation(editedExercise)) {
+        setIsEstimating(true)
+        try {
+          const estimateInput = createEstimateInput(editedExercise, {
+            weightKg: profile.weight,
+            age: profile.age,
+            gender: profile.gender
+          })
+          
+          const estimates = await getBatchEstimates([estimateInput])
+          const estimate = estimates[0]
+          
+          if (estimate) {
+            updatedExercise = {
+              ...editedExercise,
+              kcalEstimated: estimate.kcal,
+              estimateMeta: {
+                source: 'ai' as const,
+                updatedAt: new Date().toISOString()
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Failed to get AI estimate:', error)
+          // Continue without AI estimate
+        } finally {
+          setIsEstimating(false)
+        }
+      }
+      
       const updatedExercises = [...workout.exercises]
-      updatedExercises[editingExercise] = editedExercise
+      updatedExercises[editingExercise] = updatedExercise
       
       const updatedWorkout = {
         ...workout,
@@ -151,6 +191,66 @@ const WorkoutDetailsPage: React.FC = () => {
       showToast(t.workoutDetailsPage?.updateFailed || 'Failed to update exercise', 'error')
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const updateAllAIEstimates = async () => {
+    if (!workout || !profile || !isAIConfigured) return
+    
+    setIsEstimating(true)
+    try {
+      const exercisesNeedingEstimation = workout.exercises.filter(needsAIEstimation)
+      
+      if (exercisesNeedingEstimation.length === 0) {
+        showToast('All exercises already have estimates', 'success')
+        return
+      }
+      
+      const estimateInputs = exercisesNeedingEstimation.map(exercise => 
+        createEstimateInput(exercise, {
+          weightKg: profile.weight,
+          age: profile.age,
+          gender: profile.gender
+        })
+      )
+      
+      const estimates = await getBatchEstimates(estimateInputs)
+      
+      // Update exercises with estimates
+      const updatedExercises = workout.exercises.map(exercise => {
+        const needsEstimate = needsAIEstimation(exercise)
+        if (needsEstimate) {
+          const estimateIndex = exercisesNeedingEstimation.findIndex(e => e === exercise)
+          const estimate = estimates[estimateIndex]
+          
+          if (estimate) {
+            return {
+              ...exercise,
+              kcalEstimated: estimate.kcal,
+              estimateMeta: {
+                source: 'ai' as const,
+                updatedAt: new Date().toISOString()
+              }
+            }
+          }
+        }
+        return exercise
+      })
+      
+      // Update the workout
+      const updatedWorkout = {
+        ...workout,
+        exercises: updatedExercises
+      }
+      
+      await updateWorkout(workout.id, updatedWorkout)
+      setWorkout(updatedWorkout)
+      showToast('AI estimates updated successfully', 'success')
+    } catch (error) {
+      console.error('Failed to update AI estimates:', error)
+      showToast('Failed to update AI estimates', 'error')
+    } finally {
+      setIsEstimating(false)
     }
   }
 
@@ -444,6 +544,25 @@ const WorkoutDetailsPage: React.FC = () => {
                       </div>
                     </div>
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {t.workoutForm?.totalDuration || 'Total Workout Duration'}
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        min="1"
+                        max="300"
+                        value={editedDurationMin || ''}
+                        onChange={(e) => setEditedDurationMin(e.target.value ? parseInt(e.target.value) : undefined)}
+                        placeholder="Optional"
+                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <span className="text-sm text-gray-500">
+                        {t.workoutForm?.durationMinutes || 'minutes'}
+                      </span>
+                    </div>
+                  </div>
                   <div className="flex space-x-2">
                     <button
                       onClick={saveHeader}
@@ -468,11 +587,18 @@ const WorkoutDetailsPage: React.FC = () => {
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
                   </h2>
-                  {workout.rpe && (
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRpeColor(workout.rpe)}`}>
-                      RPE {workout.rpe} - {getRpeLabel(workout.rpe)}
-                    </span>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    {workout.rpe && (
+                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRpeColor(workout.rpe)}`}>
+                        RPE {workout.rpe} - {getRpeLabel(workout.rpe)}
+                      </span>
+                    )}
+                    {workout.durationMin && (
+                      <span className="inline-block px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+                        {workout.durationMin} min
+                      </span>
+                    )}
+                  </div>
                 </>
               )}
             </div>
@@ -493,6 +619,27 @@ const WorkoutDetailsPage: React.FC = () => {
                   <TrendingUp size={20} />
                   <span className="font-medium">{t.workoutDetailsPage?.aiReviewed || 'AI Reviewed'}</span>
                 </div>
+              )}
+              
+              {isAIConfigured && (
+                <button
+                  onClick={updateAllAIEstimates}
+                  disabled={isEstimating}
+                  className="flex items-center space-x-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Update AI estimates for all exercises"
+                >
+                  {isEstimating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700"></div>
+                      <span className="text-sm">Updating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Bot size={16} />
+                      <span className="text-sm">Update AI Estimates</span>
+                    </>
+                  )}
+                </button>
               )}
             </div>
           </div>
@@ -548,8 +695,13 @@ const WorkoutDetailsPage: React.FC = () => {
                         </button>
                         
                         {exercise.kcalEstimated && exercise.kcalEstimated > 0 && (
-                          <div className="text-sm text-gray-500">
-                            ~{exercise.kcalEstimated} kcal
+                          <div className="flex items-center space-x-1 text-sm text-gray-500">
+                            <span>~{exercise.kcalEstimated} kcal</span>
+                            {exercise.estimateMeta?.source === 'ai' && (
+                              <span className="px-1 py-0.5 bg-blue-100 text-blue-700 text-xs rounded" title="Estimated by AI">
+                                AI
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>
