@@ -199,7 +199,9 @@ export class AIReviewService {
         }
 
         // Save feedback
+        console.log('Saving AI feedback:', feedback)
         await dbHelpers.saveAIFeedback(feedback)
+        console.log('AI feedback saved successfully')
 
         // Update workout with RPE and feedback ID
         const updatedWorkout = {
@@ -209,7 +211,9 @@ export class AIReviewService {
           updatedAt: new Date().toISOString()
         }
 
+        console.log('Updating workout with AI data:', updatedWorkout)
         await db.workouts.put(updatedWorkout)
+        console.log('Workout updated successfully')
 
         return result
       } catch (error) {

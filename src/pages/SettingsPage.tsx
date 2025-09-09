@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { useProfileStore } from '../stores/profile.store'
 import { useI18nStore } from '../stores/i18n.store'
 import { useTranslations } from '../stores/i18n.store'
+import { dbHelpers } from '../services/db'
 import JsonFileButtons from '../components/JsonFileButtons'
 import AISettings from '../components/AISettings'
 import DataImport from '../components/DataImport'
 import ProfileDetailsModal from '../components/ProfileDetailsModal'
-import { Edit, Check, X, Eye } from 'lucide-react'
+import { Edit, Check, X, Eye, RefreshCw } from 'lucide-react'
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate()
@@ -25,6 +26,8 @@ const SettingsPage: React.FC = () => {
   // Profile modal states
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [profileModalEditMode, setProfileModalEditMode] = useState(false)
+  const [isUpgradingDB, setIsUpgradingDB] = useState(false)
+  const [isDebuggingDB, setIsDebuggingDB] = useState(false)
 
   if (!profile) {
     return <div>{t.settingsPage?.loading || 'Loading...'}</div>
@@ -112,6 +115,47 @@ const SettingsPage: React.FC = () => {
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type })
     setTimeout(() => setToast(null), 3000)
+  }
+
+  const handleForceDBUpgrade = async () => {
+    if (!confirm('This will force upgrade the database. Continue?')) {
+      return
+    }
+    
+    setIsUpgradingDB(true)
+    try {
+      await dbHelpers.forceUpgrade()
+      showToast('Database upgraded successfully. Please refresh the page.', 'success')
+    } catch (error) {
+      console.error('Failed to upgrade database:', error)
+      showToast('Failed to upgrade database. Please refresh the page manually.', 'error')
+    } finally {
+      setIsUpgradingDB(false)
+    }
+  }
+
+  const handleDebugDB = async () => {
+    setIsDebuggingDB(true)
+    try {
+      const allFeedback = await dbHelpers.getAllAIFeedback()
+      console.log('=== DEBUG: All AI Feedback ===')
+      console.log('Count:', allFeedback.length)
+      allFeedback.forEach((feedback, index) => {
+        console.log(`Feedback ${index + 1}:`, {
+          id: feedback.id,
+          workoutId: feedback.workoutId,
+          rpe: feedback.rpe,
+          review: feedback.review?.substring(0, 100) + '...',
+          createdAt: feedback.createdAt
+        })
+      })
+      showToast(`Found ${allFeedback.length} AI feedback records. Check console for details.`, 'success')
+    } catch (error) {
+      console.error('Failed to debug database:', error)
+      showToast('Failed to debug database. Check console for errors.', 'error')
+    } finally {
+      setIsDebuggingDB(false)
+    }
   }
 
   // Profile modal functions
@@ -408,6 +452,51 @@ const SettingsPage: React.FC = () => {
           <div className="card">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.dataManagement || 'Data Management'}</h2>
             <JsonFileButtons />
+            
+            {/* Database Management */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h3 className="text-md font-semibold text-gray-900 mb-3">Database Management</h3>
+              <div className="space-y-3">
+                <button
+                  onClick={handleForceDBUpgrade}
+                  disabled={isUpgradingDB}
+                  className="flex items-center space-x-2 px-4 py-2 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isUpgradingDB ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-700"></div>
+                      <span>Upgrading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw size={16} />
+                      <span>Force Database Upgrade</span>
+                    </>
+                  )}
+                </button>
+                
+                <button
+                  onClick={handleDebugDB}
+                  disabled={isDebuggingDB}
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDebuggingDB ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700"></div>
+                      <span>Debugging...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw size={16} />
+                      <span>Debug AI Feedback</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Use "Force Database Upgrade" if you encounter database errors. Use "Debug AI Feedback" to check what AI feedback records exist.
+              </p>
+            </div>
           </div>
         </div>
 

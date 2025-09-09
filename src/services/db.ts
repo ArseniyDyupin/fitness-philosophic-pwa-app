@@ -13,7 +13,20 @@ export class AITrainerDB extends Dexie {
 
   constructor() {
     super('AITrainerDB')
+    
+    // Version 1 - Initial schema
     this.version(1).stores({
+      profiles: 'id',
+      workouts: 'id,date,createdAt',
+      food: 'id,date',
+      checkins: 'id,weekStart',
+      ai: 'id,createdAt',
+      plans: 'id,createdAt,forDate',
+      exercise_estimates: 'id,signature,type,createdAt'
+    })
+    
+    // Version 2 - Add ai_feedback table
+    this.version(2).stores({
       profiles: 'id',
       workouts: 'id,date,createdAt',
       food: 'id,date',
@@ -22,6 +35,9 @@ export class AITrainerDB extends Dexie {
       plans: 'id,createdAt,forDate',
       exercise_estimates: 'id,signature,type,createdAt',
       ai_feedback: 'id,workoutId,createdAt'
+    }).upgrade(async (tx) => {
+      // Migration logic if needed
+      console.log('Upgrading database to version 2 - adding ai_feedback table')
     })
   }
 }
@@ -77,14 +93,35 @@ export const dbHelpers = {
   },
 
   async getAIFeedbackByWorkout(workoutId: string): Promise<AIWorkoutFeedback | undefined> {
-    return await db.ai_feedback
-      .where('workoutId')
-      .equals(workoutId)
-      .first()
+    console.log('Searching for AI feedback with workoutId:', workoutId)
+    try {
+      const feedback = await db.ai_feedback
+        .where('workoutId')
+        .equals(workoutId)
+        .first()
+      console.log('Found AI feedback:', feedback)
+      return feedback
+    } catch (error) {
+      console.error('Error searching for AI feedback:', error)
+      throw error
+    }
   },
 
   async saveAIFeedback(feedback: AIWorkoutFeedback): Promise<void> {
+    console.log('Saving AI feedback:', feedback)
     await db.ai_feedback.put(feedback)
+  },
+
+  async getAllAIFeedback(): Promise<AIWorkoutFeedback[]> {
+    console.log('Getting all AI feedback records')
+    try {
+      const allFeedback = await db.ai_feedback.toArray()
+      console.log('All AI feedback records:', allFeedback)
+      return allFeedback
+    } catch (error) {
+      console.error('Error getting all AI feedback:', error)
+      throw error
+    }
   },
 
   async clearAllData(): Promise<void> {
@@ -98,5 +135,16 @@ export const dbHelpers = {
       await db.exercise_estimates.clear()
       await db.ai_feedback.clear()
     })
+  },
+
+  async forceUpgrade(): Promise<void> {
+    try {
+      // Force database upgrade by closing and reopening
+      await db.close()
+      // The database will automatically upgrade when reopened
+      console.log('Database upgrade forced')
+    } catch (error) {
+      console.error('Failed to force database upgrade:', error)
+    }
   }
 }

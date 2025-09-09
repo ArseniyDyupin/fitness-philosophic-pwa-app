@@ -10,8 +10,10 @@ import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../..
 import { aiReviewService } from '../../services/ai.review'
 import { dbHelpers } from '../../services/db'
 import { format } from 'date-fns'
-import { ArrowLeft, Edit, Trash2, TrendingUp, Check, X, Bot, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, TrendingUp, Check, X, Bot, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react'
 import type { WorkoutExercise, AIWorkoutFeedback } from '../../types/models'
+import WorkoutPie from '../../components/charts/WorkoutPie'
+import WorkoutBar from '../../components/charts/WorkoutBar'
 
 const WorkoutDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -36,7 +38,9 @@ const WorkoutDetailsPage: React.FC = () => {
   const [isEstimating, setIsEstimating] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [aiFeedback, setAiFeedback] = useState<AIWorkoutFeedback | null>(null)
+  const [isLoadingFeedback, setIsLoadingFeedback] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [isAnalyticsExpanded, setIsAnalyticsExpanded] = useState(false)
 
   useEffect(() => {
     if (!workout && id) {
@@ -46,17 +50,45 @@ const WorkoutDetailsPage: React.FC = () => {
 
   // Load AI feedback when workout changes
   useEffect(() => {
-    if (workout?.aiReviewId) {
-      loadAIFeedback()
+    if (workout) {
+      console.log('Workout loaded:', workout.id, 'aiReviewId:', workout.aiReviewId)
+      if (workout.aiReviewId) {
+        loadAIFeedback()
+      } else {
+        // Try to load any existing feedback for this workout
+        loadAIFeedback()
+      }
     }
-  }, [workout?.aiReviewId])
+  }, [workout?.id, workout?.aiReviewId])
 
   const loadAIFeedback = async () => {
+    if (!workout) return
+    
+    console.log('Loading AI feedback for workout:', workout.id)
+    setIsLoadingFeedback(true)
     try {
-      const feedback = await dbHelpers.getAIFeedbackByWorkout(workout!.id)
+      const feedback = await dbHelpers.getAIFeedbackByWorkout(workout.id)
+      console.log('AI feedback loaded:', feedback)
       setAiFeedback(feedback || null)
     } catch (error) {
       console.error('Failed to load AI feedback:', error)
+      // If it's a database error, try to upgrade
+      if (error instanceof Error && (error.message.includes('NotFoundError') || error.message.includes('object stores was not found'))) {
+        try {
+          await dbHelpers.forceUpgrade()
+          // Retry loading feedback
+          const feedback = await dbHelpers.getAIFeedbackByWorkout(workout.id)
+          console.log('AI feedback loaded after upgrade:', feedback)
+          setAiFeedback(feedback || null)
+        } catch (retryError) {
+          console.error('Failed to load AI feedback after upgrade:', retryError)
+          setAiFeedback(null)
+        }
+      } else {
+        setAiFeedback(null)
+      }
+    } finally {
+      setIsLoadingFeedback(false)
     }
   }
 
@@ -277,23 +309,63 @@ const WorkoutDetailsPage: React.FC = () => {
   const updateAIAnalysis = async () => {
     if (!workout || !hasKey()) return
     
+    console.log('Starting AI analysis for workout:', workout.id)
     setIsAnalyzing(true)
     try {
-      await aiReviewService.reviewWorkout(workout.id)
+      const result = await aiReviewService.reviewWorkout(workout.id)
+      console.log('AI analysis result:', result)
       
       // Reload the workout to get updated data
       const updatedWorkout = getWorkoutById(workout.id)
+      console.log('Updated workout:', updatedWorkout)
       setWorkout(updatedWorkout)
       
       // Reload AI feedback
       if (updatedWorkout?.aiReviewId) {
+        console.log('Reloading AI feedback with aiReviewId:', updatedWorkout.aiReviewId)
+        await loadAIFeedback()
+      } else {
+        console.log('No aiReviewId found, trying to load feedback anyway')
         await loadAIFeedback()
       }
       
-      showToast(t.workoutAnalysis?.ready || 'AI analysis completed', 'success')
+      // Debug: Check if feedback was actually saved
+      setTimeout(async () => {
+        try {
+          const debugFeedback = await dbHelpers.getAIFeedbackByWorkout(workout.id)
+          console.log('DEBUG: AI feedback after analysis:', debugFeedback)
+        } catch (error) {
+          console.error('DEBUG: Failed to get AI feedback after analysis:', error)
+        }
+      }, 1000)
+      
+      showToast(t.workoutDetailsPage?.analysisUpdated || 'Analysis updated', 'success')
     } catch (error) {
       console.error('Failed to update AI analysis:', error)
-      showToast(t.workoutAnalysis?.error || 'Failed to perform AI analysis', 'error')
+      
+      // More specific error handling
+      let errorMessage = t.workoutAnalysis?.error || 'Failed to perform AI analysis'
+      
+      if (error instanceof Error) {
+        if (error.message.includes('NotFoundError') || error.message.includes('object stores was not found')) {
+          // Try to force database upgrade
+          try {
+            await dbHelpers.forceUpgrade()
+            errorMessage = t.workoutDetailsPage?.databaseUpdated || 'Database updated. Please try again'
+          } catch (upgradeError) {
+            console.error('Failed to upgrade database:', upgradeError)
+            errorMessage = t.workoutDetailsPage?.databaseError || 'Database error: Please refresh the page and try again'
+          }
+        } else if (error.message.includes('API key')) {
+          errorMessage = t.workoutDetailsPage?.invalidApiKey || 'Invalid API key. Please check your settings'
+        } else if (error.message.includes('Rate limit')) {
+          errorMessage = t.workoutDetailsPage?.rateLimitExceeded || 'Rate limit exceeded. Please try again later'
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage = t.workoutDetailsPage?.networkError || 'Network error. Please check your connection'
+        }
+      }
+      
+      showToast(errorMessage, 'error')
     } finally {
       setIsAnalyzing(false)
     }
@@ -690,31 +762,11 @@ const WorkoutDetailsPage: React.FC = () => {
                 </button>
               )}
 
-              {hasKey() && (
-                <button
-                  onClick={updateAIAnalysis}
-                  disabled={isAnalyzing}
-                  className="flex items-center space-x-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={t.workoutAnalysis?.update || 'Update analysis'}
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
-                      <span className="text-sm">{t.workoutAnalysis?.starting || 'Analyzing...'}</span>
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw size={16} />
-                      <span className="text-sm">{t.workoutAnalysis?.update || 'Update Analysis'}</span>
-                    </>
-                  )}
-                </button>
-              )}
             </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-600 mb-2">{totalCalories}</div>
               <div className="text-sm text-gray-600">{t.workoutDetailsPage?.totalCalories || 'Total Calories'}</div>
@@ -723,10 +775,22 @@ const WorkoutDetailsPage: React.FC = () => {
               <div className="text-3xl font-bold text-green-600 mb-2">{Math.round(totalDuration)}</div>
               <div className="text-sm text-gray-600">{t.workoutDetailsPage?.duration || 'Duration (minutes)'}</div>
             </div>
-        <div className="text-center">
+            <div className="text-center">
               <div className="text-3xl font-bold text-purple-600 mb-2">{workout.exercises.length}</div>
               <div className="text-sm text-gray-600">{t.workoutDetailsPage?.exercises || 'Exercises'}</div>
             </div>
+            {workout.rpe && (
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2">
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRpeColor(workout.rpe)}`}>
+                    {workout.rpe}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600" title={t.workoutDetailsPage?.rpeHint || 'RPE — subjective intensity rating (1–10)'}>
+                  {t.workoutDetailsPage?.rpe || 'RPE'}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -762,17 +826,6 @@ const WorkoutDetailsPage: React.FC = () => {
                         >
                           <Edit size={16} />
                         </button>
-                        
-                        {exercise.kcalEstimated && exercise.kcalEstimated > 0 && (
-                          <div className="flex items-center space-x-1 text-sm text-gray-500">
-                            <span>~{exercise.kcalEstimated} kcal</span>
-                            {exercise.estimateMeta?.source === 'ai' && (
-                              <span className="px-1 py-0.5 bg-blue-100 text-blue-700 text-xs rounded" title="Estimated by AI">
-                                AI
-                              </span>
-                            )}
-                          </div>
-                        )}
                       </div>
                     </div>
                     
@@ -788,20 +841,44 @@ const WorkoutDetailsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* AI Feedback (if available) */}
-        {aiFeedback && (
-          <div className="card mt-8">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-                <TrendingUp size={20} className="text-primary-600" />
-                <span>{t.workoutAnalysis?.feedbackTitle || 'AI Feedback'}</span>
-                <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">AI</span>
-              </h3>
-              <div className="text-sm text-gray-500">
-                {format(new Date(aiFeedback.createdAt), 'MMM d, yyyy')} • {aiFeedback.model}
-              </div>
+        {/* AI Feedback Block */}
+        <div className="card mt-8">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+              <span className="text-2xl">🤖</span>
+              <span>{t.workoutDetailsPage?.aiFeedback || 'AI Feedback'}</span>
+              {aiFeedback && (
+                <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
+                  {aiFeedback.model}
+                </span>
+              )}
+            </h3>
+            <button
+              onClick={updateAIAnalysis}
+              disabled={isAnalyzing}
+              className="flex items-center space-x-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title={t.workoutDetailsPage?.updateAnalysis || 'Update analysis'}
+            >
+              {isAnalyzing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
+                  <span className="text-sm">{t.workoutAnalysis?.starting || 'Analyzing...'}</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw size={16} />
+                  <span className="text-sm">{t.workoutDetailsPage?.updateAnalysis || 'Update Analysis'}</span>
+                </>
+              )}
+            </button>
+          </div>
+          
+          {isLoadingFeedback ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
+              <span className="ml-3 text-gray-600">Loading AI feedback...</span>
             </div>
-            
+          ) : aiFeedback ? (
             <div className="space-y-4">
               {aiFeedback.rpe && (
                 <div className="flex items-center space-x-3">
@@ -817,9 +894,21 @@ const WorkoutDetailsPage: React.FC = () => {
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-gray-700 whitespace-pre-wrap">{aiFeedback.review}</p>
               </div>
+              
+              <div className="text-xs text-gray-500">
+                {t.workoutDetailsPage?.analysisUpdated || 'Updated'}: {format(new Date(aiFeedback.createdAt), 'MMM d, yyyy')}
+              </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <div className="text-4xl mb-4">🤖</div>
+              <div className="text-lg font-medium mb-2">
+                {t.workoutDetailsPage?.noAnalysis || 'Analysis not performed yet. Click "Update Analysis".'}
+              </div>
+            </div>
+          )}
+        </div>
+
 
         {/* AI Analysis Status (if analysis is in progress) */}
         {workout.aiReviewId && !aiFeedback && (
@@ -832,6 +921,46 @@ const WorkoutDetailsPage: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Analytics Section */}
+        <div className="card mt-8">
+          <button
+            onClick={() => setIsAnalyticsExpanded(!isAnalyticsExpanded)}
+            className="w-full flex justify-between items-center p-4 text-left hover:bg-gray-50 transition-colors"
+          >
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+              <span className="text-2xl">📊</span>
+              <span>{t.workoutDetailsPage?.analytics || 'Workout Analytics'}</span>
+            </h3>
+            {isAnalyticsExpanded ? (
+              <ChevronUp size={20} className="text-gray-500" />
+            ) : (
+              <ChevronDown size={20} className="text-gray-500" />
+            )}
+          </button>
+          
+          {isAnalyticsExpanded && (
+            <div className="px-4 pb-4 border-t border-gray-200">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+                {/* Calories Distribution */}
+                <div>
+                  <h4 className="text-md font-semibold text-gray-900 mb-4">
+                    {t.workoutDetailsPage?.caloriesSplit || 'Calories Distribution'}
+                  </h4>
+                  <WorkoutPie exercises={workout.exercises} />
+                </div>
+                
+                {/* Duration by Exercise */}
+                <div>
+                  <h4 className="text-md font-semibold text-gray-900 mb-4">
+                    {t.workoutDetailsPage?.durationByExercise || 'Duration by Exercise'}
+                  </h4>
+                  <WorkoutBar exercises={workout.exercises} />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Toast Notification */}
         {toast && (
