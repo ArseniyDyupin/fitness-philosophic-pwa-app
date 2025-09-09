@@ -573,6 +573,77 @@ export const translations = {
       }
     },
     
+    // StatsPage
+    statsPage: {
+      title: 'Statistics',
+      range: {
+        all: 'All Time',
+        ytd: 'Year to Date',
+        last30: 'Last 30 Days',
+        last90: 'Last 90 Days',
+        custom: 'Custom Period'
+      },
+      kpi: {
+        workouts: 'Total Workouts',
+        calories: 'Calories Burned',
+        time: 'Total Time',
+        avgRpe: 'Average RPE',
+        perWeek: 'Workouts/Week',
+        lastWorkout: 'Last Workout',
+        activeDays: 'Active Days'
+      },
+      discipline: {
+        title: 'Discipline Breakdown',
+        run: 'Running',
+        pullups: 'Pull-ups',
+        pushups: 'Push-ups',
+        plank: 'Plank',
+        custom: 'Custom'
+      },
+      trends: {
+        title: 'Trends',
+        metric: {
+          calories: 'Calories',
+          minutes: 'Minutes',
+          distance: 'Distance',
+          pace: 'Pace'
+        },
+        groupBy: {
+          day: 'By Day',
+          week: 'By Week'
+        }
+      },
+      records: {
+        title: 'Personal Records',
+        longestRun: 'Longest Run',
+        bestPace: 'Best Pace',
+        maxPullups: 'Max Pull-ups',
+        maxPushups: 'Max Push-ups',
+        longestPlank: 'Longest Plank',
+        viewChart: 'View Chart'
+      },
+      consistency: {
+        title: 'Activity Calendar',
+        noData: 'No activity data'
+      },
+      body: {
+        title: 'Body Metrics',
+        addMetric: 'Add Measurement',
+        last: 'Latest Measurements',
+        weight: 'Weight',
+        waist: 'Waist',
+        bicep: 'Bicep',
+        thigh: 'Thigh',
+        chest: 'Chest'
+      },
+      ai: {
+        title: 'AI Insights',
+        refresh: 'Refresh Insights',
+        loading: 'Generating insights...',
+        error: 'Failed to generate insights'
+      }
+    },
+    
     // WorkoutForm
     workoutForm: {
       formMode: 'Form Mode',
@@ -1299,6 +1370,77 @@ export const translations = {
         title: 'Нет тренировок на этой неделе',
         add: 'Добавить тренировку',
         generate: 'Сгенерировать тренировку'
+      }
+    },
+    
+    // StatsPage
+    statsPage: {
+      title: 'Статистика',
+      range: {
+        all: 'За всё время',
+        ytd: 'Текущий год',
+        last30: '30 дней',
+        last90: '90 дней',
+        custom: 'Период'
+      },
+      kpi: {
+        workouts: 'Всего тренировок',
+        calories: 'Сожжённые калории',
+        time: 'Общее время',
+        avgRpe: 'Средний RPE',
+        perWeek: 'Тренировок/неделю',
+        lastWorkout: 'Последняя тренировка',
+        activeDays: 'Дни с активностью'
+      },
+      discipline: {
+        title: 'Разбиение по дисциплинам',
+        run: 'Бег',
+        pullups: 'Подтягивания',
+        pushups: 'Отжимания',
+        plank: 'Планка',
+        custom: 'Кастомные'
+      },
+      trends: {
+        title: 'Тренды',
+        metric: {
+          calories: 'Калории',
+          minutes: 'Минуты',
+          distance: 'Дистанция',
+          pace: 'Темп'
+        },
+        groupBy: {
+          day: 'По дням',
+          week: 'По неделям'
+        }
+      },
+      records: {
+        title: 'Личные рекорды',
+        longestRun: 'Самый длинный бег',
+        bestPace: 'Лучший темп',
+        maxPullups: 'Макс подтягиваний',
+        maxPushups: 'Макс отжиманий',
+        longestPlank: 'Самая долгая планка',
+        viewChart: 'Открыть график'
+      },
+      consistency: {
+        title: 'Календарь активности',
+        noData: 'Нет данных об активности'
+      },
+      body: {
+        title: 'Метрики тела',
+        addMetric: 'Добавить измерение',
+        last: 'Последние измерения',
+        weight: 'Вес',
+        waist: 'Талия',
+        bicep: 'Бицепс',
+        thigh: 'Бедро',
+        chest: 'Грудь'
+      },
+      ai: {
+        title: 'Инсайты от ИИ',
+        refresh: 'Обновить инсайты',
+        loading: 'Генерируем инсайты...',
+        error: 'Не удалось сгенерировать инсайты'
       }
     },
     

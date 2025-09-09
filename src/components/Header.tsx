@@ -57,7 +57,7 @@ const Header: React.FC = () => {
 
   // Check if back button should be shown
   const shouldShowBackButton = () => {
-    const rootPaths = ['/', '/workouts', '/weekly', '/settings'] // Removed '/food' temporarily
+    const rootPaths = ['/', '/workouts', '/stats', '/settings'] // Removed '/food' temporarily
     return !rootPaths.includes(location.pathname) && !location.pathname.startsWith('/onboarding')
   }
 
@@ -115,15 +115,15 @@ const Header: React.FC = () => {
               {t.header?.food || t.food}
             </Link> */}
             <Link 
-              to="/weekly" 
+              to="/stats" 
               className={`px-3 py-2 rounded-md transition-colors ${
-                isActive('/weekly')
+                isActive('/stats')
                   ? 'font-semibold text-gray-900 border-b-2 border-primary-500'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
-              aria-current={isActive('/weekly') ? 'page' : undefined}
+              aria-current={isActive('/stats') ? 'page' : undefined}
             >
-              {t.header?.week || t.weekly}
+              {t.statsPage?.title || 'Statistics'}
             </Link>
             <Link 
               to="/settings" 
@@ -197,15 +197,15 @@ const Header: React.FC = () => {
               <span className="text-xs">{t.header?.food || t.food}</span>
             </Link> */}
             <Link 
-              to="/weekly" 
+              to="/stats" 
               className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors ${
-                isActive('/weekly')
+                isActive('/stats')
                   ? 'text-primary-600 font-semibold'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
-              aria-current={isActive('/weekly') ? 'page' : undefined}
+              aria-current={isActive('/stats') ? 'page' : undefined}
             >
-              <span className="text-xs">{t.header?.week || t.weekly}</span>
+              <span className="text-xs">{t.statsPage?.title || 'Statistics'}</span>
             </Link>
             <Link 
               to="/settings" 

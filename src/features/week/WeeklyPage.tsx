@@ -17,7 +17,7 @@ import WeeklyPRs from '../../components/weekly/WeeklyPRs'
 const WeeklyPage: React.FC = () => {
   const t = useTranslations()
   const { checkins, loadCheckins, addCheckin, updateCheckin, getCurrentWeekCheckin } = useWeeklyStore()
-  const { loadWorkouts } = useWorkoutStore()
+  const { loadWorkouts, getWorkoutsByWeek } = useWorkoutStore()
   // Temporarily disabled - will be implemented later
   // const { foodLogs, loadFoodLogs } = useFoodStore()
   const { profile } = useProfileStore()
@@ -70,6 +70,7 @@ const WeeklyPage: React.FC = () => {
   const weekStart = startOfWeek(selectedWeek, { weekStartsOn: 1 }) // Monday
   const weekEnd = endOfWeek(selectedWeek, { weekStartsOn: 1 }) // Sunday
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd })
+  const weekWorkouts = getWorkoutsByWeek(weekStart)
 
   // Calculate deltas for comparison with previous week
   const deltas = weekStats && previousWeekStats 
@@ -198,7 +199,7 @@ const WeeklyPage: React.FC = () => {
             <WeeklyTopSummary stats={weekStats} deltas={deltas} />
             
             {/* Activity Chart */}
-            <WeeklyActivityChart stats={weekStats} />
+            <WeeklyActivityChart workouts={weekWorkouts} weekStart={weekStart} />
             
             {/* Exercise Type Distribution */}
             <WorkoutTypeDistribution stats={weekStats} />

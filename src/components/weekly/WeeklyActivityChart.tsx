@@ -117,13 +117,13 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ workouts, wee
   const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
-    if (workouts.length > 0 && weekStart) {
+    if (workouts && weekStart) {
       processChartData()
     }
   }, [workouts, weekStart])
 
   const processChartData = () => {
-    if (!weekStart) return
+    if (!weekStart || !workouts) return
     
     setIsProcessing(true)
     try {
