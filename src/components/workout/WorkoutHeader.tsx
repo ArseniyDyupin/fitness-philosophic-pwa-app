@@ -50,36 +50,36 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
 
   return (
     <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-4">
         {/* Main header row */}
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-3 sm:space-y-0">
           {/* Left side - Title and navigation */}
           <div className="flex-1">
-            <div className="flex items-center space-x-4 mb-2">
-              <h1 className="text-2xl font-bold text-gray-900">
+            <div className="flex items-center space-x-2 sm:space-x-4 mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {t.workoutDetailsPage?.workoutDetails || 'Workout Details'}
               </h1>
               
               {/* Navigation arrows */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 {onPreviousWorkout && (
                   <button
                     onClick={onPreviousWorkout}
-                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="p-1 sm:p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
                     title={t.workoutDetailsPage?.nav?.prev || 'Previous workout'}
                     aria-label={t.workoutDetailsPage?.nav?.prev || 'Previous workout'}
                   >
-                    <ArrowLeft size={20} />
+                    <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
                   </button>
                 )}
                 {onNextWorkout && (
                   <button
                     onClick={onNextWorkout}
-                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="p-1 sm:p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
                     title={t.workoutDetailsPage?.nav?.next || 'Next workout'}
                     aria-label={t.workoutDetailsPage?.nav?.next || 'Next workout'}
                   >
-                    <ArrowRight size={20} />
+                    <ArrowRight size={18} className="sm:w-5 sm:h-5" />
                   </button>
                 )}
               </div>
@@ -92,24 +92,25 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
           </div>
           
           {/* Right side - Action buttons */}
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2">
             {/* Update Analysis (Primary) */}
             {hasKey && (
               <button
                 onClick={onUpdateAnalysis}
                 disabled={isAnalyzing}
-                className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                 title={t.workoutDetailsPage?.actions?.updateAnalysis || 'Update analysis'}
               >
                 {isAnalyzing ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
-                    <span className="text-sm">{t.workoutAnalysis?.starting || 'Analyzing...'}</span>
+                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-purple-700"></div>
+                    <span className="text-xs sm:text-sm">{t.workoutAnalysis?.starting || 'Analyzing...'}</span>
                   </>
                 ) : (
                   <>
-                    <RefreshCw size={16} />
-                    <span className="text-sm">{t.workoutDetailsPage?.actions?.updateAnalysis || 'Update Analysis'}</span>
+                    <RefreshCw size={14} className="sm:w-4 sm:h-4" />
+                    <span className="text-xs sm:text-sm hidden sm:inline">{t.workoutDetailsPage?.actions?.updateAnalysis || 'Update Analysis'}</span>
+                    <span className="text-xs sm:hidden">Update</span>
                   </>
                 )}
               </button>
@@ -120,18 +121,19 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
               <button
                 onClick={onUpdateEstimates}
                 disabled={isEstimating}
-                className="flex items-center space-x-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                 title={t.workoutDetailsPage?.actions?.recalcEstimates || 'Recalculate AI estimates'}
               >
                 {isEstimating ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700"></div>
-                    <span className="text-sm">Updating...</span>
+                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-blue-700"></div>
+                    <span className="text-xs sm:text-sm">Updating...</span>
                   </>
                 ) : (
                   <>
-                    <Bot size={16} />
-                    <span className="text-sm">{t.workoutDetailsPage?.actions?.recalcEstimates || 'Recalculate AI Estimates'}</span>
+                    <Bot size={14} className="sm:w-4 sm:h-4" />
+                    <span className="text-xs sm:text-sm hidden sm:inline">{t.workoutDetailsPage?.actions?.recalcEstimates || 'Recalculate AI Estimates'}</span>
+                    <span className="text-xs sm:hidden">Recalc</span>
                   </>
                 )}
               </button>
@@ -140,17 +142,18 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
             {/* Edit Meta (Tertiary) */}
             <button
               onClick={onEditMeta}
-              className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors touch-manipulation"
               title={t.workoutDetailsPage?.actions?.editMeta || 'Change date/duration/RPE'}
             >
-              <Settings size={16} />
-              <span className="text-sm">{t.workoutDetailsPage?.actions?.editMeta || 'Change date/duration/RPE'}</span>
+              <Settings size={14} className="sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm hidden sm:inline">{t.workoutDetailsPage?.actions?.editMeta || 'Change date/duration/RPE'}</span>
+              <span className="text-xs sm:hidden">Edit</span>
             </button>
           </div>
         </div>
         
         {/* Metrics row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <MetricCard
             value={totalCalories}
             label={t.workoutDetailsPage?.metrics?.calories || 'Total Calories'}

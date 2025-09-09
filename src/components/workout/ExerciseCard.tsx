@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Edit } from 'lucide-react'
 import { useTranslations } from '../../stores/i18n.store'
 import type { WorkoutExercise } from '../../types/models'
 
 interface ExerciseCardProps {
   exercise: WorkoutExercise
   index: number
-  onEdit: (index: number) => void
+  onEdit: (exercise: WorkoutExercise) => void
   isEditing?: boolean
 }
 
@@ -124,12 +124,12 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const microMetrics = getMicroMetrics()
 
   return (
-    <div className={`border border-gray-200 rounded-lg p-4 ${isEditing ? 'ring-2 ring-primary-500 bg-primary-50' : ''}`}>
+    <div className={`border border-gray-200 rounded-lg p-3 sm:p-4 ${isEditing ? 'ring-2 ring-primary-500 bg-primary-50' : ''}`}>
       {/* Main row */}
       <div className="flex justify-between items-start">
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2">
-            <h4 className="font-semibold text-gray-900 capitalize truncate">
+            <h4 className="font-semibold text-gray-900 capitalize truncate text-sm sm:text-base">
               {exercise.type === 'custom' && exercise.details.customExercise
                 ? exercise.details.customExercise
                 : getExerciseTypeName(exercise.type)
@@ -138,23 +138,23 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             {hasDetails() && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
                 aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
               >
-                {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                {isExpanded ? <ChevronDown size={14} className="sm:w-4 sm:h-4" /> : <ChevronRight size={14} className="sm:w-4 sm:h-4" />}
               </button>
             )}
           </div>
-          <p className="text-sm text-gray-600 truncate" title={formatExerciseSummary(exercise)}>
+          <p className="text-xs sm:text-sm text-gray-600 truncate" title={formatExerciseSummary(exercise)}>
             {formatExerciseSummary(exercise)}
           </p>
         </div>
         
         {/* Micro metrics */}
-        <div className="flex items-center space-x-3 ml-4">
+        <div className="flex items-center space-x-2 sm:space-x-3 ml-2 sm:ml-4">
           {microMetrics.map((metric, idx) => (
             <div key={idx} className="text-right">
-              <div className="text-sm font-medium text-gray-900 flex items-center space-x-1">
+              <div className="text-xs sm:text-sm font-medium text-gray-900 flex items-center space-x-1">
                 <span>{metric.value}</span>
                 <span className="text-xs text-gray-500">{metric.unit}</span>
                 {metric.isAI && (
@@ -169,6 +169,15 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </div>
           ))}
           
+          {/* Edit button */}
+          <button
+            onClick={() => onEdit(exercise)}
+            className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
+            title={t.workoutDetailsPage?.editExercise || 'Edit exercise'}
+            aria-label={t.workoutDetailsPage?.editExercise || 'Edit exercise'}
+          >
+            <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
+          </button>
         </div>
       </div>
       

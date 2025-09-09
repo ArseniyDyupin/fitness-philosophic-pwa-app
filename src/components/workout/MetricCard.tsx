@@ -28,12 +28,12 @@ const MetricCard: React.FC<MetricCardProps> = ({
 }) => {
   return (
     <div className={`text-center ${className}`}>
-      <div className={`text-3xl font-bold mb-2 ${colorClasses[color]}`}>
-        {Icon && <Icon size={24} className="inline-block mr-2" />}
+      <div className={`text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 ${colorClasses[color]}`}>
+        {Icon && <Icon size={20} className="inline-block mr-1 sm:mr-2 sm:w-6 sm:h-6" />}
         {value}
       </div>
       <div 
-        className="text-sm text-gray-600"
+        className="text-xs sm:text-sm text-gray-600 leading-tight"
         title={hint}
       >
         {label}

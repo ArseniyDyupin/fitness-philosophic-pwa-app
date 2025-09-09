@@ -10,13 +10,14 @@ import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../..
 import { aiReviewService } from '../../services/ai.review'
 import { dbHelpers } from '../../services/db'
 import { ArrowLeft, Trash2, Check, X } from 'lucide-react'
-import type { Workout, AIWorkoutFeedback } from '../../types/models'
+import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '../../types/models'
 
 // New components
 import WorkoutHeader from '../../components/workout/WorkoutHeader'
 import ExerciseCard from '../../components/workout/ExerciseCard'
 import AiFeedbackCard from '../../components/workout/AiFeedbackCard'
 import EditWorkoutMetaModal from '../../components/workout/EditWorkoutMetaModal'
+import ExerciseEditModal from '../../components/workout/ExerciseEditModal'
 
 const WorkoutDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -37,6 +38,8 @@ const WorkoutDetailsPage: React.FC = () => {
   const [isLoadingFeedback, setIsLoadingFeedback] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [isMetaModalOpen, setIsMetaModalOpen] = useState(false)
+  const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false)
+  const [editingExercise, setEditingExercise] = useState<WorkoutExercise | null>(null)
 
   useEffect(() => {
     if (!workout && id) {
@@ -281,6 +284,65 @@ const WorkoutDetailsPage: React.FC = () => {
     }
   }
 
+  const handleEditExercise = (exercise: WorkoutExercise) => {
+    setEditingExercise(exercise)
+    setIsExerciseModalOpen(true)
+  }
+
+  const handleSaveExercise = async (updatedExercise: WorkoutExercise) => {
+    if (!workout || !editingExercise) return
+
+    try {
+      // Get AI estimates if needed and AI is configured
+      let finalExercise = updatedExercise
+      if (profile && isAIConfigured && needsAIEstimation(updatedExercise)) {
+        try {
+          const estimateInput = createEstimateInput(updatedExercise, {
+            weightKg: profile.weight,
+            age: profile.age,
+            gender: profile.gender
+          })
+          
+          const estimates = await getBatchEstimates([estimateInput])
+          const estimate = estimates[0]
+          
+          if (estimate) {
+            finalExercise = {
+              ...updatedExercise,
+              kcalEstimated: estimate.kcal,
+              estimateMeta: {
+                source: 'ai' as const,
+                updatedAt: new Date().toISOString()
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Failed to get AI estimate:', error)
+          // Continue without AI estimate
+        }
+      }
+
+      // Find and update the exercise
+      const exerciseIndex = workout.exercises.findIndex(ex => ex === editingExercise)
+      if (exerciseIndex !== -1) {
+        const updatedExercises = [...workout.exercises]
+        updatedExercises[exerciseIndex] = finalExercise
+        
+        const updatedWorkout = {
+          ...workout,
+          exercises: updatedExercises
+        }
+        
+        await updateWorkout(workout.id, updatedWorkout)
+        setWorkout(updatedWorkout)
+        showToast(t.workoutDetailsPage?.exerciseUpdated || 'Exercise updated successfully', 'success')
+      }
+    } catch (error) {
+      console.error('Failed to update exercise:', error)
+      showToast(t.workoutDetailsPage?.updateFailed || 'Failed to update exercise', 'error')
+    }
+  }
+
 
 
   return (
@@ -302,39 +364,39 @@ const WorkoutDetailsPage: React.FC = () => {
       />
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Back button and delete */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-6 sm:mb-8">
           <button
             onClick={() => navigate('/workouts')}
-            className="btn-secondary flex items-center space-x-2"
+            className="btn-secondary flex items-center space-x-1 sm:space-x-2 touch-manipulation"
           >
-            <ArrowLeft size={20} />
-            <span>{t.workoutDetailsPage?.backToWorkouts || 'Back to Workouts'}</span>
+            <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">{t.workoutDetailsPage?.backToWorkouts || 'Back to Workouts'}</span>
           </button>
           
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="btn-secondary text-red-600 hover:text-red-700 flex items-center space-x-2"
+            className="btn-secondary text-red-600 hover:text-red-700 flex items-center space-x-1 sm:space-x-2 touch-manipulation"
           >
-            <Trash2 size={16} />
-            <span>{isDeleting ? (t.workoutDetailsPage?.deleting || 'Deleting...') : (t.workoutDetailsPage?.delete || 'Delete')}</span>
+            <Trash2 size={16} className="sm:w-4 sm:h-4" />
+            <span className="text-sm sm:text-base">{isDeleting ? (t.workoutDetailsPage?.deleting || 'Deleting...') : (t.workoutDetailsPage?.delete || 'Delete')}</span>
           </button>
         </div>
 
 
         {/* Exercises */}
-        <div className="card mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">{t.workoutDetailsPage?.exercises || 'Exercises'}</h3>
+        <div className="card mb-6 sm:mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 sm:mb-6">{t.workoutDetailsPage?.exercises || 'Exercises'}</h3>
           
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-3">
             {workout.exercises.map((exercise, index) => (
               <ExerciseCard
                 key={index}
                 exercise={exercise}
                 index={index}
-                onEdit={() => {}} // Disabled - no edit functionality
+                onEdit={handleEditExercise}
                 isEditing={false}
               />
             ))}
@@ -375,6 +437,19 @@ const WorkoutDetailsPage: React.FC = () => {
         workout={workout}
         onSave={handleSaveMeta}
       />
+
+      {/* Exercise Edit Modal */}
+      {editingExercise && (
+        <ExerciseEditModal
+          isOpen={isExerciseModalOpen}
+          onClose={() => {
+            setIsExerciseModalOpen(false)
+            setEditingExercise(null)
+          }}
+          exercise={editingExercise}
+          onSave={handleSaveExercise}
+        />
+      )}
     </div>
   )
 }

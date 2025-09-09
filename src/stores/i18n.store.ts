@@ -684,6 +684,7 @@ export const translations = {
         ctaRecalc: 'Recalculate AI Estimates'
       },
       exercise: {
+        edit: 'Edit',
         sets: 'sets',
         reps: 'reps',
         holds: 'holds',
@@ -1383,6 +1384,7 @@ export const translations = {
         ctaRecalc: 'Пересчитать AI-оценки'
       },
       exercise: {
+        edit: 'Редактировать',
         sets: 'подходов',
         reps: 'повт.',
         holds: 'удержания',
