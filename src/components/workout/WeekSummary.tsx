@@ -4,6 +4,7 @@ import { useTranslations } from '../../stores/i18n.store'
 import { useProfileStore } from '../../stores/profile.store'
 import type { Workout } from '../../types/models'
 import WeeklyActivityChart from '../weekly/WeeklyActivityChart'
+import { calculateWorkoutCalories } from '@/services/kcal'
 
 interface WeekSummaryProps {
   workouts: Workout[]
@@ -20,15 +21,12 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
   const { profile } = useProfileStore()
   const [isExpanded, setIsExpanded] = useState(true)
 
-  // Calculate week metrics
   const totalCalories = workouts.reduce((sum, workout) => {
-    return sum + workout.exercises.reduce((exSum, exercise) => {
-      return exSum + (exercise.kcalEstimated || 0)
-    }, 0)
+    return sum + calculateWorkoutCalories(workout.exercises, profile?.weight || 70, workout.rpe)
   }, 0)
 
   const totalDuration = workouts.reduce((sum, workout) => {
-    return sum + (workout.durationOverrideMin || workout.exercises.reduce((exSum, exercise) => {
+    return sum + (workout.durationMin || workout.exercises.reduce((exSum, exercise) => {
       return exSum + (exercise.details.durationMin || 0)
     }, 0))
   }, 0)
@@ -39,15 +37,12 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
     ? workouts.reduce((sum, workout) => sum + (workout.rpe || 0), 0) / workouts.length 
     : 0
 
-  // Calculate previous week metrics for comparison
   const prevTotalCalories = previousWeekWorkouts.reduce((sum, workout) => {
-    return sum + workout.exercises.reduce((exSum, exercise) => {
-      return exSum + (exercise.kcalEstimated || 0)
-    }, 0)
+    return sum + calculateWorkoutCalories(workout.exercises, profile?.weight || 70, workout.rpe)
   }, 0)
 
   const prevTotalDuration = previousWeekWorkouts.reduce((sum, workout) => {
-    return sum + (workout.durationOverrideMin || workout.exercises.reduce((exSum, exercise) => {
+    return sum + (workout.durationMin || workout.exercises.reduce((exSum, exercise) => {
       return exSum + (exercise.details.durationMin || 0)
     }, 0))
   }, 0)
@@ -181,8 +176,6 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
               </div>
             </div>
           )}
-
-          {/* Weekly Activity Chart */}
           {workouts.length > 0 && (
             <div className="border-t border-gray-200 pt-4">
               <h4 className="text-sm font-medium text-gray-700 mb-3">

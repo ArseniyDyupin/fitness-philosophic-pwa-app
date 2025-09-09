@@ -27,11 +27,11 @@ const WeekSection: React.FC<WeekSectionProps> = ({
   const navigate = useNavigate()
 
   const handleWorkoutClick = (workoutId: string) => {
-    navigate(`/workout/${workoutId}`)
+    navigate(`/workouts/${workoutId}`)
   }
 
   const handleEditWorkout = (workoutId: string) => {
-    navigate(`/workout/${workoutId}/edit`)
+    navigate(`/workouts/${workoutId}`)
   }
 
   const handleDeleteWorkout = (workoutId: string) => {

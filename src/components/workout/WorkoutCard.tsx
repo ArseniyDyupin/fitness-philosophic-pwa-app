@@ -25,7 +25,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
   const t = useTranslations()
   
   const totalCalories = calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
-  const totalDuration = workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
+  const totalDuration = workout.durationMin || calculateWorkoutDuration(workout.exercises)
   
   const formatDate = (date: string) => {
     const today = new Date()
