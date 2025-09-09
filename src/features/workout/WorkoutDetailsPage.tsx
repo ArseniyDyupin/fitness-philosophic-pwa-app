@@ -9,18 +9,21 @@ import { calculateWorkoutCalories, calculateWorkoutDuration } from '../../servic
 import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../../services/ai.estimate'
 import { aiReviewService } from '../../services/ai.review'
 import { dbHelpers } from '../../services/db'
-import { format } from 'date-fns'
-import { ArrowLeft, Edit, Trash2, TrendingUp, Check, X, Bot, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, Trash2, Check, X } from 'lucide-react'
 import type { WorkoutExercise, AIWorkoutFeedback } from '../../types/models'
-import WorkoutPie from '../../components/charts/WorkoutPie'
-import WorkoutBar from '../../components/charts/WorkoutBar'
+
+// New components
+import WorkoutHeader from '../../components/workout/WorkoutHeader'
+import ExerciseCard from '../../components/workout/ExerciseCard'
+import AiFeedbackCard from '../../components/workout/AiFeedbackCard'
+import WorkoutAnalytics from '../../components/workout/WorkoutAnalytics'
 
 const WorkoutDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const t = useTranslations()
 
-  const { getWorkoutById, deleteWorkout, updateWorkout } = useWorkoutStore()
+  const { getWorkoutById, deleteWorkout, updateWorkout, workouts } = useWorkoutStore()
   const { profile } = useProfileStore()
   const { isConfigured: isAIConfigured, hasKey } = useAIStore()
   
@@ -40,7 +43,6 @@ const WorkoutDetailsPage: React.FC = () => {
   const [aiFeedback, setAiFeedback] = useState<AIWorkoutFeedback | null>(null)
   const [isLoadingFeedback, setIsLoadingFeedback] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
-  const [isAnalyticsExpanded, setIsAnalyticsExpanded] = useState(false)
 
   useEffect(() => {
     if (!workout && id) {
@@ -112,22 +114,6 @@ const WorkoutDetailsPage: React.FC = () => {
     ? calculateWorkoutCalories(workout.exercises, profile.weight, workout.rpe)
     : 0
   const totalDuration = workout.durationMin || calculateWorkoutDuration(workout.exercises)
-
-  const getRpeColor = (rpe: number) => {
-    if (rpe <= 3) return 'text-green-600 bg-green-100'
-    if (rpe <= 7) return 'text-yellow-600 bg-yellow-100'
-    return 'text-red-600 bg-red-100'
-  }
-
-  const getRpeLabel = (rpe: number) => {
-    if (rpe <= 3) return t.workoutForm?.easy || 'Easy'
-    if (rpe <= 7) return t.workoutForm?.moderate || 'Moderate'
-    return t.workoutForm?.hard || 'Hard'
-  }
-
-  const getExerciseTypeName = (type: string) => {
-    return t.exerciseTypes?.[type as keyof typeof t.exerciseTypes] || type
-  }
 
   const handleDelete = async () => {
     if (confirm(t.workoutDetailsPage?.deleteConfirm || 'Are you sure you want to delete this workout?')) {
@@ -561,405 +547,188 @@ const WorkoutDetailsPage: React.FC = () => {
     )
   }
 
-  const formatExerciseDetails = (exercise: any) => {
-    switch (exercise.type) {
-      case 'run':
-        return `${exercise.details.distanceKm || 0} ${t.workoutCard?.km || 'km'} ${t.workoutDetailsPage?.for || 'in'} ${exercise.details.durationMin || 0} ${t.workoutDetailsPage?.minutes || 'minutes'}`
-      case 'pullups':
-      case 'pushups':
-        if (exercise.details.repsPerSet) {
-          const totalReps = exercise.details.repsPerSet.reduce((sum: number, reps: number) => sum + reps, 0)
-          return `${exercise.details.sets || 0} ${t.workoutDetailsPage?.sets || 'sets'}: ${exercise.details.repsPerSet.join('-')} (${totalReps} ${t.workoutDetailsPage?.total || 'total'})`
-        }
-        return t.workoutDetailsPage?.noRepsSpecified || 'No reps specified'
-      case 'plank':
-        if (exercise.details.seconds) {
-          const totalSeconds = exercise.details.seconds.reduce((sum: number, seconds: number) => sum + seconds, 0)
-          return `${exercise.details.seconds.length} ${t.workoutDetailsPage?.holds || 'holds'}: ${exercise.details.seconds.join('-')}s (${totalSeconds}s ${t.workoutDetailsPage?.total || 'total'})`
-        }
-        return t.workoutDetailsPage?.noTimeSpecified || 'No time specified'
-      case 'custom':
-        if (exercise.details.customExercise) {
-          if (exercise.details.durationMin) {
-            return `${exercise.details.customExercise} ${t.workoutDetailsPage?.for || 'for'} ${exercise.details.durationMin} ${t.workoutDetailsPage?.minutes || 'minutes'}`
-          } else if (exercise.details.repsPerSet) {
-            const totalReps = exercise.details.repsPerSet.reduce((sum: number, reps: number) => sum + reps, 0)
-            return `${exercise.details.customExercise}: ${exercise.details.sets || 0} ${t.workoutDetailsPage?.sets || 'sets'}: ${exercise.details.repsPerSet.join('-')} (${totalReps} ${t.workoutDetailsPage?.total || 'total'})`
-          }
-        }
-        return t.workoutDetailsPage?.customExercise || 'Custom exercise'
-      default:
-        return t.workoutDetailsPage?.exerciseDetails || 'Exercise details'
+  // Navigation functions
+  const navigateToWeek = () => {
+    const workoutDate = new Date(workout.date)
+    const weekStart = new Date(workoutDate)
+    weekStart.setDate(workoutDate.getDate() - workoutDate.getDay())
+    const weekStartISO = weekStart.toISOString().split('T')[0]
+    navigate(`/weekly?week=${weekStartISO}`)
+  }
+
+  const navigateToPreviousWorkout = () => {
+    const currentIndex = workouts.findIndex((w: any) => w.id === workout.id)
+    if (currentIndex > 0) {
+      navigate(`/workout/${workouts[currentIndex - 1].id}`)
+    }
+  }
+
+  const navigateToNextWorkout = () => {
+    const currentIndex = workouts.findIndex((w: any) => w.id === workout.id)
+    if (currentIndex < workouts.length - 1) {
+      navigate(`/workout/${workouts[currentIndex + 1].id}`)
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Sticky Header */}
+      <WorkoutHeader
+        workout={workout}
+        totalCalories={totalCalories}
+        totalDuration={totalDuration}
+        isEditing={editingHeader}
+        isEstimating={isEstimating}
+        isAnalyzing={isAnalyzing}
+        hasKey={hasKey()}
+        isAIConfigured={isAIConfigured}
+        onEdit={startEditingHeader}
+        onUpdateEstimates={updateAllAIEstimates}
+        onUpdateAnalysis={updateAIAnalysis}
+        onNavigateToWeek={navigateToWeek}
+        onPreviousWorkout={navigateToPreviousWorkout}
+        onNextWorkout={navigateToNextWorkout}
+      />
+
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
+        {/* Back button and delete */}
         <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => navigate('/workouts')}
-              className="btn-secondary flex items-center space-x-2"
-            >
-              <ArrowLeft size={20} />
-              <span>{t.workoutDetailsPage?.backToWorkouts || 'Back to Workouts'}</span>
-            </button>
-            <h1 className="text-3xl font-bold text-gray-900">{t.workoutDetailsPage?.workoutDetails || 'Workout Details'}</h1>
-          </div>
+          <button
+            onClick={() => navigate('/workouts')}
+            className="btn-secondary flex items-center space-x-2"
+          >
+            <ArrowLeft size={20} />
+            <span>{t.workoutDetailsPage?.backToWorkouts || 'Back to Workouts'}</span>
+          </button>
           
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="btn-secondary text-red-600 hover:text-red-700 flex items-center space-x-2"
-            >
-              <Trash2 size={16} />
-              <span>{isDeleting ? (t.workoutDetailsPage?.deleting || 'Deleting...') : (t.workoutDetailsPage?.delete || 'Delete')}</span>
-            </button>
-          </div>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="btn-secondary text-red-600 hover:text-red-700 flex items-center space-x-2"
+          >
+            <Trash2 size={16} />
+            <span>{isDeleting ? (t.workoutDetailsPage?.deleting || 'Deleting...') : (t.workoutDetailsPage?.delete || 'Delete')}</span>
+          </button>
         </div>
 
-        {/* Workout Summary */}
-        <div className={`card mb-8 ${editingHeader ? 'ring-2 ring-primary-500 bg-primary-50' : ''}`}>
-          <div className="flex justify-between items-start mb-6">
-            <div className="flex-1">
-              {editingHeader ? (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t.workoutForm?.date || 'Date'}
-                    </label>
-                    <input
-                      type="date"
-                      value={editedDate}
-                      onChange={(e) => setEditedDate(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                    />
+        {/* Header editing form */}
+        {editingHeader && (
+          <div className="card mb-8">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t.workoutForm?.date || 'Date'}
+                </label>
+                <input
+                  type="date"
+                  value={editedDate}
+                  onChange={(e) => setEditedDate(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t.workoutForm?.rpe || 'RPE'}
+                </label>
+                <div className="space-y-2">
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={editedRpe}
+                    onChange={(e) => setEditedRpe(parseInt(e.target.value))}
+                    className="w-full max-w-xs"
+                  />
+                  <div className="flex justify-between text-sm max-w-xs">
+                    <span className="text-green-600">1-3 {t.workoutForm?.easy || 'Easy'}</span>
+                    <span className="font-medium">
+                      {editedRpe} - {editedRpe <= 3 ? t.workoutForm?.easy || 'Easy' : editedRpe <= 7 ? t.workoutForm?.moderate || 'Moderate' : t.workoutForm?.hard || 'Hard'}
+                    </span>
+                    <span className="text-red-600">8-10 {t.workoutForm?.hard || 'Hard'}</span>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t.workoutForm?.rpe || 'RPE'}
-                    </label>
-                    <div className="space-y-2">
-                      <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        value={editedRpe}
-                        onChange={(e) => setEditedRpe(parseInt(e.target.value))}
-                        className="w-full max-w-xs"
-                      />
-                      <div className="flex justify-between text-sm max-w-xs">
-                        <span className="text-green-600">1-3 {t.workoutForm?.easy || 'Easy'}</span>
-                        <span className={`font-medium ${getRpeColor(editedRpe)}`}>
-                          {editedRpe} - {getRpeLabel(editedRpe)}
-                        </span>
-                        <span className="text-red-600">8-10 {t.workoutForm?.hard || 'Hard'}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t.workoutForm?.totalDuration || 'Total Workout Duration'}
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="number"
-                        min="1"
-                        max="300"
-                        value={editedDurationMin || ''}
-                        onChange={(e) => setEditedDurationMin(e.target.value ? parseInt(e.target.value) : undefined)}
-                        placeholder="Optional"
-                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                      <span className="text-sm text-gray-500">
-                        {t.workoutForm?.durationMinutes || 'minutes'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={saveHeader}
-                      disabled={isSaving}
-                      className="btn-primary flex items-center space-x-1"
-                    >
-                      <Check size={16} />
-                      <span>{isSaving ? (t.saving || 'Saving...') : (t.save || 'Save')}</span>
-                    </button>
-                    <button
-                      onClick={cancelEditing}
-                      disabled={isSaving}
-                      className="btn-secondary flex items-center space-x-1"
-                    >
-                      <X size={16} />
-                      <span>{t.cancel || 'Cancel'}</span>
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
-                  </h2>
-                  <div className="flex items-center space-x-2">
-                    {workout.rpe && (
-                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRpeColor(workout.rpe)}`}>
-                        {t.workoutAnalysis?.rpe || 'RPE'} {workout.rpe} - {getRpeLabel(workout.rpe)}
-                        {workout.aiReviewId && (
-                          <span className="ml-1 text-xs opacity-75">(AI)</span>
-                        )}
-                      </span>
-                    )}
-                    {workout.durationMin && (
-                      <span className="inline-block px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
-                        {workout.durationMin} min
-                      </span>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              {!editingHeader && (
-                <button
-                  onClick={startEditingHeader}
-                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                  title={t.workoutDetailsPage?.editWorkout || 'Edit workout'}
-                >
-                  <Edit size={16} />
-                </button>
-              )}
-              
-              {workout.aiReviewId && (
-                <div className="flex items-center space-x-2 text-primary-600">
-                  <TrendingUp size={20} />
-                  <span className="font-medium">{t.workoutDetailsPage?.aiReviewed || 'AI Reviewed'}</span>
-                </div>
-              )}
-              
-              {isAIConfigured && (
-                <button
-                  onClick={updateAllAIEstimates}
-                  disabled={isEstimating}
-                  className="flex items-center space-x-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Update AI estimates for all exercises"
-                >
-                  {isEstimating ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700"></div>
-                      <span className="text-sm">Updating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Bot size={16} />
-                      <span className="text-sm">Update AI Estimates</span>
-                    </>
-                  )}
-                </button>
-              )}
-
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">{totalCalories}</div>
-              <div className="text-sm text-gray-600">{t.workoutDetailsPage?.totalCalories || 'Total Calories'}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">{Math.round(totalDuration)}</div>
-              <div className="text-sm text-gray-600">{t.workoutDetailsPage?.duration || 'Duration (minutes)'}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">{workout.exercises.length}</div>
-              <div className="text-sm text-gray-600">{t.workoutDetailsPage?.exercises || 'Exercises'}</div>
-            </div>
-            {workout.rpe && (
-              <div className="text-center">
-                <div className="text-3xl font-bold mb-2">
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRpeColor(workout.rpe)}`}>
-                    {workout.rpe}
-                  </span>
-                </div>
-                <div className="text-sm text-gray-600" title={t.workoutDetailsPage?.rpeHint || 'RPE — subjective intensity rating (1–10)'}>
-                  {t.workoutDetailsPage?.rpe || 'RPE'}
                 </div>
               </div>
-            )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t.workoutForm?.totalDuration || 'Total Workout Duration'}
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="number"
+                    min="1"
+                    max="300"
+                    value={editedDurationMin || ''}
+                    onChange={(e) => setEditedDurationMin(e.target.value ? parseInt(e.target.value) : undefined)}
+                    placeholder="Optional"
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <span className="text-sm text-gray-500">
+                    {t.workoutForm?.durationMinutes || 'minutes'}
+                  </span>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={saveHeader}
+                  disabled={isSaving}
+                  className="btn-primary flex items-center space-x-1"
+                >
+                  <Check size={16} />
+                  <span>{isSaving ? (t.saving || 'Saving...') : (t.save || 'Save')}</span>
+                </button>
+                <button
+                  onClick={cancelEditing}
+                  disabled={isSaving}
+                  className="btn-secondary flex items-center space-x-1"
+                >
+                  <X size={16} />
+                  <span>{t.cancel || 'Cancel'}</span>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Exercises */}
-        <div className="card">
+        <div className="card mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">{t.workoutDetailsPage?.exercises || 'Exercises'}</h3>
           
           <div className="space-y-4">
             {workout.exercises.map((exercise, index) => (
-              <div key={index} className={`border border-gray-200 rounded-lg p-4 ${editingExercise === index ? 'ring-2 ring-primary-500 bg-primary-50' : ''}`}>
+              <div key={index}>
                 {editingExercise === index ? (
-                  renderExerciseEditFields()
+                  <div className="border border-gray-200 rounded-lg p-4 ring-2 ring-primary-500 bg-primary-50">
+                    {renderExerciseEditFields()}
+                  </div>
                 ) : (
-                  <>
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 capitalize">
-                          {exercise.type === 'custom' && exercise.details.customExercise
-                            ? exercise.details.customExercise
-                            : getExerciseTypeName(exercise.type)
-                          }
-                        </h4>
-                        <p className="text-sm text-gray-600">
-                          {formatExerciseDetails(exercise)}
-                        </p>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => startEditingExercise(index)}
-                          className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                          title={t.workoutDetailsPage?.editExercise || 'Edit exercise'}
-                        >
-                          <Edit size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    {exercise.details.notes && (
-                      <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-700">{exercise.details.notes}</p>
-                      </div>
-                    )}
-                  </>
+                  <ExerciseCard
+                    exercise={exercise}
+                    index={index}
+                    onEdit={startEditingExercise}
+                    isEditing={editingExercise === index}
+                  />
                 )}
               </div>
             ))}
           </div>
         </div>
 
-        {/* AI Feedback Block */}
-        <div className="card mt-8">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-              <span className="text-2xl">🤖</span>
-              <span>{t.workoutDetailsPage?.aiFeedback || 'AI Feedback'}</span>
-              {aiFeedback && (
-                <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
-                  {aiFeedback.model}
-                </span>
-              )}
-            </h3>
-            <button
-              onClick={updateAIAnalysis}
-              disabled={isAnalyzing}
-              className="flex items-center space-x-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title={t.workoutDetailsPage?.updateAnalysis || 'Update analysis'}
-            >
-              {isAnalyzing ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
-                  <span className="text-sm">{t.workoutAnalysis?.starting || 'Analyzing...'}</span>
-                </>
-              ) : (
-                <>
-                  <RefreshCw size={16} />
-                  <span className="text-sm">{t.workoutDetailsPage?.updateAnalysis || 'Update Analysis'}</span>
-                </>
-              )}
-            </button>
-          </div>
-          
-          {isLoadingFeedback ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
-              <span className="ml-3 text-gray-600">Loading AI feedback...</span>
-            </div>
-          ) : aiFeedback ? (
-            <div className="space-y-4">
-              {aiFeedback.rpe && (
-                <div className="flex items-center space-x-3">
-                  <span className="text-sm font-medium text-gray-700">
-                    {t.workoutAnalysis?.rpe || 'RPE'}: 
-                  </span>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRpeColor(aiFeedback.rpe)}`}>
-                    {aiFeedback.rpe} - {getRpeLabel(aiFeedback.rpe)}
-                  </span>
-                </div>
-              )}
-              
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-gray-700 whitespace-pre-wrap">{aiFeedback.review}</p>
-              </div>
-              
-              <div className="text-xs text-gray-500">
-                {t.workoutDetailsPage?.analysisUpdated || 'Updated'}: {format(new Date(aiFeedback.createdAt), 'MMM d, yyyy')}
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <div className="text-4xl mb-4">🤖</div>
-              <div className="text-lg font-medium mb-2">
-                {t.workoutDetailsPage?.noAnalysis || 'Analysis not performed yet. Click "Update Analysis".'}
-              </div>
-            </div>
-          )}
-        </div>
+        {/* AI Feedback */}
+        <AiFeedbackCard
+          feedback={aiFeedback}
+          isLoading={isLoadingFeedback}
+          isAnalyzing={isAnalyzing}
+          onUpdateAnalysis={updateAIAnalysis}
+        />
 
-
-        {/* AI Analysis Status (if analysis is in progress) */}
-        {workout.aiReviewId && !aiFeedback && (
-          <div className="card mt-8">
-            <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
-              <span className="text-gray-600">
-                {t.workoutAnalysis?.starting || 'AI analysis in progress...'}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Analytics Section */}
-        <div className="card mt-8">
-          <button
-            onClick={() => setIsAnalyticsExpanded(!isAnalyticsExpanded)}
-            className="w-full flex justify-between items-center p-4 text-left hover:bg-gray-50 transition-colors"
-          >
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-              <span className="text-2xl">📊</span>
-              <span>{t.workoutDetailsPage?.analytics || 'Workout Analytics'}</span>
-            </h3>
-            {isAnalyticsExpanded ? (
-              <ChevronUp size={20} className="text-gray-500" />
-            ) : (
-              <ChevronDown size={20} className="text-gray-500" />
-            )}
-          </button>
-          
-          {isAnalyticsExpanded && (
-            <div className="px-4 pb-4 border-t border-gray-200">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
-                {/* Calories Distribution */}
-                <div>
-                  <h4 className="text-md font-semibold text-gray-900 mb-4">
-                    {t.workoutDetailsPage?.caloriesSplit || 'Calories Distribution'}
-                  </h4>
-                  <WorkoutPie exercises={workout.exercises} />
-                </div>
-                
-                {/* Duration by Exercise */}
-                <div>
-                  <h4 className="text-md font-semibold text-gray-900 mb-4">
-                    {t.workoutDetailsPage?.durationByExercise || 'Duration by Exercise'}
-                  </h4>
-                  <WorkoutBar exercises={workout.exercises} />
-                </div>
-              </div>
-            </div>
-          )}
+        {/* Analytics */}
+        <div className="mt-8">
+          <WorkoutAnalytics
+            exercises={workout.exercises}
+            onRecalcEstimates={updateAllAIEstimates}
+            isEstimating={isEstimating}
+          />
         </div>
 
         {/* Toast Notification */}
@@ -976,8 +745,8 @@ const WorkoutDetailsPage: React.FC = () => {
                 <X size={16} className="text-red-600" />
               )}
               <span className="text-sm font-medium">{toast.message}</span>
-        </div>
-      </div>
+            </div>
+          </div>
         )}
       </main>
     </div>

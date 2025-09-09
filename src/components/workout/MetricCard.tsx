@@ -1,0 +1,45 @@
+import React from 'react'
+import { LucideIcon } from 'lucide-react'
+
+interface MetricCardProps {
+  icon?: LucideIcon
+  value: string | number
+  label: string
+  hint?: string
+  color?: 'blue' | 'green' | 'purple' | 'yellow' | 'red'
+  className?: string
+}
+
+const colorClasses = {
+  blue: 'text-blue-600',
+  green: 'text-green-600',
+  purple: 'text-purple-600',
+  yellow: 'text-yellow-600',
+  red: 'text-red-600'
+}
+
+const MetricCard: React.FC<MetricCardProps> = ({
+  icon: Icon,
+  value,
+  label,
+  hint,
+  color = 'blue',
+  className = ''
+}) => {
+  return (
+    <div className={`text-center ${className}`}>
+      <div className={`text-3xl font-bold mb-2 ${colorClasses[color]}`}>
+        {Icon && <Icon size={24} className="inline-block mr-2" />}
+        {value}
+      </div>
+      <div 
+        className="text-sm text-gray-600"
+        title={hint}
+      >
+        {label}
+      </div>
+    </div>
+  )
+}
+
+export default MetricCard

@@ -649,6 +649,44 @@ export const translations = {
       holds: 'holds',
       minutes: 'minutes',
       for: 'for',
+      // New refactored UI keys
+      metrics: {
+        calories: 'Total Calories',
+        duration: 'Duration (minutes)',
+        exercises: 'Exercises',
+        rpe: 'RPE (1–10)'
+      },
+      actions: {
+        updateAnalysis: 'Update Analysis',
+        recalcEstimates: 'Recalculate AI Estimates',
+        editWorkout: 'Edit Workout',
+        toWeek: 'To Week',
+        prev: 'Previous',
+        next: 'Next'
+      },
+      ai: {
+        feedback: 'AI Feedback',
+        model: 'Model',
+        updated: 'updated',
+        notRun: 'Analysis not performed yet. Click "Update Analysis".',
+        badgeAI: 'AI Estimated'
+      },
+      analytics: {
+        title: 'Workout Analytics',
+        caloriesSplit: 'Calories Distribution',
+        durationByExercise: 'Duration by Exercise',
+        empty: 'Insufficient data for analytics.',
+        ctaRecalc: 'Recalculate AI Estimates'
+      },
+      exercise: {
+        edit: 'Edit',
+        sets: 'sets',
+        reps: 'reps',
+        holds: 'holds',
+        sec: 'sec',
+        km: 'km',
+        min: 'min'
+      },
       workoutUpdated: 'Workout updated successfully',
       exerciseUpdated: 'Exercise updated successfully',
       updateFailed: 'Failed to update',
@@ -1297,6 +1335,44 @@ export const translations = {
       holds: 'удержаний',
       minutes: 'минут',
       for: 'в течение',
+      // New refactored UI keys
+      metrics: {
+        calories: 'Всего калорий',
+        duration: 'Длительность (минуты)',
+        exercises: 'Упражнения',
+        rpe: 'RPE (1–10)'
+      },
+      actions: {
+        updateAnalysis: 'Обновить анализ',
+        recalcEstimates: 'Пересчитать AI-оценки',
+        editWorkout: 'Редактировать тренировку',
+        toWeek: 'К неделе',
+        prev: 'Предыдущая',
+        next: 'Следующая'
+      },
+      ai: {
+        feedback: 'Фидбэк от ИИ',
+        model: 'Модель',
+        updated: 'обновлено',
+        notRun: 'Анализ ещё не выполнялся. Нажмите «Обновить анализ».',
+        badgeAI: 'Оценено ИИ'
+      },
+      analytics: {
+        title: 'Аналитика тренировки',
+        caloriesSplit: 'Распределение калорий',
+        durationByExercise: 'Продолжительность по упражнениям',
+        empty: 'Недостаточно данных для аналитики.',
+        ctaRecalc: 'Пересчитать AI-оценки'
+      },
+      exercise: {
+        edit: 'Редактировать',
+        sets: 'подходов',
+        reps: 'повт.',
+        holds: 'удержания',
+        sec: 'сек',
+        km: 'км',
+        min: 'мин'
+      },
       workoutUpdated: 'Тренировка успешно обновлена',
       exerciseUpdated: 'Упражнение успешно обновлено',
       updateFailed: 'Не удалось обновить',
