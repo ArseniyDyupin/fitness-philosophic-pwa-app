@@ -14,6 +14,8 @@ interface WorkoutState {
   deleteWorkout: (id: string) => Promise<void>
   getWorkoutById: (id: string) => Workout | undefined
   getWorkoutsByDateRange: (startDate: string, endDate: string) => Workout[]
+  getSortedByDate: () => Workout[]
+  getPrevNext: (id: string) => { prev?: Workout; next?: Workout }
   clearWorkouts: () => void
 }
 
@@ -104,6 +106,24 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     return get().workouts.filter(w => 
       w.date >= startDate && w.date <= endDate
     )
+  },
+
+  getSortedByDate: () => {
+    return [...get().workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  },
+
+  getPrevNext: (id: string) => {
+    const sortedWorkouts = get().getSortedByDate()
+    const currentIndex = sortedWorkouts.findIndex(w => w.id === id)
+    
+    if (currentIndex === -1) {
+      return { prev: undefined, next: undefined }
+    }
+    
+    return {
+      prev: currentIndex < sortedWorkouts.length - 1 ? sortedWorkouts[currentIndex + 1] : undefined,
+      next: currentIndex > 0 ? sortedWorkouts[currentIndex - 1] : undefined
+    }
   },
 
   clearWorkouts: () => {

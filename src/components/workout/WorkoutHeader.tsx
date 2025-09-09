@@ -1,5 +1,5 @@
 import React from 'react'
-import { Edit, Bot, RefreshCw, ArrowLeft, ArrowRight, Calendar } from 'lucide-react'
+import { Bot, RefreshCw, ArrowLeft, ArrowRight, Settings } from 'lucide-react'
 import { useTranslations } from '../../stores/i18n.store'
 import { format } from 'date-fns'
 import MetricCard from './MetricCard'
@@ -9,15 +9,13 @@ interface WorkoutHeaderProps {
   workout: Workout
   totalCalories: number
   totalDuration: number
-  isEditing: boolean
   isEstimating: boolean
   isAnalyzing: boolean
   hasKey: boolean
   isAIConfigured: boolean
-  onEdit: () => void
   onUpdateEstimates: () => void
   onUpdateAnalysis: () => void
-  onNavigateToWeek?: () => void
+  onEditMeta: () => void
   onPreviousWorkout?: () => void
   onNextWorkout?: () => void
 }
@@ -26,15 +24,13 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   workout,
   totalCalories,
   totalDuration,
-  isEditing,
   isEstimating,
   isAnalyzing,
   hasKey,
   isAIConfigured,
-  onEdit,
   onUpdateEstimates,
   onUpdateAnalysis,
-  onNavigateToWeek,
+  onEditMeta,
   onPreviousWorkout,
   onNextWorkout
 }) => {
@@ -57,11 +53,11 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Main header row */}
         <div className="flex justify-between items-start mb-4">
-          {/* Left side - Date and navigation */}
+          {/* Left side - Title and navigation */}
           <div className="flex-1">
             <div className="flex items-center space-x-4 mb-2">
               <h1 className="text-2xl font-bold text-gray-900">
-                {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
+                {t.workoutDetailsPage?.workoutDetails || 'Workout Details'}
               </h1>
               
               {/* Navigation arrows */}
@@ -70,8 +66,8 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                   <button
                     onClick={onPreviousWorkout}
                     className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                    title={t.workoutDetailsPage?.actions?.prev || 'Previous workout'}
-                    aria-label={t.workoutDetailsPage?.actions?.prev || 'Previous workout'}
+                    title={t.workoutDetailsPage?.nav?.prev || 'Previous workout'}
+                    aria-label={t.workoutDetailsPage?.nav?.prev || 'Previous workout'}
                   >
                     <ArrowLeft size={20} />
                   </button>
@@ -80,8 +76,8 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                   <button
                     onClick={onNextWorkout}
                     className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                    title={t.workoutDetailsPage?.actions?.next || 'Next workout'}
-                    aria-label={t.workoutDetailsPage?.actions?.next || 'Next workout'}
+                    title={t.workoutDetailsPage?.nav?.next || 'Next workout'}
+                    aria-label={t.workoutDetailsPage?.nav?.next || 'Next workout'}
                   >
                     <ArrowRight size={20} />
                   </button>
@@ -89,16 +85,10 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
               </div>
             </div>
             
-            {/* Link to week */}
-            {onNavigateToWeek && (
-              <button
-                onClick={onNavigateToWeek}
-                className="flex items-center space-x-1 text-sm text-primary-600 hover:text-primary-700 transition-colors"
-              >
-                <Calendar size={14} />
-                <span>{t.workoutDetailsPage?.actions?.toWeek || 'To Week'}</span>
-              </button>
-            )}
+            {/* Date below title */}
+            <div className="text-sm text-gray-600">
+              {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
+            </div>
           </div>
           
           {/* Right side - Action buttons */}
@@ -147,17 +137,15 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
               </button>
             )}
             
-            {/* Edit Workout (Tertiary) */}
-            {!isEditing && (
-              <button
-                onClick={onEdit}
-                className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
-                title={t.workoutDetailsPage?.actions?.editWorkout || 'Edit workout'}
-              >
-                <Edit size={16} />
-                <span className="text-sm">{t.workoutDetailsPage?.actions?.editWorkout || 'Edit Workout'}</span>
-              </button>
-            )}
+            {/* Edit Meta (Tertiary) */}
+            <button
+              onClick={onEditMeta}
+              className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+              title={t.workoutDetailsPage?.actions?.editMeta || 'Change date/duration/RPE'}
+            >
+              <Settings size={16} />
+              <span className="text-sm">{t.workoutDetailsPage?.actions?.editMeta || 'Change date/duration/RPE'}</span>
+            </button>
           </div>
         </div>
         
@@ -183,7 +171,10 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
               value={`${workout.rpe} - ${getRpeLabel(workout.rpe)}`}
               label={t.workoutDetailsPage?.metrics?.rpe || 'RPE (1–10)'}
               color={getRpeColor(workout.rpe)}
-              hint={t.workoutDetailsPage?.rpeHint || 'RPE — subjective intensity rating (1–10)'}
+              hint={workout.rpeSource === 'ai' 
+                ? t.workoutDetailsPage?.metrics?.rpeSourceAI || 'Source: AI'
+                : t.workoutDetailsPage?.metrics?.rpeSourceManual || 'Source: Manual'
+              }
             />
           )}
         </div>

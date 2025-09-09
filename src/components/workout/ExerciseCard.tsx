@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Edit, ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import { useTranslations } from '../../stores/i18n.store'
 import type { WorkoutExercise } from '../../types/models'
 
@@ -169,15 +169,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </div>
           ))}
           
-          {/* Edit button */}
-          <button
-            onClick={() => onEdit(index)}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-            title={t.workoutDetailsPage?.exercise?.edit || 'Edit exercise'}
-            aria-label={t.workoutDetailsPage?.exercise?.edit || 'Edit exercise'}
-          >
-            <Edit size={16} />
-          </button>
         </div>
       </div>
       

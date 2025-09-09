@@ -635,7 +635,6 @@ export const translations = {
       aiFeedback: 'AI Feedback',
       updateAnalysis: 'Update Analysis',
       analysisUpdated: 'Analysis updated',
-      analytics: 'Workout Analytics',
       caloriesSplit: 'Calories Distribution',
       durationByExercise: 'Duration by Exercise',
       noAnalytics: 'Insufficient data for analytics',
@@ -654,15 +653,21 @@ export const translations = {
         calories: 'Total Calories',
         duration: 'Duration (minutes)',
         exercises: 'Exercises',
-        rpe: 'RPE (1–10)'
+        rpe: 'RPE (1–10)',
+        rpeSourceAI: 'Source: AI',
+        rpeSourceManual: 'Source: Manual'
       },
       actions: {
         updateAnalysis: 'Update Analysis',
         recalcEstimates: 'Recalculate AI Estimates',
-        editWorkout: 'Edit Workout',
+        editMeta: 'Change date/duration/RPE',
         toWeek: 'To Week',
         prev: 'Previous',
         next: 'Next'
+      },
+      nav: {
+        prev: 'Previous workout',
+        next: 'Next workout'
       },
       ai: {
         feedback: 'AI Feedback',
@@ -679,13 +684,21 @@ export const translations = {
         ctaRecalc: 'Recalculate AI Estimates'
       },
       exercise: {
-        edit: 'Edit',
         sets: 'sets',
         reps: 'reps',
         holds: 'holds',
         sec: 'sec',
         km: 'km',
         min: 'min'
+      },
+      metaModal: {
+        title: 'Change workout metadata',
+        date: 'Date',
+        durationMin: 'Duration (min)',
+        rpe: 'RPE (1–10)',
+        cancel: 'Cancel',
+        save: 'Save',
+        saved: 'Data updated'
       },
       workoutUpdated: 'Workout updated successfully',
       exerciseUpdated: 'Exercise updated successfully',
@@ -1321,7 +1334,6 @@ export const translations = {
       aiFeedback: 'Фидбэк от AI',
       updateAnalysis: 'Обновить анализ',
       analysisUpdated: 'Анализ обновлён',
-      analytics: 'Аналитика тренировки',
       caloriesSplit: 'Распределение калорий',
       durationByExercise: 'Продолжительность по упражнениям',
       noAnalytics: 'Недостаточно данных для аналитики',
@@ -1340,15 +1352,21 @@ export const translations = {
         calories: 'Всего калорий',
         duration: 'Длительность (минуты)',
         exercises: 'Упражнения',
-        rpe: 'RPE (1–10)'
+        rpe: 'RPE (1–10)',
+        rpeSourceAI: 'Источник: ИИ',
+        rpeSourceManual: 'Источник: вручную'
       },
       actions: {
         updateAnalysis: 'Обновить анализ',
         recalcEstimates: 'Пересчитать AI-оценки',
-        editWorkout: 'Редактировать тренировку',
+        editMeta: 'Изменить дату/длительность/RPE',
         toWeek: 'К неделе',
         prev: 'Предыдущая',
         next: 'Следующая'
+      },
+      nav: {
+        prev: 'Предыдущая тренировка',
+        next: 'Следующая тренировка'
       },
       ai: {
         feedback: 'Фидбэк от ИИ',
@@ -1365,13 +1383,21 @@ export const translations = {
         ctaRecalc: 'Пересчитать AI-оценки'
       },
       exercise: {
-        edit: 'Редактировать',
         sets: 'подходов',
         reps: 'повт.',
         holds: 'удержания',
         sec: 'сек',
         km: 'км',
         min: 'мин'
+      },
+      metaModal: {
+        title: 'Изменить мета-данные тренировки',
+        date: 'Дата',
+        durationMin: 'Длительность (мин)',
+        rpe: 'RPE (1–10)',
+        cancel: 'Отмена',
+        save: 'Сохранить',
+        saved: 'Данные обновлены'
       },
       workoutUpdated: 'Тренировка успешно обновлена',
       exerciseUpdated: 'Упражнение успешно обновлено',
