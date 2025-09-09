@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { db } from '../services/db'
+import { startOfWeek, endOfWeek, isWithinInterval, isSameWeek } from 'date-fns'
 import type { Workout } from '../types/models'
 
 interface WorkoutState {
@@ -14,6 +15,7 @@ interface WorkoutState {
   deleteWorkout: (id: string) => Promise<void>
   getWorkoutById: (id: string) => Workout | undefined
   getWorkoutsByDateRange: (startDate: string, endDate: string) => Workout[]
+  getWorkoutsByWeek: (weekStart: Date) => Workout[]
   getSortedByDate: () => Workout[]
   getPrevNext: (id: string) => { prev?: Workout; next?: Workout }
   clearWorkouts: () => void
@@ -106,6 +108,19 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     return get().workouts.filter(w => 
       w.date >= startDate && w.date <= endDate
     )
+  },
+
+  getWorkoutsByWeek: (weekStart: Date) => {
+    const weekStartDate = startOfWeek(weekStart, { weekStartsOn: 1 })
+    const weekEndDate = endOfWeek(weekStart, { weekStartsOn: 1 })
+    
+    return get().workouts.filter(workout => {
+      const workoutDate = new Date(workout.date)
+      return isWithinInterval(workoutDate, {
+        start: weekStartDate,
+        end: weekEndDate
+      })
+    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   },
 
   getSortedByDate: () => {

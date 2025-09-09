@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { WeekStats } from '../../services/stats.week'
 import { useTranslations } from '../../stores/i18n.store'
-import { useWorkoutStore } from '../../stores/workout.store'
-import { format, eachDayOfInterval } from 'date-fns'
-import { WorkoutExercise } from '../../types/models'
+import { format, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns'
+import { WorkoutExercise, Workout } from '../../types/models'
 import {
   ResponsiveContainer,
   BarChart,
@@ -14,10 +12,11 @@ import {
   Tooltip,
   Legend
 } from 'recharts'
-import { calculateWorkoutDuration } from '@/services/kcal'
+import { calculateWorkoutDuration } from '../../services/kcal'
 
 interface WeeklyActivityChartProps {
-  stats: WeekStats
+  workouts: Workout[]
+  weekStart?: Date
 }
 
 interface DayData {
@@ -112,35 +111,33 @@ const WeeklyTooltip: React.FC<any> = ({ active, payload, label }) => {
   return null
 }
 
-const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ stats }) => {
+const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ workouts, weekStart }) => {
   const t = useTranslations()
-  const { workouts, isLoading: workoutsLoading, loadWorkouts } = useWorkoutStore()
   const [chartData, setChartData] = useState<DayData[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
-    loadWorkouts()
-  }, [])
-
-  useEffect(() => {
-    if (workouts.length > 0) {
+    if (workouts.length > 0 && weekStart) {
       processChartData()
     }
-  }, [workouts, stats.range])
+  }, [workouts, weekStart])
 
   const processChartData = () => {
+    if (!weekStart) return
+    
     setIsProcessing(true)
     try {
-      const weekStart = new Date(stats.range.startISO)
-      const weekEnd = new Date(stats.range.endISO)
+      const weekStartDate = startOfWeek(weekStart, { weekStartsOn: 1 })
+      const weekEndDate = endOfWeek(weekStart, { weekStartsOn: 1 })
       
-      // Get workouts for the week from store
-      const weekWorkouts = workouts.filter(w => 
-        w.date >= stats.range.startISO && w.date <= stats.range.endISO
-      )
+      // Get workouts for the week
+      const weekWorkouts = workouts.filter(w => {
+        const workoutDate = new Date(w.date)
+        return workoutDate >= weekStartDate && workoutDate <= weekEndDate
+      })
 
       // Create day data
-      const days = eachDayOfInterval({ start: weekStart, end: weekEnd })
+      const days = eachDayOfInterval({ start: weekStartDate, end: weekEndDate })
       const dayData: DayData[] = days.map(day => {
         const dateStr = day.toISOString().split('T')[0]
         const dayWorkouts = weekWorkouts.filter(w => {
@@ -152,7 +149,7 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ stats }) => {
         
         // Calculate total duration
         const durationMinTotal = completedWorkouts.reduce((total, workout) => {
-          return workout?.durationMin ? total + workout.durationMin : total + calculateWorkoutDuration(workout.exercises)
+          return total + (workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises))
         }, 0)
 
         // Create details for tooltip
@@ -160,7 +157,7 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ stats }) => {
           id: workout.id,
           rpe: workout.rpe,
           kcal: workout.exercises.reduce((sum, exercise) => sum + (exercise.kcalEstimated || 0), 0),
-          durationMin: calculateWorkoutDuration(workout.exercises),
+          durationMin: workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises),
           exercisesShort: createExerciseSummary(workout.exercises)
         }))
         
@@ -186,7 +183,7 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ stats }) => {
 
   // Check if there's any data to display
   const hasData = chartData.some(day => day.workouts > 0 || day.durationMinTotal > 0)
-  const isLoading = workoutsLoading || isProcessing
+  const isLoading = isProcessing
   
   return (
     <div className="card mb-8">
@@ -199,10 +196,7 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ stats }) => {
           <div className="h-80 flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
             <span className="ml-3 text-gray-600">
-              {workoutsLoading 
-                ? (t.weeklyPage?.loading || 'Loading workouts...')
-                : (t.weeklyPage?.processing || 'Processing chart data...')
-              }
+              {t.weeklyPage?.processing || 'Processing chart data...'}
             </span>
           </div>
         ) : hasData ? (

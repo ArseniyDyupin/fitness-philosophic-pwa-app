@@ -541,7 +541,36 @@ export const translations = {
     workoutsPage: {
       trackWorkoutsAndProgress: 'Track your workouts and progress',
       loadingWorkouts: 'Loading workouts...',
-      startFitnessJourney: 'Start your fitness journey by adding your first workout'
+      startFitnessJourney: 'Start your fitness journey by adding your first workout',
+      weekNav: {
+        prev: 'Previous',
+        next: 'Next',
+        current: 'Current Week',
+        range: '{{from}} — {{to}}'
+      },
+      filters: {
+        title: 'Filters',
+        all: 'All',
+        completed: 'Completed',
+        planned: 'Planned',
+        types: 'Exercise Types',
+        rpe: 'RPE',
+        aiOnly: 'AI Analysis Only',
+        search: 'Search'
+      },
+      summary: {
+        title: 'Week Summary',
+        workouts: 'Workouts',
+        calories: 'Calories',
+        duration: 'Duration (min)',
+        avgRpe: 'Avg RPE',
+        goalProgress: '{{done}} / {{goal}} workouts'
+      },
+      emptyWeek: {
+        title: 'No workouts this week',
+        add: 'Add Workout',
+        generate: 'Generate Workout'
+      }
     },
     
     // WorkoutForm
@@ -1241,7 +1270,36 @@ export const translations = {
     workoutsPage: {
       trackWorkoutsAndProgress: 'Отслеживайте тренировки и прогресс',
       loadingWorkouts: 'Загружаю тренировки...',
-      startFitnessJourney: 'Начните свой фитнес-путь, добавив первую тренировку'
+      startFitnessJourney: 'Начните свой фитнес-путь, добавив первую тренировку',
+      weekNav: {
+        prev: 'Предыдущая',
+        next: 'Следующая',
+        current: 'Текущая неделя',
+        range: '{{from}} — {{to}}'
+      },
+      filters: {
+        title: 'Фильтры',
+        all: 'Все',
+        completed: 'Выполненные',
+        planned: 'План',
+        types: 'Типы упражнений',
+        rpe: 'RPE',
+        aiOnly: 'Только с AI-анализом',
+        search: 'Поиск'
+      },
+      summary: {
+        title: 'Сводка недели',
+        workouts: 'Тренировки',
+        calories: 'Калории',
+        duration: 'Длительность (мин)',
+        avgRpe: 'Средний RPE',
+        goalProgress: '{{done}} / {{goal}} тренировок'
+      },
+      emptyWeek: {
+        title: 'Нет тренировок на этой неделе',
+        add: 'Добавить тренировку',
+        generate: 'Сгенерировать тренировку'
+      }
     },
     
     // WorkoutForm
