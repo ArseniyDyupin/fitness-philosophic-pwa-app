@@ -14,6 +14,7 @@ interface AIState {
   clearApiKey: () => void
   testConnection: () => Promise<boolean>
   checkConfiguration: () => void
+  hasKey: () => boolean
 }
 
 export const useAIStore = create<AIState>()(
@@ -73,6 +74,10 @@ export const useAIStore = create<AIState>()(
           apiKey: currentKey,
           isConfigured: hasKey
         })
+      },
+
+      hasKey: () => {
+        return aiService.hasApiKey()
       }
     }),
     {

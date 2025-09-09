@@ -1,5 +1,5 @@
 import Dexie from 'dexie'
-import type { Profile, Workout, FoodLog, WeeklyCheckin, AiMessage, PlanSuggestion, ExerciseEstimate } from '../types/models'
+import type { Profile, Workout, FoodLog, WeeklyCheckin, AiMessage, PlanSuggestion, ExerciseEstimate, AIWorkoutFeedback } from '../types/models'
 
 export class AITrainerDB extends Dexie {
   profiles!: Dexie.Table<Profile, string>
@@ -9,17 +9,19 @@ export class AITrainerDB extends Dexie {
   ai!: Dexie.Table<AiMessage, string>
   plans!: Dexie.Table<PlanSuggestion, string>
   exercise_estimates!: Dexie.Table<ExerciseEstimate, string>
+  ai_feedback!: Dexie.Table<AIWorkoutFeedback, string>
 
   constructor() {
     super('AITrainerDB')
     this.version(1).stores({
       profiles: 'id',
-      workouts: 'id,date',
+      workouts: 'id,date,createdAt',
       food: 'id,date',
       checkins: 'id,weekStart',
       ai: 'id,createdAt',
       plans: 'id,createdAt,forDate',
-      exercise_estimates: 'id,signature,type,createdAt'
+      exercise_estimates: 'id,signature,type,createdAt',
+      ai_feedback: 'id,workoutId,createdAt'
     })
   }
 }
@@ -74,14 +76,27 @@ export const dbHelpers = {
       .first()
   },
 
+  async getAIFeedbackByWorkout(workoutId: string): Promise<AIWorkoutFeedback | undefined> {
+    return await db.ai_feedback
+      .where('workoutId')
+      .equals(workoutId)
+      .first()
+  },
+
+  async saveAIFeedback(feedback: AIWorkoutFeedback): Promise<void> {
+    await db.ai_feedback.put(feedback)
+  },
+
   async clearAllData(): Promise<void> {
-    await db.transaction('rw', [db.profiles, db.workouts, db.food, db.checkins, db.ai, db.plans], async () => {
+    await db.transaction('rw', [db.profiles, db.workouts, db.food, db.checkins, db.ai, db.plans, db.exercise_estimates, db.ai_feedback], async () => {
       await db.profiles.clear()
       await db.workouts.clear()
       await db.food.clear()
       await db.checkins.clear()
       await db.ai.clear()
       await db.plans.clear()
+      await db.exercise_estimates.clear()
+      await db.ai_feedback.clear()
     })
   }
 }

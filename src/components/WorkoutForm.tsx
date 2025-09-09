@@ -5,6 +5,7 @@ import { useTranslations, useI18nStore } from '../stores/i18n.store'
 import { useAIStore } from '../stores/ai.store'
 import { aiService } from '../services/ai'
 import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../services/ai.estimate'
+import { aiReviewService } from '../services/ai.review'
 import type { WorkoutExercise } from '../types/models'
 import { X, Plus, Edit3, Bot } from 'lucide-react'
 import ExerciseCard from './ExerciseCard'
@@ -12,7 +13,7 @@ import ExerciseCard from './ExerciseCard'
 interface WorkoutFormProps {
   isOpen: boolean
   onClose: () => void
-  onSuccess?: () => void
+  onSuccess?: (workoutId?: string) => void
 }
 
 const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess }) => {
@@ -20,7 +21,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
   const { currentLanguage } = useI18nStore()
   const { addWorkout } = useWorkoutStore()
   const { profile } = useProfileStore()
-  const { isConfigured: isAIConfigured } = useAIStore()
+  const { isConfigured: isAIConfigured, hasKey } = useAIStore()
   
   const [mode, setMode] = useState<'form' | 'text'>('form')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -30,6 +31,8 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
   const [textInput, setTextInput] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [isEstimating, setIsEstimating] = useState(false)
+  const [enableAIAnalysis, setEnableAIAnalysis] = useState(true)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
 
   // Reset form when opening
   useEffect(() => {
@@ -40,8 +43,9 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
       setExercises([])
       setTextInput('')
       setMode('form')
+      setEnableAIAnalysis(hasKey()) // Default to true if AI is available
     }
-  }, [isOpen])
+  }, [isOpen, hasKey])
 
   const addExercise = () => {
     const newExercise: WorkoutExercise = {
@@ -83,16 +87,16 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
     }
 
     try {
-      // First, save the workout without AI estimates
+      // First, save the workout without AI estimates and analysis
       const workoutData = {
         date: new Date(date).toISOString(),
         exercises,
-        rpe: rpe > 0 ? rpe : undefined,
+        rpe: enableAIAnalysis ? undefined : (rpe > 0 ? rpe : undefined), // Don't set RPE if AI analysis is enabled
         durationMin: durationMin && durationMin > 0 ? durationMin : undefined,
         status: 'completed' as const
       }
 
-      await addWorkout(workoutData)
+      const savedWorkout = await addWorkout(workoutData)
       
       // Then, get AI estimates for exercises that need them
       if (profile && isAIConfigured) {
@@ -147,8 +151,26 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
           setIsEstimating(false)
         }
       }
+
+      // Start AI analysis if enabled and AI is configured
+      if (enableAIAnalysis && hasKey() && savedWorkout) {
+        setIsAnalyzing(true)
+        // Run AI analysis asynchronously without blocking navigation
+        aiReviewService.reviewWorkout(savedWorkout.id)
+          .then(() => {
+            // Show success toast (could be implemented with a toast system)
+            console.log('AI analysis completed successfully')
+          })
+          .catch((error) => {
+            console.error('AI analysis failed:', error)
+            // Show error toast (could be implemented with a toast system)
+          })
+          .finally(() => {
+            setIsAnalyzing(false)
+          })
+      }
       
-      onSuccess?.()
+      onSuccess?.(savedWorkout.id)
       onClose()
     } catch (error) {
       console.error('Failed to save workout:', error)
@@ -310,6 +332,27 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                   Optional: Total time spent on the workout including rest
                 </p>
               </div>
+
+              {/* AI Analysis Checkbox - only show if AI is configured */}
+              {hasKey() && (
+                <div className="md:col-span-2">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      id="enableAIAnalysis"
+                      checked={enableAIAnalysis}
+                      onChange={(e) => setEnableAIAnalysis(e.target.checked)}
+                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="enableAIAnalysis" className="text-sm font-medium text-gray-700">
+                      {t.workoutAnalysis?.enable || 'Analyze workout with AI'}
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1 ml-7">
+                    AI will automatically estimate RPE and provide feedback after saving
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Exercises */}
@@ -404,13 +447,18 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
           {mode === 'form' && (
             <button
               onClick={handleSave}
-              disabled={exercises.length === 0 || isEstimating}
+              disabled={exercises.length === 0 || isEstimating || isAnalyzing}
               className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               {isEstimating ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   <span>AI estimation...</span>
+                </>
+              ) : isAnalyzing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>{t.workoutAnalysis?.starting || 'Starting AI analysis...'}</span>
                 </>
               ) : (
                 <span>{t.save}</span>

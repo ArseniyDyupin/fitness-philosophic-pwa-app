@@ -40,7 +40,7 @@ export interface Workout {
   id: string
   date: string                  // ISO string
   exercises: WorkoutExercise[]
-  rpe?: number // Rate of Perceived Exertion (1-10 scale)
+  rpe?: number // Rate of Perceived Exertion (1-10 scale) - will be filled by AI when analysis is enabled
   durationMin?: number // Total workout duration in minutes (user-specified)
   aiReviewId?: string // ID of AI review if available
   status?: WorkoutStatus // NEW: default "completed" for old data
@@ -154,4 +154,14 @@ export interface ExerciseEstimate {
   meta?: { source: "ai" | "manual"; notes?: string }
   createdAt: string
   updatedAt: string
+}
+
+export interface AIWorkoutFeedback {
+  id: string
+  workoutId: string
+  language: "ru" | "en"
+  rpe: number               // 1..10
+  review: string            // текстовый анализ тренировки
+  model: "gpt-4o-mini"
+  createdAt: string
 }

@@ -574,6 +574,17 @@ export const translations = {
       aiNotConfigured: 'AI is not configured. Please set up your OpenAI API key in Settings.',
       aiParseFailed: 'AI parsing failed. Please try again or use form mode.'
     },
+
+    // Workout Analysis
+    workoutAnalysis: {
+      enable: 'Analyze workout with AI',
+      starting: 'Starting AI analysis...',
+      ready: 'AI analysis completed',
+      error: 'Failed to perform AI analysis',
+      rpe: 'RPE (intensity)',
+      feedbackTitle: 'AI Feedback',
+      update: 'Update analysis'
+    },
     
     // WorkoutCard
     workoutCard: {
@@ -1196,6 +1207,17 @@ export const translations = {
       failedToParse: 'Не удалось разобрать текст тренировки. Пожалуйста, используйте режим формы.',
       aiNotConfigured: 'ИИ не настроен. Пожалуйста, настройте ваш OpenAI API ключ в Настройках.',
       aiParseFailed: 'Парсинг ИИ не удался. Попробуйте еще раз или используйте режим формы.'
+    },
+
+    // Workout Analysis
+    workoutAnalysis: {
+      enable: 'Анализировать тренировку ИИ',
+      starting: 'Запускаем анализ ИИ…',
+      ready: 'Анализ ИИ добавлен',
+      error: 'Не удалось выполнить анализ ИИ',
+      rpe: 'RPE (интенсивность)',
+      feedbackTitle: 'Фидбэк от ИИ',
+      update: 'Обновить анализ'
     },
     
     // WorkoutCard

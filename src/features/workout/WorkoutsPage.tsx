@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslations } from '../../stores/i18n.store'
 import { useWorkoutStore } from '../../stores/workout.store'
 import { useProfileStore } from '../../stores/profile.store'
@@ -8,6 +9,7 @@ import { Plus } from 'lucide-react'
 
 const WorkoutsPage: React.FC = () => {
   const t = useTranslations()
+  const navigate = useNavigate()
   const { workouts, loadWorkouts, isLoading } = useWorkoutStore()
   const { profile } = useProfileStore()
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -16,9 +18,14 @@ const WorkoutsPage: React.FC = () => {
     loadWorkouts()
   }, [loadWorkouts])
 
-  const handleWorkoutSuccess = () => {
+  const handleWorkoutSuccess = (workoutId?: string) => {
     // Refresh the workouts list
     loadWorkouts()
+    
+    // Navigate to workout details if workoutId is provided
+    if (workoutId) {
+      navigate(`/workouts/${workoutId}`)
+    }
   }
 
   if (!profile) {

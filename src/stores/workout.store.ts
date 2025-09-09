@@ -9,7 +9,7 @@ interface WorkoutState {
   
   // Actions
   loadWorkouts: () => Promise<void>
-  addWorkout: (workout: Omit<Workout, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  addWorkout: (workout: Omit<Workout, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Workout>
   updateWorkout: (id: string, workout: Partial<Workout>) => Promise<void>
   deleteWorkout: (id: string) => Promise<void>
   getWorkoutById: (id: string) => Workout | undefined
@@ -48,6 +48,8 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
       set(state => ({
         workouts: [newWorkout, ...state.workouts]
       }))
+      
+      return newWorkout
     } catch (err) {
       set({ error: err instanceof Error ? err.message : 'Failed to add workout' })
       throw err
