@@ -39,6 +39,24 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = ({ weekStart }) => {
     try {
       setIsLoading(true)
       
+      // Check if database is ready and has the required tables
+      const db = (await import('../../services/db')).db
+      if (!db.isOpen()) {
+        await db.open()
+      }
+      
+      // Check if metric_defs table exists and has data
+      const tableExists = db.tables.some(table => table.name === 'metric_defs')
+      if (!tableExists) {
+        console.log('Body metrics tables not found - skipping body metrics block')
+        setMetricDefs([])
+        setLatestValues({})
+        setTrends({})
+        setDeltas({})
+        setSelectedMetrics([])
+        return
+      }
+      
       const [defs, values] = await Promise.all([
         metricsService.getActiveDefs(),
         metricsService.getLatestValues()
@@ -52,13 +70,19 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = ({ weekStart }) => {
       const deltasData: Record<string, number> = {}
       
       for (const def of defs) {
-        const [trend, delta] = await Promise.all([
-          metricsService.getTrends(def.id, 8),
-          metricsService.getDelta(def.id, 30)
-        ])
-        
-        trendsData[def.key] = trend
-        deltasData[def.key] = delta || 0
+        try {
+          const [trend, delta] = await Promise.all([
+            metricsService.getTrends(def.id, 8),
+            metricsService.getDelta(def.id, 30)
+          ])
+          
+          trendsData[def.key] = trend
+          deltasData[def.key] = delta || 0
+        } catch (error) {
+          console.warn(`Failed to load trends for metric ${def.key}:`, error)
+          trendsData[def.key] = []
+          deltasData[def.key] = 0
+        }
       }
       
       setTrends(trendsData)
@@ -69,6 +93,12 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = ({ weekStart }) => {
       
     } catch (error) {
       console.error('Failed to load body metrics data:', error)
+      // Set empty state to prevent further errors
+      setMetricDefs([])
+      setLatestValues({})
+      setTrends({})
+      setDeltas({})
+      setSelectedMetrics([])
     } finally {
       setIsLoading(false)
     }

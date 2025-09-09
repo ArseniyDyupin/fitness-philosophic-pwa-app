@@ -5,7 +5,23 @@ import type { MetricDef, MetricEntry, PhotoAsset, BodyMetricsSettings } from '..
 export const metricsService = {
   // Metric Definitions
   async getActiveDefs(): Promise<MetricDef[]> {
-    return await db.metric_defs.where('isActive').equals(true).toArray()
+    try {
+      // Check if database is open and table exists
+      if (!db.isOpen()) {
+        await db.open()
+      }
+      
+      const tableExists = db.tables.some(table => table.name === 'metric_defs')
+      if (!tableExists) {
+        console.log('metric_defs table does not exist')
+        return []
+      }
+      
+      return await db.metric_defs.where('isActive').equals(true).toArray()
+    } catch (error) {
+      console.error('Error getting active metric definitions:', error)
+      return []
+    }
   },
 
   async getAllDefs(): Promise<MetricDef[]> {
@@ -50,25 +66,50 @@ export const metricsService = {
   },
 
   async getLatestByDef(defId: string): Promise<MetricEntry | undefined> {
-    return await db.metric_entries
-      .where('defId')
-      .equals(defId)
-      .orderBy('date')
-      .last()
+    try {
+      // Check if database is open and table exists
+      if (!db.isOpen()) {
+        await db.open()
+      }
+      
+      const tableExists = db.tables.some(table => table.name === 'metric_entries')
+      if (!tableExists) {
+        console.log('metric_entries table does not exist')
+        return undefined
+      }
+      
+      return await db.metric_entries
+        .where('defId')
+        .equals(defId)
+        .orderBy('date')
+        .last()
+    } catch (error) {
+      console.error(`Error getting latest entry for metric ${defId}:`, error)
+      return undefined
+    }
   },
 
   async getLatestValues(): Promise<Record<string, number>> {
-    const activeDefs = await this.getActiveDefs()
-    const latestValues: Record<string, number> = {}
-    
-    for (const def of activeDefs) {
-      const latest = await this.getLatestByDef(def.id)
-      if (latest) {
-        latestValues[def.key] = latest.value
+    try {
+      const activeDefs = await this.getActiveDefs()
+      const latestValues: Record<string, number> = {}
+      
+      for (const def of activeDefs) {
+        try {
+          const latest = await this.getLatestByDef(def.id)
+          if (latest) {
+            latestValues[def.key] = latest.value
+          }
+        } catch (error) {
+          console.warn(`Failed to get latest value for metric ${def.key}:`, error)
+        }
       }
+      
+      return latestValues
+    } catch (error) {
+      console.error('Error getting latest values:', error)
+      return {}
     }
-    
-    return latestValues
   },
 
   // Photo Assets
