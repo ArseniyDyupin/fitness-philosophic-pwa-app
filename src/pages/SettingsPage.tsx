@@ -8,6 +8,7 @@ import JsonFileButtons from '../components/JsonFileButtons'
 import AISettings from '../components/AISettings'
 import DataImport from '../components/DataImport'
 import ProfileDetailsModal from '../components/ProfileDetailsModal'
+import SettingsBodyMetrics from '../components/settings/SettingsBodyMetrics'
 import { Edit, Check, X, Eye, RefreshCw } from 'lucide-react'
 
 const SettingsPage: React.FC = () => {
@@ -443,10 +444,15 @@ const SettingsPage: React.FC = () => {
             <AISettings />
           </div>
 
+          {/* Body Metrics */}
+          <div className="card">
+            <SettingsBodyMetrics />
+          </div>
+
           {/* Data Import */}
           <div className="card">
             <DataImport />
-            </div>
+          </div>
 
           {/* Export/Import (Legacy) */}
           <div className="card">

@@ -5,6 +5,8 @@ import { useAIStore } from '../stores/ai.store'
 import { downloadExport } from '../services/export'
 import { ArrowLeft, Download, Check, X, Sparkles } from 'lucide-react'
 import GenerateWorkoutModal from './GenerateWorkoutModal'
+import HeaderReminderBanner from './HeaderReminderBanner'
+import BodyMetricsModal from './BodyMetricsModal'
 
 const Header: React.FC = () => {
   const t = useTranslations()
@@ -14,6 +16,7 @@ const Header: React.FC = () => {
   
   const [isExporting, setIsExporting] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isMetricsModalOpen, setIsMetricsModalOpen] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   const showToast = (message: string, type: 'success' | 'error') => {
@@ -70,8 +73,12 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      {/* Reminder Banner */}
+      <HeaderReminderBanner onOpenMetricsModal={() => setIsMetricsModalOpen(true)} />
+      
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Left side: Back button + Logo */}
           <div className="flex items-center space-x-4">
@@ -246,7 +253,14 @@ const Header: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         onPlanGenerated={handlePlanGenerated}
       />
+
+      {/* Body Metrics Modal */}
+      <BodyMetricsModal
+        isOpen={isMetricsModalOpen}
+        onClose={() => setIsMetricsModalOpen(false)}
+      />
     </header>
+    </>
   )
 }
 

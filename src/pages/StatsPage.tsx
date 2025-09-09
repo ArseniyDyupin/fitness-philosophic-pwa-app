@@ -7,6 +7,8 @@ import StatsHeader from '../components/stats/StatsHeader'
 import KPIGrid from '../components/stats/KPIGrid'
 import DisciplineBreakdown from '../components/stats/DisciplineBreakdown'
 import Records from '../components/stats/Records'
+import BodyMetricsBlock from '../components/stats/BodyMetricsBlock'
+import AiBodyEvalCard from '../components/stats/AiBodyEvalCard'
 import type { StatsRange } from '../types/stats'
 
 const StatsPage: React.FC = () => {
@@ -129,12 +131,11 @@ const StatsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Body Metrics</h2>
-              <div className="text-center py-8 text-gray-500">
-                Body metrics tracking will be implemented here
-              </div>
-            </div>
+            {/* Body Metrics */}
+            <BodyMetricsBlock weekStart={statsData.startDate ? new Date(statsData.startDate) : undefined} />
+
+            {/* AI Body Evaluation */}
+            <AiBodyEvalCard weekStart={statsData.startDate ? new Date(statsData.startDate) : undefined} />
           </div>
         )}
 

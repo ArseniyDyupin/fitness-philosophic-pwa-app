@@ -644,6 +644,74 @@ export const translations = {
       }
     },
     
+    // Body Metrics
+    metrics: {
+      title: 'Body Metrics',
+      setup: 'Setup Metrics',
+      reminder: 'Time to update measurements for the past week',
+      fillNow: 'Fill Now',
+      snooze: 'Snooze',
+      modal: {
+        title: 'Weekly Measurements',
+        addPhoto: 'Add Photo',
+        consent: 'Allow sending photos for AI analysis',
+        save: 'Save',
+        saveAndAnalyze: 'Save and Analyze with AI',
+        noPhotos: 'No photos added',
+        photosAdded: '{{count}} photos added'
+      },
+      ai: {
+        summary: 'AI Assessment',
+        score: 'Score',
+        tips: 'Recommendations',
+        history: 'Assessment History',
+        disclaimer: 'AI assessment is for reference only and is not medical advice.'
+      },
+      default: {
+        weight: 'Weight',
+        waist: 'Waist',
+        chest: 'Chest',
+        bicep: 'Bicep',
+        thigh: 'Thigh',
+        bodyFat: 'Body Fat %'
+      },
+      units: {
+        kg: 'kg',
+        cm: 'cm',
+        percent: '%',
+        count: 'count',
+        custom: 'custom'
+      },
+      photo: {
+        front: 'Front',
+        side: 'Side',
+        back: 'Back',
+        other: 'Other'
+      },
+      settings: 'Settings',
+      allowPhotoAnalysis: 'Allow photo analysis',
+      photoAnalysisDesc: 'Allow sending photos to AI for analysis',
+      reminderEnabled: 'Enable reminders',
+      reminderDesc: 'Show weekly reminder to fill metrics',
+      defaultMetrics: 'Default Metrics',
+      testEntry: 'Test Entry',
+      customMetrics: 'Custom Metrics',
+      addCustom: 'Add Custom',
+      metricKey: 'Metric Key',
+      metricLabel: 'Metric Label',
+      unit: 'Unit',
+      precision: 'Precision',
+      minValue: 'Min Value',
+      maxValue: 'Max Value',
+      isActive: 'Active',
+      isRequired: 'Required',
+      fillRequired: 'Please fill in all required fields',
+      confirmDelete: 'Are you sure you want to delete this metric?',
+      note: 'Add a note...',
+      recentEntries: 'Recent Entries',
+      noEntries: 'No recent entries'
+    },
+    
     // WorkoutForm
     workoutForm: {
       formMode: 'Form Mode',
@@ -1442,6 +1510,74 @@ export const translations = {
         loading: 'Генерируем инсайты...',
         error: 'Не удалось сгенерировать инсайты'
       }
+    },
+    
+    // Body Metrics
+    metrics: {
+      title: 'Метрики тела',
+      setup: 'Настроить метрики',
+      reminder: 'Пора обновить измерения за прошедшую неделю',
+      fillNow: 'Заполнить',
+      snooze: 'Отложить',
+      modal: {
+        title: 'Еженедельные измерения',
+        addPhoto: 'Добавить фото',
+        consent: 'Разрешаю отправку фото на анализ ИИ',
+        save: 'Сохранить',
+        saveAndAnalyze: 'Сохранить и проанализировать ИИ',
+        noPhotos: 'Фото не добавлены',
+        photosAdded: 'Добавлено {{count}} фото'
+      },
+      ai: {
+        summary: 'Оценка ИИ',
+        score: 'Оценка',
+        tips: 'Рекомендации',
+        history: 'История оценок',
+        disclaimer: 'Оценка ИИ носит ориентировочный характер и не является медицинским советом.'
+      },
+      default: {
+        weight: 'Вес',
+        waist: 'Талия',
+        chest: 'Грудь',
+        bicep: 'Бицепс',
+        thigh: 'Бедро',
+        bodyFat: 'Процент жира'
+      },
+      units: {
+        kg: 'кг',
+        cm: 'см',
+        percent: '%',
+        count: 'шт',
+        custom: 'пользовательская'
+      },
+      photo: {
+        front: 'Спереди',
+        side: 'Сбоку',
+        back: 'Сзади',
+        other: 'Другое'
+      },
+      settings: 'Настройки',
+      allowPhotoAnalysis: 'Разрешить анализ фото',
+      photoAnalysisDesc: 'Разрешить отправку фото для анализа ИИ',
+      reminderEnabled: 'Включить напоминания',
+      reminderDesc: 'Показывать еженедельное напоминание о заполнении метрик',
+      defaultMetrics: 'Стандартные метрики',
+      testEntry: 'Тестовая запись',
+      customMetrics: 'Пользовательские метрики',
+      addCustom: 'Добавить',
+      metricKey: 'Ключ метрики',
+      metricLabel: 'Название метрики',
+      unit: 'Единица измерения',
+      precision: 'Точность',
+      minValue: 'Минимальное значение',
+      maxValue: 'Максимальное значение',
+      isActive: 'Активна',
+      isRequired: 'Обязательна',
+      fillRequired: 'Пожалуйста, заполните все обязательные поля',
+      confirmDelete: 'Вы уверены, что хотите удалить эту метрику?',
+      note: 'Добавить заметку...',
+      recentEntries: 'Последние записи',
+      noEntries: 'Нет последних записей'
     },
     
     // WorkoutForm

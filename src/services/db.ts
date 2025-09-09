@@ -1,5 +1,6 @@
 import Dexie from 'dexie'
 import type { Profile, Workout, FoodLog, WeeklyCheckin, AiMessage, PlanSuggestion, ExerciseEstimate, AIWorkoutFeedback } from '../types/models'
+import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '../types/body-metrics'
 
 export class AITrainerDB extends Dexie {
   profiles!: Dexie.Table<Profile, string>
@@ -10,6 +11,10 @@ export class AITrainerDB extends Dexie {
   plans!: Dexie.Table<PlanSuggestion, string>
   exercise_estimates!: Dexie.Table<ExerciseEstimate, string>
   ai_feedback!: Dexie.Table<AIWorkoutFeedback, string>
+  metric_defs!: Dexie.Table<MetricDef, string>
+  metric_entries!: Dexie.Table<MetricEntry, string>
+  photo_assets!: Dexie.Table<PhotoAsset, string>
+  ai_body_evals!: Dexie.Table<AiBodyEval, string>
 
   constructor() {
     super('AITrainerDB')
@@ -38,6 +43,114 @@ export class AITrainerDB extends Dexie {
     }).upgrade(async (tx) => {
       // Migration logic if needed
       console.log('Upgrading database to version 2 - adding ai_feedback table')
+    })
+
+    // Version 3 - Add body metrics tables
+    this.version(3).stores({
+      profiles: 'id',
+      workouts: 'id,date,createdAt',
+      food: 'id,date',
+      checkins: 'id,weekStart',
+      ai: 'id,createdAt',
+      plans: 'id,createdAt,forDate',
+      exercise_estimates: 'id,signature,type,createdAt',
+      ai_feedback: 'id,workoutId,createdAt',
+      metric_defs: 'id,key,isActive,createdAt',
+      metric_entries: 'id,defId,date',
+      photo_assets: 'id,date',
+      ai_body_evals: 'id,weekStart,createdAt'
+    }).upgrade(async (tx) => {
+      console.log('Upgrading database to version 3 - adding body metrics tables')
+      
+      // Initialize default metrics
+      const defaultMetrics = [
+        {
+          id: 'weight',
+          key: 'weight',
+          label: 'metrics.default.weight',
+          unit: 'kg',
+          precision: 1,
+          min: 30,
+          max: 200,
+          color: '#3B82F6',
+          isActive: true,
+          isRequired: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'waist',
+          key: 'waist',
+          label: 'metrics.default.waist',
+          unit: 'cm',
+          precision: 1,
+          min: 50,
+          max: 150,
+          color: '#10B981',
+          isActive: false,
+          isRequired: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'chest',
+          key: 'chest',
+          label: 'metrics.default.chest',
+          unit: 'cm',
+          precision: 1,
+          min: 70,
+          max: 150,
+          color: '#F59E0B',
+          isActive: false,
+          isRequired: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'bicep',
+          key: 'bicep',
+          label: 'metrics.default.bicep',
+          unit: 'cm',
+          precision: 1,
+          min: 20,
+          max: 60,
+          color: '#8B5CF6',
+          isActive: false,
+          isRequired: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'thigh',
+          key: 'thigh',
+          label: 'metrics.default.thigh',
+          unit: 'cm',
+          precision: 1,
+          min: 40,
+          max: 100,
+          color: '#EF4444',
+          isActive: false,
+          isRequired: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'bodyFat',
+          key: 'bodyFat',
+          label: 'metrics.default.bodyFat',
+          unit: '%',
+          precision: 1,
+          min: 3,
+          max: 50,
+          color: '#6B7280',
+          isActive: false,
+          isRequired: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+
+      await tx.metric_defs.bulkAdd(defaultMetrics)
     })
   }
 }
