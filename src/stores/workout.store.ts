@@ -18,6 +18,10 @@ interface WorkoutState {
   getWorkoutsByWeek: (weekStart: Date) => Workout[]
   getSortedByDate: () => Workout[]
   getPrevNext: (id: string) => { prev?: Workout; next?: Workout }
+  getWorkoutsByDate: (dateISO: string) => Workout[]
+  getLastN: (n: number) => Workout[]
+  getDayStats: (dateISO: string) => { calories: number; minutes: number; exercises: number; rpeAvg?: number }
+  getWeekStats: (weekStartISO: string) => { calories: number; minutes: number; exercises: number; rpeAvg?: number; workouts: number; goalPerWeek?: number }
   clearWorkouts: () => void
 }
 
@@ -138,6 +142,88 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     return {
       prev: currentIndex < sortedWorkouts.length - 1 ? sortedWorkouts[currentIndex + 1] : undefined,
       next: currentIndex > 0 ? sortedWorkouts[currentIndex - 1] : undefined
+    }
+  },
+
+  getWorkoutsByDate: (dateISO: string) => {
+    const { workouts } = get()
+    return workouts.filter(workout => workout.date === dateISO)
+  },
+
+  getLastN: (n: number) => {
+    const { workouts } = get()
+    return workouts.slice(0, n)
+  },
+
+  getDayStats: (dateISO: string) => {
+    const { workouts } = get()
+    const dayWorkouts = workouts.filter(workout => workout.date === dateISO)
+    
+    let calories = 0
+    let minutes = 0
+    let exercises = 0
+    let totalRPE = 0
+    let rpeCount = 0
+
+    dayWorkouts.forEach(workout => {
+      if (workout.exercises) {
+        workout.exercises.forEach(exercise => {
+          calories += exercise.kcalEstimated || 0
+          minutes += exercise.details.durationMin || 0
+          exercises += 1
+        })
+      }
+      if (workout.rpe && workout.rpe > 0) {
+        totalRPE += workout.rpe
+        rpeCount += 1
+      }
+    })
+
+    return {
+      calories,
+      minutes,
+      exercises,
+      rpeAvg: rpeCount > 0 ? totalRPE / rpeCount : undefined
+    }
+  },
+
+  getWeekStats: (weekStartISO: string) => {
+    const { workouts } = get()
+    const weekStart = new Date(weekStartISO)
+    const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 })
+    
+    const weekWorkouts = workouts.filter(workout => {
+      const workoutDate = new Date(workout.date)
+      return isWithinInterval(workoutDate, { start: weekStart, end: weekEnd })
+    })
+    
+    let calories = 0
+    let minutes = 0
+    let exercises = 0
+    let totalRPE = 0
+    let rpeCount = 0
+
+    weekWorkouts.forEach(workout => {
+      if (workout.exercises) {
+        workout.exercises.forEach(exercise => {
+          calories += exercise.kcalEstimated || 0
+          minutes += exercise.details.durationMin || 0
+          exercises += 1
+        })
+      }
+      if (workout.rpe && workout.rpe > 0) {
+        totalRPE += workout.rpe
+        rpeCount += 1
+      }
+    })
+
+    return {
+      calories,
+      minutes,
+      exercises,
+      rpeAvg: rpeCount > 0 ? totalRPE / rpeCount : undefined,
+      workouts: weekWorkouts.length,
+      goalPerWeek: 3 // Default goal, could be from profile
     }
   },
 

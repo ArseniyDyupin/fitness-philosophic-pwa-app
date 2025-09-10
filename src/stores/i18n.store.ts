@@ -274,10 +274,55 @@ export const translations = {
     
     // HomePage
     homePage: {
-      workoutsDescription: 'Отслеживайте тренировки и получайте AI анализ',
-      foodDescription: 'Ведите дневник питания и отслеживайте калории',
-      weeklyDescription: 'Еженедельные проверки и отслеживание прогресса',
-      settingsDescription: 'Управляйте профилем и настройками'
+      workoutsDescription: 'Track your workouts and get AI analysis',
+      foodDescription: 'Log your meals and track calories',
+      weeklyDescription: 'Weekly check-ins and progress tracking',
+      settingsDescription: 'Manage your profile and settings'
+    },
+    
+    // Home Dashboard
+    homeDashboard: {
+      nextPlan: {
+        today: 'Plan for Today',
+        tomorrow: 'Plan for Tomorrow',
+        open: 'Open Plan',
+        markDone: 'Mark as Done',
+        regenerate: 'Regenerate',
+        noPlan: 'No plan created for today',
+        enableAI: 'Enable AI',
+        generate: 'Generate Plan'
+      },
+      kpi: {
+        today: 'Today',
+        week: 'Week',
+        calories: 'Calories',
+        minutes: 'Minutes',
+        exercises: 'Exercises',
+        rpe: 'RPE',
+        goal: 'Goal',
+        progress: 'Progress'
+      },
+      recent: {
+        title: 'Recent Workouts',
+        showAll: 'Show All',
+        empty: 'No workouts yet',
+        add: 'Add Workout',
+        import: 'Import JSON'
+      },
+      banners: {
+        metrics: 'Time to update measurements for the past week',
+        apiKey: 'Connect OpenAI key to enable AI features',
+        finishProfile: 'Complete your profile',
+        fill: 'Fill',
+        snooze: 'Snooze',
+        setup: 'Setup'
+      },
+      cta: {
+        openPlan: 'Open Today\'s Plan',
+        generatePlan: 'Generate Plan',
+        enableAI: 'Enable AI',
+        addWorkout: 'Add Workout'
+      }
     },
     
     // SettingsPage
@@ -1209,6 +1254,51 @@ export const translations = {
       foodDescription: 'Ведите дневник питания и отслеживайте калории',
       weeklyDescription: 'Еженедельные проверки и отслеживание прогресса',
       settingsDescription: 'Управляйте профилем и настройками'
+    },
+    
+    // Home Dashboard
+    homeDashboard: {
+      nextPlan: {
+        today: 'План на сегодня',
+        tomorrow: 'План на завтра',
+        open: 'Открыть план',
+        markDone: 'Отметить выполнено',
+        regenerate: 'Сгенерировать заново',
+        noPlan: 'План на сегодня не создан',
+        enableAI: 'Включить ИИ',
+        generate: 'Сгенерировать план'
+      },
+      kpi: {
+        today: 'Сегодня',
+        week: 'Неделя',
+        calories: 'Калории',
+        minutes: 'Минуты',
+        exercises: 'Упражнения',
+        rpe: 'RPE',
+        goal: 'Цель',
+        progress: 'Прогресс'
+      },
+      recent: {
+        title: 'Последние тренировки',
+        showAll: 'Показать все',
+        empty: 'Пока нет тренировок',
+        add: 'Добавить тренировку',
+        import: 'Импорт JSON'
+      },
+      banners: {
+        metrics: 'Пора обновить измерения за прошедшую неделю',
+        apiKey: 'Подключите ключ OpenAI, чтобы включить ИИ',
+        finishProfile: 'Завершите профиль',
+        fill: 'Заполнить',
+        snooze: 'Отложить',
+        setup: 'Настроить'
+      },
+      cta: {
+        openPlan: 'Открыть план на сегодня',
+        generatePlan: 'Сгенерировать план',
+        enableAI: 'Включить ИИ',
+        addWorkout: 'Добавить тренировку'
+      }
     },
     
     // SettingsPage
