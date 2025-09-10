@@ -17,7 +17,13 @@ const WorkoutsPage: React.FC = () => {
   const { profile } = useProfileStore()
   const [isFormOpen, setIsFormOpen] = useState(false)
 
-  // Get selected week from URL params or default to current week
+  useEffect(() => {
+    const week = searchParams.get('week')
+    if (week == null) {
+      handleWeekChange(startOfWeek(new Date(), { weekStartsOn: 2 }))
+    }
+  }, [])
+
   const weekParam = searchParams.get('week')
   const selectedWeekStart = weekParam 
     ? new Date(weekParam) 
@@ -44,10 +50,7 @@ const WorkoutsPage: React.FC = () => {
   }
 
   const handleWorkoutSuccess = (workoutId?: string) => {
-    // Refresh the workouts list
     loadWorkouts()
-    
-    // Navigate to workout details if workoutId is provided
     if (workoutId) {
       navigate(`/workouts/${workoutId}`)
     }
@@ -58,7 +61,6 @@ const WorkoutsPage: React.FC = () => {
   }
 
   const handleGenerateWorkout = () => {
-    // Navigate to AI workout generation
     navigate('/workout/generate')
   }
 

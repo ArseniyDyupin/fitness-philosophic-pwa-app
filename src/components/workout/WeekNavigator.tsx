@@ -1,7 +1,7 @@
 import React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from '../../stores/i18n.store'
-import { format, startOfWeek, endOfWeek, addWeeks, isSameWeek } from 'date-fns'
+import { format, startOfWeek, endOfWeek, addWeeks } from 'date-fns'
 import { ru, enUS } from 'date-fns/locale'
 
 interface WeekNavigatorProps {
