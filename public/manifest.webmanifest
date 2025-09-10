@@ -1,0 +1,10 @@
+{
+  "name": "AI Trainer",
+  "short_name": "AI Trainer",
+  "description": "AI-powered fitness trainer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": []
+}
