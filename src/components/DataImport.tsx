@@ -17,6 +17,7 @@ const DataImport: React.FC = () => {
   const [importMode, setImportMode] = useState<'replace' | 'merge'>('replace')
   const [isValidating, setIsValidating] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,6 +27,7 @@ const DataImport: React.FC = () => {
     setSelectedFile(file)
     setBundle(null)
     setPreview(null)
+    setError(null)
     setIsValidating(true)
 
     try {
@@ -33,22 +35,25 @@ const DataImport: React.FC = () => {
       setBundle(validatedBundle)
       setPreview(getImportPreview(validatedBundle))
     } catch (err) {
+      let errorMessage = t.error || 'Error processing file'
+      
       if (err instanceof ImportError) {
         switch (err.code) {
           case 'FILE_TOO_LARGE':
-            toastError(t.fileTooLarge || 'File too large (max 20MB)')
+            errorMessage = t.fileTooLarge || 'File too large (max 20MB)'
             break
           case 'INVALID_FORMAT':
           case 'VALIDATION_ERROR':
           case 'PARSE_ERROR':
-            toastError(t.invalidFormat || 'Invalid file format')
+            errorMessage = t.invalidFormat || 'Invalid file format'
             break
           default:
-            toastError(t.error || 'Error processing file')
+            errorMessage = t.error || 'Error processing file'
         }
-      } else {
-        toastError(t.error || 'Error processing file')
       }
+      
+      setError(errorMessage)
+      toastError(errorMessage)
     } finally {
       setIsValidating(false)
     }
@@ -58,6 +63,7 @@ const DataImport: React.FC = () => {
     if (!bundle) return
 
     setIsImporting(true)
+    setError(null)
 
     try {
       const stats = await importData(bundle, importMode)
@@ -75,6 +81,7 @@ const DataImport: React.FC = () => {
       setSelectedFile(null)
       setBundle(null)
       setPreview(null)
+      setError(null)
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
@@ -85,11 +92,14 @@ const DataImport: React.FC = () => {
       }, 1500)
       
     } catch (err) {
+      let errorMessage = t.error || 'Import failed'
+      
       if (err instanceof ImportError) {
-        toastError(err.message)
-      } else {
-        toastError(t.error || 'Import failed')
+        errorMessage = err.message
       }
+      
+      setError(errorMessage)
+      toastError(errorMessage)
     } finally {
       setIsImporting(false)
     }
