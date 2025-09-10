@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useProfileStore } from '../stores/profile.store'
 import { useI18nStore } from '../stores/i18n.store'
 import { useTranslations } from '../stores/i18n.store'
+import { toastSuccess, toastError } from '../lib/toast'
 import { X, Edit, Save } from 'lucide-react'
 
 interface ProfileDetailsModalProps {
@@ -93,10 +94,10 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
       }
       
       setIsEditMode(false)
-      showToast((t.profile as any)?.updateSuccess || 'Profile updated successfully', 'success')
+      toastSuccess((t.profile as any)?.updateSuccess || 'Profile updated successfully')
     } catch (error) {
       console.error('Failed to save profile:', error)
-      showToast((t.profile as any)?.updateError || 'Failed to save profile', 'error')
+      toastError((t.profile as any)?.updateError || 'Failed to save profile')
     } finally {
       setIsSaving(false)
     }
@@ -111,20 +112,6 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
     }
   }
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    // Simple toast implementation
-    const toast = document.createElement('div')
-    toast.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-      type === 'success' 
-        ? 'bg-green-100 border border-green-200 text-green-800' 
-        : 'bg-red-100 border border-red-200 text-red-800'
-    }`
-    toast.textContent = message
-    document.body.appendChild(toast)
-    setTimeout(() => {
-      document.body.removeChild(toast)
-    }, 3000)
-  }
 
   if (!isOpen || !profile) return null
 

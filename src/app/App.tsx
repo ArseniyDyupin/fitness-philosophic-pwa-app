@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { useProfileStore } from '../stores/profile.store'
 import { useI18nStore } from '../stores/i18n.store'
 import { useEffect, useState } from 'react'
+import { Toaster } from 'react-hot-toast'
 import Header from '../components/Header'
 
 // Pages
@@ -103,6 +104,18 @@ function App() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Toaster
+        position="top-right"
+        gutter={8}
+        toastOptions={{
+          duration: 3500,
+          style: { 
+            borderRadius: '12px',
+            fontSize: '14px',
+            fontWeight: '500'
+          }
+        }}
+      />
     </>
   )
 }

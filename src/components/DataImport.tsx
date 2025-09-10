@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslations } from '../stores/i18n.store'
 import { validateFile, importData, ImportError, getImportPreview } from '../services/import'
+import { toastSuccess, toastError } from '../lib/toast'
 import type { ExportBundle, ImportPreview } from '../types/export'
 import { Upload, FileText, Check, X, AlertCircle } from 'lucide-react'
 
@@ -16,13 +17,7 @@ const DataImport: React.FC = () => {
   const [importMode, setImportMode] = useState<'replace' | 'merge'>('replace')
   const [isValidating, setIsValidating] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -31,7 +26,6 @@ const DataImport: React.FC = () => {
     setSelectedFile(file)
     setBundle(null)
     setPreview(null)
-    setError(null)
     setIsValidating(true)
 
     try {
@@ -42,18 +36,18 @@ const DataImport: React.FC = () => {
       if (err instanceof ImportError) {
         switch (err.code) {
           case 'FILE_TOO_LARGE':
-            setError(t.fileTooLarge || 'File too large (max 20MB)')
+            toastError(t.fileTooLarge || 'File too large (max 20MB)')
             break
           case 'INVALID_FORMAT':
           case 'VALIDATION_ERROR':
           case 'PARSE_ERROR':
-            setError(t.invalidFormat || 'Invalid file format')
+            toastError(t.invalidFormat || 'Invalid file format')
             break
           default:
-            setError(t.error || 'Error processing file')
+            toastError(t.error || 'Error processing file')
         }
       } else {
-        setError(t.error || 'Error processing file')
+        toastError(t.error || 'Error processing file')
       }
     } finally {
       setIsValidating(false)
@@ -64,7 +58,6 @@ const DataImport: React.FC = () => {
     if (!bundle) return
 
     setIsImporting(true)
-    setError(null)
 
     try {
       const stats = await importData(bundle, importMode)
@@ -76,7 +69,7 @@ const DataImport: React.FC = () => {
         message += ` (${totalUpserted} records)`
       }
       
-      showToast(message, 'success')
+      toastSuccess(message)
       
       // Reset form
       setSelectedFile(null)
@@ -93,9 +86,9 @@ const DataImport: React.FC = () => {
       
     } catch (err) {
       if (err instanceof ImportError) {
-        setError(err.message)
+        toastError(err.message)
       } else {
-        setError(t.error || 'Import failed')
+        toastError(t.error || 'Import failed')
       }
     } finally {
       setIsImporting(false)
@@ -258,23 +251,6 @@ const DataImport: React.FC = () => {
         </div>
       )}
 
-      {/* Toast Notification */}
-      {toast && (
-        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-          toast.type === 'success' 
-            ? 'bg-green-100 border border-green-200 text-green-800' 
-            : 'bg-red-100 border border-red-200 text-red-800'
-        }`}>
-          <div className="flex items-center space-x-2">
-            {toast.type === 'success' ? (
-              <Check size={16} className="text-green-600" />
-            ) : (
-              <X size={16} className="text-red-600" />
-            )}
-            <span className="text-sm font-medium">{toast.message}</span>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

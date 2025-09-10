@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslations } from '../stores/i18n.store'
 import { useAIStore } from '../stores/ai.store'
 import { downloadExport } from '../services/export'
+import { toastSuccess, toastError } from '../lib/toast'
 import { ArrowLeft, Download, Check, X, Sparkles } from 'lucide-react'
 import GenerateWorkoutModal from './GenerateWorkoutModal'
 import HeaderReminderBanner from './HeaderReminderBanner'
@@ -17,21 +18,16 @@ const Header: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMetricsModalOpen, setIsMetricsModalOpen] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }
 
   const handleExport = async () => {
     setIsExporting(true)
     try {
       await downloadExport()
-      showToast(t.exportSuccess || 'Data exported successfully', 'success')
+      toastSuccess(t.exportSuccess || 'Data exported successfully')
     } catch (error) {
       console.error('Export failed:', error)
-      showToast(t.error || 'Export failed', 'error')
+      toastError(t.error || 'Export failed')
     } finally {
       setIsExporting(false)
     }
@@ -229,23 +225,6 @@ const Header: React.FC = () => {
         </nav>
       </div>
       
-      {/* Toast Notification */}
-      {toast && (
-        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-          toast.type === 'success' 
-            ? 'bg-green-100 border border-green-200 text-green-800' 
-            : 'bg-red-100 border border-red-200 text-red-800'
-        }`}>
-          <div className="flex items-center space-x-2">
-            {toast.type === 'success' ? (
-              <Check size={16} className="text-green-600" />
-            ) : (
-              <X size={16} className="text-red-600" />
-            )}
-            <span className="text-sm font-medium">{toast.message}</span>
-          </div>
-        </div>
-      )}
 
       {/* Generate Workout Modal */}
       <GenerateWorkoutModal

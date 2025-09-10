@@ -5,6 +5,7 @@ import { useProfileStore } from '../stores/profile.store'
 import { useWorkoutStore } from '../stores/workout.store'
 import { useAIStore } from '../stores/ai.store'
 import { aiService } from '../services/ai'
+import { toastSuccess, toastError } from '../lib/toast'
 import { format, startOfWeek } from 'date-fns'
 import { Sparkles, Loader, Plus } from 'lucide-react'
 
@@ -32,7 +33,6 @@ const HomePage: React.FC = () => {
   const { hasKey } = useAIStore()
   
   const [isGenerating, setIsGenerating] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
   const [isMetricsModalOpen, setIsMetricsModalOpen] = useState(false)
   const [dayStats, setDayStats] = useState<DayStats>({ calories: 0, minutes: 0, exercises: 0 })
@@ -54,14 +54,10 @@ const HomePage: React.FC = () => {
     setRecentWorkouts(getLastN(5))
   }, [workouts, getDayStats, getWeekStats, getLastN])
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }
 
   const handleGeneratePlan = async () => {
     if (!profile) {
-      showToast(t.error || 'Profile not found', 'error')
+      toastError(t.error || 'Profile not found')
       return
     }
 
@@ -70,7 +66,7 @@ const HomePage: React.FC = () => {
       const recentWorkouts = workouts.slice(0, 5) // Get last 5 workouts
       const plan = await aiService.generateNextWorkout(profile, recentWorkouts, currentLanguage)
       
-      showToast(t.plan?.planGenerated || 'Plan generated successfully', 'success')
+      toastSuccess(t.plan?.planGenerated || 'Plan generated successfully')
       
       // Navigate to plan realization page
       setTimeout(() => {
@@ -79,7 +75,7 @@ const HomePage: React.FC = () => {
       
     } catch (error) {
       console.error('Failed to generate plan:', error)
-      showToast(t.error || 'Failed to generate plan', 'error')
+      toastError(t.error || 'Failed to generate plan')
     } finally {
       setIsGenerating(false)
     }
@@ -93,7 +89,7 @@ const HomePage: React.FC = () => {
 
   const handleMarkDone = () => {
     // This would mark the current plan as completed
-    showToast('Plan marked as completed', 'success')
+    toastSuccess('Plan marked as completed')
   }
 
   const handleRegenerate = () => {
@@ -110,12 +106,12 @@ const HomePage: React.FC = () => {
 
   const handleDeleteWorkout = () => {
     // This would delete the workout
-    showToast('Workout deleted', 'success')
+    toastSuccess('Workout deleted')
   }
 
   const handleOpenTextParser = () => {
     // This would open a text parser modal
-    showToast('Text parser coming soon', 'success')
+    toastSuccess('Text parser coming soon')
   }
 
   // Get today's plan (if any)
@@ -238,23 +234,6 @@ const HomePage: React.FC = () => {
         onClose={() => setIsMetricsModalOpen(false)}
       />
 
-      {/* Toast Notification */}
-      {toast && (
-        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-          toast.type === 'success' 
-            ? 'bg-green-100 border border-green-200 text-green-800' 
-            : 'bg-red-100 border border-red-200 text-red-800'
-        }`}>
-          <div className="flex items-center space-x-2">
-            {toast.type === 'success' ? (
-              <Sparkles size={16} className="text-green-600" />
-            ) : (
-              <Loader size={16} className="text-red-600" />
-            )}
-            <span className="text-sm font-medium">{toast.message}</span>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

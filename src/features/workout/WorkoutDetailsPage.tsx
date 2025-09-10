@@ -9,7 +9,8 @@ import { calculateWorkoutCalories, calculateWorkoutDuration } from '../../servic
 import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../../services/ai.estimate'
 import { aiReviewService } from '../../services/ai.review'
 import { dbHelpers } from '../../services/db'
-import { ArrowLeft, Trash2, Check, X, ArrowRight } from 'lucide-react'
+import { toastSuccess, toastError } from '../../lib/toast'
+import { ArrowLeft, Trash2, ArrowRight } from 'lucide-react'
 import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '../../types/models'
 
 // New components
@@ -36,12 +37,11 @@ const WorkoutDetailsPage: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [aiFeedback, setAiFeedback] = useState<AIWorkoutFeedback | null>(null)
   const [isLoadingFeedback, setIsLoadingFeedback] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [isMetaModalOpen, setIsMetaModalOpen] = useState(false)
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false)
   const [editingExercise, setEditingExercise] = useState<WorkoutExercise | null>(null)
 
-  const { next: nextWorkout, prev: prevWorkout } = getPrevNext(id)
+  const { next: nextWorkout, prev: prevWorkout } = getPrevNext(id || '')
 
   useEffect(() => {
     if (!workout && id) {
@@ -51,8 +51,8 @@ const WorkoutDetailsPage: React.FC = () => {
 
   useEffect(() => {
     if (id) {
-      if (workout?.aiReviewId) {
-        loadAIFeedback()
+    if (workout?.aiReviewId) {
+      loadAIFeedback()
       } else {
         setAiFeedback(null)
       }
@@ -129,7 +129,7 @@ const WorkoutDetailsPage: React.FC = () => {
       const exercisesNeedingEstimation = workout.exercises.filter(needsAIEstimation)
       
       if (exercisesNeedingEstimation.length === 0) {
-        showToast('All exercises already have estimates', 'success')
+        toastSuccess('All exercises already have estimates')
         return
       }
       
@@ -172,10 +172,10 @@ const WorkoutDetailsPage: React.FC = () => {
       
       await updateWorkout(workout.id, updatedWorkout)
       setWorkout(updatedWorkout)
-      showToast('AI estimates updated successfully', 'success')
+      toastSuccess('AI estimates updated successfully')
     } catch (error) {
       console.error('Failed to update AI estimates:', error)
-      showToast('Failed to update AI estimates', 'error')
+      toastError('Failed to update AI estimates')
     } finally {
       setIsEstimating(false)
     }
@@ -188,16 +188,16 @@ const WorkoutDetailsPage: React.FC = () => {
       await aiReviewService.reviewWorkout(workout.id)
       const updatedWorkout = getWorkoutById(workout.id)
       setWorkout(updatedWorkout)
-      await loadAIFeedback()
+        await loadAIFeedback()
       setTimeout(async () => {
         try {
           await dbHelpers.getAIFeedbackByWorkout(workout.id)
         } catch (error) {
           console.error('DEBUG: Failed to get AI feedback after analysis:', error)
-        }
+      }
       }, 1000)
       
-      showToast(t.workoutDetailsPage?.analysisUpdated || 'Analysis updated', 'success')
+      toastSuccess(t.workoutDetailsPage?.analysisUpdated || 'Analysis updated')
     } catch (error) {
       console.error('Failed to update AI analysis:', error)
       let errorMessage = t.workoutAnalysis?.error || 'Failed to perform AI analysis'
@@ -221,38 +221,34 @@ const WorkoutDetailsPage: React.FC = () => {
         }
       }
       
-      showToast(errorMessage, 'error')
+      toastError(errorMessage)
     } finally {
       setIsAnalyzing(false)
     }
   }
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }
 
   const handleSaveMeta = async (updatedWorkout: Partial<Workout>) => {
     try {
       await updateWorkout(workout.id, updatedWorkout)
       setWorkout({ ...workout, ...updatedWorkout })
-      showToast(t.workoutDetailsPage?.metaModal?.saved || 'Data updated', 'success')
+      toastSuccess(t.workoutDetailsPage?.metaModal?.saved || 'Data updated')
     } catch (error) {
       console.error('Failed to save workout metadata:', error)
-      showToast(t.workoutDetailsPage?.updateFailed || 'Failed to update', 'error')
+      toastError(t.workoutDetailsPage?.updateFailed || 'Failed to update')
     }
   }
 
   const navigateToPreviousWorkout = () => {
     if (prevWorkout) {
-      setWorkout(null)
+      setWorkout(undefined)
       navigate(`/workouts/${prevWorkout.id}`)
     }
   }
 
   const navigateToNextWorkout = () => {
     if (nextWorkout) {
-      setWorkout(null)
+      setWorkout(undefined)
       navigate(`/workouts/${nextWorkout.id}`)
     }
   }
@@ -308,11 +304,11 @@ const WorkoutDetailsPage: React.FC = () => {
         
         await updateWorkout(workout.id, updatedWorkout)
         setWorkout(updatedWorkout)
-        showToast(t.workoutDetailsPage?.exerciseUpdated || 'Exercise updated successfully', 'success')
+        toastSuccess(t.workoutDetailsPage?.exerciseUpdated || 'Exercise updated successfully')
       }
     } catch (error) {
       console.error('Failed to update exercise:', error)
-      showToast(t.workoutDetailsPage?.updateFailed || 'Failed to update exercise', 'error')
+      toastError(t.workoutDetailsPage?.updateFailed || 'Failed to update exercise')
     }
   }
 
@@ -338,21 +334,21 @@ const WorkoutDetailsPage: React.FC = () => {
       <main className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Back button and delete */}
         <div className="flex justify-between items-center mb-6 sm:mb-8">
-          <button
-            onClick={() => navigate('/workouts')}
+            <button
+              onClick={() => navigate('/workouts')}
             className="btn-secondary flex items-center space-x-1 sm:space-x-2 touch-manipulation"
-          >
+            >
             <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
             <span className="text-sm sm:text-base">{t.workoutDetailsPage?.backToWorkouts || 'Back to Workouts'}</span>
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting}
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
             className="btn-secondary text-red-600 hover:text-red-700 flex items-center space-x-1 sm:space-x-2 touch-manipulation"
-          >
+            >
             <Trash2 size={16} className="sm:w-4 sm:h-4" />
             <span className="text-sm sm:text-base">{isDeleting ? (t.workoutDetailsPage?.deleting || 'Deleting...') : (t.workoutDetailsPage?.delete || 'Delete')}</span>
-          </button>
+            </button>
         </div>
 
         <div className="flex justify-between items-center mb-6 sm:mb-8">
@@ -401,22 +397,6 @@ const WorkoutDetailsPage: React.FC = () => {
           onUpdateAnalysis={updateAIAnalysis}
         />
 
-        {toast && (
-          <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-            toast.type === 'success' 
-              ? 'bg-green-100 border border-green-200 text-green-800' 
-              : 'bg-red-100 border border-red-200 text-red-800'
-          }`}>
-            <div className="flex items-center space-x-2">
-              {toast.type === 'success' ? (
-                <Check size={16} className="text-green-600" />
-              ) : (
-                <X size={16} className="text-red-600" />
-              )}
-              <span className="text-sm font-medium">{toast.message}</span>
-            </div>
-          </div>
-        )}
       </main>
 
       <EditWorkoutMetaModal

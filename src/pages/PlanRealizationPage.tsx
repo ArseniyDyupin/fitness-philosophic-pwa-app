@@ -8,6 +8,7 @@ import { calculateWorkoutCalories } from '../services/kcal'
 import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../services/ai.estimate'
 import { db } from '../services/db'
 import { aiService } from '../services/ai'
+import { toastSuccess, toastError } from '../lib/toast'
 import PlanSummary from '../components/PlanSummary'
 import PlanExerciseCard from '../components/PlanExerciseCard'
 import type { PlanSuggestion, ExerciseEdit, Workout, WorkoutExercise } from '../types/models'
@@ -29,7 +30,6 @@ const PlanRealizationPage: React.FC = () => {
   const [isAdjusting, setIsAdjusting] = useState(false)
   const [adjustmentText, setAdjustmentText] = useState('')
   const [showAdjustment, setShowAdjustment] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
     if (planId) {
@@ -52,19 +52,15 @@ const PlanRealizationPage: React.FC = () => {
           })) || []
         setExerciseEdits(edits)
       } else {
-        setToast({ message: t.plan?.noPlanAvailable || 'Plan not found', type: 'error' })
+        toastError(t.plan?.noPlanAvailable || 'Plan not found')
         navigate('/')
       }
     } catch (error) {
       console.error('Failed to load plan:', error)
-      setToast({ message: t.error || 'Failed to load plan', type: 'error' })
+      toastError(t.error || 'Failed to load plan')
     }
   }
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }
 
   const handleExerciseEditChange = (index: number, edit: ExerciseEdit) => {
     setExerciseEdits((prev) => prev.map((e, i) => (i === index ? edit : e)))
@@ -174,7 +170,7 @@ const PlanRealizationPage: React.FC = () => {
       // Save workout
       await addWorkout(workout)
 
-      showToast(t.plan?.save || 'Workout saved successfully', 'success')
+      toastSuccess(t.plan?.save || 'Workout saved successfully')
       
       // Navigate to workouts list
       setTimeout(() => {
@@ -182,7 +178,7 @@ const PlanRealizationPage: React.FC = () => {
       }, 1500)
     } catch (error) {
       console.error('Failed to save workout:', error)
-      showToast(t.error || 'Failed to save workout', 'error')
+      toastError(t.error || 'Failed to save workout')
     } finally {
       setIsSaving(false)
     }
@@ -220,11 +216,11 @@ const PlanRealizationPage: React.FC = () => {
       
       setShowAdjustment(false)
       setAdjustmentText('')
-      showToast(t.plan?.adjust?.apply || 'Plan adjusted successfully', 'success')
+      toastSuccess(t.plan?.adjust?.apply || 'Plan adjusted successfully')
       
     } catch (error) {
       console.error('Failed to adjust plan:', error)
-      showToast(t.error || 'Failed to adjust plan', 'error')
+      toastError(t.error || 'Failed to adjust plan')
     } finally {
       setIsAdjusting(false)
     }
@@ -431,25 +427,6 @@ const PlanRealizationPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Toast Notification */}
-      {toast && (
-        <div
-          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-            toast.type === 'success'
-              ? 'bg-green-100 border border-green-200 text-green-800'
-              : 'bg-red-100 border border-red-200 text-red-800'
-          }`}
-        >
-          <div className="flex items-center space-x-2">
-            {toast.type === 'success' ? (
-              <Save size={16} className="text-green-600" />
-            ) : (
-              <X size={16} className="text-red-600" />
-            )}
-            <span className="text-sm font-medium">{toast.message}</span>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

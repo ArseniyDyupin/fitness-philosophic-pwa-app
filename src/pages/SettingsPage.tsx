@@ -4,6 +4,7 @@ import { useProfileStore } from '../stores/profile.store'
 import { useI18nStore } from '../stores/i18n.store'
 import { useTranslations } from '../stores/i18n.store'
 import { dbHelpers } from '../services/db'
+import { toastSuccess, toastError } from '../lib/toast'
 import JsonFileButtons from '../components/JsonFileButtons'
 import AISettings from '../components/AISettings'
 import DataImport from '../components/DataImport'
@@ -22,7 +23,6 @@ const SettingsPage: React.FC = () => {
   const [editedData, setEditedData] = useState<any>({})
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const [isSaving, setIsSaving] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   
   // Profile modal states
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
@@ -105,19 +105,15 @@ const SettingsPage: React.FC = () => {
       
       setEditingSection(null)
       setEditedData({})
-      showToast((t.settingsPage as any)?.changesSaved || 'Changes saved successfully', 'success')
+      toastSuccess((t.settingsPage as any)?.changesSaved || 'Changes saved successfully')
     } catch (error) {
       console.error('Failed to save changes:', error)
-      showToast((t.settingsPage as any)?.failedToSave || 'Failed to save changes', 'error')
+      toastError((t.settingsPage as any)?.failedToSave || 'Failed to save changes')
     } finally {
       setIsSaving(false)
     }
   }
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }
 
   const handleForceDBUpgrade = async () => {
     if (!confirm((t.settingsPage as any)?.forceUpgradeConfirm || 'This will force upgrade the database. Continue?')) {
@@ -127,10 +123,10 @@ const SettingsPage: React.FC = () => {
     setIsUpgradingDB(true)
     try {
       await dbHelpers.forceUpgrade()
-      showToast((t.settingsPage as any)?.upgradeSuccess || 'Database upgraded successfully. Please refresh the page.', 'success')
+      toastSuccess((t.settingsPage as any)?.upgradeSuccess || 'Database upgraded successfully. Please refresh the page.')
     } catch (error) {
       console.error('Failed to upgrade database:', error)
-      showToast((t.settingsPage as any)?.upgradeError || 'Failed to upgrade database. Please refresh the page manually.', 'error')
+      toastError((t.settingsPage as any)?.upgradeError || 'Failed to upgrade database. Please refresh the page manually.')
     } finally {
       setIsUpgradingDB(false)
     }
@@ -151,10 +147,10 @@ const SettingsPage: React.FC = () => {
           createdAt: feedback.createdAt
         })
       })
-      showToast((t.settingsPage as any)?.debugSuccess?.replace('{{count}}', allFeedback.length.toString()) || `Found ${allFeedback.length} AI feedback records. Check console for details.`, 'success')
+      toastSuccess((t.settingsPage as any)?.debugSuccess?.replace('{{count}}', allFeedback.length.toString()) || `Found ${allFeedback.length} AI feedback records. Check console for details.`)
     } catch (error) {
       console.error('Failed to debug database:', error)
-      showToast((t.settingsPage as any)?.debugError || 'Failed to debug database. Check console for errors.', 'error')
+      toastError((t.settingsPage as any)?.debugError || 'Failed to debug database. Check console for errors.')
     } finally {
       setIsDebuggingDB(false)
     }
@@ -164,10 +160,10 @@ const SettingsPage: React.FC = () => {
     setIsDebuggingDatabase(true)
     try {
       await dbHelpers.debugDatabase()
-      showToast('Database debug info logged to console', 'success')
+      toastSuccess('Database debug info logged to console')
     } catch (error) {
       console.error('Database debug failed:', error)
-      showToast('Database debug failed. Check console for details.', 'error')
+      toastError('Database debug failed. Check console for details.')
     } finally {
       setIsDebuggingDatabase(false)
     }
@@ -538,23 +534,6 @@ const SettingsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Toast Notification */}
-        {toast && (
-          <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-            toast.type === 'success' 
-              ? 'bg-green-100 border border-green-200 text-green-800' 
-              : 'bg-red-100 border border-red-200 text-red-800'
-          }`}>
-            <div className="flex items-center space-x-2">
-              {toast.type === 'success' ? (
-                <Check size={16} className="text-green-600" />
-              ) : (
-                <X size={16} className="text-red-600" />
-              )}
-              <span className="text-sm font-medium">{toast.message}</span>
-            </div>
-          </div>
-        )}
 
         {/* Profile Details Modal */}
         <ProfileDetailsModal
