@@ -9,7 +9,7 @@ import { calculateWorkoutCalories, calculateWorkoutDuration } from '../../servic
 import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../../services/ai.estimate'
 import { aiReviewService } from '../../services/ai.review'
 import { dbHelpers } from '../../services/db'
-import { ArrowLeft, Trash2, Check, X } from 'lucide-react'
+import { ArrowLeft, Trash2, Check, X, ArrowRight } from 'lucide-react'
 import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '../../types/models'
 
 // New components
@@ -41,20 +41,21 @@ const WorkoutDetailsPage: React.FC = () => {
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false)
   const [editingExercise, setEditingExercise] = useState<WorkoutExercise | null>(null)
 
+  const { next: nextWorkout, prev: prevWorkout } = getPrevNext(id)
+
   useEffect(() => {
     if (!workout && id) {
       setWorkout(getWorkoutById(id))
     }
   }, [id, workout, getWorkoutById])
-
+  console.log(aiFeedback, '<<<aiFeedback!!!!')
   // Load AI feedback when workout changes
   useEffect(() => {
+    console.log(workout.aiReviewId, '<<<workout useEffect')
     if (workout) {
-      console.log('Workout loaded:', workout.id, 'aiReviewId:', workout.aiReviewId)
       if (workout.aiReviewId) {
         loadAIFeedback()
       } else {
-        // Try to load any existing feedback for this workout
         loadAIFeedback()
       }
     }
@@ -62,22 +63,17 @@ const WorkoutDetailsPage: React.FC = () => {
 
   const loadAIFeedback = async () => {
     if (!workout) return
-    
-    console.log('Loading AI feedback for workout:', workout.id)
+
     setIsLoadingFeedback(true)
     try {
-      const feedback = await dbHelpers.getAIFeedbackByWorkout(workout.id)
-      console.log('AI feedback loaded:', feedback)
+       await dbHelpers.getAIFeedbackByWorkout(workout.id)
       setAiFeedback(feedback || null)
     } catch (error) {
       console.error('Failed to load AI feedback:', error)
-      // If it's a database error, try to upgrade
       if (error instanceof Error && (error.message.includes('NotFoundError') || error.message.includes('object stores was not found'))) {
         try {
           await dbHelpers.forceUpgrade()
-          // Retry loading feedback
           const feedback = await dbHelpers.getAIFeedbackByWorkout(workout.id)
-          console.log('AI feedback loaded after upgrade:', feedback)
           setAiFeedback(feedback || null)
         } catch (retryError) {
           console.error('Failed to load AI feedback after upgrade:', retryError)
@@ -110,7 +106,7 @@ const WorkoutDetailsPage: React.FC = () => {
   const totalCalories = profile?.weight 
     ? calculateWorkoutCalories(workout.exercises, profile.weight, workout.rpe)
     : 0
-  const totalDuration = workout.durationOverrideMin || workout.durationMin || calculateWorkoutDuration(workout.exercises)
+  const totalDuration = workout.durationMin || calculateWorkoutDuration(workout.exercises)
 
   const handleDelete = async () => {
     if (confirm(t.workoutDetailsPage?.deleteConfirm || 'Are you sure you want to delete this workout?')) {
@@ -190,32 +186,15 @@ const WorkoutDetailsPage: React.FC = () => {
 
   const updateAIAnalysis = async () => {
     if (!workout || !hasKey()) return
-    
-    console.log('Starting AI analysis for workout:', workout.id)
     setIsAnalyzing(true)
     try {
-      const result = await aiReviewService.reviewWorkout(workout.id)
-      console.log('AI analysis result:', result)
-      
-      // Reload the workout to get updated data
+      await aiReviewService.reviewWorkout(workout.id)
       const updatedWorkout = getWorkoutById(workout.id)
-      console.log('Updated workout:', updatedWorkout)
       setWorkout(updatedWorkout)
-      
-      // Reload AI feedback
-      if (updatedWorkout?.aiReviewId) {
-        console.log('Reloading AI feedback with aiReviewId:', updatedWorkout.aiReviewId)
-        await loadAIFeedback()
-      } else {
-        console.log('No aiReviewId found, trying to load feedback anyway')
-        await loadAIFeedback()
-      }
-      
-      // Debug: Check if feedback was actually saved
+      await loadAIFeedback()
       setTimeout(async () => {
         try {
-          const debugFeedback = await dbHelpers.getAIFeedbackByWorkout(workout.id)
-          console.log('DEBUG: AI feedback after analysis:', debugFeedback)
+          await dbHelpers.getAIFeedbackByWorkout(workout.id)
         } catch (error) {
           console.error('DEBUG: Failed to get AI feedback after analysis:', error)
         }
@@ -224,8 +203,6 @@ const WorkoutDetailsPage: React.FC = () => {
       showToast(t.workoutDetailsPage?.analysisUpdated || 'Analysis updated', 'success')
     } catch (error) {
       console.error('Failed to update AI analysis:', error)
-      
-      // More specific error handling
       let errorMessage = t.workoutAnalysis?.error || 'Failed to perform AI analysis'
       
       if (error instanceof Error) {
@@ -269,18 +246,17 @@ const WorkoutDetailsPage: React.FC = () => {
     }
   }
 
-  // Navigation functions
   const navigateToPreviousWorkout = () => {
-    const { prev } = getPrevNext(workout.id)
-    if (prev) {
-      navigate(`/workouts/${prev.id}`)
+    if (prevWorkout) {
+      setWorkout(null)
+      navigate(`/workouts/${prevWorkout.id}`)
     }
   }
 
   const navigateToNextWorkout = () => {
-    const { next } = getPrevNext(workout.id)
-    if (next) {
-      navigate(`/workouts/${next.id}`)
+    if (nextWorkout) {
+      setWorkout(null)
+      navigate(`/workouts/${nextWorkout.id}`)
     }
   }
 
@@ -359,8 +335,6 @@ const WorkoutDetailsPage: React.FC = () => {
         onUpdateEstimates={updateAllAIEstimates}
         onUpdateAnalysis={updateAIAnalysis}
         onEditMeta={() => setIsMetaModalOpen(true)}
-        onPreviousWorkout={navigateToPreviousWorkout}
-        onNextWorkout={navigateToNextWorkout}
       />
 
       {/* Main Content */}
@@ -374,7 +348,6 @@ const WorkoutDetailsPage: React.FC = () => {
             <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
             <span className="text-sm sm:text-base">{t.workoutDetailsPage?.backToWorkouts || 'Back to Workouts'}</span>
           </button>
-          
           <button
             onClick={handleDelete}
             disabled={isDeleting}
@@ -383,6 +356,29 @@ const WorkoutDetailsPage: React.FC = () => {
             <Trash2 size={16} className="sm:w-4 sm:h-4" />
             <span className="text-sm sm:text-base">{isDeleting ? (t.workoutDetailsPage?.deleting || 'Deleting...') : (t.workoutDetailsPage?.delete || 'Delete')}</span>
           </button>
+        </div>
+
+        <div className="flex justify-between items-center mb-6 sm:mb-8">
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            {prevWorkout && (<button
+              onClick={navigateToPreviousWorkout}
+              className="btn-secondary flex items-center space-x-1 sm:space-x-2 touch-manipulation"
+              title={t.workoutDetailsPage?.nav?.prev || 'Previous workout'}
+              aria-label={t.workoutDetailsPage?.nav?.prev || 'Previous workout'}
+            >
+              <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">{t.workoutDetailsPage?.nav?.prev || 'Previous workout'}</span>
+            </button>)}
+            {nextWorkout && (<button
+              onClick={navigateToNextWorkout}
+              className="btn-secondary flex items-center space-x-1 sm:space-x-2 touch-manipulation"
+              title={t.workoutDetailsPage?.nav?.next || 'Next workout'}
+              aria-label={t.workoutDetailsPage?.nav?.next || 'Next workout'}
+            >
+              <ArrowRight size={18} className="sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">{t.workoutDetailsPage?.nav?.next || 'Next workout'}</span>
+            </button>)}
+          </div>
         </div>
 
 

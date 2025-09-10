@@ -1,5 +1,5 @@
 import React from 'react'
-import { Bot, RefreshCw, ArrowLeft, ArrowRight, Settings } from 'lucide-react'
+import { Bot, RefreshCw, Settings } from 'lucide-react'
 import { useTranslations } from '../../stores/i18n.store'
 import { format } from 'date-fns'
 import MetricCard from './MetricCard'
@@ -16,8 +16,6 @@ interface WorkoutHeaderProps {
   onUpdateEstimates: () => void
   onUpdateAnalysis: () => void
   onEditMeta: () => void
-  onPreviousWorkout?: () => void
-  onNextWorkout?: () => void
 }
 
 const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
@@ -30,9 +28,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   isAIConfigured,
   onUpdateEstimates,
   onUpdateAnalysis,
-  onEditMeta,
-  onPreviousWorkout,
-  onNextWorkout
+  onEditMeta
 }) => {
   const t = useTranslations()
 
@@ -59,30 +55,6 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {t.workoutDetailsPage?.workoutDetails || 'Workout Details'}
               </h1>
-              
-              {/* Navigation arrows */}
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                {onPreviousWorkout && (
-                  <button
-                    onClick={onPreviousWorkout}
-                    className="p-1 sm:p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
-                    title={t.workoutDetailsPage?.nav?.prev || 'Previous workout'}
-                    aria-label={t.workoutDetailsPage?.nav?.prev || 'Previous workout'}
-                  >
-                    <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
-                  </button>
-                )}
-                {onNextWorkout && (
-                  <button
-                    onClick={onNextWorkout}
-                    className="p-1 sm:p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
-                    title={t.workoutDetailsPage?.nav?.next || 'Next workout'}
-                    aria-label={t.workoutDetailsPage?.nav?.next || 'Next workout'}
-                  >
-                    <ArrowRight size={18} className="sm:w-5 sm:h-5" />
-                  </button>
-                )}
-              </div>
             </div>
             
             {/* Date below title */}
