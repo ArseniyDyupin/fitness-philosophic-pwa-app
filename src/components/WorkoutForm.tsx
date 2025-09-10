@@ -6,9 +6,11 @@ import { useAIStore } from '../stores/ai.store'
 import { aiService } from '../services/ai'
 import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../services/ai.estimate'
 import { aiReviewService } from '../services/ai.review'
+import { toastError } from '../lib/toast'
 import type { WorkoutExercise } from '../types/models'
 import { X, Plus, Edit3, Bot } from 'lucide-react'
 import ExerciseCard from './ExerciseCard'
+import { calculateExerciseCalories } from '@/services/kcal'
 
 interface WorkoutFormProps {
   isOpen: boolean
@@ -59,8 +61,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
   const updateExercise = (index: number, updates: Partial<WorkoutExercise>) => {
     const updatedExercises = [...exercises]
     updatedExercises[index] = { ...updatedExercises[index], ...updates }
-    
-          // Recalculate calories if we have user weight
+
       if (profile?.weight) {
         updatedExercises[index].kcalEstimated = calculateExerciseCalories(
           updatedExercises[index],
@@ -82,7 +83,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
 
   const handleSave = async () => {
     if (exercises.length === 0) {
-      alert('Please add at least one exercise')
+      toastError((t.workoutForm as any)?.addAtLeastOneExercise || 'Please add at least one exercise')
       return
     }
 
@@ -174,18 +175,18 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
       onClose()
     } catch (error) {
       console.error('Failed to save workout:', error)
-      alert('Failed to save workout')
+      toastError((t.workoutForm as any)?.failedToSave || 'Failed to save workout')
     }
   }
 
   const handleTextParse = async () => {
     if (!textInput.trim()) {
-      alert(t.workoutForm?.pleaseEnterDescription || 'Please enter workout description')
+      toastError((t.workoutForm as any)?.pleaseEnterDescription || 'Please enter workout description')
       return
     }
 
     if (!isAIConfigured) {
-      alert(t.workoutForm?.aiNotConfigured || 'AI is not configured. Please set up your OpenAI API key in Settings.')
+      toastError((t.workoutForm as any)?.aiNotConfigured || 'AI is not configured. Please set up your OpenAI API key in Settings.')
       return
     }
 
@@ -199,7 +200,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
     } catch (error) {
       console.error('Failed to parse workout text:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      alert(t.workoutForm?.aiParseFailed || `AI parsing failed: ${errorMessage}`)
+      toastError((t.workoutForm as any)?.aiParseFailed || `AI parsing failed: ${errorMessage}`)
     } finally {
       setIsProcessing(false)
     }
@@ -264,7 +265,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               <Bot size={16} />
               <span>{t.workoutForm?.textMode || 'Text Mode'}</span>
               {!isAIConfigured && (
-                <span className="text-xs">(AI required)</span>
+                <span className="text-xs">{(t.workoutForm as any)?.aiRequired || '(AI required)'}</span>
               )}
             </button>
           </div>
@@ -321,7 +322,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                     max="300"
                     value={durationMin || ''}
                     onChange={(e) => setDurationMin(e.target.value ? parseInt(e.target.value) : undefined)}
-                    placeholder="Optional"
+                    placeholder={(t.workoutForm as any)?.optional || 'Optional'}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <span className="text-sm text-gray-500">
@@ -329,7 +330,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Optional: Total time spent on the workout including rest
+                  {(t.workoutForm as any)?.optionalDescription || 'Optional: Total time spent on the workout including rest'}
                 </p>
               </div>
 
@@ -349,7 +350,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                     </label>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 ml-7">
-                    AI will automatically estimate RPE and provide feedback after saving
+                    {(t.workoutForm as any)?.aiWillEstimate || 'AI will automatically estimate RPE and provide feedback after saving'}
                   </p>
                 </div>
               )}
@@ -394,9 +395,9 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                 <h4 className="font-medium text-gray-900 mb-2">{t.workoutForm?.workoutSummary || 'Workout Summary'}</h4>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">Estimates will be calculated after saving</span>
+                    <span className="text-gray-600">{(t.workoutForm as any)?.estimatesWillBeCalculated || 'Estimates will be calculated after saving'}</span>
                     <div className="font-medium text-sm text-gray-500">
-                      {isEstimating ? 'AI estimation in progress...' : 'Calories and duration will be estimated automatically'}
+                      {isEstimating ? ((t.workoutForm as any)?.aiEstimationInProgress || 'AI estimation in progress...') : ((t.workoutForm as any)?.caloriesWillBeEstimated || 'Calories and duration will be estimated automatically')}
                     </div>
                   </div>
                   <div>
@@ -431,7 +432,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               disabled={isProcessing || !textInput.trim()}
               className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isProcessing ? (t.workoutForm?.parsing || 'Parsing...') : (t.workoutForm?.parseAndContinue || 'Parse and Continue')}
+              {isProcessing ? ((t.workoutForm as any)?.parsing || 'Parsing...') : (t.workoutForm?.parseAndContinue || 'Parse and Continue')}
             </button>
           </div>
         )}
@@ -453,7 +454,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               {isEstimating ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span>AI estimation...</span>
+                  <span>{(t.workoutForm as any)?.aiEstimationInProgress || 'AI estimation...'}</span>
                 </>
               ) : isAnalyzing ? (
                 <>
@@ -469,40 +470,6 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
       </div>
     </div>
   )
-}
-
-// Helper function for calculating exercise calories
-function calculateExerciseCalories(
-  exercise: WorkoutExercise,
-  userWeight: number
-): number {
-  // This is a simplified version - the full implementation is in kcal.ts
-  const baseMET = 4.0 // Default MET value
-  let duration = 0
-
-  switch (exercise.type) {
-    case 'run':
-      duration = exercise.details.durationMin || 0
-      break
-    case 'pullups':
-    case 'pushups':
-      if (exercise.details.repsPerSet) {
-        const totalReps = exercise.details.repsPerSet.reduce((sum, reps) => sum + reps, 0)
-        duration = totalReps * 2 / 60 // 2 seconds per rep
-      }
-      break
-    case 'plank':
-      if (exercise.details.seconds) {
-        const totalSeconds = exercise.details.seconds.reduce((sum, seconds) => sum + seconds, 0)
-        duration = totalSeconds / 60
-      }
-      break
-    case 'custom':
-      duration = exercise.details.durationMin || 0
-      break
-  }
-
-  return Math.round((baseMET * userWeight * duration * 3.5) / 200)
 }
 
 export default WorkoutForm

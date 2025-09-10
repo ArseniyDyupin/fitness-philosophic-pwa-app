@@ -10,10 +10,10 @@ const NotFound: React.FC = () => {
       <div className="max-w-md w-full text-center">
         <div className="text-6xl font-bold text-gray-300 mb-4">404</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-4">
-          Page Not Found
+          {(t as any)?.notFound?.title || 'Page Not Found'}
         </h1>
         <p className="text-gray-600 mb-8">
-          The page you're looking for doesn't exist.
+          {(t as any)?.notFound?.description || 'The page you\'re looking for doesn\'t exist.'}
         </p>
         <Link
           to="/"

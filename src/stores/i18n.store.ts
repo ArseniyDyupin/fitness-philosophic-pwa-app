@@ -48,6 +48,12 @@ export const translations = {
     // Common
     save: 'Save',
     saving: 'Saving...',
+    
+    // NotFound
+    notFound: {
+      title: 'Page Not Found',
+      description: 'The page you\'re looking for doesn\'t exist.'
+    },
     cancel: 'Cancel',
     delete: 'Delete',
     exportAll: 'Export Data',
@@ -843,12 +849,18 @@ export const translations = {
       workoutDescriptionHelp: 'Describe your workout in natural language. The AI will parse it into structured exercises.',
       parseAndContinue: 'Parse and Continue',
       parsing: 'Parsing...',
-      pleaseAddExercise: 'Please add at least one exercise',
-      failedToSave: 'Failed to save workout',
       pleaseEnterDescription: 'Please enter workout description',
-      failedToParse: 'Failed to parse workout text. Please use the form mode instead.',
       aiNotConfigured: 'AI is not configured. Please set up your OpenAI API key in Settings.',
-      aiParseFailed: 'AI parsing failed. Please try again or use form mode.'
+      aiParseFailed: 'AI parsing failed',
+      aiRequired: '(AI required)',
+      optional: 'Optional',
+      optionalDescription: 'Optional: Total time spent on the workout including rest',
+      aiWillEstimate: 'AI will automatically estimate RPE and provide feedback after saving',
+      estimatesWillBeCalculated: 'Estimates will be calculated after saving',
+      aiEstimationInProgress: 'AI estimation in progress...',
+      caloriesWillBeEstimated: 'Calories and duration will be estimated automatically',
+      addAtLeastOneExercise: 'Please add at least one exercise',
+      failedToSave: 'Failed to save workout'
     },
 
     // Workout Analysis
@@ -1357,6 +1369,13 @@ export const translations = {
       russian: 'Русский',
       save: 'Сохранить',
       saving: 'Сохранение...',
+      
+      // NotFound
+      notFound: {
+        title: 'Страница не найдена',
+        description: 'Страница, которую вы ищете, не существует.'
+      },
+      
       cancel: 'Отмена'
     },
     
@@ -1818,13 +1837,19 @@ export const translations = {
       workoutDescriptionPlaceholder: 'Пример: пробежал 5 км, подтянулся 7-5-3-3-2, отжимания 20-20-15, планка 60-45-50',
       workoutDescriptionHelp: 'Опишите вашу тренировку естественным языком. ИИ разберет её на структурированные упражнения.',
       parseAndContinue: 'Разобрать и продолжить',
-      parsing: 'Разбираю...',
-      pleaseAddExercise: 'Пожалуйста, добавьте хотя бы одно упражнение',
-      failedToSave: 'Не удалось сохранить тренировку',
+      parsing: 'Разбор...',
       pleaseEnterDescription: 'Пожалуйста, введите описание тренировки',
-      failedToParse: 'Не удалось разобрать текст тренировки. Пожалуйста, используйте режим формы.',
       aiNotConfigured: 'ИИ не настроен. Пожалуйста, настройте ваш OpenAI API ключ в Настройках.',
-      aiParseFailed: 'Парсинг ИИ не удался. Попробуйте еще раз или используйте режим формы.'
+      aiParseFailed: 'Ошибка разбора ИИ',
+      aiRequired: '(требуется ИИ)',
+      optional: 'Необязательно',
+      optionalDescription: 'Необязательно: Общее время, потраченное на тренировку, включая отдых',
+      aiWillEstimate: 'ИИ автоматически оценит RPE и предоставит обратную связь после сохранения',
+      estimatesWillBeCalculated: 'Оценки будут рассчитаны после сохранения',
+      aiEstimationInProgress: 'ИИ оценка в процессе...',
+      caloriesWillBeEstimated: 'Калории и длительность будут оценены автоматически',
+      addAtLeastOneExercise: 'Пожалуйста, добавьте хотя бы одно упражнение',
+      failedToSave: 'Не удалось сохранить тренировку'
     },
 
     // Workout Analysis
