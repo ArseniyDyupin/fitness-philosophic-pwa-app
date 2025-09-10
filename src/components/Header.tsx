@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslations } from '../stores/i18n.store'
-import { useAIStore } from '../stores/ai.store'
 import { downloadExport } from '../services/export'
 import { toastSuccess, toastError } from '../lib/toast'
-import { ArrowLeft, Download, Check, X, Sparkles } from 'lucide-react'
-import GenerateWorkoutModal from './GenerateWorkoutModal'
+import { ArrowLeft, Download } from 'lucide-react'
+import GenerateWorkoutButton from './home/GenerateWorkoutButton'
 import HeaderReminderBanner from './HeaderReminderBanner'
 import BodyMetricsModal from './BodyMetricsModal'
 
@@ -13,10 +12,8 @@ const Header: React.FC = () => {
   const t = useTranslations()
   const location = useLocation()
   const navigate = useNavigate()
-  const { isConfigured } = useAIStore()
   
   const [isExporting, setIsExporting] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMetricsModalOpen, setIsMetricsModalOpen] = useState(false)
 
 
@@ -41,18 +38,6 @@ const Header: React.FC = () => {
     }
   }
 
-  const handleGeneratePlan = () => {
-    setIsModalOpen(true)
-  }
-
-  const handlePlanGenerated = (plan: any) => {
-    showToast(t.plan?.planGenerated || 'Plan generated successfully', 'success')
-    
-    // Navigate to plan realization page
-    setTimeout(() => {
-      navigate(`/plan/${plan.id}`)
-    }, 1000)
-  }
 
   // Check if back button should be shown
   const shouldShowBackButton = () => {
@@ -143,19 +128,13 @@ const Header: React.FC = () => {
 
           {/* Right side: Action buttons */}
           <div className="flex items-center space-x-2">
-            {/* Generate Plan Button (only if AI is configured) */}
-            {isConfigured && (
-              <button
-                onClick={handleGeneratePlan}
-                className="btn-primary flex items-center space-x-2 text-sm"
-                title={t.header?.generate || 'Generate Workout'}
-              >
-                <Sparkles size={16} />
-                <span className="hidden sm:inline">
-                  {t.header?.generate || 'Generate Workout'}
-                </span>
-              </button>
-            )}
+            {/* Generate Workout Button */}
+            <GenerateWorkoutButton
+              variant="primary"
+              size="sm"
+              showText={false}
+              className="text-sm"
+            />
             
             {/* Export Button */}
             <button
@@ -224,15 +203,6 @@ const Header: React.FC = () => {
           </div>
         </nav>
       </div>
-      
-
-      {/* Generate Workout Modal */}
-      <GenerateWorkoutModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onPlanGenerated={handlePlanGenerated}
-      />
-
       {/* Body Metrics Modal */}
       <BodyMetricsModal
         isOpen={isMetricsModalOpen}

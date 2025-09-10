@@ -325,7 +325,9 @@ export const translations = {
       },
       cta: {
         openPlan: 'Open Today\'s Plan',
-        generatePlan: 'Generate Plan',
+        generateWorkout: 'Generate Workout',
+        generatePlan: 'Generate Plan', // Alias for backward compatibility
+        generating: 'Generating...',
         enableAI: 'Enable AI',
         addWorkout: 'Add Workout'
       }
@@ -1307,7 +1309,9 @@ export const translations = {
       },
       cta: {
         openPlan: 'Открыть план на сегодня',
-        generatePlan: 'Сгенерировать план',
+        generateWorkout: 'Сгенерировать тренировку',
+        generatePlan: 'Сгенерировать план', // Alias for backward compatibility
+        generating: 'Генерация...',
         enableAI: 'Включить ИИ',
         addWorkout: 'Добавить тренировку'
       }

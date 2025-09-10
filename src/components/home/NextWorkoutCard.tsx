@@ -1,17 +1,16 @@
 import React from 'react'
 import { useTranslations } from '../../stores/i18n.store'
 import { useNavigate } from 'react-router-dom'
-import { Calendar, Clock, Zap, Target, Play, CheckCircle, RotateCcw, Settings } from 'lucide-react'
+import { Calendar, Clock, Zap, Target, Play, CheckCircle, Settings } from 'lucide-react'
 import type { Workout } from '../../types/models'
+import GenerateWorkoutButton from './GenerateWorkoutButton'
 
 interface NextWorkoutCardProps {
   plan?: Workout
   hasApiKey: boolean
   onOpenPlan: () => void
   onMarkDone: () => void
-  onRegenerate: () => void
   onOpenSettings: () => void
-  onGeneratePlan: () => void
 }
 
 const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
@@ -19,9 +18,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
   hasApiKey,
   onOpenPlan,
   onMarkDone,
-  onRegenerate,
-  onOpenSettings,
-  onGeneratePlan
+  onOpenSettings
 }) => {
   const t = useTranslations()
   const navigate = useNavigate()
@@ -63,15 +60,6 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
             <h2 className="text-lg font-semibold text-gray-900">
               {(t.homeDashboard as any)?.nextPlan?.today || 'Plan for Today'}
             </h2>
-          </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={onRegenerate}
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-              title={(t.homeDashboard as any)?.nextPlan?.regenerate || 'Regenerate'}
-            >
-              <RotateCcw size={16} />
-            </button>
           </div>
         </div>
 
@@ -184,13 +172,12 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
         
         <div className="flex flex-col sm:flex-row gap-2 justify-center">
           {hasApiKey ? (
-            <button
-              onClick={onGeneratePlan}
-              className="btn-primary flex items-center space-x-2"
-            >
-              <Zap size={16} />
-              <span>{(t.homeDashboard as any)?.nextPlan?.generate || 'Generate Plan'}</span>
-            </button>
+            <GenerateWorkoutButton
+              variant="primary"
+              size="md"
+              showIcon={true}
+              showText={true}
+            />
           ) : (
             <button
               onClick={onOpenSettings}

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTranslations, useI18nStore } from '../stores/i18n.store'
-import { useProfileStore } from '../stores/profile.store'
+import { useTranslations } from '../stores/i18n.store'
 import { useWorkoutStore } from '../stores/workout.store'
 import { useAIStore } from '../stores/ai.store'
-import { aiService } from '../services/ai'
-import { toastSuccess, toastError } from '../lib/toast'
+import { toastSuccess } from '../lib/toast'
 import { format, startOfWeek } from 'date-fns'
-import { Sparkles, Loader, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import GenerateWorkoutButton from '../components/home/GenerateWorkoutButton'
 
 // Import new dashboard components
 import NextWorkoutCard from '../components/home/NextWorkoutCard'
@@ -20,8 +19,6 @@ import BodyMetricsModal from '../components/BodyMetricsModal'
 const HomePage: React.FC = () => {
   const t = useTranslations()
   const navigate = useNavigate()
-  const { currentLanguage } = useI18nStore()
-  const { profile } = useProfileStore()
   const { 
     workouts, 
     loadWorkouts, 
@@ -31,8 +28,6 @@ const HomePage: React.FC = () => {
     isLoading: workoutsLoading 
   } = useWorkoutStore()
   const { hasKey } = useAIStore()
-  
-  const [isGenerating, setIsGenerating] = useState(false)
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
   const [isMetricsModalOpen, setIsMetricsModalOpen] = useState(false)
   const [dayStats, setDayStats] = useState<DayStats>({ calories: 0, minutes: 0, exercises: 0 })
@@ -55,31 +50,6 @@ const HomePage: React.FC = () => {
   }, [workouts, getDayStats, getWeekStats, getLastN])
 
 
-  const handleGeneratePlan = async () => {
-    if (!profile) {
-      toastError(t.error || 'Profile not found')
-      return
-    }
-
-    setIsGenerating(true)
-    try {
-      const recentWorkouts = workouts.slice(0, 5) // Get last 5 workouts
-      const plan = await aiService.generateNextWorkout(profile, recentWorkouts, currentLanguage)
-      
-      toastSuccess(t.plan?.planGenerated || 'Plan generated successfully')
-      
-      // Navigate to plan realization page
-      setTimeout(() => {
-        navigate(`/plan/${plan.id}`)
-      }, 1000)
-      
-    } catch (error) {
-      console.error('Failed to generate plan:', error)
-      toastError(t.error || 'Failed to generate plan')
-    } finally {
-      setIsGenerating(false)
-    }
-  }
 
   const handleOpenPlan = () => {
     // For now, navigate to workouts page
@@ -92,9 +62,6 @@ const HomePage: React.FC = () => {
     toastSuccess('Plan marked as completed')
   }
 
-  const handleRegenerate = () => {
-    handleGeneratePlan()
-  }
 
   const handleOpenSettings = () => {
     navigate('/settings')
@@ -138,7 +105,7 @@ const HomePage: React.FC = () => {
                   onClick={handleOpenSettings}
                   className="btn-primary flex items-center space-x-2"
                 >
-                  <Sparkles size={16} />
+                  <Plus size={16} />
                   <span>{(t.homeDashboard as any)?.cta?.enableAI || 'Enable AI'}</span>
                 </button>
               ) : todayPlan ? (
@@ -149,18 +116,12 @@ const HomePage: React.FC = () => {
                   <span>{(t.homeDashboard as any)?.cta?.openPlan || 'Open Today\'s Plan'}</span>
                 </button>
               ) : (
-                <button
-                  onClick={handleGeneratePlan}
-                  disabled={isGenerating}
-                  className="btn-primary flex items-center space-x-2"
-                >
-                  {isGenerating ? (
-                    <Loader className="animate-spin" size={16} />
-                  ) : (
-                    <Sparkles size={16} />
-                  )}
-                  <span>{(t.homeDashboard as any)?.cta?.generatePlan || 'Generate Plan'}</span>
-                </button>
+                <GenerateWorkoutButton
+                  variant="primary"
+                  size="md"
+                  showIcon={true}
+                  showText={true}
+                />
               )}
             </div>
           </div>
@@ -178,9 +139,7 @@ const HomePage: React.FC = () => {
               hasApiKey={hasKey()}
               onOpenPlan={handleOpenPlan}
               onMarkDone={handleMarkDone}
-              onRegenerate={handleRegenerate}
               onOpenSettings={handleOpenSettings}
-              onGeneratePlan={handleGeneratePlan}
             />
           </div>
           
