@@ -100,9 +100,7 @@ const WorkoutDetailsPage: React.FC = () => {
     )
   }
 
-  const totalCalories = profile?.weight 
-    ? calculateWorkoutCalories(workout.exercises, profile.weight, workout.rpe)
-    : 0
+  const totalCalories = calculateWorkoutCalories(workout.exercises, profile?.weight || 70, workout.rpe)
   const totalDuration = workout.durationMin || calculateWorkoutDuration(workout.exercises)
 
   const handleDelete = async () => {
@@ -311,8 +309,6 @@ const WorkoutDetailsPage: React.FC = () => {
       toastError(t.workoutDetailsPage?.updateFailed || 'Failed to update exercise')
     }
   }
-
-
 
   return (
     <div className="min-h-screen bg-gray-50">
