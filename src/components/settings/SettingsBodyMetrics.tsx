@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from '../../stores/i18n.store'
-import { useProfileStore } from '../../stores/profile.store'
 import { metricsService } from '../../services/metrics.service'
 import { Plus, Trash2, Edit, Save, X, TestTube } from 'lucide-react'
 import type { MetricDef, BodyMetricsSettings } from '../../types/body-metrics'
 
 const SettingsBodyMetrics: React.FC = () => {
   const t = useTranslations()
-  const { profile } = useProfileStore()
   const [metricDefs, setMetricDefs] = useState<MetricDef[]>([])
   const [settings, setSettings] = useState<BodyMetricsSettings>({
     allowPhotoAnalysis: false,

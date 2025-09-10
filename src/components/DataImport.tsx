@@ -4,7 +4,7 @@ import { useTranslations } from '../stores/i18n.store'
 import { validateFile, importData, ImportError, getImportPreview } from '../services/import'
 import { toastSuccess, toastError } from '../lib/toast'
 import type { ExportBundle, ImportPreview } from '../types/export'
-import { Upload, FileText, Check, X, AlertCircle } from 'lucide-react'
+import { Upload, FileText, Check, AlertCircle } from 'lucide-react'
 
 const DataImport: React.FC = () => {
   const t = useTranslations()

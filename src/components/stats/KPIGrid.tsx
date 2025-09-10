@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslations } from '../../stores/i18n.store'
 import { Flame, Clock, TrendingUp, Calendar, Target, Activity } from 'lucide-react'
-import { format, formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
 import type { StatsKPI } from '../../types/stats'
 
 interface KPIGridProps {

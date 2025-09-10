@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { db } from '../services/db'
 import { calculateWorkoutCalories, calculateWorkoutDuration } from '../services/kcal'
-import { startOfYear, subDays, startOfDay, endOfDay, format, eachDayOfInterval } from 'date-fns'
+import { startOfYear, subDays, format, eachDayOfInterval } from 'date-fns'
 import type { Workout, WorkoutExercise } from '../types/models'
 import type { StatsData, StatsRange, StatsKPI, DisciplineStats, TrendData, PersonalRecords, ConsistencyData, BodyMetricsData, MetricDef, MetricEntry } from '../types/stats'
 
@@ -245,7 +245,7 @@ const calculateConsistency = (workouts: Workout[], startDate: Date | null, endDa
   })
 }
 
-export const useStatsStore = create<StatsState>((set, get) => ({
+export const useStatsStore = create<StatsState>((set) => ({
   data: null,
   isLoading: false,
   error: null,

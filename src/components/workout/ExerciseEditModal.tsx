@@ -49,9 +49,6 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
     }
   }
 
-  const getExerciseTypeName = (type: string) => {
-    return t.exerciseTypes?.[type as keyof typeof t.exerciseTypes] || type
-  }
 
   if (!isOpen) return null
 

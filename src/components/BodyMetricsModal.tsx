@@ -4,7 +4,7 @@ import { useProfileStore } from '../stores/profile.store'
 import { metricsService } from '../services/metrics.service'
 import { aiBodyService } from '../services/aiBody.service'
 import { startOfWeek, format } from 'date-fns'
-import { X, Camera, Upload, Save, Sparkles, Loader } from 'lucide-react'
+import { X, Camera, Save, Sparkles, Loader } from 'lucide-react'
 import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '../types/body-metrics'
 
 interface BodyMetricsModalProps {

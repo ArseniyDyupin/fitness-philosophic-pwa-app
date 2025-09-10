@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslations } from '../../stores/i18n.store'
 import { Trophy, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
-import { format } from 'date-fns'
 import type { PersonalRecords } from '../../types/stats'
 
 interface RecordsProps {

@@ -2,7 +2,7 @@ import React from 'react'
 import { useTranslations } from '../../stores/i18n.store'
 import { calculateWorkoutCalories, calculateWorkoutDuration } from '../../services/kcal'
 import type { Workout } from '../../types/models'
-import { Clock, Flame, TrendingUp, Eye, MoreVertical, Edit, Trash2, Bot } from 'lucide-react'
+import { Clock, Flame, TrendingUp, MoreVertical, Bot } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface WorkoutCardProps {
@@ -19,7 +19,6 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
   userWeight = 70,
   onClick,
   onEdit,
-  onDelete,
   onUpdateAnalysis
 }) => {
   const t = useTranslations()

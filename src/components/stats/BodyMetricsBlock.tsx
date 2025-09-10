@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from '../../stores/i18n.store'
-import { useProfileStore } from '../../stores/profile.store'
 import { metricsService } from '../../services/metrics.service'
-import { ChevronDown, ChevronUp, Plus, TrendingUp, TrendingDown } from 'lucide-react'
+import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from 'lucide-react'
 import {
   ResponsiveContainer,
   LineChart,
@@ -13,16 +12,15 @@ import {
   Tooltip,
   Legend
 } from 'recharts'
-import { format, subDays } from 'date-fns'
+import { format } from 'date-fns'
 import type { MetricDef, MetricEntry } from '../../types/body-metrics'
 
 interface BodyMetricsBlockProps {
   weekStart?: Date
 }
 
-const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = ({ weekStart }) => {
+const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
   const t = useTranslations()
-  const { profile } = useProfileStore()
   const [isExpanded, setIsExpanded] = useState(false)
   const [metricDefs, setMetricDefs] = useState<MetricDef[]>([])
   const [latestValues, setLatestValues] = useState<Record<string, number>>({})

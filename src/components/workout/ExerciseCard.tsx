@@ -12,7 +12,6 @@ interface ExerciseCardProps {
 
 const ExerciseCard: React.FC<ExerciseCardProps> = ({
   exercise,
-  index,
   onEdit,
   isEditing = false
 }) => {

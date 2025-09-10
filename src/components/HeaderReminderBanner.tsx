@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from '../stores/i18n.store'
-import { useProfileStore } from '../stores/profile.store'
 import { metricsService } from '../services/metrics.service'
 import { startOfWeek, subWeeks, format } from 'date-fns'
 import { Calendar, X, Clock } from 'lucide-react'
@@ -12,7 +11,6 @@ interface HeaderReminderBannerProps {
 
 const HeaderReminderBanner: React.FC<HeaderReminderBannerProps> = ({ onOpenMetricsModal }) => {
   const t = useTranslations()
-  const { profile } = useProfileStore()
   const [showBanner, setShowBanner] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState<BodyMetricsSettings | null>(null)

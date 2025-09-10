@@ -59,7 +59,7 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
   const totalCalories = pieData.reduce((sum, item) => sum + item.value, 0)
   const totalMinutes = Object.values(discipline).reduce((sum, stats) => sum + stats.minutes, 0)
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       const percentage = chartType === 'calories' 

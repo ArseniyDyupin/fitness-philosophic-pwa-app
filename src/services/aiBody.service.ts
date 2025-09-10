@@ -178,7 +178,7 @@ Be objective and constructive.`
     }
   },
 
-  async getEvaluations(weekStart?: string): Promise<AiBodyEval[]> {
+  async getEvaluations(): Promise<AiBodyEval[]> {
     try {
       // This would query the database
       // For now, return empty array

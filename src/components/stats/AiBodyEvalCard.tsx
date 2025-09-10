@@ -9,7 +9,7 @@ interface AiBodyEvalCardProps {
   weekStart?: Date
 }
 
-const AiBodyEvalCard: React.FC<AiBodyEvalCardProps> = ({ weekStart }) => {
+const AiBodyEvalCard: React.FC<AiBodyEvalCardProps> = () => {
   const t = useTranslations()
   const [evaluations, setEvaluations] = useState<AiBodyEval[]>([])
   const [isLoading, setIsLoading] = useState(true)

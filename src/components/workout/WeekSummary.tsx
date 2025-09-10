@@ -31,7 +31,6 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
     }, 0))
   }, 0)
 
-  const totalExercises = workouts.reduce((sum, workout) => sum + workout.exercises.length, 0)
 
   const avgRpe = workouts.length > 0 
     ? workouts.reduce((sum, workout) => sum + (workout.rpe || 0), 0) / workouts.length 
