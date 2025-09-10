@@ -157,7 +157,11 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
 
   getDayStats: (dateISO: string) => {
     const { workouts } = get()
-    const dayWorkouts = workouts.filter(workout => workout.date === dateISO)
+    // Filter only completed workouts (not AI plans) for today
+    const dayWorkouts = workouts.filter(workout => 
+      workout.date === dateISO && 
+      workout.status === 'completed'
+    )
     
     let calories = 0
     let minutes = 0
@@ -183,7 +187,8 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
       calories,
       minutes,
       exercises,
-      rpeAvg: rpeCount > 0 ? totalRPE / rpeCount : undefined
+      rpeAvg: rpeCount > 0 ? totalRPE / rpeCount : undefined,
+      workoutCount: dayWorkouts.length
     }
   },
 
@@ -192,9 +197,11 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     const weekStart = new Date(weekStartISO)
     const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 })
     
+    // Filter only completed workouts (not AI plans) for the week
     const weekWorkouts = workouts.filter(workout => {
       const workoutDate = new Date(workout.date)
-      return isWithinInterval(workoutDate, { start: weekStart, end: weekEnd })
+      return isWithinInterval(workoutDate, { start: weekStart, end: weekEnd }) &&
+             workout.status === 'completed'
     })
     
     let calories = 0

@@ -48,7 +48,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
 
   if (plan) {
     const totalCalories = plan.exercises?.reduce((sum, ex) => sum + (ex.kcalEstimated || 0), 0) || 0
-    const totalDuration = plan.durationOverrideMin || plan.exercises?.reduce((sum, ex) => sum + (ex.details.durationMin || 0), 0) || 0
+    const totalDuration = plan.durationMin || plan.exercises?.reduce((sum, ex) => sum + (ex.details.durationMin || 0), 0) || 0
     const avgRPE = plan.rpe || 0
     const exerciseCount = plan.exercises?.length || 0
 

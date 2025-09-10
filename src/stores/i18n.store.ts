@@ -301,12 +301,14 @@ export const translations = {
       kpi: {
         today: 'Today',
         week: 'Week',
+        progress: 'Progress',
         calories: 'Calories',
         minutes: 'Minutes',
         exercises: 'Exercises',
         rpe: 'RPE',
-        goal: 'Goal',
-        progress: 'Progress'
+        noWorkoutsToday: 'You haven\'t trained today',
+        workoutsCount: 'workouts',
+        workouts: 'Workouts'
       },
       recent: {
         title: 'Recent Workouts',
@@ -1285,12 +1287,14 @@ export const translations = {
       kpi: {
         today: 'Сегодня',
         week: 'Неделя',
+        progress: 'Прогресс',
         calories: 'Калории',
         minutes: 'Минуты',
         exercises: 'Упражнения',
         rpe: 'RPE',
-        goal: 'Цель',
-        progress: 'Прогресс'
+        noWorkoutsToday: 'Сегодня вы не тренировались',
+        workoutsCount: 'тренировок',
+        workouts: 'Тренировки'
       },
       recent: {
         title: 'Последние тренировки',
