@@ -273,14 +273,14 @@ const WorkoutDetailsPage: React.FC = () => {
   const navigateToPreviousWorkout = () => {
     const { prev } = getPrevNext(workout.id)
     if (prev) {
-      navigate(`/workout/${prev.id}`)
+      navigate(`/workouts/${prev.id}`)
     }
   }
 
   const navigateToNextWorkout = () => {
     const { next } = getPrevNext(workout.id)
     if (next) {
-      navigate(`/workout/${next.id}`)
+      navigate(`/workouts/${next.id}`)
     }
   }
 

@@ -49,7 +49,7 @@ const WorkoutsPage: React.FC = () => {
     
     // Navigate to workout details if workoutId is provided
     if (workoutId) {
-      navigate(`/workout/${workoutId}`)
+      navigate(`/workouts/${workoutId}`)
     }
   }
 
