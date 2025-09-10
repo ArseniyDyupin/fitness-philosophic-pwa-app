@@ -29,6 +29,7 @@ const SettingsPage: React.FC = () => {
   const [profileModalEditMode, setProfileModalEditMode] = useState(false)
   const [isUpgradingDB, setIsUpgradingDB] = useState(false)
   const [isDebuggingDB, setIsDebuggingDB] = useState(false)
+  const [isDebuggingDatabase, setIsDebuggingDatabase] = useState(false)
 
   if (!profile) {
     return <div>{(t.settingsPage as any)?.loading || 'Loading...'}</div>
@@ -156,6 +157,19 @@ const SettingsPage: React.FC = () => {
       showToast((t.settingsPage as any)?.debugError || 'Failed to debug database. Check console for errors.', 'error')
     } finally {
       setIsDebuggingDB(false)
+    }
+  }
+
+  const handleDebugDatabase = async () => {
+    setIsDebuggingDatabase(true)
+    try {
+      await dbHelpers.debugDatabase()
+      showToast('Database debug info logged to console', 'success')
+    } catch (error) {
+      console.error('Database debug failed:', error)
+      showToast('Database debug failed. Check console for details.', 'error')
+    } finally {
+      setIsDebuggingDatabase(false)
     }
   }
 
@@ -495,6 +509,24 @@ const SettingsPage: React.FC = () => {
                     <>
                       <RefreshCw size={16} />
                       <span>{(t.settingsPage as any)?.debugAIFeedback || 'Debug AI Feedback'}</span>
+                    </>
+                  )}
+                </button>
+                
+                <button
+                  onClick={handleDebugDatabase}
+                  disabled={isDebuggingDatabase}
+                  className="flex items-center space-x-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDebuggingDatabase ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
+                      <span>Debugging...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw size={16} />
+                      <span>Debug Database</span>
                     </>
                   )}
                 </button>

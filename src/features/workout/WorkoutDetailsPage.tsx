@@ -48,25 +48,22 @@ const WorkoutDetailsPage: React.FC = () => {
       setWorkout(getWorkoutById(id))
     }
   }, [id, workout, getWorkoutById])
-  console.log(aiFeedback, '<<<aiFeedback!!!!')
-  // Load AI feedback when workout changes
+
   useEffect(() => {
-    console.log(workout.aiReviewId, '<<<workout useEffect')
-    if (workout) {
-      if (workout.aiReviewId) {
+    if (id) {
+      if (workout?.aiReviewId) {
         loadAIFeedback()
       } else {
-        loadAIFeedback()
+        setAiFeedback(null)
       }
     }
-  }, [workout?.id, workout?.aiReviewId])
+  }, [id, workout?.aiReviewId])
 
   const loadAIFeedback = async () => {
     if (!workout) return
-
     setIsLoadingFeedback(true)
     try {
-       await dbHelpers.getAIFeedbackByWorkout(workout.id)
+      const feedback = await dbHelpers.getAIFeedbackByWorkout(workout.id)
       setAiFeedback(feedback || null)
     } catch (error) {
       console.error('Failed to load AI feedback:', error)
@@ -381,8 +378,6 @@ const WorkoutDetailsPage: React.FC = () => {
           </div>
         </div>
 
-
-        {/* Exercises */}
         <div className="card mb-6 sm:mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 sm:mb-6">{t.workoutDetailsPage?.exercises || 'Exercises'}</h3>
           
@@ -399,7 +394,6 @@ const WorkoutDetailsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* AI Feedback */}
         <AiFeedbackCard
           feedback={aiFeedback}
           isLoading={isLoadingFeedback}
@@ -407,7 +401,6 @@ const WorkoutDetailsPage: React.FC = () => {
           onUpdateAnalysis={updateAIAnalysis}
         />
 
-        {/* Toast Notification */}
         {toast && (
           <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
             toast.type === 'success' 
@@ -426,7 +419,6 @@ const WorkoutDetailsPage: React.FC = () => {
         )}
       </main>
 
-      {/* Meta Edit Modal */}
       <EditWorkoutMetaModal
         isOpen={isMetaModalOpen}
         onClose={() => setIsMetaModalOpen(false)}
@@ -434,7 +426,6 @@ const WorkoutDetailsPage: React.FC = () => {
         onSave={handleSaveMeta}
       />
 
-      {/* Exercise Edit Modal */}
       {editingExercise && (
         <ExerciseEditModal
           isOpen={isExerciseModalOpen}

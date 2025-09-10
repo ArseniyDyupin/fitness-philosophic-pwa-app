@@ -40,7 +40,7 @@ export class AITrainerDB extends Dexie {
       plans: 'id,createdAt,forDate',
       exercise_estimates: 'id,signature,type,createdAt',
       ai_feedback: 'id,workoutId,createdAt'
-    }).upgrade(async (tx) => {
+    }).upgrade(async () => {
       // Migration logic if needed
       console.log('Upgrading database to version 2 - adding ai_feedback table')
     })
@@ -150,7 +150,7 @@ export class AITrainerDB extends Dexie {
         }
       ]
 
-      await tx.metric_defs.bulkAdd(defaultMetrics)
+      await tx.table('metric_defs').bulkAdd(defaultMetrics)
     })
   }
 }
@@ -208,6 +208,22 @@ export const dbHelpers = {
   async getAIFeedbackByWorkout(workoutId: string): Promise<AIWorkoutFeedback | undefined> {
     console.log('Searching for AI feedback with workoutId:', workoutId)
     try {
+      console.log('Database version:', db.verno)
+      console.log('Database is open:', db.isOpen())
+      console.log('Available tables:', db.tables.map(t => t.name))
+      
+      if (!db.isOpen()) {
+        await db.open()
+      }
+      
+      const tableExists = db.tables.some(table => table.name === 'ai_feedback')
+      console.log('ai_feedback table exists:', tableExists)
+      
+      if (!tableExists) {
+        console.log('ai_feedback table does not exist - returning undefined')
+        return undefined
+      }
+      
       const feedback = await db.ai_feedback
         .where('workoutId')
         .equals(workoutId)
@@ -228,6 +244,22 @@ export const dbHelpers = {
   async getAllAIFeedback(): Promise<AIWorkoutFeedback[]> {
     console.log('Getting all AI feedback records')
     try {
+      console.log('Database version:', db.verno)
+      console.log('Database is open:', db.isOpen())
+      console.log('Available tables:', db.tables.map(t => t.name))
+      
+      if (!db.isOpen()) {
+        await db.open()
+      }
+      
+      const tableExists = db.tables.some(table => table.name === 'ai_feedback')
+      console.log('ai_feedback table exists:', tableExists)
+      
+      if (!tableExists) {
+        console.log('ai_feedback table does not exist - returning empty array')
+        return []
+      }
+      
       const allFeedback = await db.ai_feedback.toArray()
       console.log('All AI feedback records:', allFeedback)
       return allFeedback
@@ -258,6 +290,42 @@ export const dbHelpers = {
       console.log('Database upgrade forced')
     } catch (error) {
       console.error('Failed to force database upgrade:', error)
+    }
+  },
+
+  async debugDatabase(): Promise<void> {
+    try {
+      console.log('=== DATABASE DEBUG INFO ===')
+      console.log('Database version:', db.verno)
+      console.log('Database is open:', db.isOpen())
+      console.log('Available tables:', db.tables.map(t => t.name))
+      
+      if (!db.isOpen()) {
+        await db.open()
+        console.log('Database opened, version after open:', db.verno)
+      }
+      
+      // Check if ai_feedback table exists
+      const tableExists = db.tables.some(table => table.name === 'ai_feedback')
+      console.log('ai_feedback table exists:', tableExists)
+      
+      if (tableExists) {
+        try {
+          const count = await db.ai_feedback.count()
+          console.log('ai_feedback records count:', count)
+          
+          if (count > 0) {
+            const firstRecord = await db.ai_feedback.limit(1).first()
+            console.log('First ai_feedback record:', firstRecord)
+          }
+        } catch (error) {
+          console.error('Error accessing ai_feedback table:', error)
+        }
+      }
+      
+      console.log('=== END DEBUG INFO ===')
+    } catch (error) {
+      console.error('Error in debugDatabase:', error)
     }
   }
 }
