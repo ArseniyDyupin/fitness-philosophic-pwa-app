@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { db } from '../services/db'
-import { startOfWeek, endOfWeek, isWithinInterval, isSameWeek } from 'date-fns'
+import { startOfWeek, endOfWeek, isWithinInterval } from 'date-fns'
+import { calculateWorkoutCalories, calculateWorkoutDuration } from '../services/kcal'
 import type { Workout } from '../types/models'
 
 interface WorkoutState {
@@ -21,7 +22,7 @@ interface WorkoutState {
   getWorkoutsByDate: (dateISO: string) => Workout[]
   getLastN: (n: number) => Workout[]
   getDayStats: (dateISO: string) => { calories: number; minutes: number; exercises: number; rpeAvg?: number }
-  getWeekStats: (weekStartISO: string) => { calories: number; minutes: number; exercises: number; rpeAvg?: number; workouts: number; goalPerWeek?: number }
+  getWeekStats: (weekStartISO: string, userWeight?: number) => { calories: number; minutes: number; exercises: number; rpeAvg?: number; workouts: number; goalPerWeek?: number }
   clearWorkouts: () => void
 }
 
@@ -192,7 +193,7 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     }
   },
 
-  getWeekStats: (weekStartISO: string) => {
+  getWeekStats: (weekStartISO: string, userWeight?: number) => {
     const { workouts } = get()
     const weekStart = new Date(weekStartISO)
     const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 })
@@ -211,13 +212,20 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     let rpeCount = 0
 
     weekWorkouts.forEach(workout => {
-      if (workout.exercises) {
-        workout.exercises.forEach(exercise => {
-          calories += exercise.kcalEstimated || 0
-          minutes += exercise.details.durationMin || 0
-          exercises += 1
-        })
+      if (workout.exercises && workout.exercises.length > 0) {
+        // Calculate calories using the proper function
+        if (userWeight) {
+          calories += calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
+        }
+        
+        // Calculate duration using workout.durationMin || calculateWorkoutDuration
+        const workoutDuration = workout.durationMin || calculateWorkoutDuration(workout.exercises)
+        minutes += workoutDuration
+        
+        // Count exercises
+        exercises += workout.exercises.length
       }
+      
       if (workout.rpe && workout.rpe > 0) {
         totalRPE += workout.rpe
         rpeCount += 1
@@ -230,7 +238,7 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
       exercises,
       rpeAvg: rpeCount > 0 ? totalRPE / rpeCount : undefined,
       workouts: weekWorkouts.length,
-      goalPerWeek: 3 // Default goal, could be from profile
+      goalPerWeek: 3 // Default goal, will be overridden by profile.frequency in component
     }
   },
 

@@ -172,20 +172,20 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium text-gray-900">
-                  {weekStats.workouts}/{profile?.frequency || 0}
+                  {weekStats.workouts}/{profile?.frequency || 3}
                 </span>
-                {weekStats.workouts > (profile?.frequency || 0) && (
+                {weekStats.workouts > (profile?.frequency || 3) && (
                   <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    +{weekStats.workouts - (profile?.frequency || 0)}
+                    +{weekStats.workouts - (profile?.frequency || 3)}
                   </span>
                 )}
               </div>
             </div>
-            {profile?.frequency && (
+            {(profile?.frequency || 3) > 0 && (
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${getProgressPercentage(weekStats.workouts, profile.frequency)}%` }}
+                  style={{ width: `${getProgressPercentage(weekStats.workouts, profile?.frequency || 3)}%` }}
                 ></div>
               </div>
             )}

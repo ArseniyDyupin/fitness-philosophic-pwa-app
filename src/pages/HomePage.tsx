@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslations } from '../stores/i18n.store'
 import { useWorkoutStore } from '../stores/workout.store'
 import { useAIStore } from '../stores/ai.store'
+import { useProfileStore } from '../stores/profile.store'
 import { toastSuccess } from '../lib/toast'
 import { format, startOfWeek } from 'date-fns'
 import { Plus } from 'lucide-react'
@@ -28,6 +29,7 @@ const HomePage: React.FC = () => {
     isLoading: workoutsLoading 
   } = useWorkoutStore()
   const { hasKey } = useAIStore()
+  const { profile } = useProfileStore()
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
   const [isMetricsModalOpen, setIsMetricsModalOpen] = useState(false)
   const [dayStats, setDayStats] = useState<DayStats>({ calories: 0, minutes: 0, exercises: 0 })
@@ -45,9 +47,9 @@ const HomePage: React.FC = () => {
     const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 })
     
     setDayStats(getDayStats(today))
-    setWeekStats(getWeekStats(format(weekStart, 'yyyy-MM-dd')))
+    setWeekStats(getWeekStats(format(weekStart, 'yyyy-MM-dd'), profile?.weight))
     setRecentWorkouts(getLastN(5))
-  }, [workouts, getDayStats, getWeekStats, getLastN])
+  }, [workouts, getDayStats, getWeekStats, getLastN, profile?.weight])
 
 
 
