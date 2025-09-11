@@ -93,6 +93,7 @@ export const translations = {
     // Header
     header: {
       back: 'Back',
+      home: 'Overview',
       workouts: 'Workouts',
       food: 'Food',
       week: 'Week',
@@ -1136,6 +1137,7 @@ export const translations = {
     // Header
     header: {
       back: 'Назад',
+      home: 'Сводка',
       workouts: 'Тренировки',
       food: 'Питание',
       week: 'Неделя',

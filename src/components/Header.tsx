@@ -80,6 +80,17 @@ const Header: React.FC = () => {
           {/* Center: Navigation (Desktop) */}
           <nav className="hidden md:flex space-x-1">
             <Link 
+              to="/" 
+              className={`px-3 py-2 rounded-md transition-colors ${
+                isActive('/')
+                  ? 'font-semibold text-gray-900 border-b-2 border-primary-500'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+              aria-current={isActive('/') ? 'page' : undefined}
+            >
+              {t.header?.home || 'Overview'}
+            </Link>
+            <Link 
               to="/workouts" 
               className={`px-3 py-2 rounded-md transition-colors ${
                 isActive('/workouts')
@@ -155,6 +166,17 @@ const Header: React.FC = () => {
         {/* Mobile Navigation */}
         <nav className="md:hidden border-t border-gray-200 py-2 pwa-safe-area">
           <div className="flex justify-around pwa-scroll">
+            <Link 
+              to="/" 
+              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors pwa-touch-target ${
+                isActive('/')
+                  ? 'text-primary-600 font-semibold'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+              aria-current={isActive('/') ? 'page' : undefined}
+            >
+              <span className="text-xs">{t.header?.home || 'Overview'}</span>
+            </Link>
             <Link 
               to="/workouts" 
               className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors pwa-touch-target ${
