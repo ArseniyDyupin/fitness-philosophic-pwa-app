@@ -803,7 +803,17 @@ export const translations = {
         expand: 'Expand',
         sessionsCount: 'sessions',
         kcal: 'kcal',
-        min: 'min'
+        min: 'min',
+        progress: 'Progress',
+        close: 'Close',
+        dataPoints: 'Data Points',
+        best: 'Best',
+        first: 'First',
+        latest: 'Latest',
+        distance: 'Distance (km)',
+        reps: 'Reps',
+        pace: 'Pace (min/km)',
+        noDataMessage: 'No progress data for this record'
       }
     },
     
@@ -1842,7 +1852,17 @@ export const translations = {
         expand: 'Развернуть',
         sessionsCount: 'сессий',
         kcal: 'ккал',
-        min: 'мин'
+        min: 'мин',
+        progress: 'Прогресс',
+        close: 'Закрыть',
+        dataPoints: 'Точек данных',
+        best: 'Лучший',
+        first: 'Первый',
+        latest: 'Последний',
+        distance: 'Дистанция (км)',
+        reps: 'Повторения',
+        pace: 'Темп (мин/км)',
+        noDataMessage: 'Нет данных о прогрессе для этого рекорда'
       }
     },
     

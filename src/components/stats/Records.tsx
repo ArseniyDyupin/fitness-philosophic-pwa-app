@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useTranslations } from '../../stores/i18n.store'
 import { Trophy, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import RecordChartModal from './RecordChartModal'
 import type { PersonalRecords } from '../../types/stats'
 
 interface RecordsProps {
@@ -10,6 +11,19 @@ interface RecordsProps {
 const Records: React.FC<RecordsProps> = ({ records }) => {
   const t = useTranslations()
   const [isExpanded, setIsExpanded] = useState(false)
+  const [chartModal, setChartModal] = useState<{
+    isOpen: boolean
+    recordKey: string
+    recordData: Array<{ date: string; value: number }>
+    recordType: 'distance' | 'time' | 'reps' | 'pace'
+    recordLabel: string
+  }>({
+    isOpen: false,
+    recordKey: '',
+    recordData: [],
+    recordType: 'reps',
+    recordLabel: ''
+  })
 
   const formatPace = (pace?: number): string => {
     if (!pace) return 'N/A'
@@ -23,6 +37,31 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
     const minutes = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${minutes}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const openChart = (recordKey: string, recordLabel: string) => {
+    // Get record type based on the key
+    let recordType: 'distance' | 'time' | 'reps' | 'pace' = 'reps'
+    if (recordKey === 'longestRunKm') recordType = 'distance'
+    else if (recordKey === 'longestPlankSec') recordType = 'time'
+    else if (recordKey === 'bestPaceMinPerKm') recordType = 'pace'
+    else if (recordKey === 'maxPullups' || recordKey === 'maxPushups') recordType = 'reps'
+
+    // Get record data from records.dates if available
+    const rawData = records.dates?.[recordKey]
+    const recordData = Array.isArray(rawData) ? rawData : []
+    
+    setChartModal({
+      isOpen: true,
+      recordKey,
+      recordData,
+      recordType,
+      recordLabel
+    })
+  }
+
+  const closeChart = () => {
+    setChartModal(prev => ({ ...prev, isOpen: false }))
   }
 
   const recordItems = [
@@ -127,12 +166,9 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
               </div>
               
               {/* View Chart Button */}
-              {records.dates[key] && (
+              {records.dates?.[key] && records.dates[key].length > 0 && (
                 <button
-                  onClick={() => {
-                    // TODO: Open chart modal
-                    console.log('View chart for', key, records.dates[key])
-                  }}
+                  onClick={() => openChart(key, item.label)}
                   className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
                   title={t.statsPage?.records?.viewChart || 'View Chart'}
                 >
@@ -163,12 +199,9 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
                       <div className={`text-lg font-bold ${item.color}`}>{item.value}</div>
                     </div>
                   </div>
-                  {records.dates[key] && (
+                  {records.dates?.[key] && records.dates[key].length > 0 && (
                     <button
-                      onClick={() => {
-                        // TODO: Open chart modal
-                        console.log('View chart for', key, records.dates[key])
-                      }}
+                      onClick={() => openChart(key, item.label)}
                       className="flex items-center space-x-1 px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors touch-manipulation"
                     >
                       <ExternalLink size={14} />
@@ -181,6 +214,16 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
           </div>
         </div>
       )}
+
+      {/* Chart Modal */}
+      <RecordChartModal
+        isOpen={chartModal.isOpen}
+        onClose={closeChart}
+        recordKey={chartModal.recordKey}
+        recordData={chartModal.recordData}
+        recordType={chartModal.recordType}
+        recordLabel={chartModal.recordLabel}
+      />
     </div>
   )
 }

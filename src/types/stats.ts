@@ -14,7 +14,7 @@ export interface PersonalRecords {
   maxPullups?: number
   maxPushups?: number
   longestPlankSec?: number
-  dates: Record<string, string> // metric -> workoutId
+  dates: Record<string, Array<{ date: string; value: number }>> // metric -> array of {date, value}
 }
 
 export interface DisciplineStats {

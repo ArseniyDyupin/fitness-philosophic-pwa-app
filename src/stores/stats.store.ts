@@ -165,7 +165,13 @@ const calculateTrends = (workouts: Workout[], userWeight: number): TrendData[] =
 
 const calculateRecords = (workouts: Workout[]): PersonalRecords => {
   const records: PersonalRecords = {
-    dates: {}
+    dates: {
+      longestRunKm: [],
+      bestPaceMinPerKm: [],
+      maxPullups: [],
+      maxPushups: [],
+      longestPlankSec: []
+    }
   }
   
   workouts.forEach(workout => {
@@ -173,42 +179,72 @@ const calculateRecords = (workouts: Workout[]): PersonalRecords => {
       switch (exercise.type) {
         case 'run':
           const distance = exercise.details.distanceKm || 0
-          if (!records.longestRunKm || distance > records.longestRunKm) {
-            records.longestRunKm = distance
-            records.dates.longestRunKm = workout.id
+          if (distance > 0) {
+            records.dates.longestRunKm.push({
+              date: workout.date,
+              value: distance
+            })
+            if (!records.longestRunKm || distance > records.longestRunKm) {
+              records.longestRunKm = distance
+            }
           }
           
           const pace = exercise.details.durationMin && distance > 0 
             ? exercise.details.durationMin / distance 
             : undefined
-          if (pace && (!records.bestPaceMinPerKm || pace < records.bestPaceMinPerKm)) {
-            records.bestPaceMinPerKm = pace
-            records.dates.bestPaceMinPerKm = workout.id
+          if (pace) {
+            records.dates.bestPaceMinPerKm.push({
+              date: workout.date,
+              value: pace
+            })
+            if (!records.bestPaceMinPerKm || pace < records.bestPaceMinPerKm) {
+              records.bestPaceMinPerKm = pace
+            }
           }
           break
         case 'pullups':
           const pullupReps = exercise.details.repsPerSet?.reduce((a, b) => a + b, 0) || 0
-          if (!records.maxPullups || pullupReps > records.maxPullups) {
-            records.maxPullups = pullupReps
-            records.dates.maxPullups = workout.id
+          if (pullupReps > 0) {
+            records.dates.maxPullups.push({
+              date: workout.date,
+              value: pullupReps
+            })
+            if (!records.maxPullups || pullupReps > records.maxPullups) {
+              records.maxPullups = pullupReps
+            }
           }
           break
         case 'pushups':
           const pushupReps = exercise.details.repsPerSet?.reduce((a, b) => a + b, 0) || 0
-          if (!records.maxPushups || pushupReps > records.maxPushups) {
-            records.maxPushups = pushupReps
-            records.dates.maxPushups = workout.id
+          if (pushupReps > 0) {
+            records.dates.maxPushups.push({
+              date: workout.date,
+              value: pushupReps
+            })
+            if (!records.maxPushups || pushupReps > records.maxPushups) {
+              records.maxPushups = pushupReps
+            }
           }
           break
         case 'plank':
           const plankSeconds = exercise.details.seconds?.reduce((a, b) => a + b, 0) || 0
-          if (!records.longestPlankSec || plankSeconds > records.longestPlankSec) {
-            records.longestPlankSec = plankSeconds
-            records.dates.longestPlankSec = workout.id
+          if (plankSeconds > 0) {
+            records.dates.longestPlankSec.push({
+              date: workout.date,
+              value: plankSeconds
+            })
+            if (!records.longestPlankSec || plankSeconds > records.longestPlankSec) {
+              records.longestPlankSec = plankSeconds
+            }
           }
           break
       }
     })
+  })
+  
+  // Sort all arrays by date
+  Object.keys(records.dates).forEach(key => {
+    records.dates[key].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   })
   
   return records
