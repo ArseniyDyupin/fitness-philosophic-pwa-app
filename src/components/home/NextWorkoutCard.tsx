@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslations } from '../../stores/i18n.store'
 import { useNavigate } from 'react-router-dom'
-import { Calendar, Clock, Zap, Target, Play, CheckCircle, Settings } from 'lucide-react'
+import { Calendar, Clock, Zap, Target, Play, CheckCircle, Settings, Plus } from 'lucide-react'
 import type { Workout } from '../../types/models'
 import GenerateWorkoutButton from './GenerateWorkoutButton'
+import WorkoutForm from '../WorkoutForm'
 
 interface NextWorkoutCardProps {
   plan?: Workout
@@ -22,6 +23,14 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
 }) => {
   const t = useTranslations()
   const navigate = useNavigate()
+  const [isFormOpen, setIsFormOpen] = useState(false)
+
+  const handleFormSuccess = (workoutId?: string) => {
+    setIsFormOpen(false)
+    if (workoutId) {
+      navigate(`/workouts/${workoutId}`)
+    }
+  }
 
   const formatDuration = (minutes: number): string => {
     const hours = Math.floor(minutes / 60)
@@ -53,6 +62,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
     const exerciseCount = plan.exercises?.length || 0
 
     return (
+      <>
       <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
@@ -148,55 +158,74 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
           </button>
         </div>
       </div>
-    )
+      
+      {/* Workout Form Modal */}
+      <WorkoutForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSuccess={handleFormSuccess}
+      />
+    </>
+  )
   }
 
   // No plan state
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-      <div className="text-center py-8">
-        <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-          <Calendar className="w-8 h-8 text-gray-400" />
-        </div>
-        
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          {(t.homeDashboard as any)?.nextPlan?.noPlan || 'No plan created for today'}
-        </h3>
-        
-        <p className="text-gray-500 mb-6">
-          {hasApiKey 
-            ? (t.homeDashboard as any)?.nextPlan?.generateDescription || 'Generate a personalized workout plan for today'
-            : (t.homeDashboard as any)?.nextPlan?.enableAIDescription || 'Enable AI to generate personalized workout plans'
-          }
-        </p>
-        
-        <div className="flex flex-col sm:flex-row gap-2 justify-center">
-          {hasApiKey ? (
-            <GenerateWorkoutButton
-              variant="primary"
-              size="md"
-              showIcon={true}
-              showText={true}
-            />
-          ) : (
-            <button
-              onClick={onOpenSettings}
-              className="btn-primary flex items-center space-x-2"
-            >
-              <Settings size={16} />
-              <span>{(t.homeDashboard as any)?.nextPlan?.enableAI || 'Enable AI'}</span>
-            </button>
-          )}
+    <>
+      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+        <div className="text-center py-8">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+            <Calendar className="w-8 h-8 text-gray-400" />
+          </div>
           
-          <button
-            onClick={() => navigate('/workouts')}
-            className="btn-secondary flex items-center space-x-2"
-          >
-            <span>{(t.homeDashboard as any)?.cta?.addWorkout || 'Add Workout'}</span>
-          </button>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {(t.homeDashboard as any)?.nextPlan?.noPlan || 'No plan created for today'}
+          </h3>
+          
+          <p className="text-gray-500 mb-6">
+            {hasApiKey 
+              ? (t.homeDashboard as any)?.nextPlan?.generateDescription || 'Generate a personalized workout plan for today'
+              : (t.homeDashboard as any)?.nextPlan?.enableAIDescription || 'Enable AI to generate personalized workout plans'
+            }
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+            {hasApiKey ? (
+              <GenerateWorkoutButton
+                variant="primary"
+                size="md"
+                showIcon={true}
+                showText={true}
+              />
+            ) : (
+              <button
+                onClick={onOpenSettings}
+                className="btn-primary flex items-center space-x-2"
+              >
+                <Settings size={16} />
+                <span>{(t.homeDashboard as any)?.nextPlan?.enableAI || 'Enable AI'}</span>
+              </button>
+            )}
+            
+            <button
+              onClick={() => setIsFormOpen(true)}
+              className="btn-secondary flex items-center space-x-1 sm:space-x-2 touch-manipulation"
+            >
+              <Plus size={18} className="sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">{(t.homeDashboard as any)?.cta?.addWorkout || t.addWorkout || 'Add Workout'}</span>
+              <span className="sm:hidden">{(t.homeDashboard as any)?.cta?.add || 'Add'}</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+      
+      {/* Workout Form Modal */}
+      <WorkoutForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSuccess={handleFormSuccess}
+      />
+    </>
   )
 }
 

@@ -335,7 +335,8 @@ export const translations = {
         generatePlan: 'Generate Plan', // Alias for backward compatibility
         generating: 'Generating...',
         enableAI: 'Enable AI',
-        addWorkout: 'Add Workout'
+        addWorkout: 'Add Workout',
+        add: 'Add'
       }
     },
     
@@ -1326,7 +1327,8 @@ export const translations = {
         generatePlan: 'Сгенерировать план', // Alias for backward compatibility
         generating: 'Генерация...',
         enableAI: 'Включить ИИ',
-        addWorkout: 'Добавить тренировку'
+        addWorkout: 'Добавить тренировку',
+        add: 'Добавить'
       }
     },
     
