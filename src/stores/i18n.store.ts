@@ -103,7 +103,7 @@ export const translations = {
     },
     
     // Profile
-    profile: 'Profile',
+    profileLabel: 'Profile',
     language: 'Language',
     english: 'English',
     russian: 'Русский',
@@ -1146,7 +1146,7 @@ export const translations = {
     },
     
     // Profile
-    profile: 'Профиль',
+    profileLabel: 'Профиль',
     language: 'Язык',
     english: 'English',
     russian: 'Русский',

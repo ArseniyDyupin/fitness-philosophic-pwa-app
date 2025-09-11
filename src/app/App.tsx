@@ -27,7 +27,7 @@ import EntryStep from '../pages/EntryStep'
 
 function App() {
   const { profile, loadProfile } = useProfileStore()
-  const { initializeLanguage } = useI18nStore()
+  const { initializeLanguage, setLanguageFromProfile } = useI18nStore()
   const [isFirstLaunch, setIsFirstLaunch] = useState(true)
 
   useEffect(() => {
@@ -40,6 +40,13 @@ function App() {
       setIsFirstLaunch(false)
     }
   }, [initializeLanguage, loadProfile])
+
+  // Set language from profile after profile is loaded
+  useEffect(() => {
+    if (profile) {
+      setLanguageFromProfile()
+    }
+  }, [profile, setLanguageFromProfile])
 
 
   // Always show language selection on first launch
