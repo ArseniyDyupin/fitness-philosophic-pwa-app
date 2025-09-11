@@ -17,7 +17,7 @@ export const metricsService = {
         return []
       }
       
-      return await db.metric_defs.where('isActive').equals(true).toArray()
+      return await db.metric_defs.where('isActive').equals(1).toArray()
     } catch (error) {
       console.error('Error getting active metric definitions:', error)
       return []
@@ -54,15 +54,14 @@ export const metricsService = {
       query = query.and(entry => entry.date >= startDate && entry.date <= endDate)
     }
     
-    return await query.orderBy('date').toArray()
+    return await query.sortBy('date')
   },
 
   async getEntriesByRange(startDate: string, endDate: string): Promise<MetricEntry[]> {
     return await db.metric_entries
       .where('date')
       .between(startDate, endDate)
-      .orderBy('date')
-      .toArray()
+      .sortBy('date')
   },
 
   async getLatestByDef(defId: string): Promise<MetricEntry | undefined> {
@@ -78,11 +77,11 @@ export const metricsService = {
         return undefined
       }
       
-      return await db.metric_entries
+      const entries = await db.metric_entries
         .where('defId')
         .equals(defId)
-        .orderBy('date')
-        .last()
+        .sortBy('date')
+      return entries[entries.length - 1]
     } catch (error) {
       console.error(`Error getting latest entry for metric ${defId}:`, error)
       return undefined

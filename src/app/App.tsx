@@ -10,7 +10,6 @@ import HomePage from '../pages/HomePage'
 import WorkoutsPage from '../features/workout/WorkoutsPage'
 import WorkoutDetailsPage from '../features/workout/WorkoutDetailsPage'
 import FoodPage from '../features/food/FoodPage'
-import WeeklyPage from '../features/week/WeeklyPage'
 import StatsPage from '../pages/StatsPage'
 import SettingsPage from '../pages/SettingsPage'
 import PlanRealizationPage from '../pages/PlanRealizationPage'
@@ -99,7 +98,6 @@ function App() {
         <Route path="/workouts/:id" element={<WorkoutDetailsPage />} />
         <Route path="/plan/:planId" element={<PlanRealizationPage />} />
         <Route path="/food" element={<FoodPage />} />
-        <Route path="/weekly" element={<WeeklyPage />} />
         <Route path="/stats" element={<StatsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFound />} />

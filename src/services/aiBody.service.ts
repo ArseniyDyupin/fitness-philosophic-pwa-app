@@ -1,5 +1,5 @@
 import { aiService } from './ai'
-import type { BodyAnalysisInput, BodyAnalysisResult, AiBodyEval, PhotoAsset } from '../types/body-metrics'
+import type { BodyAnalysisInput, BodyAnalysisResult, AiBodyEval } from '../types/body-metrics'
 
 export const aiBodyService = {
   async evaluate(input: BodyAnalysisInput): Promise<BodyAnalysisResult> {
@@ -41,13 +41,11 @@ export const aiBodyService = {
         }
       }
 
-      // Call OpenAI API
-      const response = await aiService.callOpenAI({
-        model: 'gpt-4o-mini',
-        messages,
-        max_tokens: 500,
-        temperature: 0.7
-      })
+      // Call OpenAI API using makeRequest method
+      const response = await (aiService as any).makeRequest(
+        messages.map(m => m.content).join('\n'),
+        language === 'ru' ? 'ru' : 'en'
+      )
 
       // Parse the response
       return this.parseResponse(response, language)
@@ -144,8 +142,8 @@ Be objective and constructive.`
       return {
         score: typeof parsed.score === 'number' ? Math.max(0, Math.min(100, parsed.score)) : undefined,
         summary: typeof parsed.summary === 'string' ? parsed.summary.trim() : 'No summary available',
-        tips: Array.isArray(parsed.tips) ? parsed.tips.filter(tip => typeof tip === 'string') : [],
-        tags: Array.isArray(parsed.tags) ? parsed.tags.filter(tag => typeof tag === 'string') : [],
+        tips: Array.isArray(parsed.tips) ? parsed.tips.filter((tip: any) => typeof tip === 'string') : [],
+        tags: Array.isArray(parsed.tags) ? parsed.tags.filter((tag: any) => typeof tag === 'string') : [],
         comparedTo: parsed.comparedTo && typeof parsed.comparedTo === 'object' 
           ? {
               weeks: typeof parsed.comparedTo.weeks === 'number' ? parsed.comparedTo.weeks : 0,
