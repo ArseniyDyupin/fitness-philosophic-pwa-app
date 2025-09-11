@@ -2,7 +2,7 @@ import React from 'react'
 import { useTranslations } from '../../stores/i18n.store'
 import { calculateWorkoutCalories, calculateWorkoutDuration } from '../../services/kcal'
 import type { Workout } from '../../types/models'
-import { Clock, Flame, TrendingUp, MoreVertical, Bot } from 'lucide-react'
+import { Clock, Flame, TrendingUp, MoreVertical, Bot, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface WorkoutCardProps {
@@ -19,6 +19,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
   userWeight = 70,
   onClick,
   onEdit,
+  onDelete,
   onUpdateAnalysis
 }) => {
   const t = useTranslations()
@@ -111,17 +112,30 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
               <Bot size={14} />
             </button>
           )}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              // Show menu or handle edit
-              if (onEdit) onEdit()
-            }}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
-            title="More options"
-          >
-            <MoreVertical size={14} />
-          </button>
+          {onEdit && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit()
+              }}
+              className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
+              title="Edit workout"
+            >
+              <MoreVertical size={14} />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete()
+              }}
+              className="p-1 text-gray-400 hover:text-red-600 transition-colors touch-manipulation"
+              title="Delete workout"
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
         </div>
       </div>
 

@@ -106,6 +106,7 @@ const HomePage: React.FC = () => {
           <RecentWorkouts
             workouts={recentWorkouts}
             isLoading={workoutsLoading}
+            userWeight={profile?.weight}
             onEdit={handleEditWorkout}
             onDelete={handleDeleteWorkout}
           />
