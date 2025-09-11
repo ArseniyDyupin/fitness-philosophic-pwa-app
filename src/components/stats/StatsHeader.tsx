@@ -55,7 +55,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
             {t.statsPage?.title || 'Statistics'}
           </h1>
           <p className="text-sm sm:text-lg text-gray-600 mt-1 sm:mt-2">
-            Track your fitness progress and trends
+            {t.statsPage?.subtitle || 'Track your fitness progress and trends'}
           </p>
         </div>
 
@@ -99,7 +99,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
                 <form onSubmit={handleCustomDateSubmit} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Start Date
+                      {t.statsPage?.customDate?.startDate || 'Start Date'}
                     </label>
                     <input
                       type="date"
@@ -114,7 +114,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      End Date
+                      {t.statsPage?.customDate?.endDate || 'End Date'}
                     </label>
                     <input
                       type="date"
@@ -133,13 +133,13 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
                       onClick={() => setIsCustomOpen(false)}
                       className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800"
                     >
-                      Cancel
+                      {t.statsPage?.customDate?.cancel || 'Cancel'}
                     </button>
                     <button
                       type="submit"
                       className="px-3 py-1.5 text-sm bg-primary-600 text-white rounded-md hover:bg-primary-700"
                     >
-                      Apply
+                      {t.statsPage?.customDate?.apply || 'Apply'}
                     </button>
                   </div>
                 </form>

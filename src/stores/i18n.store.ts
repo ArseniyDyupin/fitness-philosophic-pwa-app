@@ -773,6 +773,16 @@ export const translations = {
         refresh: 'Refresh Insights',
         loading: 'Generating insights...',
         error: 'Failed to generate insights'
+      },
+      error: 'Error:',
+      noData: 'No Data Available',
+      noDataMessage: 'Start tracking your workouts to see your statistics here.',
+      subtitle: 'Track your fitness progress and trends',
+      customDate: {
+        startDate: 'Start Date',
+        endDate: 'End Date',
+        cancel: 'Cancel',
+        apply: 'Apply'
       }
     },
     
@@ -1781,6 +1791,16 @@ export const translations = {
         refresh: 'Обновить инсайты',
         loading: 'Генерируем инсайты...',
         error: 'Не удалось сгенерировать инсайты'
+      },
+      error: 'Ошибка:',
+      noData: 'Нет данных',
+      noDataMessage: 'Начните отслеживать тренировки, чтобы увидеть статистику здесь.',
+      subtitle: 'Отслеживайте прогресс и тренды в фитнесе',
+      customDate: {
+        startDate: 'Дата начала',
+        endDate: 'Дата окончания',
+        cancel: 'Отмена',
+        apply: 'Применить'
       }
     },
     

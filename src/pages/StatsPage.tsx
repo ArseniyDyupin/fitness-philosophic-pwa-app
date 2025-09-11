@@ -99,7 +99,7 @@ const StatsPage: React.FC = () => {
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
             <div className="text-red-800">
-              <strong>Error:</strong> {error}
+              <strong>{t.statsPage?.error || 'Error:'}</strong> {error}
             </div>
           </div>
         )}
@@ -107,34 +107,19 @@ const StatsPage: React.FC = () => {
         {/* Stats Content */}
         {statsData && !isLoading && (
           <div className="space-y-6">
-            {/* KPI Grid */}
+            {/* KPI Grid - Always show */}
             <KPIGrid kpi={statsData.kpi} />
 
-            {/* Discipline Breakdown */}
+            {/* Discipline Breakdown - Only show if has data */}
             <DisciplineBreakdown discipline={statsData.discipline} />
 
-            {/* Personal Records */}
+            {/* Personal Records - Only show if has data */}
             <Records records={statsData.records} />
 
-            {/* Placeholder for other components */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Trends</h2>
-              <div className="text-center py-8 text-gray-500">
-                Trends chart will be implemented here
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Activity Calendar</h2>
-              <div className="text-center py-8 text-gray-500">
-                Activity heatmap will be implemented here
-              </div>
-            </div>
-
-            {/* Body Metrics */}
+            {/* Body Metrics - Only show if configured */}
             <BodyMetricsBlock weekStart={statsData.startDate ? new Date(statsData.startDate) : undefined} />
 
-            {/* AI Body Evaluation */}
+            {/* AI Body Evaluation - Only show if has data */}
             <AiBodyEvalCard weekStart={statsData.startDate ? new Date(statsData.startDate) : undefined} />
           </div>
         )}
@@ -144,10 +129,10 @@ const StatsPage: React.FC = () => {
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📊</div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              No Data Available
+              {t.statsPage?.noData || 'No Data Available'}
             </h2>
             <p className="text-lg text-gray-600">
-              Start tracking your workouts to see your statistics here.
+              {t.statsPage?.noDataMessage || 'Start tracking your workouts to see your statistics here.'}
             </p>
           </div>
         )}
