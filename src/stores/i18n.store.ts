@@ -296,7 +296,11 @@ export const translations = {
         regenerate: 'Regenerate',
         noPlan: 'No plan created for today',
         enableAI: 'Enable AI',
-        generate: 'Generate Plan'
+        generate: 'Generate Plan',
+        exercises: 'Exercises',
+        moreExercises: 'more exercises',
+        generateDescription: 'Generate a personalized workout plan for today',
+        enableAIDescription: 'Enable AI to generate personalized workout plans'
       },
       kpi: {
         today: 'Today',
@@ -839,6 +843,7 @@ export const translations = {
       easy: 'Easy',
       moderate: 'Moderate',
       hard: 'Hard',
+      veryHard: 'Very Hard',
       exercises: 'Exercises',
       addExercise: 'Add Exercise',
       noExercisesAdded: 'No exercises added yet. Click "Add Exercise" to get started.',
@@ -1282,7 +1287,11 @@ export const translations = {
         regenerate: 'Сгенерировать заново',
         noPlan: 'План на сегодня не создан',
         enableAI: 'Включить ИИ',
-        generate: 'Сгенерировать план'
+        generate: 'Сгенерировать план',
+        exercises: 'Упражнения',
+        moreExercises: 'упражнений',
+        generateDescription: 'Сгенерируйте персональный план тренировки на сегодня',
+        enableAIDescription: 'Включите ИИ для генерации персональных планов тренировок'
       },
       kpi: {
         today: 'Сегодня',
@@ -1832,6 +1841,7 @@ export const translations = {
       easy: 'Легко',
       moderate: 'Умеренно',
       hard: 'Тяжело',
+      veryHard: 'Очень тяжело',
       exercises: 'Упражнения',
       addExercise: 'Добавить упражнение',
       noExercisesAdded: 'Упражнения еще не добавлены. Нажмите "Добавить упражнение" чтобы начать.',

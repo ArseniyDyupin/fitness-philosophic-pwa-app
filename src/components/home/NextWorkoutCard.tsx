@@ -40,10 +40,10 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
   }
 
   const getRPEBadgeText = (rpe: number): string => {
-    if (rpe <= 3) return 'Easy'
-    if (rpe <= 6) return 'Moderate'
-    if (rpe <= 8) return 'Hard'
-    return 'Very Hard'
+    if (rpe <= 3) return t.workoutForm?.easy || 'Easy'
+    if (rpe <= 6) return t.workoutForm?.moderate || 'Moderate'
+    if (rpe <= 8) return t.workoutForm?.hard || 'Hard'
+    return t.workoutForm?.veryHard || 'Very Hard'
   }
 
   if (plan) {
@@ -108,7 +108,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
         {/* Exercise List */}
         {plan.exercises && plan.exercises.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Exercises:</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">{(t.homeDashboard as any)?.nextPlan?.exercises || 'Exercises'}:</h3>
             <div className="space-y-1">
               {plan.exercises.slice(0, 3).map((exercise, index) => (
                 <div key={index} className="flex items-center justify-between text-sm">
@@ -123,7 +123,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
               ))}
               {plan.exercises.length > 3 && (
                 <div className="text-sm text-gray-500">
-                  +{plan.exercises.length - 3} more exercises
+                  +{plan.exercises.length - 3} {(t.homeDashboard as any)?.nextPlan?.moreExercises || 'more exercises'}
                 </div>
               )}
             </div>
@@ -165,8 +165,8 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
         
         <p className="text-gray-500 mb-6">
           {hasApiKey 
-            ? 'Generate a personalized workout plan for today'
-            : 'Enable AI to generate personalized workout plans'
+            ? (t.homeDashboard as any)?.nextPlan?.generateDescription || 'Generate a personalized workout plan for today'
+            : (t.homeDashboard as any)?.nextPlan?.enableAIDescription || 'Enable AI to generate personalized workout plans'
           }
         </p>
         
