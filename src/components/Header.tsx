@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslations } from '../stores/i18n.store'
 import { downloadExport } from '../services/export'
 import { toastSuccess, toastError } from '../lib/toast'
-import { ArrowLeft, Download } from 'lucide-react'
+import { ArrowLeft, Download, MoreVertical } from 'lucide-react'
 import GenerateWorkoutButton from './home/GenerateWorkoutButton'
 import HeaderReminderBanner from './HeaderReminderBanner'
 import BodyMetricsModal from './BodyMetricsModal'
@@ -15,6 +15,24 @@ const Header: React.FC = () => {
   
   const [isExporting, setIsExporting] = useState(false)
   const [isMetricsModalOpen, setIsMetricsModalOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isMobileMenuOpen) {
+        const target = event.target as Element
+        if (!target.closest('.mobile-menu-container')) {
+          setIsMobileMenuOpen(false)
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isMobileMenuOpen])
 
 
   const handleExport = async () => {
@@ -139,19 +157,32 @@ const Header: React.FC = () => {
 
           {/* Right side: Action buttons */}
           <div className="flex items-center space-x-2">
-            {/* Generate Workout Button */}
-            <GenerateWorkoutButton
-              variant="primary"
-              showIcon={true}
-              showText={true}
-              className="text-sm"
-            />
+            {/* Generate Workout Button - Desktop */}
+            <div className="hidden md:block">
+              <GenerateWorkoutButton
+                variant="primary"
+                showIcon={true}
+                showText={true}
+                className="text-sm"
+              />
+            </div>
+            
+            {/* Generate Workout Button - Mobile (icon only, same size as export) */}
+            <div className="md:hidden">
+              <GenerateWorkoutButton
+                variant="primary"
+                showIcon={true}
+                showText={false}
+                className="p-2"
+                title={t.header?.generate || 'Generate Workout'}
+              />
+            </div>
             
             {/* Export Button */}
             <button
               onClick={handleExport}
               disabled={isExporting}
-              className="btn-secondary flex items-center space-x-2 text-sm pwa-touch-target"
+              className="btn-secondary flex items-center space-x-2 text-sm pwa-touch-target p-2"
             >
               {isExporting ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
@@ -160,70 +191,75 @@ const Header: React.FC = () => {
               )}
               <span className="hidden sm:inline">{t.header?.export || t.exportAll || 'Export Data'}</span>
             </button>
+            
+            {/* Mobile Menu Button */}
+            <div className="mobile-menu-container relative">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden btn-secondary flex items-center p-2 text-gray-600 hover:text-gray-900 transition-colors pwa-touch-target"
+                aria-label="Open navigation menu"
+              >
+                <MoreVertical size={16} />
+              </button>
+              
+              {/* Mobile Menu Dropdown */}
+              {isMobileMenuOpen && (
+                <div className="md:hidden absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[160px]">
+                  <div className="py-1">
+                    <Link 
+                      to="/" 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center px-3 py-2 text-sm transition-colors pwa-touch-target ${
+                        isActive('/')
+                          ? 'bg-primary-50 text-primary-600 font-semibold'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      }`}
+                      aria-current={isActive('/') ? 'page' : undefined}
+                    >
+                      {t.header?.home || 'Overview'}
+                    </Link>
+                    <Link 
+                      to="/workouts" 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center px-3 py-2 text-sm transition-colors pwa-touch-target ${
+                        isActive('/workouts')
+                          ? 'bg-primary-50 text-primary-600 font-semibold'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      }`}
+                      aria-current={isActive('/workouts') ? 'page' : undefined}
+                    >
+                      {t.header?.workouts || t.workouts}
+                    </Link>
+                    <Link 
+                      to="/stats" 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center px-3 py-2 text-sm transition-colors pwa-touch-target ${
+                        isActive('/stats')
+                          ? 'bg-primary-50 text-primary-600 font-semibold'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      }`}
+                      aria-current={isActive('/stats') ? 'page' : undefined}
+                    >
+                      {t.statsPage?.title || 'Statistics'}
+                    </Link>
+                    <Link 
+                      to="/settings" 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center px-3 py-2 text-sm transition-colors pwa-touch-target ${
+                        isActive('/settings')
+                          ? 'bg-primary-50 text-primary-600 font-semibold'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      }`}
+                      aria-current={isActive('/settings') ? 'page' : undefined}
+                    >
+                      {t.header?.settings || t.settings}
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        
-        {/* Mobile Navigation */}
-        <nav className="md:hidden border-t border-gray-200 py-2 pwa-safe-area">
-          <div className="flex justify-around pwa-scroll">
-            <Link 
-              to="/" 
-              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors pwa-touch-target ${
-                isActive('/')
-                  ? 'text-primary-600 font-semibold'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-              aria-current={isActive('/') ? 'page' : undefined}
-            >
-              <span className="text-xs">{t.header?.home || 'Overview'}</span>
-            </Link>
-            <Link 
-              to="/workouts" 
-              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors pwa-touch-target ${
-                isActive('/workouts')
-                  ? 'text-primary-600 font-semibold'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-              aria-current={isActive('/workouts') ? 'page' : undefined}
-            >
-              <span className="text-xs">{t.header?.workouts || t.workouts}</span>
-            </Link>
-            {/* Temporarily hidden - will be implemented later */}
-            {/* <Link 
-              to="/food" 
-              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors ${
-                isActive('/food')
-                  ? 'text-primary-600 font-semibold'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-              aria-current={isActive('/food') ? 'page' : undefined}
-            >
-              <span className="text-xs">{t.header?.food || t.food}</span>
-            </Link> */}
-            <Link 
-              to="/stats" 
-              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors pwa-touch-target ${
-                isActive('/stats')
-                  ? 'text-primary-600 font-semibold'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-              aria-current={isActive('/stats') ? 'page' : undefined}
-            >
-              <span className="text-xs">{t.statsPage?.title || 'Statistics'}</span>
-            </Link>
-            <Link 
-              to="/settings" 
-              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors pwa-touch-target ${
-                isActive('/settings')
-                  ? 'text-primary-600 font-semibold'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-              aria-current={isActive('/settings') ? 'page' : undefined}
-            >
-              <span className="text-xs">{t.header?.settings || t.settings}</span>
-            </Link>
-          </div>
-        </nav>
       </div>
       {/* Body Metrics Modal */}
       <BodyMetricsModal

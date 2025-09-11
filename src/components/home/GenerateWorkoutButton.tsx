@@ -13,6 +13,7 @@ interface GenerateWorkoutButtonProps {
   showText?: boolean
   className?: string
   disabled?: boolean
+  title?: string
   onPlanGenerated?: (plan: any) => void
 }
 
@@ -23,6 +24,7 @@ const GenerateWorkoutButton: React.FC<GenerateWorkoutButtonProps> = ({
   showText = true,
   className = '',
   disabled = false,
+  title,
   onPlanGenerated
 }) => {
   const t = useTranslations()
@@ -82,7 +84,7 @@ const GenerateWorkoutButton: React.FC<GenerateWorkoutButtonProps> = ({
         onClick={() => setIsModalOpen(true)}
         disabled={disabled}
         className={getButtonClasses()}
-        title={(t.homeDashboard as any)?.cta?.generateWorkout || 'Generate Workout'}
+        title={title || (t.homeDashboard as any)?.cta?.generateWorkout || 'Generate Workout'}
       >
         {showIcon && <Sparkles size={getIconSize()} />}
         {showText && (

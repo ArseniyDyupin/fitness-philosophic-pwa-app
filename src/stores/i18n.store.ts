@@ -100,7 +100,8 @@ export const translations = {
       settings: 'Settings',
       export: 'Export Data',
       generate: 'Generate Workout',
-      generating: 'Generating...'
+      generating: 'Generating...',
+      menu: 'Menu'
     },
     
     // Profile
@@ -1144,7 +1145,8 @@ export const translations = {
       settings: 'Настройки',
       export: 'Выгрузить данные',
       generate: 'Сгенерировать тренировку',
-      generating: 'Генерация…'
+      generating: 'Генерация…',
+      menu: 'Меню'
     },
     
     // Profile
