@@ -46,6 +46,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
   const today = new Date().toISOString().split('T')[0]
   const todayWorkouts = getWorkoutsByDate(today)
   const hasWorkoutsToday = todayWorkouts.length > 0
+  console.log(todayWorkouts, '<<<<<<todayWorkouts')
 
 
   const getProgressPercentage = (current: number, goal: number): number => {

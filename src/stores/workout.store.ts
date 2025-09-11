@@ -148,7 +148,7 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
 
   getWorkoutsByDate: (dateISO: string) => {
     const { workouts } = get()
-    return workouts.filter(workout => workout.date === dateISO)
+    return workouts.filter(workout => workout.date.split('T')[0] === dateISO)
   },
 
   getLastN: (n: number) => {
@@ -158,9 +158,8 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
 
   getDayStats: (dateISO: string) => {
     const { workouts } = get()
-    // Filter only completed workouts (not AI plans) for today
     const dayWorkouts = workouts.filter(workout => 
-      workout.date === dateISO && 
+      workout.date.split('T')[0] === dateISO &&
       workout.status === 'completed'
     )
     
@@ -172,11 +171,9 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
 
     dayWorkouts.forEach(workout => {
       if (workout.exercises) {
-        workout.exercises.forEach(exercise => {
-          calories += exercise.kcalEstimated || 0
-          minutes += exercise.details.durationMin || 0
-          exercises += 1
-        })
+        calories += calculateWorkoutCalories(workout.exercises, 70, workout.rpe)
+        minutes += workout.durationMin || calculateWorkoutDuration(workout.exercises)
+        exercises += workout.exercises.length
       }
       if (workout.rpe && workout.rpe > 0) {
         totalRPE += workout.rpe
