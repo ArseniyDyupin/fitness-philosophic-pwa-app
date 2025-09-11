@@ -45,7 +45,7 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
           type: 'warning',
           icon: <User className="w-5 h-5" />,
           title: (t.homeDashboard as any)?.banners?.finishProfile || 'Complete your profile',
-          message: 'Complete your profile to get personalized recommendations',
+          message: (t.homeDashboard as any)?.banners?.completeProfileMessage || 'Complete your profile to get personalized recommendations',
           actionText: (t.homeDashboard as any)?.banners?.setup || 'Setup',
           onAction: () => navigate('/settings')
         })
@@ -58,7 +58,7 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
           type: 'info',
           icon: <Settings className="w-5 h-5" />,
           title: (t.homeDashboard as any)?.banners?.apiKey || 'Connect OpenAI key to enable AI features',
-          message: 'Enable AI to generate personalized workout plans and get analysis',
+          message: (t.homeDashboard as any)?.banners?.enableAIMessage || 'Enable AI to generate personalized workout plans and get analysis',
           actionText: (t.homeDashboard as any)?.banners?.setup || 'Setup',
           onAction: () => navigate('/settings')
         })
@@ -78,14 +78,14 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
               type: 'info',
               icon: <Activity className="w-5 h-5" />,
               title: (t.homeDashboard as any)?.banners?.metrics || 'Time to update measurements for the past week',
-              message: 'Keep track of your progress by updating your body measurements',
+              message: (t.homeDashboard as any)?.banners?.metricsMessage || 'Keep track of your progress by updating your body measurements',
               actionText: (t.homeDashboard as any)?.banners?.fill || 'Fill',
               onAction: () => onOpenMetricsModal?.()
             })
           }
         }
       } catch (error) {
-        console.log('Body metrics check failed:', error)
+        console.log((t.homeDashboard as any)?.banners?.bodyMetricsCheckFailed || 'Body metrics check failed:', error)
       }
 
       // Check if user hasn't worked out in a while
@@ -94,7 +94,7 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
 
       setBanners(newBanners)
     } catch (error) {
-      console.error('Failed to load banners:', error)
+      console.error((t.homeDashboard as any)?.banners?.failedToLoadBanners || 'Failed to load banners:', error)
     } finally {
       setIsLoading(false)
     }

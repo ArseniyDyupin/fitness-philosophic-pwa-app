@@ -327,7 +327,12 @@ export const translations = {
         finishProfile: 'Complete your profile',
         fill: 'Fill',
         snooze: 'Snooze',
-        setup: 'Setup'
+        setup: 'Setup',
+        completeProfileMessage: 'Complete your profile to get personalized recommendations',
+        enableAIMessage: 'Enable AI to generate personalized workout plans and get analysis',
+        metricsMessage: 'Keep track of your progress by updating your body measurements',
+        bodyMetricsCheckFailed: 'Body metrics check failed:',
+        failedToLoadBanners: 'Failed to load banners:'
       },
       cta: {
         openPlan: 'Open Today\'s Plan',
@@ -1319,7 +1324,12 @@ export const translations = {
         finishProfile: 'Завершите профиль',
         fill: 'Заполнить',
         snooze: 'Отложить',
-        setup: 'Настроить'
+        setup: 'Настроить',
+        completeProfileMessage: 'Завершите профиль, чтобы получить персональные рекомендации',
+        enableAIMessage: 'Включите ИИ для генерации персональных планов тренировок и анализа',
+        metricsMessage: 'Отслеживайте прогресс, обновляя измерения тела',
+        bodyMetricsCheckFailed: 'Проверка метрик тела не удалась:',
+        failedToLoadBanners: 'Не удалось загрузить баннеры:'
       },
       cta: {
         openPlan: 'Открыть план на сегодня',
