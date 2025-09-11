@@ -692,7 +692,11 @@ export const translations = {
         calories: 'Calories',
         duration: 'Duration (min)',
         avgRpe: 'Avg RPE',
-        goalProgress: '{{done}} / {{goal}} workouts'
+        goalProgress: '{{done}} / {{goal}} workouts',
+        collapseSummary: 'Collapse summary',
+        expandSummary: 'Expand summary',
+        min: 'min',
+        weeklyActivity: 'Weekly Activity'
       },
       emptyWeek: {
         title: 'No workouts this week',
@@ -1696,7 +1700,11 @@ export const translations = {
         calories: 'Калории',
         duration: 'Длительность (мин)',
         avgRpe: 'Средний RPE',
-        goalProgress: '{{done}} / {{goal}} тренировок'
+        goalProgress: '{{done}} / {{goal}} тренировок',
+        collapseSummary: 'Свернуть сводку',
+        expandSummary: 'Развернуть сводку',
+        min: 'мин',
+        weeklyActivity: 'Активность недели'
       },
       emptyWeek: {
         title: 'Нет тренировок на этой неделе',
