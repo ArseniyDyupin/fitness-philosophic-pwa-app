@@ -58,7 +58,7 @@ const Header: React.FC = () => {
       {/* Reminder Banner */}
       <HeaderReminderBanner onOpenMetricsModal={() => setIsMetricsModalOpen(true)} />
       
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white shadow-sm border-b border-gray-200 pwa-safe-area">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Left side: Back button + Logo */}
@@ -66,7 +66,7 @@ const Header: React.FC = () => {
             {shouldShowBackButton() && (
               <button
                 onClick={handleBack}
-                className="btn-ghost p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="btn-ghost p-2 hover:bg-gray-100 rounded-lg transition-colors pwa-touch-target"
                 aria-label={t.header?.back || 'Back'}
               >
                 <ArrowLeft size={20} />
@@ -140,7 +140,7 @@ const Header: React.FC = () => {
             <button
               onClick={handleExport}
               disabled={isExporting}
-              className="btn-secondary flex items-center space-x-2 text-sm"
+              className="btn-secondary flex items-center space-x-2 text-sm pwa-touch-target"
             >
               {isExporting ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
@@ -153,11 +153,11 @@ const Header: React.FC = () => {
         </div>
         
         {/* Mobile Navigation */}
-        <nav className="md:hidden border-t border-gray-200 py-2">
-          <div className="flex justify-around">
+        <nav className="md:hidden border-t border-gray-200 py-2 pwa-safe-area">
+          <div className="flex justify-around pwa-scroll">
             <Link 
               to="/workouts" 
-              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors ${
+              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors pwa-touch-target ${
                 isActive('/workouts')
                   ? 'text-primary-600 font-semibold'
                   : 'text-gray-600 hover:text-gray-900'
@@ -180,7 +180,7 @@ const Header: React.FC = () => {
             </Link> */}
             <Link 
               to="/stats" 
-              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors ${
+              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors pwa-touch-target ${
                 isActive('/stats')
                   ? 'text-primary-600 font-semibold'
                   : 'text-gray-600 hover:text-gray-900'
@@ -191,7 +191,7 @@ const Header: React.FC = () => {
             </Link>
             <Link 
               to="/settings" 
-              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors ${
+              className={`flex flex-col items-center px-3 py-2 rounded-md transition-colors pwa-touch-target ${
                 isActive('/settings')
                   ? 'text-primary-600 font-semibold'
                   : 'text-gray-600 hover:text-gray-900'
