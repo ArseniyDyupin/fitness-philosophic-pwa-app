@@ -131,8 +131,8 @@ const Header: React.FC = () => {
             {/* Generate Workout Button */}
             <GenerateWorkoutButton
               variant="primary"
-              size="sm"
-              showText={false}
+              showIcon={true}
+              showText={true}
               className="text-sm"
             />
             
