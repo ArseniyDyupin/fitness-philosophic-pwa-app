@@ -25,14 +25,14 @@ const KPIGrid: React.FC<KPIGridProps> = ({ kpi }) => {
   }
 
   const getRpeLabel = (rpe?: number): string => {
-    if (!rpe) return 'N/A'
-    if (rpe <= 3) return 'Easy'
-    if (rpe <= 7) return 'Moderate'
-    return 'Hard'
+    if (!rpe) return t.statsPage?.rpe?.na || 'N/A'
+    if (rpe <= 3) return t.statsPage?.rpe?.easy || 'Easy'
+    if (rpe <= 7) return t.statsPage?.rpe?.moderate || 'Moderate'
+    return t.statsPage?.rpe?.hard || 'Hard'
   }
 
   const formatLastWorkout = (date?: string): string => {
-    if (!date) return 'Never'
+    if (!date) return t.statsPage?.rpe?.never || 'Never'
     return formatDistanceToNow(new Date(date), { addSuffix: true })
   }
 
@@ -83,7 +83,7 @@ const KPIGrid: React.FC<KPIGridProps> = ({ kpi }) => {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Key Metrics</h2>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.statsPage?.keyMetrics || 'Key Metrics'}</h2>
       
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {kpiItems.map((item, index) => (

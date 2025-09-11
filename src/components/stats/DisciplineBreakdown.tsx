@@ -56,24 +56,23 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
     sessions: stats.sessions
   })).filter(item => item.calories > 0 || item.minutes > 0)
 
-  const totalCalories = pieData.reduce((sum, item) => sum + item.value, 0)
+  const totalCalories = Object.values(discipline).reduce((sum, stats) => sum + stats.calories, 0)
   const totalMinutes = Object.values(discipline).reduce((sum, stats) => sum + stats.minutes, 0)
+  const totalValue = chartType === 'calories' ? totalCalories : totalMinutes
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
-      const percentage = chartType === 'calories' 
-        ? ((data.value / totalCalories) * 100).toFixed(1)
-        : ((data.value / totalMinutes) * 100).toFixed(1)
+      const percentage = ((data.value / totalValue) * 100).toFixed(1)
       
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900">{data.name}</p>
           <p className="text-sm text-gray-600">
-            {chartType === 'calories' ? 'Calories' : 'Minutes'}: {data.value.toLocaleString()}
+            {chartType === 'calories' ? (t.statsPage?.chart?.calories || 'Calories') : (t.statsPage?.chart?.minutes || 'Minutes')}: {data.value.toLocaleString()}
           </p>
-          <p className="text-sm text-gray-500">{percentage}% of total</p>
-          <p className="text-sm text-gray-500">Sessions: {data.sessions}</p>
+          <p className="text-sm text-gray-500">{percentage}{t.statsPage?.chart?.ofTotal || '% of total'}</p>
+          <p className="text-sm text-gray-500">{t.statsPage?.chart?.sessions || 'Sessions:'} {data.sessions}</p>
         </div>
       )
     }
@@ -87,7 +86,7 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
           {t.statsPage?.discipline?.title || 'Discipline Breakdown'}
         </h2>
         <div className="text-center py-8 text-gray-500">
-          No workout data available for this period
+          {t.statsPage?.chart?.noData || 'No workout data available for this period'}
         </div>
       </div>
     )
@@ -102,7 +101,7 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
-          aria-label={isExpanded ? 'Collapse' : 'Expand'}
+          aria-label={isExpanded ? (t.statsPage?.chart?.collapse || 'Collapse') : (t.statsPage?.chart?.expand || 'Expand')}
         >
           {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
         </button>
@@ -119,7 +118,7 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Calories
+            {t.statsPage?.chart?.calories || 'Calories'}
           </button>
           <button
             onClick={() => setChartType('time')}
@@ -129,7 +128,7 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Time
+            {t.statsPage?.chart?.time || 'Time'}
           </button>
         </div>
       </div>
@@ -166,8 +165,11 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="calories" fill="#3B82F6" name="Calories" />
-                <Bar dataKey="minutes" fill="#10B981" name="Minutes" />
+                {chartType === 'calories' ? (
+                  <Bar dataKey="calories" fill="#3B82F6" name={t.statsPage?.chart?.calories || 'Calories'} />
+                ) : (
+                  <Bar dataKey="minutes" fill="#10B981" name={t.statsPage?.chart?.minutes || 'Minutes'} />
+                )}
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -189,10 +191,13 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
                 {disciplineNames[key as keyof typeof disciplineNames]}
               </div>
               <div className="text-xs text-gray-600">
-                {stats.sessions} sessions
+                {stats.sessions} {t.statsPage?.chart?.sessionsCount || 'sessions'}
               </div>
               <div className="text-xs text-gray-500">
-                {Math.round(stats.calories)} kcal
+                {chartType === 'calories' 
+                  ? `${Math.round(stats.calories)} ${t.statsPage?.chart?.kcal || 'kcal'}`
+                  : `${Math.round(stats.minutes)} ${t.statsPage?.chart?.minutes || 'min'}`
+                }
               </div>
             </div>
           )

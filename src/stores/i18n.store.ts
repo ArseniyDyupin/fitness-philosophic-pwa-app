@@ -783,6 +783,27 @@ export const translations = {
         endDate: 'End Date',
         cancel: 'Cancel',
         apply: 'Apply'
+      },
+      keyMetrics: 'Key Metrics',
+      rpe: {
+        easy: 'Easy',
+        moderate: 'Moderate',
+        hard: 'Hard',
+        never: 'Never',
+        na: 'N/A'
+      },
+      chart: {
+        calories: 'Calories',
+        minutes: 'Minutes',
+        time: 'Time',
+        ofTotal: '% of total',
+        sessions: 'Sessions:',
+        noData: 'No workout data available for this period',
+        collapse: 'Collapse',
+        expand: 'Expand',
+        sessionsCount: 'sessions',
+        kcal: 'kcal',
+        min: 'min'
       }
     },
     
@@ -1801,6 +1822,27 @@ export const translations = {
         endDate: 'Дата окончания',
         cancel: 'Отмена',
         apply: 'Применить'
+      },
+      keyMetrics: 'Ключевые метрики',
+      rpe: {
+        easy: 'Легко',
+        moderate: 'Умеренно',
+        hard: 'Сложно',
+        never: 'Никогда',
+        na: 'Н/Д'
+      },
+      chart: {
+        calories: 'Калории',
+        minutes: 'Минуты',
+        time: 'Время',
+        ofTotal: '% от общего',
+        sessions: 'Сессии:',
+        noData: 'Нет данных о тренировках за этот период',
+        collapse: 'Свернуть',
+        expand: 'Развернуть',
+        sessionsCount: 'сессий',
+        kcal: 'ккал',
+        min: 'мин'
       }
     },
     
