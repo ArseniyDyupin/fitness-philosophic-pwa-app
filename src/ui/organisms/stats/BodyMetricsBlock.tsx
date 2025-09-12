@@ -38,13 +38,13 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
       setIsLoading(true)
       
       // Check if database is ready and has the required tables
-      const db = (await import('../../services/db')).db
+      const db = (await import('@services/db')).db
       if (!db.isOpen()) {
         await db.open()
       }
       
       // Check if metric_defs table exists and has data
-      const tableExists = db.tables.some(table => table.name === 'metric_defs')
+      const tableExists = db.tables.some((table: any) => table.name === 'metric_defs')
       if (!tableExists) {
         console.log('Body metrics tables not found - skipping body metrics block')
         setMetricDefs([])

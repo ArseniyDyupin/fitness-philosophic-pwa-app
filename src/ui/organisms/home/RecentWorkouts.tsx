@@ -1,6 +1,6 @@
 import React from 'react'
 import Button from '@atoms/Button'
-import WorkoutCard from './WorkoutCard'
+import WorkoutCard from '@organisms/shared/WorkoutCard'
 import { cn } from '@utils/cn'
 import type { Workout } from '@/types/models'
 

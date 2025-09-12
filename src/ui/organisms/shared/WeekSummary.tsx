@@ -3,10 +3,10 @@ import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
 import { useProfileStore } from '@stores/profile.store'
 import type { Workout } from '@/types/models'
-import WeeklyActivityChart from './WeeklyActivityChart'
+import WeeklyActivityChart from '@organisms/shared/WeeklyActivityChart'
 import { calculateWorkoutCalories } from '@services/kcal'
 
-interface WeekSummaryProps {
+export interface WeekSummaryProps {
   workouts: Workout[]
   weekStart: Date
   previousWeekWorkouts?: Workout[]

@@ -3,7 +3,7 @@ import { useTranslations } from '@stores/i18n.store'
 import type { WorkoutExercise, WorkoutType } from '@/types/models'
 import { Copy, Trash2, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react'
 
-interface ExerciseCardProps {
+export interface ExerciseCardProps {
   exercise: WorkoutExercise
   index: number
   onUpdate: (updates: Partial<WorkoutExercise>) => void

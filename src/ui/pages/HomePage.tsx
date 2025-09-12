@@ -8,10 +8,10 @@ import { useTranslations } from '@stores/i18n.store'
 import { format, startOfWeek } from 'date-fns'
 
 // Import new dashboard components
-import NextWorkoutCard from '@organisms/NextWorkoutCard'
-import HomeKPI, { type DayStats, type WeekStats } from '@organisms/HomeKPI'
-import RecentWorkouts from '@organisms/RecentWorkouts'
-import HomeBanners from '@organisms/HomeBanners'
+import NextWorkoutCard from '@organisms/home/NextWorkoutCard'
+import HomeKPI, { type DayStats, type WeekStats } from '@organisms/home/HomeKPI'
+import RecentWorkouts from '@organisms/home/RecentWorkouts'
+import HomeBanners from '@organisms/home/HomeBanners'
 import BodyMetricsModal from '@modals/BodyMetricsModal'
 
 const HomePage: React.FC = () => {

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Calendar, Clock, Zap, Target, Play, CheckCircle, Settings, Plus } from 'lucide-react'
 import type { Workout } from '@/types/models'
 import GenerateWorkoutButton from '@molecules/GenerateWorkoutButton'
-import WorkoutForm from './WorkoutForm'
+import WorkoutForm from '@organisms/workouts/WorkoutForm'
 
 interface NextWorkoutCardProps {
   plan?: Workout

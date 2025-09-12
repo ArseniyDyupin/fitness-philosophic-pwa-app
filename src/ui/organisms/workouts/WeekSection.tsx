@@ -4,8 +4,8 @@ import { useAIStore } from '@stores/ai.store'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Sparkles } from 'lucide-react'
 import type { Workout } from '@/types/models'
-import WorkoutCard from './WorkoutCard'
-import WeekSummary from './WeekSummary'
+import WorkoutCard from '@organisms/shared/WorkoutCard'
+import WeekSummary from '@organisms/shared/WeekSummary'
 
 interface WeekSectionProps {
   workouts: Workout[]

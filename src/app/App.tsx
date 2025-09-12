@@ -3,7 +3,7 @@ import { useProfileStore } from '@stores/profile.store'
 import { useI18nStore } from '@stores/i18n.store'
 import { useEffect, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
-import Header from '@organisms/Header'
+import Header from '@organisms/shared/Header'
 
 // Pages
 import HomePage from '@pages/HomePage'
@@ -17,12 +17,12 @@ import NotFound from '@pages/NotFound'
 
 // Onboarding
 import LanguageSelectionPage from '@pages/LanguageSelectionPage'
-import OnboardingGoals from '@organisms/OnboardingGoals'
-import OnboardingConstraints from '@organisms/OnboardingConstraints'
-import OnboardingDetailedGoals from '@organisms/OnboardingDetailedGoals'
-import OnboardingEquipment from '@organisms/OnboardingEquipment'
-import OnboardingMetrics from '@organisms/OnboardingMetrics'
-import OnboardingFrequency from '@organisms/OnboardingFrequency'
+import OnboardingGoals from '@organisms/onboarding/OnboardingGoals'
+import OnboardingConstraints from '@organisms/onboarding/OnboardingConstraints'
+import OnboardingDetailedGoals from '@organisms/onboarding/OnboardingDetailedGoals'
+import OnboardingEquipment from '@organisms/onboarding/OnboardingEquipment'
+import OnboardingMetrics from '@organisms/onboarding/OnboardingMetrics'
+import OnboardingFrequency from '@organisms/onboarding/OnboardingFrequency'
 import EntryStep from '@pages/EntryStep'
 
 function App() {

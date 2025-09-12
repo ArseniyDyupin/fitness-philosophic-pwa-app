@@ -9,7 +9,7 @@ import { aiReviewService } from '@services/ai.review'
 import { toastError } from '@lib/toast'
 import type { WorkoutExercise } from '@/types/models'
 import { X, Plus, Edit3, Bot } from 'lucide-react'
-import ExerciseCard from '@organisms/ExerciseCard'
+import ExerciseCard from '@organisms/shared/ExerciseCard'
 import { calculateExerciseCalories } from '@services/kcal'
 
 interface WorkoutFormProps {

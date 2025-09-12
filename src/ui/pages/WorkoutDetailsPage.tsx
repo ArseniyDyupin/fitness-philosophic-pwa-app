@@ -14,9 +14,9 @@ import { ArrowLeft, Trash2, ArrowRight } from 'lucide-react'
 import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '@/types/models'
 
 // New components
-import WorkoutHeader from '@organisms/WorkoutHeader'
-import AiFeedbackCard from '@organisms/AiFeedbackCard'
-import WorkoutExerciseCard from '@organisms/WorkoutExerciseCard'
+import WorkoutHeader from '@organisms/workouts/WorkoutHeader'
+import AiFeedbackCard from '@organisms/workouts/AiFeedbackCard'
+import WorkoutExerciseCard from '@organisms/workouts/WorkoutExerciseCard'
 import EditWorkoutMetaModal from '@modals/EditWorkoutMetaModal'
 import ExerciseEditModal from '@modals/ExerciseEditModal'
 

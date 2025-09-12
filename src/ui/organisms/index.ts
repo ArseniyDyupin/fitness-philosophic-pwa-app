@@ -1,36 +1,20 @@
-export { default as WorkoutCard } from './WorkoutCard'
-export { default as RecentWorkouts } from './RecentWorkouts'
-export { default as Header } from './Header'
-export { default as WorkoutForm } from './WorkoutForm'
-export { default as WorkoutHeader } from './WorkoutHeader'
-export { default as WeekSection } from './WeekSection'
-export { default as WeekSummary } from './WeekSummary'
-export { default as PlanSummary } from './PlanSummary'
-export { default as PlanExerciseCard } from './PlanExerciseCard'
-export { default as BodyMetricsBlock } from './BodyMetricsBlock'
-export { default as Records } from './Records'
-export { default as StatsHeader } from './StatsHeader'
-export { default as DisciplineBreakdown } from './DisciplineBreakdown'
-export { default as WeeklyActivityChart } from './WeeklyActivityChart'
-export { default as HomeKPI } from './HomeKPI'
-export { default as HomeBanners } from './HomeBanners'
-export { default as NextWorkoutCard } from './NextWorkoutCard'
-export { default as ProfileSummary } from './ProfileSummary'
+// Home page components
+export * from './home'
 
-// Onboarding organisms
-export { default as OnboardingConstraints } from './OnboardingConstraints'
-export { default as OnboardingDetailedGoals } from './OnboardingDetailedGoals'
-export { default as OnboardingEquipment } from './OnboardingEquipment'
-export { default as OnboardingFrequency } from './OnboardingFrequency'
-export { default as OnboardingGoals } from './OnboardingGoals'
-export { default as OnboardingMetrics } from './OnboardingMetrics'
+// Stats page components  
+export * from './stats'
 
-// Feature-specific organisms
-export { default as SettingsBodyMetrics } from './SettingsBodyMetrics'
-export { default as AiBodyEvalCard } from './AiBodyEvalCard'
-export { default as AiFeedbackCard } from './AiFeedbackCard'
-export { default as ExerciseCard } from './ExerciseCard'
-export { default as WorkoutExerciseCard } from './WorkoutExerciseCard'
+// Workouts page components
+export * from './workouts'
 
-export type { WorkoutCardProps } from './WorkoutCard'
-export type { RecentWorkoutsProps } from './RecentWorkouts'
+// Plan page components
+export * from './plan'
+
+// Settings page components
+export * from './settings'
+
+// Onboarding components
+export * from './onboarding'
+
+// Shared components (used across multiple pages)
+export * from './shared'

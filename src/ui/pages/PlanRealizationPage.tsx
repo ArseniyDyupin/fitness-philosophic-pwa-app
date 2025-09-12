@@ -9,8 +9,8 @@ import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '@serv
 import { db } from '@services/db'
 import { aiService } from '@services/ai'
 import { toastSuccess, toastError } from '@lib/toast'
-import PlanSummary from '@organisms/PlanSummary'
-import PlanExerciseCard from '@organisms/PlanExerciseCard'
+import PlanSummary from '@organisms/plan/PlanSummary'
+import PlanExerciseCard from '@organisms/plan/PlanExerciseCard'
 import type { PlanSuggestion, ExerciseEdit, Workout, WorkoutExercise } from '@/types/models'
 import { ArrowLeft, Save, X, RotateCcw, Loader } from 'lucide-react'
 
