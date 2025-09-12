@@ -5,7 +5,7 @@ import { useWorkoutStore } from '@stores/workout.store'
 import { useProfileStore } from '@stores/profile.store'
 import WorkoutForm from '@organisms/workouts/WorkoutForm'
 import WeekSection from '@organisms/workouts/WeekSection'
-import WeekNavigator from '@molecules/WeekNavigator'
+import WeekNavigator from '@molecules/workouts/WeekNavigator'
 import { Plus } from 'lucide-react'
 import { startOfWeek, addWeeks, isSameWeek } from 'date-fns'
 

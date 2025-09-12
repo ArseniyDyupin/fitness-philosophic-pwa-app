@@ -1,8 +1,14 @@
-export { default as AISettings } from './AISettings'
-export { default as BodyMetricsModal } from './BodyMetricsModal'
-export { default as DataImport } from './DataImport'
-export { default as GenerateWorkoutModal } from './GenerateWorkoutModal'
-export { default as ProfileDetailsModal } from './ProfileDetailsModal'
-export { default as EditWorkoutMetaModal } from './EditWorkoutMetaModal'
-export { default as ExerciseEditModal } from './ExerciseEditModal'
-export { default as RecordChartModal } from './RecordChartModal'
+// Home page modals
+export * from './home'
+
+// Stats page modals
+export * from './stats'
+
+// Workouts page modals
+export * from './workouts'
+
+// Settings page modals
+export * from './settings'
+
+// Shared modals (used across multiple pages)
+export * from './shared'

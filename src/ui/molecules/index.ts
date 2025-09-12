@@ -1,15 +1,11 @@
-export { default as RPEBadge } from './RPEBadge'
-export { default as StatTile } from './StatTile'
-export { default as ProgressRow } from './ProgressRow'
-export { default as KpiGrid } from './KpiGrid'
-export { default as GenerateWorkoutButton } from './GenerateWorkoutButton'
-export { default as WeekNavigator } from './WeekNavigator'
-export { default as ReminderBanner } from './ReminderBanner'
+// Home page molecules
+export * from './home'
 
-export type { RPEBadgeProps } from './RPEBadge'
-export type { StatTileProps } from './StatTile'
-export type { ProgressRowProps } from './ProgressRow'
-export type { KpiData, KpiGridProps } from './KpiGrid'
-export type { GenerateWorkoutButtonProps } from './GenerateWorkoutButton'
-export type { WeekNavigatorProps } from './WeekNavigator'
-export type { ReminderBannerProps } from './ReminderBanner'
+// Stats page molecules
+export * from './stats'
+
+// Workouts page molecules
+export * from './workouts'
+
+// Shared molecules (used across multiple pages)
+export * from './shared'

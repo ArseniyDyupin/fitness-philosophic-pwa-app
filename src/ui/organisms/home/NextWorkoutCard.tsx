@@ -3,7 +3,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { useNavigate } from 'react-router-dom'
 import { Calendar, Clock, Zap, Target, Play, CheckCircle, Settings, Plus } from 'lucide-react'
 import type { Workout } from '@/types/models'
-import GenerateWorkoutButton from '@molecules/GenerateWorkoutButton'
+import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'
 import WorkoutForm from '@organisms/workouts/WorkoutForm'
 
 interface NextWorkoutCardProps {

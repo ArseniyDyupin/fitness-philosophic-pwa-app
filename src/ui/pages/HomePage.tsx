@@ -12,7 +12,7 @@ import NextWorkoutCard from '@organisms/home/NextWorkoutCard'
 import HomeKPI, { type DayStats, type WeekStats } from '@organisms/home/HomeKPI'
 import RecentWorkouts from '@organisms/home/RecentWorkouts'
 import HomeBanners from '@organisms/home/HomeBanners'
-import BodyMetricsModal from '@modals/BodyMetricsModal'
+import BodyMetricsModal from '@modals/home/BodyMetricsModal'
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate()

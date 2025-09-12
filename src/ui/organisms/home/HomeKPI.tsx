@@ -5,7 +5,7 @@ import { useProfileStore } from '@stores/profile.store'
 import { useWorkoutStore } from '@stores/workout.store'
 import { useAIStore } from '@stores/ai.store'
 import { Zap, Clock, Target, Calendar, Activity } from 'lucide-react'
-import GenerateWorkoutButton from '@molecules/GenerateWorkoutButton'
+import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'
 
 export interface DayStats {
   calories: number

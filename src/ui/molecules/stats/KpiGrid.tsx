@@ -1,5 +1,5 @@
 import React from 'react'
-import StatTile from './StatTile'
+import StatTile from '@molecules/stats/StatTile'
 import { cn } from '@utils/cn'
 
 export interface KpiData {

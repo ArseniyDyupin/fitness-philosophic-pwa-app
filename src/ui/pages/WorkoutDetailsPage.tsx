@@ -17,8 +17,8 @@ import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '@/types/models
 import WorkoutHeader from '@organisms/workouts/WorkoutHeader'
 import AiFeedbackCard from '@organisms/workouts/AiFeedbackCard'
 import WorkoutExerciseCard from '@organisms/workouts/WorkoutExerciseCard'
-import EditWorkoutMetaModal from '@modals/EditWorkoutMetaModal'
-import ExerciseEditModal from '@modals/ExerciseEditModal'
+import EditWorkoutMetaModal from '@modals/workouts/EditWorkoutMetaModal'
+import ExerciseEditModal from '@modals/workouts/ExerciseEditModal'
 
 const WorkoutDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()

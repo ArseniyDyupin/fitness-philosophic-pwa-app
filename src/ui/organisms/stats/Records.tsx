@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { Trophy, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
-import RecordChartModal from '@modals/RecordChartModal'
+import RecordChartModal from '@modals/stats/RecordChartModal'
 import type { PersonalRecords } from '@/types/stats'
 
 interface RecordsProps {

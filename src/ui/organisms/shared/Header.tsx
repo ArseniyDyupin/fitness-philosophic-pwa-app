@@ -4,10 +4,10 @@ import { useTranslations } from '@stores/i18n.store'
 import { downloadExport } from '@services/export'
 import { toastSuccess, toastError } from '@lib/toast'
 import { ArrowLeft, Download, MoreVertical } from 'lucide-react'
-import GenerateWorkoutButton from '@molecules/GenerateWorkoutButton'
+import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'
 import Button from '@atoms/Button'
-import ReminderBanner from '@molecules/ReminderBanner'
-import BodyMetricsModal from '@modals/BodyMetricsModal'
+import ReminderBanner from '@molecules/shared/ReminderBanner'
+import BodyMetricsModal from '@modals/home/BodyMetricsModal'
 
 const Header: React.FC = () => {
   const t = useTranslations()
