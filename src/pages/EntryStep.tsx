@@ -23,7 +23,7 @@ const EntryStep: React.FC = () => {
 
     // Check file size (20MB limit)
     if (file.size > 20 * 1024 * 1024) {
-      setImportError('File too large. Maximum size is 20MB.')
+      setImportError(t.fileTooLarge || 'File too large. Maximum size is 20MB.')
       return
     }
 
@@ -35,7 +35,7 @@ const EntryStep: React.FC = () => {
       const bundle = await validateFile(file)
       setImportPreview(bundle)
     } catch (error) {
-      setImportError(error instanceof Error ? error.message : 'Failed to read file')
+      setImportError(error instanceof Error ? error.message : t.error || 'Failed to read file')
     } finally {
       setIsImporting(false)
     }
@@ -54,7 +54,7 @@ const EntryStep: React.FC = () => {
       // Redirect to home
       navigate('/')
     } catch (error) {
-      setImportError(error instanceof Error ? error.message : 'Import failed')
+      setImportError(error instanceof Error ? error.message : t.error || 'Import failed')
     } finally {
       setIsImporting(false)
     }
@@ -122,7 +122,7 @@ const EntryStep: React.FC = () => {
               >
                 <FileText size={20} />
                 <span>
-                  {isImporting ? 'Loading...' : 'Load JSON File'}
+                  {isImporting ? (t.loading || 'Loading...') : (t.chooseJson || 'Load JSON File')}
                 </span>
               </button>
 
@@ -196,7 +196,7 @@ const EntryStep: React.FC = () => {
                       disabled={isImporting}
                       className="btn-primary w-full"
                     >
-                      {isImporting ? 'Importing...' : 'Import Profile'}
+                      {isImporting ? (t.importing || 'Importing...') : (t.import || 'Import Profile')}
                     </button>
                   </div>
                 </div>

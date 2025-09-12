@@ -4,6 +4,7 @@ import { useWorkoutStore } from '../stores/workout.store'
 import { useAIStore } from '../stores/ai.store'
 import { useProfileStore } from '../stores/profile.store'
 import { toastSuccess } from '../lib/toast'
+import { useTranslations } from '../stores/i18n.store'
 import { format, startOfWeek } from 'date-fns'
 
 // Import new dashboard components
@@ -15,6 +16,7 @@ import BodyMetricsModal from '../components/BodyMetricsModal'
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate()
+  const t = useTranslations()
   const { 
     workouts, 
     loadWorkouts, 
@@ -55,7 +57,7 @@ const HomePage: React.FC = () => {
 
   const handleMarkDone = () => {
     // This would mark the current plan as completed
-    toastSuccess('Plan marked as completed')
+    toastSuccess(t.success || 'Plan marked as completed')
   }
 
 
@@ -69,7 +71,7 @@ const HomePage: React.FC = () => {
 
   const handleDeleteWorkout = () => {
     // This would delete the workout
-    toastSuccess('Workout deleted')
+    toastSuccess(t.success || 'Workout deleted')
   }
 
   const todayPlan = recentWorkouts.find(workout => workout.date === format(new Date(), 'yyyy-MM-dd'))

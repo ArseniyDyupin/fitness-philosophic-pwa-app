@@ -46,7 +46,7 @@ const LanguageSelectionPage: React.FC = () => {
 
     } catch (error) {
       console.error('Failed to create profile:', error)
-      alert('Failed to create profile')
+      alert(t.error || 'Failed to create profile')
     }
   }
 

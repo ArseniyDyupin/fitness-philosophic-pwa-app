@@ -42,7 +42,7 @@ const OnboardingDetailedGoals: React.FC = () => {
       navigate('/')
     } catch (error) {
       console.error('Failed to complete onboarding:', error)
-      alert('Failed to complete onboarding')
+      alert(t.error || 'Failed to complete onboarding')
     }
   }
 

@@ -101,7 +101,7 @@ const WorkoutsPage: React.FC = () => {
           >
             <Plus size={18} className="sm:w-5 sm:h-5" />
             <span className="hidden sm:inline">{t.addWorkout}</span>
-            <span className="sm:hidden">Add</span>
+            <span className="sm:hidden">{t.add}</span>
           </button>
         </div>
 
@@ -121,15 +121,6 @@ const WorkoutsPage: React.FC = () => {
           />
         )}
       </main>
-
-      {/* Mobile FAB */}
-      <button
-        onClick={handleAddWorkout}
-        className="fixed bottom-6 right-6 sm:hidden bg-primary-600 text-white rounded-full p-4 shadow-lg hover:bg-primary-700 transition-colors touch-manipulation z-50"
-        aria-label="Add workout"
-      >
-        <Plus size={24} />
-      </button>
 
       {/* Workout Form Modal */}
       <WorkoutForm
