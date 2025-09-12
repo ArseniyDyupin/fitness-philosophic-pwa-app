@@ -42,7 +42,6 @@ export default defineConfig({
       '@molecules': '/src/ui/molecules',
       '@organisms': '/src/ui/organisms',
       '@modals': '/src/ui/modals',
-      '@features': '/src/features',
       '@hooks': '/src/hooks',
       '@stores': '/src/stores',
       '@services': '/src/services',

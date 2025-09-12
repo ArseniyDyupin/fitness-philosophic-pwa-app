@@ -9,7 +9,7 @@ import { ExportButton, ImportButton } from '@atoms'
 import AISettings from '@modals/AISettings'
 import DataImport from '@modals/DataImport'
 import ProfileDetailsModal from '@modals/ProfileDetailsModal'
-import { SettingsBodyMetrics } from '@features/metrics/components'
+import SettingsBodyMetrics from '@organisms/SettingsBodyMetrics'
 import { Edit, Check, X, Eye, RefreshCw } from 'lucide-react'
 
 const SettingsPage: React.FC = () => {

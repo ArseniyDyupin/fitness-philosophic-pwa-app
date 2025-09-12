@@ -15,7 +15,8 @@ import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '../../types/mo
 
 // New components
 import WorkoutHeader from '@organisms/WorkoutHeader'
-import { AiFeedbackCard, WorkoutExerciseCard } from '@features/workouts/components'
+import AiFeedbackCard from '@organisms/AiFeedbackCard'
+import WorkoutExerciseCard from '@organisms/WorkoutExerciseCard'
 import EditWorkoutMetaModal from '@modals/EditWorkoutMetaModal'
 import ExerciseEditModal from '@modals/ExerciseEditModal'
 

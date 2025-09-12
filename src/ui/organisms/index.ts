@@ -18,6 +18,21 @@ export { default as HomeBanners } from './HomeBanners'
 export { default as NextWorkoutCard } from './NextWorkoutCard'
 export { default as ProfileSummary } from './ProfileSummary'
 
+// Onboarding organisms
+export { default as OnboardingConstraints } from './OnboardingConstraints'
+export { default as OnboardingDetailedGoals } from './OnboardingDetailedGoals'
+export { default as OnboardingEquipment } from './OnboardingEquipment'
+export { default as OnboardingFrequency } from './OnboardingFrequency'
+export { default as OnboardingGoals } from './OnboardingGoals'
+export { default as OnboardingMetrics } from './OnboardingMetrics'
+
+// Feature-specific organisms
+export { default as SettingsBodyMetrics } from './SettingsBodyMetrics'
+export { default as AiBodyEvalCard } from './AiBodyEvalCard'
+export { default as AiFeedbackCard } from './AiFeedbackCard'
+export { default as ExerciseCard } from './ExerciseCard'
+export { default as WorkoutExerciseCard } from './WorkoutExerciseCard'
+
 export type { WorkoutCardProps } from './WorkoutCard'
 export type { RecentWorkoutsProps } from './RecentWorkouts'
 export type { WeeklyStats, WeeklySummaryPanelProps } from './WeeklySummaryPanel'

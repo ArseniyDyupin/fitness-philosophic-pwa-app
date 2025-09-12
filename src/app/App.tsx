@@ -7,9 +7,9 @@ import Header from '@organisms/Header'
 
 // Pages
 import HomePage from '@pages/HomePage'
-import WorkoutsPage from '@features/workout/WorkoutsPage'
-import WorkoutDetailsPage from '@features/workout/WorkoutDetailsPage'
-import FoodPage from '@features/food/FoodPage'
+import WorkoutsPage from '@pages/WorkoutsPage'
+import WorkoutDetailsPage from '@pages/WorkoutDetailsPage'
+import FoodPage from '@pages/FoodPage'
 import StatsPage from '@pages/StatsPage'
 import SettingsPage from '@pages/SettingsPage'
 import PlanRealizationPage from '@pages/PlanRealizationPage'
@@ -17,12 +17,12 @@ import NotFound from '@pages/NotFound'
 
 // Onboarding
 import LanguageSelectionPage from '@pages/LanguageSelectionPage'
-import OnboardingGoals from '@features/onboarding/OnboardingGoals'
-import OnboardingConstraints from '@features/onboarding/OnboardingConstraints'
-import OnboardingDetailedGoals from '@features/onboarding/OnboardingDetailedGoals'
-import OnboardingEquipment from '@features/onboarding/OnboardingEquipment'
-import OnboardingMetrics from '@features/onboarding/OnboardingMetrics'
-import OnboardingFrequency from '@features/onboarding/OnboardingFrequency'
+import OnboardingGoals from '@organisms/OnboardingGoals'
+import OnboardingConstraints from '@organisms/OnboardingConstraints'
+import OnboardingDetailedGoals from '@organisms/OnboardingDetailedGoals'
+import OnboardingEquipment from '@organisms/OnboardingEquipment'
+import OnboardingMetrics from '@organisms/OnboardingMetrics'
+import OnboardingFrequency from '@organisms/OnboardingFrequency'
 import EntryStep from '@pages/EntryStep'
 
 function App() {

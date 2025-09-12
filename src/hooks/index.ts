@@ -3,9 +3,9 @@ export { useExportImport } from './useExportImport'
 export { useDexieQuery } from './useDexieQuery'
 export { useOffline } from './useOffline'
 
-// Feature-specific hooks
-export { useWorkoutCrud } from '@features/workouts/hooks/useWorkoutCrud'
-export { useTodayStats } from '@features/workouts/hooks/useTodayStats'
-export { useWeekStats } from '@features/workouts/hooks/useWeekStats'
-export { useGenerateWorkout } from '@features/plan/hooks/useGenerateWorkout'
-export { useProfile } from '@features/profile/hooks/useProfile'
+// Feature-specific hooks (now in hooks directory)
+export { useWorkoutCrud } from './useWorkoutCrud'
+export { useTodayStats } from './useTodayStats'
+export { useWeekStats } from './useWeekStats'
+export { useGenerateWorkout } from './useGenerateWorkout'
+export { useProfile } from './useProfile'
