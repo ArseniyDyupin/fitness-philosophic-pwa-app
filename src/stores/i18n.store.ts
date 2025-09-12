@@ -79,6 +79,13 @@ export const translations = {
     success: 'Success',
     back: 'Back',
     close: 'Close',
+    // Error boundary
+    errorBoundary: {
+      title: 'Something went wrong',
+      description: 'An unexpected error occurred. Please try refreshing the page.',
+      reload: 'Reload',
+      goHome: 'Go Home'
+    },
     confirm: 'Confirm',
     yes: 'Yes',
     no: 'No',
@@ -1186,6 +1193,13 @@ export const translations = {
     success: 'Успешно',
     back: 'Назад',
     close: 'Закрыть',
+    // Error boundary
+    errorBoundary: {
+      title: 'Что-то пошло не так',
+      description: 'Произошла неожиданная ошибка. Попробуйте обновить страницу.',
+      reload: 'Обновить',
+      goHome: 'На главную'
+    },
     confirm: 'Подтвердить',
     yes: 'Да',
     no: 'Нет',

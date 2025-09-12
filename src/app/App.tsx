@@ -1,21 +1,22 @@
 import { Routes, Route } from 'react-router-dom'
 import { useProfileStore } from '@stores/profile.store'
 import { useI18nStore } from '@stores/i18n.store'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense, lazy } from 'react'
 import { Toaster } from 'react-hot-toast'
 import Header from '@organisms/shared/Header'
+import { ErrorBoundary, PageTransition, SkeletonCard } from '@/ui/atoms'
 
-// Pages
-import HomePage from '@pages/HomePage'
-import WorkoutsPage from '@pages/WorkoutsPage'
-import WorkoutDetailsPage from '@pages/WorkoutDetailsPage'
-import FoodPage from '@pages/FoodPage'
-import StatsPage from '@pages/StatsPage'
-import SettingsPage from '@pages/SettingsPage'
-import PlanRealizationPage from '@pages/PlanRealizationPage'
-import NotFound from '@pages/NotFound'
+// Lazy load pages for better performance
+const HomePage = lazy(() => import('@pages/HomePage'))
+const WorkoutsPage = lazy(() => import('@pages/WorkoutsPage'))
+const WorkoutDetailsPage = lazy(() => import('@pages/WorkoutDetailsPage'))
+const FoodPage = lazy(() => import('@pages/FoodPage'))
+const StatsPage = lazy(() => import('@pages/StatsPage'))
+const SettingsPage = lazy(() => import('@pages/SettingsPage'))
+const PlanRealizationPage = lazy(() => import('@pages/PlanRealizationPage'))
+const NotFound = lazy(() => import('@pages/NotFound'))
 
-// Onboarding
+// Onboarding pages (keep synchronous for better UX)
 import LanguageSelectionPage from '@pages/LanguageSelectionPage'
 import OnboardingGoals from '@organisms/onboarding/OnboardingGoals'
 import OnboardingConstraints from '@organisms/onboarding/OnboardingConstraints'
@@ -97,18 +98,22 @@ function App() {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <Header />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/workouts" element={<WorkoutsPage />} />
-        <Route path="/workouts/:id" element={<WorkoutDetailsPage />} />
-        <Route path="/plan/:planId" element={<PlanRealizationPage />} />
-        <Route path="/food" element={<FoodPage />} />
-        <Route path="/stats" element={<StatsPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <PageTransition>
+        <Suspense fallback={<SkeletonCard className="m-4" />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/workouts" element={<WorkoutsPage />} />
+            <Route path="/workouts/:id" element={<WorkoutDetailsPage />} />
+            <Route path="/plan/:planId" element={<PlanRealizationPage />} />
+            <Route path="/food" element={<FoodPage />} />
+            <Route path="/stats" element={<StatsPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </PageTransition>
       <Toaster
         position="top-right"
         gutter={8}
@@ -121,7 +126,7 @@ function App() {
           }
         }}
       />
-    </>
+    </ErrorBoundary>
   )
 }
 

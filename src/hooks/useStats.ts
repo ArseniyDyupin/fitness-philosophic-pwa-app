@@ -18,14 +18,33 @@ export interface StatsResult {
 const statsCache = new Map<string, { data: StatsResult; timestamp: number }>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
+/**
+ * Generates a unique cache key for stats calculations
+ * @param period - The time period for stats calculation
+ * @param includeIncomplete - Whether to include incomplete workouts
+ * @returns A unique string key for caching
+ */
 function getCacheKey(period: StatsPeriod, includeIncomplete: boolean): string {
   return `${period.type}-${period.start.getTime()}-${period.end.getTime()}-${includeIncomplete}`
 }
 
+/**
+ * Checks if a cached entry is still valid based on timestamp
+ * @param timestamp - The timestamp when the cache entry was created
+ * @returns True if the cache entry is still valid
+ */
 function isCacheValid(timestamp: number): boolean {
   return Date.now() - timestamp < CACHE_TTL
 }
 
+/**
+ * Calculates workout statistics for a given period with caching support
+ * @param workouts - Array of workout objects
+ * @param period - The time period for calculation
+ * @param includeIncomplete - Whether to include incomplete workouts
+ * @param userWeight - User's weight in kg for calorie calculations
+ * @returns Calculated statistics result
+ */
 function calculateStats(
   workouts: any[],
   period: StatsPeriod,
@@ -87,7 +106,11 @@ function calculateStats(
   return result
 }
 
-// Main hook
+/**
+ * Main hook for calculating workout statistics with caching and multiple period support
+ * @param options - Configuration options for stats calculation
+ * @returns Object containing stats data and helper functions for different periods
+ */
 export function useStats(options: UseStatsOptions = {}) {
   const workouts = useWorkoutStore(s => s.workouts)
   const { 

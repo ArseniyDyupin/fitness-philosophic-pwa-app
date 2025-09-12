@@ -1,6 +1,6 @@
 // AI Services
 export { AIService, aiService } from './ai'
-export { 
+export {
   getExerciseEstimate,
   getBatchEstimates,
   needsAIEstimation,
@@ -8,9 +8,10 @@ export {
 } from './ai.estimate'
 export { AIReviewService, aiReviewService } from './ai.review'
 export { aiBodyService } from './aiBody.service'
+export { aiRateLimiter, withRateLimit, useRateLimit } from './rateLimiter'
 
 // Re-export types
-export type { 
+export type {
   AIReviewPayload,
   AIReviewResult
 } from './ai.review'

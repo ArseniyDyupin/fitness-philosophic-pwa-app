@@ -2,6 +2,7 @@ import type { AIWorkoutReview, AIWorkoutPayload } from '@/types/ai'
 import type { Profile, Workout, PlanSuggestion } from '@/types/models'
 import { db } from '../data/db'
 import { z } from 'zod'
+import { aiRateLimiter } from './rateLimiter'
 
 export class AIService {
   private apiKey: string = ''
@@ -52,6 +53,13 @@ export class AIService {
   private async makeRequest(prompt: string, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<string> {
     if (!this.apiKey) {
       throw new Error('API key not set')
+    }
+
+    // Check rate limit
+    const rateLimitKey = `ai-request-${Date.now().toString().slice(0, -3)}` // Per minute
+    if (!aiRateLimiter.isAllowed(rateLimitKey)) {
+      const remainingTime = aiRateLimiter.getTimeUntilReset(rateLimitKey)
+      throw new Error(`Rate limit exceeded. Please wait ${Math.ceil(remainingTime / 1000)} seconds before making another AI request.`)
     }
 
     const systemPrompt = language === 'ru' 

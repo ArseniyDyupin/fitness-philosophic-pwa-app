@@ -51,5 +51,40 @@ export default defineConfig({
       '@lib': '/src/lib',
       '@': '/src'
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'chart-vendor': ['recharts'],
+          'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge', 'zod'],
+          'state-vendor': ['zustand'],
+          'db-vendor': ['dexie'],
+          'toast-vendor': ['react-hot-toast'],
+          
+          // App chunks
+          'pages': [
+            './src/ui/pages/HomePage.tsx',
+            './src/ui/pages/WorkoutsPage.tsx',
+            './src/ui/pages/StatsPage.tsx',
+            './src/ui/pages/SettingsPage.tsx'
+          ],
+          'organisms': [
+            './src/ui/organisms/home',
+            './src/ui/organisms/stats',
+            './src/ui/organisms/workouts'
+          ],
+          'services': [
+            './src/services/ai',
+            './src/services/data',
+            './src/services/fitness'
+          ]
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000
   }
 })
