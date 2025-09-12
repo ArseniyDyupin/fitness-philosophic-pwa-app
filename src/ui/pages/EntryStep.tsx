@@ -4,7 +4,7 @@ import { useOnboardingStore } from '@stores/onboarding.store'
 import { useTranslations } from '@stores/i18n.store'
 import { Upload, Play, FileText, User, CheckCircle, AlertCircle } from 'lucide-react'
 import { validateFile, importData } from '@services/import'
-import type { ExportBundle } from '../../types/export'
+import type { ExportBundle } from '@types/export'
 
 const EntryStep: React.FC = () => {
   const navigate = useNavigate()

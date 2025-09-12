@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { format, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns'
-import { WorkoutExercise, Workout } from '../../types/models'
+import { WorkoutExercise, Workout } from '@types/models'
 import {
   ResponsiveContainer,
   BarChart,

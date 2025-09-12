@@ -13,7 +13,7 @@ import {
   Dot
 } from 'recharts'
 import { format, parseISO } from 'date-fns'
-import type { PersonalRecords } from '../../types/stats'
+import type { PersonalRecords } from '@types/stats'
 
 interface RecordChartModalProps {
   isOpen: boolean

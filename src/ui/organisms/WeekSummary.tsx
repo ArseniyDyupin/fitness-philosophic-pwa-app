@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
 import { useProfileStore } from '@stores/profile.store'
-import type { Workout } from '../../types/models'
+import type { Workout } from '@types/models'
 import WeeklyActivityChart from './WeeklyActivityChart'
 import { calculateWorkoutCalories } from '@services/kcal'
 

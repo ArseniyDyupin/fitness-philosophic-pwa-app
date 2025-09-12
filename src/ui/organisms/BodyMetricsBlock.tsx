@@ -13,7 +13,7 @@ import {
   Legend
 } from 'recharts'
 import { format } from 'date-fns'
-import type { MetricDef } from '../../types/body-metrics'
+import type { MetricDef } from '@types/body-metrics'
 
 interface BodyMetricsBlockProps {
   weekStart?: Date

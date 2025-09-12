@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { db } from '@services/db'
-import type { WeeklyCheckin } from '../../types/models'
+import type { WeeklyCheckin } from '@types/models'
 
 interface WeeklyState {
   checkins: WeeklyCheckin[]

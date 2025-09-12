@@ -5,7 +5,7 @@ import { metricsService } from '@services/metrics.service'
 import { aiBodyService } from '@services/aiBody.service'
 import { startOfWeek, format } from 'date-fns'
 import { X, Camera, Save, Sparkles, Loader } from 'lucide-react'
-import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '../../types/body-metrics'
+import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '@types/body-metrics'
 
 interface BodyMetricsModalProps {
   isOpen: boolean

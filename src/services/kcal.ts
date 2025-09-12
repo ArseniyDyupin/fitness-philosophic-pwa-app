@@ -1,4 +1,4 @@
-import type { WorkoutExercise, WorkoutType } from '../../types/models'
+import type { WorkoutExercise, WorkoutType } from '@types/models'
 
 // MET values for different exercise types
 const MET_VALUES: Record<WorkoutType, number> = {

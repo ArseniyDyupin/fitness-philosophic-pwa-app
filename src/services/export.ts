@@ -1,5 +1,5 @@
 import { db } from './db'
-import type { ExportBundle } from '../../types/export'
+import type { ExportBundle } from '@types/export'
 
 export async function exportAll(): Promise<ExportBundle> {
   try {

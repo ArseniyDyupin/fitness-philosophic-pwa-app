@@ -3,7 +3,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { useProfileStore } from '@stores/profile.store'
 import { useWorkoutStore } from '@stores/workout.store'
 import { aiService } from '@services/ai'
-import type { PlanSuggestion } from '../../types/models'
+import type { PlanSuggestion } from '@types/models'
 import { X, Calendar, MessageSquare, Activity, Sparkles, Loader } from 'lucide-react'
 
 interface GenerateWorkoutModalProps {

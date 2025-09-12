@@ -6,7 +6,7 @@ import { downloadExport } from '@services/export'
 import { importData } from '@services/import'
 import { toastSuccess, toastError } from '@lib/toast'
 import { useTranslations } from '@stores/i18n.store'
-import type { ExportBundle } from '../../types/export'
+import type { ExportBundle } from '@types/export'
 
 export interface ImportOptions {
   mode: 'replace' | 'merge'

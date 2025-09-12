@@ -1,6 +1,6 @@
 import { db } from './db'
 import { startOfWeek, endOfWeek, subWeeks, format } from 'date-fns'
-import type { MetricDef, MetricEntry, PhotoAsset, BodyMetricsSettings } from '../../types/body-metrics'
+import type { MetricDef, MetricEntry, PhotoAsset, BodyMetricsSettings } from '@types/body-metrics'
 
 export const metricsService = {
   // Metric Definitions

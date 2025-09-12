@@ -1,5 +1,5 @@
 import { db } from './db'
-import type { WorkoutType, ExerciseEstimate, WorkoutExercise } from '../../types/models'
+import type { WorkoutType, ExerciseEstimate, WorkoutExercise } from '@types/models'
 
 export interface EstimateInput {
   type: WorkoutType | "custom"

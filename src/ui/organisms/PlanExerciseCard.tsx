@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslations } from '@stores/i18n.store'
-import type { WorkoutExercise, ExerciseEdit, ExerciseStatus } from '../../types/models'
+import type { WorkoutExercise, ExerciseEdit, ExerciseStatus } from '@types/models'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 interface PlanExerciseCardProps {

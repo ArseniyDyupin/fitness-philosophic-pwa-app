@@ -14,7 +14,7 @@ import {
   Tooltip,
   Legend
 } from 'recharts'
-import type { DisciplineStats } from '../../types/stats'
+import type { DisciplineStats } from '@types/stats'
 
 interface DisciplineBreakdownProps {
   discipline: DisciplineStats

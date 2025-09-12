@@ -2,8 +2,8 @@ import { create } from 'zustand'
 import { db } from '@services/db'
 import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/kcal'
 import { startOfYear, subDays, format, eachDayOfInterval } from 'date-fns'
-import type { Workout } from '../../types/models'
-import type { StatsData, StatsRange, StatsKPI, DisciplineStats, TrendData, PersonalRecords, ConsistencyData, BodyMetricsData } from '../../types/stats'
+import type { Workout } from '@types/models'
+import type { StatsData, StatsRange, StatsKPI, DisciplineStats, TrendData, PersonalRecords, ConsistencyData, BodyMetricsData } from '@types/stats'
 
 interface StatsState {
   data: StatsData | null

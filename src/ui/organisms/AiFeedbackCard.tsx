@@ -2,7 +2,7 @@ import React from 'react'
 import { RefreshCw } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
 import { format } from 'date-fns'
-import type { AIWorkoutFeedback } from '../../types/models'
+import type { AIWorkoutFeedback } from '@types/models'
 
 interface AiFeedbackCardProps {
   feedback: AIWorkoutFeedback | null

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
-import type { Workout } from '../../types/models'
+import type { Workout } from '@types/models'
 
 interface EditWorkoutMetaModalProps {
   isOpen: boolean

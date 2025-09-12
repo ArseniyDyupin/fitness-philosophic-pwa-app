@@ -1,5 +1,5 @@
 import type { AIWorkoutReview, AIWorkoutPayload, AIWeeklyAdvicePayload } from '@/types/ai'
-import type { Profile, Workout, PlanSuggestion } from '../../types/models'
+import type { Profile, Workout, PlanSuggestion } from '@types/models'
 import { db } from './db'
 import { z } from 'zod'
 

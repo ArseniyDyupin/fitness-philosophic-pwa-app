@@ -1,5 +1,5 @@
 import { aiService } from './ai'
-import type { BodyAnalysisInput, BodyAnalysisResult, AiBodyEval } from '../../types/body-metrics'
+import type { BodyAnalysisInput, BodyAnalysisResult, AiBodyEval } from '@types/body-metrics'
 
 export const aiBodyService = {
   async evaluate(input: BodyAnalysisInput): Promise<BodyAnalysisResult> {

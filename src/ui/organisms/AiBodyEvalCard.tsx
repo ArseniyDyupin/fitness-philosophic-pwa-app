@@ -3,7 +3,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { aiBodyService } from '@services/aiBody.service'
 import { Sparkles, TrendingUp, TrendingDown, Minus, Eye, X } from 'lucide-react'
 import { format } from 'date-fns'
-import type { AiBodyEval } from '../../types/body-metrics'
+import type { AiBodyEval } from '@types/body-metrics'
 
 interface AiBodyEvalCardProps {
   weekStart?: Date
