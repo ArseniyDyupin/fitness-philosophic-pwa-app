@@ -6,7 +6,6 @@ import { toastSuccess, toastError } from '@lib/toast'
 import { ArrowLeft, Download, MoreVertical } from 'lucide-react'
 import GenerateWorkoutButton from '@molecules/GenerateWorkoutButton'
 import Button from '@atoms/Button'
-import { cn } from '@utils/cn'
 import ReminderBanner from '@molecules/ReminderBanner'
 import BodyMetricsModal from '@modals/BodyMetricsModal'
 
@@ -77,10 +76,10 @@ const Header: React.FC = () => {
     <>
       {/* Reminder Banner */}
       <ReminderBanner 
-        title="Weekly Metrics Reminder"
-        message="Don't forget to log your weekly body metrics"
+        title={t.header?.metricsReminder || 'Weekly Metrics Reminder'}
+        message={t.header?.metricsReminderMessage || 'Don\'t forget to log your weekly body metrics'}
         onAction={() => setIsMetricsModalOpen(true)}
-        actionText="Log Metrics"
+        actionText={t.header?.logMetrics || 'Log Metrics'}
         variant="info"
       />
       
@@ -93,7 +92,7 @@ const Header: React.FC = () => {
               <button
                 onClick={handleBack}
                 className="btn-ghost p-2 hover:bg-gray-100 rounded-lg transition-colors pwa-touch-target"
-                aria-label={t.header?.back || 'Back'}
+                aria-label={t.header?.back || 'Назад'}
               >
                 <ArrowLeft size={20} />
               </button>
@@ -114,7 +113,7 @@ const Header: React.FC = () => {
               }`}
               aria-current={isActive('/') ? 'page' : undefined}
             >
-              {t.header?.home || 'Overview'}
+              {t.header?.home || 'Обзор'}
             </Link>
             <Link 
               to="/workouts" 
@@ -148,7 +147,7 @@ const Header: React.FC = () => {
               }`}
               aria-current={isActive('/stats') ? 'page' : undefined}
             >
-              {t.statsPage?.title || 'Statistics'}
+              {t.statsPage?.title || 'Статистика'}
             </Link>
             <Link 
               to="/settings" 
@@ -182,7 +181,7 @@ const Header: React.FC = () => {
                 showIcon={true}
                 showText={false}
                 className="w-10 h-10 flex items-center justify-center"
-                title={t.header?.generate || 'Generate Workout'}
+                title={t.header?.generate || 'Создать тренировку'}
               />
             </div>
             
@@ -205,7 +204,7 @@ const Header: React.FC = () => {
               className="hidden md:flex items-center space-x-2 text-sm p-2"
             >
               <Download size={16} />
-              <span>{t.header?.export || t.exportAll || 'Export Data'}</span>
+              <span>{t.header?.export || t.exportAll || 'Экспорт данных'}</span>
             </Button>
             
             {/* Mobile Menu Button */}
@@ -214,7 +213,7 @@ const Header: React.FC = () => {
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 variant="secondary"
                 className="md:hidden w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900"
-                aria-label="Open navigation menu"
+                aria-label={t.header?.openMenu || 'Открыть меню навигации'}
               >
                 <MoreVertical size={16} />
               </Button>
@@ -233,7 +232,7 @@ const Header: React.FC = () => {
                       }`}
                       aria-current={isActive('/') ? 'page' : undefined}
                     >
-                      {t.header?.home || 'Overview'}
+                      {t.header?.home || 'Обзор'}
                     </Link>
                     <Link 
                       to="/workouts" 
@@ -257,7 +256,7 @@ const Header: React.FC = () => {
                       }`}
                       aria-current={isActive('/stats') ? 'page' : undefined}
                     >
-                      {t.statsPage?.title || 'Statistics'}
+                      {t.statsPage?.title || 'Статистика'}
                     </Link>
                     <Link 
                       to="/settings" 

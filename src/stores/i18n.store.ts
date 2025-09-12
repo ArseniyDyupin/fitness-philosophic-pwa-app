@@ -101,7 +101,11 @@ export const translations = {
       export: 'Export Data',
       generate: 'Generate Workout',
       generating: 'Generating...',
-      menu: 'Menu'
+      menu: 'Menu',
+      metricsReminder: 'Weekly Metrics Reminder',
+      metricsReminderMessage: 'Don\'t forget to log your weekly body metrics',
+      logMetrics: 'Log Metrics',
+      openMenu: 'Open navigation menu'
     },
     
     // Profile
@@ -1146,7 +1150,11 @@ export const translations = {
       export: 'Выгрузить данные',
       generate: 'Сгенерировать тренировку',
       generating: 'Генерация…',
-      menu: 'Меню'
+      menu: 'Меню',
+      metricsReminder: 'Напоминание о еженедельных метриках',
+      metricsReminderMessage: 'Не забудьте записать ваши еженедельные показатели тела',
+      logMetrics: 'Записать метрики',
+      openMenu: 'Открыть меню навигации'
     },
     
     // Profile
