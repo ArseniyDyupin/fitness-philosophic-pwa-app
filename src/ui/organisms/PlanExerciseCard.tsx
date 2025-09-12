@@ -59,7 +59,7 @@ const PlanExerciseCard: React.FC<PlanExerciseCardProps> = ({
     onEditChange({ ...edit, status })
   }
 
-  const handleDetailChange = (field: string, value: any) => {
+  const handleDetailChange = (field: string, value: string | number | number[]) => {
     const updatedEdit = {
       ...edit,
       edited: {

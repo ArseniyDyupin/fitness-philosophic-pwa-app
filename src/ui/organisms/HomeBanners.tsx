@@ -44,9 +44,9 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
           id: 'incomplete-profile',
           type: 'warning',
           icon: <User className="w-5 h-5" />,
-          title: (t.homeDashboard as any)?.banners?.finishProfile || 'Complete your profile',
-          message: (t.homeDashboard as any)?.banners?.completeProfileMessage || 'Complete your profile to get personalized recommendations',
-          actionText: (t.homeDashboard as any)?.banners?.setup || 'Setup',
+          title: t.homeDashboard?.banners?.finishProfile || 'Complete your profile',
+          message: t.homeDashboard?.banners?.completeProfileMessage || 'Complete your profile to get personalized recommendations',
+          actionText: t.homeDashboard?.banners?.setup || 'Setup',
           onAction: () => navigate('/settings')
         })
       }
@@ -57,9 +57,9 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
           id: 'missing-api-key',
           type: 'info',
           icon: <Settings className="w-5 h-5" />,
-          title: (t.homeDashboard as any)?.banners?.apiKey || 'Connect OpenAI key to enable AI features',
-          message: (t.homeDashboard as any)?.banners?.enableAIMessage || 'Enable AI to generate personalized workout plans and get analysis',
-          actionText: (t.homeDashboard as any)?.banners?.setup || 'Setup',
+          title: t.homeDashboard?.banners?.apiKey || 'Connect OpenAI key to enable AI features',
+          message: t.homeDashboard?.banners?.enableAIMessage || 'Enable AI to generate personalized workout plans and get analysis',
+          actionText: t.homeDashboard?.banners?.setup || 'Setup',
           onAction: () => navigate('/settings')
         })
       }
@@ -77,15 +77,15 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
               id: 'metrics-update',
               type: 'info',
               icon: <Activity className="w-5 h-5" />,
-              title: (t.homeDashboard as any)?.banners?.metrics || 'Time to update measurements for the past week',
-              message: (t.homeDashboard as any)?.banners?.metricsMessage || 'Keep track of your progress by updating your body measurements',
-              actionText: (t.homeDashboard as any)?.banners?.fill || 'Fill',
+              title: t.homeDashboard?.banners?.metrics || 'Time to update measurements for the past week',
+              message: t.homeDashboard?.banners?.metricsMessage || 'Keep track of your progress by updating your body measurements',
+              actionText: t.homeDashboard?.banners?.fill || 'Fill',
               onAction: () => onOpenMetricsModal?.()
             })
           }
         }
       } catch (error) {
-        console.log((t.homeDashboard as any)?.banners?.bodyMetricsCheckFailed || 'Body metrics check failed:', error)
+        console.log(t.homeDashboard?.banners?.bodyMetricsCheckFailed || 'Body metrics check failed:', error)
       }
 
       // Check if user hasn't worked out in a while
@@ -94,7 +94,7 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
 
       setBanners(newBanners)
     } catch (error) {
-      console.error((t.homeDashboard as any)?.banners?.failedToLoadBanners || 'Failed to load banners:', error)
+      console.error(t.homeDashboard?.banners?.failedToLoadBanners || 'Failed to load banners:', error)
     } finally {
       setIsLoading(false)
     }
@@ -194,7 +194,7 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
                   onClick={() => snoozeBanner(banner.id)}
                   className="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-white bg-opacity-50 hover:bg-opacity-75 transition-colors"
                 >
-                  {(t.homeDashboard as any)?.banners?.snooze || 'Snooze'}
+                  {t.homeDashboard?.banners?.snooze || 'Snooze'}
                 </button>
               </div>
             </div>

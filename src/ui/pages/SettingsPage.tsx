@@ -36,7 +36,7 @@ const SettingsPage: React.FC = () => {
   const [isImporting, setIsImporting] = useState(false)
 
   if (!profile) {
-    return <div>{(t.settingsPage as any)?.loading || 'Loading...'}</div>
+    return <div>{t.settingsPage?.loading || 'Loading...'}</div>
   }
 
 
@@ -73,16 +73,16 @@ const SettingsPage: React.FC = () => {
     
     if (section === 'profile') {
       if (!data.name?.trim()) {
-        errors.name = (t.settingsPage as any)?.nameRequired || 'Name is required'
+        errors.name = t.settingsPage?.nameRequired || 'Name is required'
       }
       if (data.age < 10 || data.age > 120) {
-        errors.age = (t.settingsPage as any)?.ageInvalid || 'Age must be between 10 and 120'
+        errors.age = t.settingsPage?.ageInvalid || 'Age must be between 10 and 120'
       }
       if (data.height < 100 || data.height > 250) {
-        errors.height = (t.settingsPage as any)?.heightInvalid || 'Height must be between 100 and 250 cm'
+        errors.height = t.settingsPage?.heightInvalid || 'Height must be between 100 and 250 cm'
       }
       if (data.weight <= 0 || data.weight > 500) {
-        errors.weight = (t.settingsPage as any)?.weightInvalid || 'Weight must be between 1 and 500 kg'
+        errors.weight = t.settingsPage?.weightInvalid || 'Weight must be between 1 and 500 kg'
       }
     }
     
@@ -109,10 +109,10 @@ const SettingsPage: React.FC = () => {
       
       setEditingSection(null)
       setEditedData({})
-      toastSuccess((t.settingsPage as any)?.changesSaved || 'Changes saved successfully')
+      toastSuccess(t.settingsPage?.changesSaved || 'Changes saved successfully')
     } catch (error) {
       console.error('Failed to save changes:', error)
-      toastError((t.settingsPage as any)?.failedToSave || 'Failed to save changes')
+      toastError(t.settingsPage?.failedToSave || 'Failed to save changes')
     } finally {
       setIsSaving(false)
     }
@@ -120,17 +120,17 @@ const SettingsPage: React.FC = () => {
 
 
   const handleForceDBUpgrade = async () => {
-    if (!confirm((t.settingsPage as any)?.forceUpgradeConfirm || 'This will force upgrade the database. Continue?')) {
+    if (!confirm(t.settingsPage?.forceUpgradeConfirm || 'This will force upgrade the database. Continue?')) {
       return
     }
     
     setIsUpgradingDB(true)
     try {
       await dbHelpers.forceUpgrade()
-      toastSuccess((t.settingsPage as any)?.upgradeSuccess || 'Database upgraded successfully. Please refresh the page.')
+      toastSuccess(t.settingsPage?.upgradeSuccess || 'Database upgraded successfully. Please refresh the page.')
     } catch (error) {
       console.error('Failed to upgrade database:', error)
-      toastError((t.settingsPage as any)?.upgradeError || 'Failed to upgrade database. Please refresh the page manually.')
+      toastError(t.settingsPage?.upgradeError || 'Failed to upgrade database. Please refresh the page manually.')
     } finally {
       setIsUpgradingDB(false)
     }
@@ -151,10 +151,10 @@ const SettingsPage: React.FC = () => {
           createdAt: feedback.createdAt
         })
       })
-      toastSuccess((t.settingsPage as any)?.debugSuccess?.replace('{{count}}', allFeedback.length.toString()) || `Found ${allFeedback.length} AI feedback records. Check console for details.`)
+      toastSuccess(t.settingsPage?.debugSuccess?.replace('{{count}}', allFeedback.length.toString()) || `Found ${allFeedback.length} AI feedback records. Check console for details.`)
     } catch (error) {
       console.error('Failed to debug database:', error)
-      toastError((t.settingsPage as any)?.debugError || 'Failed to debug database. Check console for errors.')
+      toastError(t.settingsPage?.debugError || 'Failed to debug database. Check console for errors.')
     } finally {
       setIsDebuggingDB(false)
     }
@@ -221,7 +221,7 @@ const SettingsPage: React.FC = () => {
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">{(t.settingsPage as any)?.title || t.settings}</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t.settingsPage?.title || t.settings}</h1>
           </div>
         </div>
       </header>
@@ -232,12 +232,12 @@ const SettingsPage: React.FC = () => {
           {/* Language Settings */}
           <div className={`card ${editingSection === 'language' ? 'ring-2 ring-primary-500 bg-primary-50' : ''}`}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">{(t.settingsPage as any)?.language || 'Language'}</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t.settingsPage?.language || 'Language'}</h2>
               {editingSection !== 'language' && (
                 <button
                   onClick={() => startEditing('language')}
                   className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                  title={(t.settingsPage as any)?.editLanguage || 'Edit language'}
+                  title={t.settingsPage?.editLanguage || 'Edit language'}
                 >
                   <Edit size={16} />
                 </button>
@@ -302,12 +302,12 @@ const SettingsPage: React.FC = () => {
           {/* Profile Information */}
           <div className={`card ${editingSection === 'profile' ? 'ring-2 ring-primary-500 bg-primary-50' : ''}`}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">{(t.settingsPage as any)?.profileInformation || 'Profile Information'}</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t.settingsPage?.profileInformation || 'Profile Information'}</h2>
               {editingSection !== 'profile' && (
                 <button
                   onClick={() => openProfileModal(true)}
                   className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                  title={(t.settingsPage as any)?.editProfile || 'Edit profile'}
+                  title={t.settingsPage?.editProfile || 'Edit profile'}
                 >
                   <Edit size={16} />
                 </button>
@@ -318,7 +318,7 @@ const SettingsPage: React.FC = () => {
               <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.name || 'Name'}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.name || 'Name'}</label>
                     <input
                       type="text"
                       value={editedData.name || ''}
@@ -333,7 +333,7 @@ const SettingsPage: React.FC = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.age || 'Age'}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.age || 'Age'}</label>
                     <input
                       type="number"
                       min="10"
@@ -350,7 +350,7 @@ const SettingsPage: React.FC = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.height || 'Height'} ({(t.settingsPage as any)?.cm || 'cm'})</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.height || 'Height'} ({t.settingsPage?.cm || 'cm'})</label>
                     <input
                       type="number"
                       min="100"
@@ -367,7 +367,7 @@ const SettingsPage: React.FC = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.weight || 'Weight'} ({(t.settingsPage as any)?.kg || 'kg'})</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.weight || 'Weight'} ({t.settingsPage?.kg || 'kg'})</label>
                     <input
                       type="number"
                       min="1"
@@ -384,14 +384,14 @@ const SettingsPage: React.FC = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.gender || 'Gender'}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.gender || 'Gender'}</label>
                     <select
                       value={editedData.gender || ''}
                       onChange={(e) => setEditedData({ ...editedData, gender: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
-                      <option value="male">{(t.settingsPage as any)?.male || 'Male'}</option>
-                      <option value="female">{(t.settingsPage as any)?.female || 'Female'}</option>
+                      <option value="male">{t.settingsPage?.male || 'Male'}</option>
+                      <option value="female">{t.settingsPage?.female || 'Female'}</option>
                     </select>
                   </div>
                 </div>
@@ -418,23 +418,23 @@ const SettingsPage: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.name || 'Name'}</label>
-                  <p className="text-gray-900">{profile.name || ((t.settingsPage as any)?.notSet || 'Not set')}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.name || 'Name'}</label>
+                  <p className="text-gray-900">{profile.name || (t.settingsPage?.notSet || 'Not set')}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.age || 'Age'}</label>
-                  <p className="text-gray-900">{profile.age} {(t.settingsPage as any)?.years || 'years'}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.age || 'Age'}</label>
+                  <p className="text-gray-900">{profile.age} {t.settingsPage?.years || 'years'}</p>
               </div>
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.height || 'Height'}</label>
-                  <p className="text-gray-900">{profile.height} {(t.settingsPage as any)?.cm || 'cm'}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.height || 'Height'}</label>
+                  <p className="text-gray-900">{profile.height} {t.settingsPage?.cm || 'cm'}</p>
               </div>
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.weight || 'Weight'}</label>
-                  <p className="text-gray-900">{profile.weight} {(t.settingsPage as any)?.kg || 'kg'}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.weight || 'Weight'}</label>
+                  <p className="text-gray-900">{profile.weight} {t.settingsPage?.kg || 'kg'}</p>
               </div>
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{(t.settingsPage as any)?.gender || 'Gender'}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.gender || 'Gender'}</label>
                   <p className="text-gray-900 capitalize">{profile.gender}</p>
                 </div>
               </div>
@@ -448,7 +448,7 @@ const SettingsPage: React.FC = () => {
                   className="btn-secondary flex items-center space-x-2 w-full justify-center"
                 >
                   <Eye size={16} />
-                  <span>{(t.settingsPage as any)?.viewAllDetails || 'View all details'}</span>
+                  <span>{t.settingsPage?.viewAllDetails || 'View all details'}</span>
                 </button>
               </div>
             )}
@@ -456,14 +456,14 @@ const SettingsPage: React.FC = () => {
 
           {/* Onboarding Reset */}
           <div className="card">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{(t.settingsPage as any)?.onboarding || 'Onboarding'}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.onboarding || 'Onboarding'}</h2>
             <div className="space-y-3">
               <p className="text-sm text-gray-600">
-                {(t.settingsPage as any)?.onboardingDescription || 'Reset the onboarding process to start over with language selection and profile setup.'}
+                {t.settingsPage?.onboardingDescription || 'Reset the onboarding process to start over with language selection and profile setup.'}
               </p>
               <button
                 onClick={() => {
-                  if (confirm((t.settingsPage as any)?.resetConfirmMessage || 'Are you sure you want to reset onboarding? This will clear your profile and start over.')) {
+                  if (confirm(t.settingsPage?.resetConfirmMessage || 'Are you sure you want to reset onboarding? This will clear your profile and start over.')) {
                     localStorage.removeItem('ai-trainer:has-launched')
                     localStorage.removeItem('ai-trainer:onboarding-draft')
                     window.location.reload()
@@ -471,7 +471,7 @@ const SettingsPage: React.FC = () => {
                 }}
                 className="btn-secondary text-red-600 border-red-300 hover:bg-red-50"
               >
-                {(t.settingsPage as any)?.resetOnboarding || 'Reset Onboarding'}
+                {t.settingsPage?.resetOnboarding || 'Reset Onboarding'}
               </button>
             </div>
           </div>
@@ -494,7 +494,7 @@ const SettingsPage: React.FC = () => {
 
           {/* Export/Import (Legacy) */}
           <div className="card">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{(t.settingsPage as any)?.dataManagement || 'Data Management'}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.dataManagement || 'Data Management'}</h2>
             <div className="flex space-x-3">
               <ExportButton 
                 onClick={handleExport}
@@ -508,7 +508,7 @@ const SettingsPage: React.FC = () => {
             
             {/* Database Management */}
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-md font-semibold text-gray-900 mb-3">{(t.settingsPage as any)?.databaseManagement || 'Database Management'}</h3>
+              <h3 className="text-md font-semibold text-gray-900 mb-3">{t.settingsPage?.databaseManagement || 'Database Management'}</h3>
               <div className="space-y-3">
                 <button
                   onClick={handleForceDBUpgrade}
@@ -518,12 +518,12 @@ const SettingsPage: React.FC = () => {
                   {isUpgradingDB ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-700"></div>
-                      <span>{(t.settingsPage as any)?.upgrading || 'Upgrading...'}</span>
+                      <span>{t.settingsPage?.upgrading || 'Upgrading...'}</span>
                     </>
                   ) : (
                     <>
                       <RefreshCw size={16} />
-                      <span>{(t.settingsPage as any)?.forceDatabaseUpgrade || 'Force Database Upgrade'}</span>
+                      <span>{t.settingsPage?.forceDatabaseUpgrade || 'Force Database Upgrade'}</span>
                     </>
                   )}
                 </button>
@@ -536,12 +536,12 @@ const SettingsPage: React.FC = () => {
                   {isDebuggingDB ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700"></div>
-                      <span>{(t.settingsPage as any)?.debugging || 'Debugging...'}</span>
+                      <span>{t.settingsPage?.debugging || 'Debugging...'}</span>
                     </>
                   ) : (
                     <>
                       <RefreshCw size={16} />
-                      <span>{(t.settingsPage as any)?.debugAIFeedback || 'Debug AI Feedback'}</span>
+                      <span>{t.settingsPage?.debugAIFeedback || 'Debug AI Feedback'}</span>
                     </>
                   )}
                 </button>
@@ -565,7 +565,7 @@ const SettingsPage: React.FC = () => {
                 </button>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                {(t.settingsPage as any)?.databaseHelpText || 'Use "Force Database Upgrade" if you encounter database errors. Use "Debug AI Feedback" to check what AI feedback records exist.'}
+                {t.settingsPage?.databaseHelpText || 'Use "Force Database Upgrade" if you encounter database errors. Use "Debug AI Feedback" to check what AI feedback records exist.'}
               </p>
             </div>
           </div>

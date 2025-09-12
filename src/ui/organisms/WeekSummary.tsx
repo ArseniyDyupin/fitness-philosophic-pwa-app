@@ -87,7 +87,7 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
-          aria-label={isExpanded ? (t.workoutsPage as any)?.summary?.collapseSummary || 'Collapse summary' : (t.workoutsPage as any)?.summary?.expandSummary || 'Expand summary'}
+          aria-label={isExpanded ? t.workoutsPage?.summary?.collapseSummary || 'Collapse summary' : t.workoutsPage?.summary?.expandSummary || 'Expand summary'}
         >
           {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
         </button>
@@ -134,7 +134,7 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
               </div>
               {durationDiff !== 0 && (
                 <div className={`text-xs ${getTrendColor(durationDiff)}`}>
-                  {formatTrend(durationDiff, (t.workoutsPage as any)?.summary?.min || 'min')}
+                  {formatTrend(durationDiff, t.workoutsPage?.summary?.min || 'min')}
                 </div>
               )}
             </div>
@@ -178,7 +178,7 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
           {workouts.length > 0 && (
             <div className="border-t border-gray-200 pt-4">
               <h4 className="text-sm font-medium text-gray-700 mb-3">
-                {(t.workoutsPage as any)?.summary?.weeklyActivity || 'Weekly Activity'}
+                {t.workoutsPage?.summary?.weeklyActivity || 'Weekly Activity'}
               </h4>
               <WeeklyActivityChart workouts={workouts} weekStart={weekStart} />
             </div>

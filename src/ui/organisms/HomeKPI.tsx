@@ -75,7 +75,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">
-        {(t.homeDashboard as any)?.kpi?.today || 'Today'}
+        {t.homeDashboard?.kpi?.today || 'Today'}
       </h2>
       
       {/* Today's Stats */}
@@ -85,7 +85,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
           {todayWorkouts.length > 1 && (
             <div className="mb-3">
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {todayWorkouts.length} {(t.homeDashboard as any)?.kpi?.workoutsCount || 'workouts'}
+                {todayWorkouts.length} {t.homeDashboard?.kpi?.workoutsCount || 'workouts'}
               </span>
             </div>
           )}
@@ -97,7 +97,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
             >
               <div className="flex items-center justify-center mb-1">
                 <Zap className="w-4 h-4 text-orange-500 mr-1" />
-                <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.calories || 'Calories'}</span>
+                <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.calories || 'Calories'}</span>
               </div>
               <div className="text-xl font-bold text-gray-900">{dayStats.calories}</div>
             </div>
@@ -108,7 +108,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
             >
               <div className="flex items-center justify-center mb-1">
                 <Clock className="w-4 h-4 text-blue-500 mr-1" />
-                <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.minutes || 'Minutes'}</span>
+                <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.minutes || 'Minutes'}</span>
               </div>
               <div className="text-xl font-bold text-gray-900">{formatDuration(dayStats.minutes)}</div>
             </div>
@@ -119,7 +119,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
             >
               <div className="flex items-center justify-center mb-1">
                 <Target className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.exercises || 'Exercises'}</span>
+                <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.exercises || 'Exercises'}</span>
               </div>
               <div className="text-xl font-bold text-gray-900">{dayStats.exercises}</div>
             </div>
@@ -130,7 +130,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
             >
               <div className="flex items-center justify-center mb-1">
                 <Activity className="w-4 h-4 text-purple-500 mr-1" />
-                <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.rpe || 'RPE'}</span>
+                <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.rpe || 'RPE'}</span>
               </div>
               <div className="text-xl font-bold text-gray-900">
                 {dayStats.rpeAvg ? dayStats.rpeAvg.toFixed(1) : '-'}
@@ -141,7 +141,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
       ) : (
         <div className="text-center py-6 mb-6">
           <p className="text-gray-500 mb-4">
-            {(t.homeDashboard as any)?.kpi?.noWorkoutsToday || 'You haven\'t trained today'}
+            {t.homeDashboard?.kpi?.noWorkoutsToday || 'You haven\'t trained today'}
           </p>
           {hasKey() && (
             <GenerateWorkoutButton
@@ -157,7 +157,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
       {/* Week Progress */}
       <div className="border-t border-gray-200 pt-4">
         <h3 className="text-md font-medium text-gray-900 mb-3">
-          {(t.homeDashboard as any)?.kpi?.week || 'Week'} {(t.homeDashboard as any)?.kpi?.progress || 'Progress'}
+          {t.homeDashboard?.kpi?.week || 'Week'} {t.homeDashboard?.kpi?.progress || 'Progress'}
         </h3>
         
         <div className="space-y-3">
@@ -169,7 +169,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 text-blue-500 mr-2" />
-                <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.workouts || 'Workouts'}</span>
+                <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.workouts || 'Workouts'}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium text-gray-900">
@@ -200,7 +200,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center">
                 <Zap className="w-4 h-4 text-orange-500 mr-2" />
-                <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.calories || 'Calories'}</span>
+                <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.calories || 'Calories'}</span>
               </div>
               <span className="text-sm font-medium text-gray-900">{weekStats.calories}</span>
             </div>
@@ -214,7 +214,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center">
                 <Clock className="w-4 h-4 text-green-500 mr-2" />
-                <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.minutes || 'Minutes'}</span>
+                <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.minutes || 'Minutes'}</span>
               </div>
               <span className="text-sm font-medium text-gray-900">{formatDuration(weekStats.minutes)}</span>
             </div>

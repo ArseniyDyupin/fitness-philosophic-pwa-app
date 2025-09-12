@@ -68,7 +68,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
           <div className="flex items-center space-x-2">
             <Calendar className="w-5 h-5 text-primary-600" />
             <h2 className="text-lg font-semibold text-gray-900">
-              {(t.homeDashboard as any)?.nextPlan?.today || 'Plan for Today'}
+              {t.homeDashboard?.nextPlan?.today || 'Plan for Today'}
             </h2>
           </div>
         </div>
@@ -78,7 +78,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
           <div className="text-center">
             <div className="flex items-center justify-center mb-1">
               <Clock className="w-4 h-4 text-gray-500 mr-1" />
-              <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.minutes || 'Minutes'}</span>
+              <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.minutes || 'Minutes'}</span>
             </div>
             <div className="text-lg font-semibold text-gray-900">
               {formatDuration(totalDuration)}
@@ -88,7 +88,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
           <div className="text-center">
             <div className="flex items-center justify-center mb-1">
               <Zap className="w-4 h-4 text-gray-500 mr-1" />
-              <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.calories || 'Calories'}</span>
+              <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.calories || 'Calories'}</span>
             </div>
             <div className="text-lg font-semibold text-gray-900">
               {totalCalories}
@@ -98,7 +98,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
           <div className="text-center">
             <div className="flex items-center justify-center mb-1">
               <Target className="w-4 h-4 text-gray-500 mr-1" />
-              <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.exercises || 'Exercises'}</span>
+              <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.exercises || 'Exercises'}</span>
             </div>
             <div className="text-lg font-semibold text-gray-900">
               {exerciseCount}
@@ -107,7 +107,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
           
           <div className="text-center">
             <div className="flex items-center justify-center mb-1">
-              <span className="text-sm text-gray-600">{(t.homeDashboard as any)?.kpi?.rpe || 'RPE'}</span>
+              <span className="text-sm text-gray-600">{t.homeDashboard?.kpi?.rpe || 'RPE'}</span>
             </div>
             <div className={`inline-flex items-center px-2 py-1 rounded-full text-sm font-medium ${getRPEBadgeColor(avgRPE)}`}>
               {avgRPE.toFixed(1)} - {getRPEBadgeText(avgRPE)}
@@ -118,7 +118,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
         {/* Exercise List */}
         {plan.exercises && plan.exercises.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">{(t.homeDashboard as any)?.nextPlan?.exercises || 'Exercises'}:</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">{t.homeDashboard?.nextPlan?.exercises || 'Exercises'}:</h3>
             <div className="space-y-1">
               {plan.exercises.slice(0, 3).map((exercise, index) => (
                 <div key={index} className="flex items-center justify-between text-sm">
@@ -133,7 +133,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
               ))}
               {plan.exercises.length > 3 && (
                 <div className="text-sm text-gray-500">
-                  +{plan.exercises.length - 3} {(t.homeDashboard as any)?.nextPlan?.moreExercises || 'more exercises'}
+                  +{plan.exercises.length - 3} {t.homeDashboard?.nextPlan?.moreExercises || 'more exercises'}
                 </div>
               )}
             </div>
@@ -147,14 +147,14 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
             className="btn-primary flex items-center space-x-2 flex-1 justify-center"
           >
             <Play size={16} />
-            <span>{(t.homeDashboard as any)?.nextPlan?.open || 'Open Plan'}</span>
+            <span>{t.homeDashboard?.nextPlan?.open || 'Open Plan'}</span>
           </button>
           <button
             onClick={onMarkDone}
             className="btn-secondary flex items-center space-x-2"
           >
             <CheckCircle size={16} />
-            <span>{(t.homeDashboard as any)?.nextPlan?.markDone || 'Mark Done'}</span>
+            <span>{t.homeDashboard?.nextPlan?.markDone || 'Mark Done'}</span>
           </button>
         </div>
       </div>
@@ -179,13 +179,13 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
           </div>
           
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {(t.homeDashboard as any)?.nextPlan?.noPlan || 'No plan created for today'}
+            {t.homeDashboard?.nextPlan?.noPlan || 'No plan created for today'}
           </h3>
           
           <p className="text-gray-500 mb-6">
             {hasApiKey 
-              ? (t.homeDashboard as any)?.nextPlan?.generateDescription || 'Generate a personalized workout plan for today'
-              : (t.homeDashboard as any)?.nextPlan?.enableAIDescription || 'Enable AI to generate personalized workout plans'
+              ? t.homeDashboard?.nextPlan?.generateDescription || 'Generate a personalized workout plan for today'
+              : t.homeDashboard?.nextPlan?.enableAIDescription || 'Enable AI to generate personalized workout plans'
             }
           </p>
           
@@ -203,7 +203,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
                 className="btn-primary flex items-center space-x-2"
               >
                 <Settings size={16} />
-                <span>{(t.homeDashboard as any)?.nextPlan?.enableAI || 'Enable AI'}</span>
+                <span>{t.homeDashboard?.nextPlan?.enableAI || 'Enable AI'}</span>
               </button>
             )}
             
@@ -212,8 +212,8 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
               className="btn-secondary flex items-center space-x-1 sm:space-x-2 touch-manipulation"
             >
               <Plus size={18} className="sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">{(t.homeDashboard as any)?.cta?.addWorkout || t.addWorkout || 'Add Workout'}</span>
-              <span className="sm:hidden">{(t.homeDashboard as any)?.cta?.add || 'Add'}</span>
+              <span className="hidden sm:inline">{t.homeDashboard?.cta?.addWorkout || t.addWorkout || 'Add Workout'}</span>
+              <span className="sm:hidden">{t.homeDashboard?.cta?.add || 'Add'}</span>
             </button>
           </div>
         </div>

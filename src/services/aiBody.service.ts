@@ -10,7 +10,10 @@ export const aiBodyService = {
       const prompt = this.buildPrompt(profile, metricsHistory, language)
       
       // Prepare messages for OpenAI
-      const messages: any[] = [
+      const messages: Array<{
+        role: string;
+        content: string | Array<{ type: string; text: string }>;
+      }> = [
         {
           role: 'system',
           content: language === 'ru' 
@@ -42,7 +45,7 @@ export const aiBodyService = {
       }
 
       // Call OpenAI API using makeRequest method
-      const response = await (aiService as any).makeRequest(
+      const response = await aiService.makeRequest(
         messages.map(m => m.content).join('\n'),
         language === 'ru' ? 'ru' : 'en'
       )
@@ -142,8 +145,8 @@ Be objective and constructive.`
       return {
         score: typeof parsed.score === 'number' ? Math.max(0, Math.min(100, parsed.score)) : undefined,
         summary: typeof parsed.summary === 'string' ? parsed.summary.trim() : 'No summary available',
-        tips: Array.isArray(parsed.tips) ? parsed.tips.filter((tip: any) => typeof tip === 'string') : [],
-        tags: Array.isArray(parsed.tags) ? parsed.tags.filter((tag: any) => typeof tag === 'string') : [],
+        tips: Array.isArray(parsed.tips) ? parsed.tips.filter((tip: unknown) => typeof tip === 'string') : [],
+        tags: Array.isArray(parsed.tags) ? parsed.tags.filter((tag: unknown) => typeof tag === 'string') : [],
         comparedTo: parsed.comparedTo && typeof parsed.comparedTo === 'object' 
           ? {
               weeks: typeof parsed.comparedTo.weeks === 'number' ? parsed.comparedTo.weeks : 0,

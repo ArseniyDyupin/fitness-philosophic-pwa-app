@@ -146,7 +146,7 @@ const SettingsBodyMetrics: React.FC = () => {
     console.log('Opening test metrics entry modal')
   }
 
-  const handleSettingsChange = async (key: keyof BodyMetricsSettings, value: any) => {
+  const handleSettingsChange = async (key: keyof BodyMetricsSettings, value: string | number | boolean) => {
     try {
       const newSettings = { ...settings, [key]: value }
       setSettings(newSettings)
@@ -321,7 +321,7 @@ const SettingsBodyMetrics: React.FC = () => {
                 </label>
                 <select
                   value={newMetric.unit || 'cm'}
-                  onChange={(e) => setNewMetric({ ...newMetric, unit: e.target.value as any })}
+                  onChange={(e) => setNewMetric({ ...newMetric, unit: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="kg">kg</option>

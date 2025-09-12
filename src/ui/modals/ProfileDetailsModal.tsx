@@ -51,22 +51,22 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
     const errors: Record<string, string> = {}
     
     if (!editedData.name?.trim()) {
-      errors.name = (t as any).profile?.nameRequired || 'Name is required'
+      errors.name = t.profile?.nameRequired || 'Name is required'
     }
     if (editedData.age < 10 || editedData.age > 100) {
-      errors.age = (t as any).profile?.ageRange || 'Age must be between 10 and 100'
+      errors.age = t.profile?.ageRange || 'Age must be between 10 and 100'
     }
     if (editedData.height < 100 || editedData.height > 250) {
-      errors.height = (t as any).profile?.heightRange || 'Height must be between 100 and 250 cm'
+      errors.height = t.profile?.heightRange || 'Height must be between 100 and 250 cm'
     }
     if (editedData.weight < 30 || editedData.weight > 300) {
-      errors.weight = (t as any).profile?.weightRange || 'Weight must be between 30 and 300 kg'
+      errors.weight = t.profile?.weightRange || 'Weight must be between 30 and 300 kg'
     }
     if (editedData.frequency < 1 || editedData.frequency > 14) {
-      errors.frequency = (t as any).profile?.frequencyRange || 'Frequency must be between 1 and 14'
+      errors.frequency = t.profile?.frequencyRange || 'Frequency must be between 1 and 14'
     }
     if (editedData.duration < 5 || editedData.duration > 300) {
-      errors.duration = (t as any).profile?.durationRange || 'Duration must be between 5 and 300 minutes'
+      errors.duration = t.profile?.durationRange || 'Duration must be between 5 and 300 minutes'
     }
     
     return errors
@@ -94,10 +94,10 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
       }
       
       setIsEditMode(false)
-      toastSuccess((t as any).profile?.updateSuccess || 'Profile updated successfully')
+      toastSuccess(t.profile?.updateSuccess || 'Profile updated successfully')
     } catch (error) {
       console.error('Failed to save profile:', error)
-      toastError((t as any).profile?.updateError || 'Failed to save profile')
+      toastError(t.profile?.updateError || 'Failed to save profile')
     } finally {
       setIsSaving(false)
     }
@@ -121,7 +121,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
-            {(t as any).profile?.title || 'Profile Details'}
+            {t.profile?.title || 'Profile Details'}
           </h2>
           <button
             onClick={onClose}
@@ -141,7 +141,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            {(t as any).profile?.general || 'General'}
+            {t.profile?.general || 'General'}
           </button>
           <button
             onClick={() => setActiveTab('goals')}
@@ -151,7 +151,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            {(t as any).profile?.goalsPreferences || 'Goals & Preferences'}
+            {t.profile?.goalsPreferences || 'Goals & Preferences'}
           </button>
         </div>
 
@@ -162,7 +162,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.name || 'Name'}
+                    {t.profile?.name || 'Name'}
                   </label>
                   {isEditMode ? (
                     <input
@@ -174,7 +174,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                       }`}
                     />
                   ) : (
-                    <p className="text-gray-900 py-2">{profile.name || (t as any).profile?.notSet || 'Not set'}</p>
+                    <p className="text-gray-900 py-2">{profile.name || t.profile?.notSet || 'Not set'}</p>
                   )}
                   {validationErrors.name && (
                     <p className="text-sm text-red-600 mt-1">{validationErrors.name}</p>
@@ -183,7 +183,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.age || 'Age'}
+                    {t.profile?.age || 'Age'}
                   </label>
                   {isEditMode ? (
                     <input
@@ -197,7 +197,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                       }`}
                     />
                   ) : (
-                    <p className="text-gray-900 py-2">{profile.age} {(t as any).profile?.years || 'years'}</p>
+                    <p className="text-gray-900 py-2">{profile.age} {t.profile?.years || 'years'}</p>
                   )}
                   {validationErrors.age && (
                     <p className="text-sm text-red-600 mt-1">{validationErrors.age}</p>
@@ -206,7 +206,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.gender || 'Gender'}
+                    {t.profile?.gender || 'Gender'}
                   </label>
                   {isEditMode ? (
                     <select
@@ -214,9 +214,9 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                       onChange={(e) => setEditedData({ ...editedData, gender: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
-                      <option value="male">{(t as any).profile?.male || 'Male'}</option>
-                      <option value="female">{(t as any).profile?.female || 'Female'}</option>
-                      <option value="other">{(t as any).profile?.other || 'Other'}</option>
+                      <option value="male">{t.profile?.male || 'Male'}</option>
+                      <option value="female">{t.profile?.female || 'Female'}</option>
+                      <option value="other">{t.profile?.other || 'Other'}</option>
                     </select>
                   ) : (
                     <p className="text-gray-900 py-2 capitalize">{profile.gender}</p>
@@ -225,7 +225,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.height || 'Height'} ({(t as any).profile?.units?.cm || 'cm'})
+                    {t.profile?.height || 'Height'} ({t.profile?.units?.cm || 'cm'})
                   </label>
                   {isEditMode ? (
                     <input
@@ -239,7 +239,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                       }`}
                     />
                   ) : (
-                    <p className="text-gray-900 py-2">{profile.height} {(t as any).profile?.units?.cm || 'cm'}</p>
+                    <p className="text-gray-900 py-2">{profile.height} {t.profile?.units?.cm || 'cm'}</p>
                   )}
                   {validationErrors.height && (
                     <p className="text-sm text-red-600 mt-1">{validationErrors.height}</p>
@@ -248,7 +248,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.weight || 'Weight'} ({(t as any).profile?.units?.kg || 'kg'})
+                    {t.profile?.weight || 'Weight'} ({t.profile?.units?.kg || 'kg'})
                   </label>
                   {isEditMode ? (
                     <input
@@ -262,7 +262,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                       }`}
                     />
                   ) : (
-                    <p className="text-gray-900 py-2">{profile.weight} {(t as any).profile?.units?.kg || 'kg'}</p>
+                    <p className="text-gray-900 py-2">{profile.weight} {t.profile?.units?.kg || 'kg'}</p>
                   )}
                   {validationErrors.weight && (
                     <p className="text-sm text-red-600 mt-1">{validationErrors.weight}</p>
@@ -271,7 +271,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.language || 'Language'}
+                    {t.profile?.language || 'Language'}
                   </label>
                   {isEditMode ? (
                     <select
@@ -279,11 +279,11 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                       onChange={(e) => setEditedData({ ...editedData, language: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
-                      <option value="en">{(t as any).profile?.english || 'English'}</option>
-                      <option value="ru">{(t as any).profile?.russian || 'Русский'}</option>
+                      <option value="en">{t.profile?.english || 'English'}</option>
+                      <option value="ru">{t.profile?.russian || 'Русский'}</option>
                     </select>
                   ) : (
-                    <p className="text-gray-900 py-2">{profile.language === 'en' ? ((t as any).profile?.english || 'English') : ((t as any).profile?.russian || 'Русский')}</p>
+                    <p className="text-gray-900 py-2">{profile.language === 'en' ? (t.profile?.english || 'English') : (t.profile?.russian || 'Русский')}</p>
                   )}
                 </div>
               </div>
@@ -294,7 +294,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {(t as any).profile?.goalDescription || 'Goal Description'}
+                  {t.profile?.goalDescription || 'Goal Description'}
                 </label>
                 {isEditMode ? (
                   <textarea
@@ -302,16 +302,16 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                     onChange={(e) => setEditedData({ ...editedData, goal: e.target.value })}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                    placeholder={(t as any).profile?.goalPlaceholder || 'Describe your main fitness goal...'}
+                    placeholder={t.profile?.goalPlaceholder || 'Describe your main fitness goal...'}
                   />
                 ) : (
-                  <p className="text-gray-900 py-2">{profile.goal || (t as any).profile?.notSet || 'Not set'}</p>
+                  <p className="text-gray-900 py-2">{profile.goal || t.profile?.notSet || 'Not set'}</p>
                 )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {(t as any).profile?.detailedGoals || 'Detailed Goals'}
+                  {t.profile?.detailedGoals || 'Detailed Goals'}
                 </label>
                 {isEditMode ? (
                   <textarea
@@ -319,17 +319,17 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                     onChange={(e) => setEditedData({ ...editedData, goalsDetailed: e.target.value })}
                     rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                    placeholder={(t as any).profile?.detailedGoalsPlaceholder || 'Add more details about your fitness goals...'}
+                    placeholder={t.profile?.detailedGoalsPlaceholder || 'Add more details about your fitness goals...'}
                   />
                 ) : (
-                  <p className="text-gray-900 py-2">{profile.goalsDetailed || (t as any).profile?.notSet || 'Not set'}</p>
+                  <p className="text-gray-900 py-2">{profile.goalsDetailed || t.profile?.notSet || 'Not set'}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.workoutsPerWeek || 'Workouts per week'}
+                    {t.profile?.workoutsPerWeek || 'Workouts per week'}
                   </label>
                   {isEditMode ? (
                     <input
@@ -343,7 +343,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                       }`}
                     />
                   ) : (
-                    <p className="text-gray-900 py-2">{profile.frequency || (t as any).profile?.notSet || 'Not set'}</p>
+                    <p className="text-gray-900 py-2">{profile.frequency || t.profile?.notSet || 'Not set'}</p>
                   )}
                   {validationErrors.frequency && (
                     <p className="text-sm text-red-600 mt-1">{validationErrors.frequency}</p>
@@ -352,7 +352,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.workoutDuration || 'Workout duration'} ({(t as any).profile?.units?.min || 'min'})
+                    {t.profile?.workoutDuration || 'Workout duration'} ({t.profile?.units?.min || 'min'})
                   </label>
                   {isEditMode ? (
                     <input
@@ -366,7 +366,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                       }`}
                     />
                   ) : (
-                    <p className="text-gray-900 py-2">{profile.duration || (t as any).profile?.notSet || 'Not set'} {(t as any).profile?.units?.min || 'min'}</p>
+                    <p className="text-gray-900 py-2">{profile.duration || t.profile?.notSet || 'Not set'} {t.profile?.units?.min || 'min'}</p>
                   )}
                   {validationErrors.duration && (
                     <p className="text-sm text-red-600 mt-1">{validationErrors.duration}</p>
@@ -378,7 +378,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
               {profile.constraints && profile.constraints.length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.constraints || 'Constraints'}
+                    {t.profile?.constraints || 'Constraints'}
                   </label>
                   <p className="text-gray-900 py-2">{profile.constraints.join(', ')}</p>
                 </div>
@@ -387,7 +387,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
               {profile.equipment && profile.equipment.length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {(t as any).profile?.equipment || 'Equipment'}
+                    {t.profile?.equipment || 'Equipment'}
                   </label>
                   <p className="text-gray-900 py-2">{profile.equipment.join(', ')}</p>
                 </div>
@@ -402,7 +402,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
           >
-            {(t as any).profile?.close || 'Close'}
+            {t.profile?.close || 'Close'}
           </button>
           
           <div className="flex space-x-2">
@@ -412,7 +412,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                 className="btn-primary flex items-center space-x-1"
               >
                 <Edit size={16} />
-                <span>{(t as any).profile?.update || 'Update'}</span>
+                <span>{t.profile?.update || 'Update'}</span>
               </button>
             ) : (
               <>
@@ -422,7 +422,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                   className="btn-secondary flex items-center space-x-1"
                 >
                   <X size={16} />
-                  <span>{(t as any).profile?.cancel || 'Cancel'}</span>
+                  <span>{t.profile?.cancel || 'Cancel'}</span>
                 </button>
                 <button
                   onClick={handleSave}
@@ -430,7 +430,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                   className="btn-primary flex items-center space-x-1"
                 >
                   <Save size={16} />
-                  <span>{isSaving ? ((t as any).profile?.saving || 'Saving...') : ((t as any).profile?.save || 'Save')}</span>
+                  <span>{isSaving ? (t.profile?.saving || 'Saving...') : (t.profile?.save || 'Save')}</span>
                 </button>
               </>
             )}

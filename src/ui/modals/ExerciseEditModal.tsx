@@ -26,7 +26,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
     }
   }, [isOpen, exercise])
 
-  const updateExerciseField = (field: string, value: any) => {
+  const updateExerciseField = (field: string, value: string | number | number[]) => {
     setEditedExercise(prev => ({
       ...prev,
       details: { ...prev.details, [field]: value }
@@ -34,7 +34,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
   }
 
   const updateExerciseType = (type: string) => {
-    setEditedExercise(prev => ({ ...prev, type: type as any }))
+    setEditedExercise(prev => ({ ...prev, type: type }))
   }
 
   const handleSave = async () => {

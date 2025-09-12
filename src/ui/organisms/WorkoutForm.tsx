@@ -83,7 +83,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
 
   const handleSave = async () => {
     if (exercises.length === 0) {
-      toastError((t.workoutForm as any)?.addAtLeastOneExercise || 'Please add at least one exercise')
+      toastError(t.workoutForm?.addAtLeastOneExercise || 'Please add at least one exercise')
       return
     }
 
@@ -175,18 +175,18 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
       onClose()
     } catch (error) {
       console.error('Failed to save workout:', error)
-      toastError((t.workoutForm as any)?.failedToSave || 'Failed to save workout')
+      toastError(t.workoutForm?.failedToSave || 'Failed to save workout')
     }
   }
 
   const handleTextParse = async () => {
     if (!textInput.trim()) {
-      toastError((t.workoutForm as any)?.pleaseEnterDescription || 'Please enter workout description')
+      toastError(t.workoutForm?.pleaseEnterDescription || 'Please enter workout description')
       return
     }
 
     if (!isAIConfigured) {
-      toastError((t.workoutForm as any)?.aiNotConfigured || 'AI is not configured. Please set up your OpenAI API key in Settings.')
+      toastError(t.workoutForm?.aiNotConfigured || 'AI is not configured. Please set up your OpenAI API key in Settings.')
       return
     }
 
@@ -200,7 +200,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
     } catch (error) {
       console.error('Failed to parse workout text:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      toastError((t.workoutForm as any)?.aiParseFailed || `AI parsing failed: ${errorMessage}`)
+      toastError(t.workoutForm?.aiParseFailed || `AI parsing failed: ${errorMessage}`)
     } finally {
       setIsProcessing(false)
     }
@@ -265,7 +265,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               <Bot size={16} />
               <span>{t.workoutForm?.textMode || 'Text Mode'}</span>
               {!isAIConfigured && (
-                <span className="text-xs">{(t.workoutForm as any)?.aiRequired || '(AI required)'}</span>
+                <span className="text-xs">{t.workoutForm?.aiRequired || '(AI required)'}</span>
               )}
             </button>
           </div>
@@ -322,7 +322,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                     max="300"
                     value={durationMin || ''}
                     onChange={(e) => setDurationMin(e.target.value ? parseInt(e.target.value) : undefined)}
-                    placeholder={(t.workoutForm as any)?.optional || 'Optional'}
+                    placeholder={t.workoutForm?.optional || 'Optional'}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <span className="text-sm text-gray-500">
@@ -330,7 +330,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {(t.workoutForm as any)?.optionalDescription || 'Optional: Total time spent on the workout including rest'}
+                  {t.workoutForm?.optionalDescription || 'Optional: Total time spent on the workout including rest'}
                 </p>
               </div>
 
@@ -350,7 +350,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                     </label>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 ml-7">
-                    {(t.workoutForm as any)?.aiWillEstimate || 'AI will automatically estimate RPE and provide feedback after saving'}
+                    {t.workoutForm?.aiWillEstimate || 'AI will automatically estimate RPE and provide feedback after saving'}
                   </p>
                 </div>
               )}
@@ -395,9 +395,9 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
                 <h4 className="font-medium text-gray-900 mb-2">{t.workoutForm?.workoutSummary || 'Workout Summary'}</h4>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">{(t.workoutForm as any)?.estimatesWillBeCalculated || 'Estimates will be calculated after saving'}</span>
+                    <span className="text-gray-600">{t.workoutForm?.estimatesWillBeCalculated || 'Estimates will be calculated after saving'}</span>
                     <div className="font-medium text-sm text-gray-500">
-                      {isEstimating ? ((t.workoutForm as any)?.aiEstimationInProgress || 'AI estimation in progress...') : ((t.workoutForm as any)?.caloriesWillBeEstimated || 'Calories and duration will be estimated automatically')}
+                      {isEstimating ? (t.workoutForm?.aiEstimationInProgress || 'AI estimation in progress...') : (t.workoutForm?.caloriesWillBeEstimated || 'Calories and duration will be estimated automatically')}
                     </div>
                   </div>
                   <div>
@@ -432,7 +432,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               disabled={isProcessing || !textInput.trim()}
               className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isProcessing ? ((t.workoutForm as any)?.parsing || 'Parsing...') : (t.workoutForm?.parseAndContinue || 'Parse and Continue')}
+              {isProcessing ? (t.workoutForm?.parsing || 'Parsing...') : (t.workoutForm?.parseAndContinue || 'Parse and Continue')}
             </button>
           </div>
         )}
@@ -454,7 +454,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               {isEstimating ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span>{(t.workoutForm as any)?.aiEstimationInProgress || 'AI estimation...'}</span>
+                  <span>{t.workoutForm?.aiEstimationInProgress || 'AI estimation...'}</span>
                 </>
               ) : isAnalyzing ? (
                 <>
