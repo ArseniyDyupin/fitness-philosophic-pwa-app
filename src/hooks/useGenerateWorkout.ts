@@ -11,6 +11,7 @@ export interface GenerateWorkoutOptions {
   focus?: string
   duration?: number
   equipment?: string[]
+  preferences?: string
 }
 
 export function useGenerateWorkout() {
@@ -33,28 +34,9 @@ export function useGenerateWorkout() {
 
     setIsGenerating(true)
     try {
-      // Build payload for AI generation
-      const payload = {
-        profile: {
-          age: profile.age,
-          gender: profile.gender,
-          height: profile.height,
-          weight: profile.weight,
-          goal: profile.goal,
-          constraints: profile.constraints || [],
-          equipment: profile.equipment || [],
-          frequency: profile.frequency,
-          duration: options.duration || profile.duration
-        },
-        preferences: {
-          focus: options.focus,
-          equipment: options.equipment || profile.equipment || [],
-          date: options.dateISO
-        }
-      }
 
       // Generate workout plan using AI
-      const generatedWorkout = await aiService.generateWorkout(payload)
+      const generatedWorkout = await aiService.generateNextWorkout(profile, [], 'en', options.preferences)
       
       if (!generatedWorkout) {
         throw new Error('Failed to generate workout')
@@ -62,11 +44,11 @@ export function useGenerateWorkout() {
 
       // Save the generated workout
       const workoutData = {
-        name: generatedWorkout.name || 'Generated Workout',
+        name: generatedWorkout.title || 'Generated Workout',
         description: generatedWorkout.description || '',
         date: options.dateISO || new Date().toISOString().split('T')[0],
         exercises: generatedWorkout.exercises || [],
-        rpe: generatedWorkout.rpe || 0,
+        rpe: 0,
         notes: generatedWorkout.notes || '',
         isPlan: true
       }

@@ -1,4 +1,4 @@
-import type { AIWorkoutReview, AIWorkoutPayload, AIWeeklyAdvicePayload } from '@/types/ai'
+import type { AIWorkoutReview, AIWorkoutPayload } from '@/types/ai'
 import type { Profile, Workout, PlanSuggestion } from '../types/models'
 import { db } from './db'
 import { z } from 'zod'
@@ -43,6 +43,10 @@ export class AIService {
 
   hasApiKey(): boolean {
     return !!this.apiKey && this.apiKey !== 'your_openai_api_key_here'
+  }
+
+  async generateResponse(prompt: string, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<string> {
+    return this.makeRequest(prompt, language, abortController)
   }
 
   private async makeRequest(prompt: string, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<string> {
@@ -147,21 +151,6 @@ Respond with JSON in this exact format:
     }
   }
 
-  async getWeeklyAdvice(payload: AIWeeklyAdvicePayload, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<string> {
-    const prompt = language === 'ru'
-      ? `Предоставьте недельный совет по фитнесу на основе этих данных. Ответьте кратким, практичным советом.
-
-Данные недели: ${JSON.stringify(payload)}
-
-Сделайте ответ кратким и практичным. Сосредоточьтесь на одной основной рекомендации.`
-      : `Provide weekly fitness advice based on this data. Respond with a brief, actionable advice paragraph.
-
-Week data: ${JSON.stringify(payload)}
-
-Keep the response concise and practical. Focus on one main recommendation.`
-
-    return await this.makeRequest(prompt, language, abortController)
-  }
 
   async testConnection(): Promise<boolean> {
     try {

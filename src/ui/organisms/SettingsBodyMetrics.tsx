@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { metricsService } from '@services/metrics.service'
 import { Plus, Trash2, Edit, Save, X, TestTube } from 'lucide-react'
-import type { MetricDef, BodyMetricsSettings } from '@types/body-metrics'
+import type { MetricDef, BodyMetricsSettings } from '@/types/body-metrics'
 
 const SettingsBodyMetrics: React.FC = () => {
   const t = useTranslations()
@@ -321,7 +321,7 @@ const SettingsBodyMetrics: React.FC = () => {
                 </label>
                 <select
                   value={newMetric.unit || 'cm'}
-                  onChange={(e) => setNewMetric({ ...newMetric, unit: e.target.value })}
+                  onChange={(e) => setNewMetric({ ...newMetric, unit: e.target.value as any })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="kg">kg</option>

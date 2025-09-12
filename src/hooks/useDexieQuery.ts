@@ -1,18 +1,24 @@
 import { useState, useEffect, useCallback } from 'react'
 import { db } from '@services/db'
 
-export interface UseDexieQueryOptions<T> {
+export interface UseDexieQueryOptions {
   enabled?: boolean
   refetchOnWindowFocus?: boolean
   staleTime?: number
 }
 
 export function useDexieQuery<T>(
-  tableName: keyof typeof db,
+  _tableName: keyof typeof db,
   queryFn: () => Promise<T>,
   deps: any[] = [],
-  options: UseDexieQueryOptions<T> = {}
-) {
+  options: UseDexieQueryOptions = {}
+): {
+  data: T | undefined
+  isLoading: boolean
+  error: Error | null
+  refetch: () => void
+  isStale: boolean
+} {
   const [data, setData] = useState<T | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)

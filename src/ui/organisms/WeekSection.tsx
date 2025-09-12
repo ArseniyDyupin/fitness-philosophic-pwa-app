@@ -3,7 +3,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { useAIStore } from '@stores/ai.store'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Sparkles } from 'lucide-react'
-import type { Workout } from '@types/models'
+import type { Workout } from '@/types/models'
 import WorkoutCard from './WorkoutCard'
 import WeekSummary from './WeekSummary'
 

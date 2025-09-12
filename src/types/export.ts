@@ -14,6 +14,7 @@ export interface ExportBundle {
   workouts: Workout[]
   food: FoodLog[]
   checkins: WeeklyCheckin[]
+  weeklyData: any[] // For compatibility
   ai: AiMessage[]
   plans: PlanSuggestion[]
 }

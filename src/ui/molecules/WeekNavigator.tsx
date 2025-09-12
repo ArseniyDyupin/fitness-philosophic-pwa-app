@@ -3,8 +3,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
 import { format, startOfWeek, endOfWeek, addWeeks } from 'date-fns'
 import { ru, enUS } from 'date-fns/locale'
-import Button from '@atoms/Button'
-import { cn } from '@utils/cn'
 
 export interface WeekNavigatorProps {
   selectedWeekStart: Date

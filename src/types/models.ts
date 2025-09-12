@@ -38,6 +38,8 @@ export interface WorkoutExercise {
 
 export interface Workout {
   id: string
+  name?: string                 // Workout name
+  description?: string          // Workout description
   date: string                  // ISO string
   exercises: WorkoutExercise[]
   rpe?: number // Rate of Perceived Exertion (1-10 scale) - will be filled by AI when analysis is enabled
@@ -46,6 +48,8 @@ export interface Workout {
   durationOverrideMin?: number // NEW: manual override for total duration
   aiReviewId?: string // ID of AI review if available
   status?: WorkoutStatus // NEW: default "completed" for old data
+  isPlan?: boolean             // Whether this is a plan or completed workout
+  notes?: string               // General workout notes
   createdAt: string            // ISO string
   updatedAt: string            // ISO string
 }

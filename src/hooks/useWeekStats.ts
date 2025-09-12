@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { useWorkoutStore } from '@stores/workout.store'
-import { useProfileStore } from '@stores/profile.store'
-import { startOfWeek, endOfWeek, isWithinInterval } from 'date-fns'
+import { endOfWeek, isWithinInterval } from 'date-fns'
 import { sumWorkoutKcal, sumWorkoutMinutes } from '@services/kcal'
 
 export interface WeekStats {
@@ -15,7 +14,6 @@ export interface WeekStats {
 
 export function useWeekStats(weekStart: Date) {
   const workouts = useWorkoutStore(s => s.workouts)
-  const profile = useProfileStore(s => s.profile)
 
   const stats = useMemo((): WeekStats => {
     const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 })
@@ -24,13 +22,9 @@ export function useWeekStats(weekStart: Date) {
       isWithinInterval(new Date(w.date), { start: weekStart, end: weekEnd }) && !w.isPlan
     )
 
-    const calories = weekWorkouts.reduce((sum, workout) => 
-      sum + sumWorkoutKcal(workout), 0
-    )
+    const calories = sumWorkoutKcal(weekWorkouts, 70)
 
-    const minutes = weekWorkouts.reduce((sum, workout) => 
-      sum + sumWorkoutMinutes(workout), 0
-    )
+    const minutes = sumWorkoutMinutes(weekWorkouts)
 
     const exercises = weekWorkouts.reduce((sum, workout) => 
       sum + (workout.exercises?.length ?? 0), 0

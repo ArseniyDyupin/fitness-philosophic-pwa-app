@@ -1,5 +1,5 @@
 import { aiService } from './ai'
-import type { BodyAnalysisInput, BodyAnalysisResult, AiBodyEval } from '@types/body-metrics'
+import type { BodyAnalysisInput, BodyAnalysisResult, AiBodyEval } from '@/types/body-metrics'
 
 export const aiBodyService = {
   async evaluate(input: BodyAnalysisInput): Promise<BodyAnalysisResult> {
@@ -7,7 +7,7 @@ export const aiBodyService = {
       const { profile, metricsHistory, photos, language } = input
       
       // Prepare the prompt
-      const prompt = this.buildPrompt(profile, metricsHistory, language)
+      const bodyPrompt = this.buildPrompt(profile, metricsHistory, language)
       
       // Prepare messages for OpenAI
       const messages: Array<{
@@ -25,7 +25,7 @@ export const aiBodyService = {
           content: [
             {
               type: 'text',
-              text: prompt
+              text: bodyPrompt
             }
           ]
         }
@@ -34,21 +34,29 @@ export const aiBodyService = {
       // Add photos if available
       if (photos && photos.length > 0) {
         for (const photo of photos) {
-          messages[1].content.push({
-            type: 'image_url',
-            image_url: {
-              url: photo.dataUrl,
-              detail: 'low'
-            }
-          })
+          if (Array.isArray(messages[1].content)) {
+            (messages[1].content as any[]).push({
+              type: 'image_url',
+              image_url: {
+                url: photo.dataUrl,
+                detail: 'low'
+              }
+            })
+          }
         }
       }
 
-      // Call OpenAI API using makeRequest method
-      const response = await aiService.makeRequest(
-        messages.map(m => m.content).join('\n'),
-        language === 'ru' ? 'ru' : 'en'
-      )
+      // Call OpenAI API using generateResponse method
+      const prompt = messages.map(m => {
+        if (typeof m.content === 'string') {
+          return m.content
+        } else if (Array.isArray(m.content)) {
+          return m.content.map(c => c.type === 'text' ? c.text : '').join('\n')
+        }
+        return ''
+      }).join('\n')
+      
+      const response = await aiService.generateResponse(prompt, language === 'ru' ? 'ru' : 'en')
 
       // Parse the response
       return this.parseResponse(response, language)

@@ -11,7 +11,7 @@ import { aiReviewService } from '@services/ai.review'
 import { dbHelpers } from '@services/db'
 import { toastSuccess, toastError } from '@lib/toast'
 import { ArrowLeft, Trash2, ArrowRight } from 'lucide-react'
-import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '@types/models'
+import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '@/types/models'
 
 // New components
 import WorkoutHeader from '@organisms/WorkoutHeader'

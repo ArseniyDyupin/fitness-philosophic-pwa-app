@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { db } from '@services/db'
-import type { FoodLog } from '@types/models'
+import type { FoodLog } from '@/types/models'
 
 interface FoodState {
   foodLogs: FoodLog[]

@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { db } from '@services/db'
 import { startOfWeek, endOfWeek, isWithinInterval } from 'date-fns'
 import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/kcal'
-import type { Workout } from '@types/models'
+import type { Workout } from '@/types/models'
 
 interface WorkoutState {
   workouts: Workout[]
@@ -12,6 +12,7 @@ interface WorkoutState {
   // Actions
   loadWorkouts: () => Promise<void>
   addWorkout: (workout: Omit<Workout, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Workout>
+  createWorkout: (workout: Omit<Workout, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Workout>
   updateWorkout: (id: string, workout: Partial<Workout>) => Promise<void>
   deleteWorkout: (id: string) => Promise<void>
   getWorkoutById: (id: string) => Workout | undefined
@@ -65,6 +66,10 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     } finally {
       set({ isLoading: false })
     }
+  },
+
+  createWorkout: async (workoutData) => {
+    return get().addWorkout(workoutData)
   },
 
   updateWorkout: async (id, workoutData) => {

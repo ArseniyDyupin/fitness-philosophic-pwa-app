@@ -1,9 +1,10 @@
 import { create } from 'zustand'
 import { db } from '@services/db'
-import type { WeeklyCheckin } from '@types/models'
+import type { WeeklyCheckin } from '@/types/models'
 
 interface WeeklyState {
   checkins: WeeklyCheckin[]
+  weeklyData: any[] // For export/import compatibility
   isLoading: boolean
   error: string | null
   
@@ -19,6 +20,7 @@ interface WeeklyState {
 
 export const useWeeklyStore = create<WeeklyState>((set, get) => ({
   checkins: [],
+  weeklyData: [],
   isLoading: false,
   error: null,
 

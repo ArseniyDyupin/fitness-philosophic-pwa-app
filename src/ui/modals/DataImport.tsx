@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslations } from '@stores/i18n.store'
 import { validateFile, importData, ImportError, getImportPreview } from '@services/import'
 import { toastSuccess, toastError } from '@lib/toast'
-import type { ExportBundle, ImportPreview } from '@types/export'
+import type { ExportBundle, ImportPreview } from '@/types/export'
 import { Upload, FileText, Check, AlertCircle } from 'lucide-react'
 
 const DataImport: React.FC = () => {
@@ -173,30 +173,30 @@ const DataImport: React.FC = () => {
           
           <div className="bg-gray-50 p-4 rounded-lg space-y-2">
             <div className="text-sm">
-              <span className="font-medium">{t.exportedAt || 'Exported at'}:</span> {formatDate(preview.exportedAt)}
+              <span className="font-medium">{t.exportedAt || 'Exported at'}: {formatDate(preview.exportedAt)}</span>
             </div>
             <div className="text-sm">
-              <span className="font-medium">Schema Version:</span> {preview.schemaVersion}
+              <span className="font-medium">Schema Version: {preview.schemaVersion}</span>
             </div>
             
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="text-sm">
-                <span className="font-medium">{t.profile || 'Profile'}:</span> {preview.hasProfile ? '✓' : '✗'}
+                <span className="font-medium">{(t as any).profile || 'Profile'}: {preview.hasProfile ? '✓' : '✗'}</span>
               </div>
               <div className="text-sm">
-                <span className="font-medium">{t.workouts || 'Workouts'}:</span> {preview.workoutsCount}
+                <span className="font-medium">{t.workouts || 'Workouts'}: {preview.workoutsCount}</span>
               </div>
               <div className="text-sm">
-                <span className="font-medium">{t.food || 'Food'}:</span> {preview.foodCount}
+                <span className="font-medium">{t.food || 'Food'}: {preview.foodCount}</span>
               </div>
               <div className="text-sm">
-                <span className="font-medium">Checkins:</span> {preview.checkinsCount}
+                <span className="font-medium">Checkins: {preview.checkinsCount}</span>
               </div>
               <div className="text-sm">
-                <span className="font-medium">AI History:</span> {preview.aiCount}
+                <span className="font-medium">AI History: {preview.aiCount}</span>
               </div>
               <div className="text-sm">
-                <span className="font-medium">Plans:</span> {preview.plansCount}
+                <span className="font-medium">Plans: {preview.plansCount}</span>
               </div>
             </div>
           </div>

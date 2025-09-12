@@ -3,7 +3,7 @@ import { Bot, RefreshCw, Settings } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
 import { format } from 'date-fns'
 import MetricCard from '@atoms/MetricCard'
-import type { Workout } from '@types/models'
+import type { Workout } from '@/types/models'
 
 interface WorkoutHeaderProps {
   workout: Workout

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { Calendar, ChevronDown } from 'lucide-react'
-import type { StatsRange } from '@types/stats'
+import type { StatsRange } from '@/types/stats'
 
 interface StatsHeaderProps {
   selectedRange: StatsRange

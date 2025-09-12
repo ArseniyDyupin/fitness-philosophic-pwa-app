@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { X, Check } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
-import type { WorkoutExercise } from '@types/models'
+import type { WorkoutExercise } from '@/types/models'
 
 interface ExerciseEditModalProps {
   isOpen: boolean
@@ -34,7 +34,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
   }
 
   const updateExerciseType = (type: string) => {
-    setEditedExercise(prev => ({ ...prev, type: type }))
+    setEditedExercise(prev => ({ ...prev, type: type as any }))
   }
 
   const handleSave = async () => {

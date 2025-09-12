@@ -19,13 +19,9 @@ export function useTodayStats(date = new Date()) {
       isSameDay(new Date(w.date), date) && !w.isPlan
     )
 
-    const calories = todayWorkouts.reduce((sum, workout) => 
-      sum + sumWorkoutKcal(workout), 0
-    )
+    const calories = sumWorkoutKcal(todayWorkouts, 70)
 
-    const minutes = todayWorkouts.reduce((sum, workout) => 
-      sum + sumWorkoutMinutes(workout), 0
-    )
+    const minutes = sumWorkoutMinutes(todayWorkouts)
 
     const exercises = todayWorkouts.reduce((sum, workout) => 
       sum + (workout.exercises?.length ?? 0), 0

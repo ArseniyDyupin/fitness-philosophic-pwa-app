@@ -1,4 +1,4 @@
-import type { WorkoutExercise, WorkoutType } from '@types/models'
+import type { WorkoutExercise, WorkoutType } from '@/types/models'
 
 // MET values for different exercise types
 const MET_VALUES: Record<WorkoutType, number> = {
@@ -135,5 +135,29 @@ export function calculateWorkoutDuration(exercises: WorkoutExercise[]): number {
       default:
         return total
     }
+  }, 0)
+}
+
+/**
+ * Sum calories for multiple workouts
+ */
+export function sumWorkoutKcal(workouts: any[], userWeight: number): number {
+  return workouts.reduce((total, workout) => {
+    if (workout.exercises) {
+      return total + calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
+    }
+    return total
+  }, 0)
+}
+
+/**
+ * Sum minutes for multiple workouts
+ */
+export function sumWorkoutMinutes(workouts: any[]): number {
+  return workouts.reduce((total, workout) => {
+    if (workout.exercises) {
+      return total + calculateWorkoutDuration(workout.exercises)
+    }
+    return total
   }, 0)
 }

@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useProfileStore } from '@stores/profile.store'
 import { useI18nStore } from '@stores/i18n.store'
 import { useTranslations } from '@stores/i18n.store'
 import { dbHelpers } from '@services/db'
 import { toastSuccess, toastError } from '@lib/toast'
-import { ExportButton, ImportButton } from '@atoms'
+import { ExportButton, ImportButton } from '@/ui/atoms'
 import AISettings from '@modals/AISettings'
 import DataImport from '@modals/DataImport'
 import ProfileDetailsModal from '@modals/ProfileDetailsModal'
@@ -13,7 +12,6 @@ import SettingsBodyMetrics from '@organisms/SettingsBodyMetrics'
 import { Edit, Check, X, Eye, RefreshCw } from 'lucide-react'
 
 const SettingsPage: React.FC = () => {
-  const navigate = useNavigate()
   const { profile, saveProfile } = useProfileStore()
   const { setLanguage } = useI18nStore()
   const t = useTranslations()
@@ -194,7 +192,7 @@ const SettingsPage: React.FC = () => {
     try {
       // Import the import function
       const { importData } = await import('@services/import')
-      await importData(file)
+      await importData(file as any)
       toastSuccess(t.importSuccess || 'Data imported successfully')
     } catch (error) {
       console.error('Import failed:', error)

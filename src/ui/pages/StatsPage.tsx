@@ -9,7 +9,7 @@ import DisciplineBreakdown from '@organisms/DisciplineBreakdown'
 import Records from '@organisms/Records'
 import BodyMetricsBlock from '@organisms/BodyMetricsBlock'
 import AiBodyEvalCard from '@organisms/AiBodyEvalCard'
-import type { StatsRange } from '@types/stats'
+import type { StatsRange } from '@/types/stats'
 
 const StatsPage: React.FC = () => {
   const t = useTranslations()

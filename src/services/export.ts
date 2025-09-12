@@ -1,5 +1,5 @@
 import { db } from './db'
-import type { ExportBundle } from '@types/export'
+import type { ExportBundle } from '@/types/export'
 
 export async function exportAll(): Promise<ExportBundle> {
   try {
@@ -12,6 +12,7 @@ export async function exportAll(): Promise<ExportBundle> {
       workouts: await db.workouts.toArray(),
       food: await db.food.toArray(),
       checkins: await db.checkins.toArray(),
+      weeklyData: [], // For compatibility
       ai: await db.ai.toArray(),
       plans: await db.plans.toArray(),
     }

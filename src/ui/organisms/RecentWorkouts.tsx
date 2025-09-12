@@ -2,7 +2,7 @@ import React from 'react'
 import Button from '@atoms/Button'
 import WorkoutCard from './WorkoutCard'
 import { cn } from '@utils/cn'
-import type { Workout } from '@types/models'
+import type { Workout } from '@/types/models'
 
 export interface RecentWorkoutsProps {
   workouts: Workout[]
@@ -11,7 +11,6 @@ export interface RecentWorkoutsProps {
   onDeleteWorkout?: (workout: Workout) => void
   onViewAll?: () => void
   maxItems?: number
-  showActions?: boolean
   className?: string
 }
 
@@ -22,7 +21,6 @@ const RecentWorkouts: React.FC<RecentWorkoutsProps> = ({
   onDeleteWorkout,
   onViewAll,
   maxItems = 5,
-  showActions = true,
   className
 }) => {
   const recentWorkouts = workouts.slice(0, maxItems)
@@ -67,10 +65,9 @@ const RecentWorkouts: React.FC<RecentWorkoutsProps> = ({
           <WorkoutCard
             key={workout.id}
             workout={workout}
-            onView={onViewWorkout}
-            onEdit={onEditWorkout}
-            onDelete={onDeleteWorkout}
-            showActions={showActions}
+            onClick={() => onViewWorkout && onViewWorkout(workout)}
+            onEdit={() => onEditWorkout && onEditWorkout(workout)}
+            onDelete={() => onDeleteWorkout && onDeleteWorkout(workout)}
           />
         ))}
       </div>

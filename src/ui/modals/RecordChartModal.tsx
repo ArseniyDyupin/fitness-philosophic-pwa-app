@@ -8,12 +8,9 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  Legend,
-  Dot
+  Tooltip
 } from 'recharts'
 import { format, parseISO } from 'date-fns'
-import type { PersonalRecords } from '@types/stats'
 
 interface RecordChartModalProps {
   isOpen: boolean
@@ -30,7 +27,6 @@ interface RecordChartModalProps {
 const RecordChartModal: React.FC<RecordChartModalProps> = ({
   isOpen,
   onClose,
-  recordKey,
   recordData,
   recordType,
   recordLabel
@@ -81,7 +77,7 @@ const RecordChartModal: React.FC<RecordChartModalProps> = ({
     }
   }
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (

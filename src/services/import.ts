@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import { db } from './db'
 import { calculateWorkoutCalories } from './kcal'
-import type { ExportBundle, ImportStats, ImportPreview } from '@types/export'
-import type { Workout, WorkoutExercise, Profile } from '@types/models'
+import type { ExportBundle, ImportStats, ImportPreview } from '@/types/export'
+import type { Workout, WorkoutExercise, Profile } from '@/types/models'
 
 // Zod schema for validation
 const ExportBundleSchema = z.object({

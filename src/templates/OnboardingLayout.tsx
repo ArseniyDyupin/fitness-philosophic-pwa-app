@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useOnboardingStore } from '@stores/onboarding.store'
 import { useTranslations } from '@stores/i18n.store'
 import { ArrowLeft, ArrowRight, Save, Check } from 'lucide-react'
-import Button from '@atoms/Button'
-import { cn } from '@utils/cn'
 
 interface OnboardingLayoutProps {
   children: React.ReactNode
@@ -146,10 +144,6 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
         {/* Profile Summary Sidebar */}
         <div className="lg:grid lg:grid-cols-3 lg:gap-8">
           <div className="lg:col-span-2">{children}</div>
-
-          <div className="lg:col-span-1 mt-8 lg:mt-0">
-            <ProfileSummary />
-          </div>
         </div>
 
         {/* Navigation Footer */}

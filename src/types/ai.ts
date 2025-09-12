@@ -31,32 +31,4 @@ export interface AIWorkoutReview {
   }
 }
 
-export interface AIWeeklyAdvicePayload {
-  profile: {
-    gender: string
-    age: number
-    heightCm: number
-    weightKg: number
-    goal: {
-      types: string[]
-      description: string
-    }
-    goalsDetailed: string
-    language: string
-  }
-  workouts: {
-    exercises: WorkoutExercise[]
-    date: string
-    rpe?: number
-  }[]
-  currentWeek: {
-    startDate: string
-    endDate: string
-  }
-}
 
-export interface AIWeeklyAdvice {
-  summary: string
-  recommendations: string[]
-  nextWeekPlan: string
-}
