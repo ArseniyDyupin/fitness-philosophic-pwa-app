@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useOnboardingStore } from '../../stores/onboarding.store'
-import { useTranslations } from '../../stores/i18n.store'
-import OnboardingLayout from '../../components/OnboardingLayout'
+import { useOnboardingStore } from '@stores/onboarding.store'
+import { useTranslations } from '@stores/i18n.store'
+import OnboardingLayout from '@templates/OnboardingLayout'
 
 const OnboardingConstraints: React.FC = () => {
   const { draft, updateDraft } = useOnboardingStore()

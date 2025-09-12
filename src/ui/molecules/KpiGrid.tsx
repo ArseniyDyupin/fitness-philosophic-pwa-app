@@ -1,5 +1,5 @@
 import React from 'react'
-import { StatTile } from './StatTile'
+import StatTile from './StatTile'
 import { cn } from '@utils/cn'
 
 export interface KpiData {
@@ -29,9 +29,12 @@ const KpiGrid: React.FC<KpiGridProps> = ({
     4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
   }
 
+  // Ensure data is an array
+  const safeData = Array.isArray(data) ? data : []
+
   return (
     <div className={cn('grid gap-4', gridClasses[columns], className)}>
-      {data.map((item, index) => (
+      {safeData.map((item, index) => (
         <StatTile
           key={`${item.title}-${index}`}
           title={item.title}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { useTranslations } from '../../stores/i18n.store'
-import { useFoodStore } from '../../stores/food.store'
-import { useWorkoutStore } from '../../stores/workout.store'
-import { useProfileStore } from '../../stores/profile.store'
+import { useTranslations } from '@stores/i18n.store'
+import { useFoodStore } from '@stores/food.store'
+import { useWorkoutStore } from '@stores/workout.store'
+import { useProfileStore } from '@stores/profile.store'
 import { Plus, Trash2 } from 'lucide-react'
 
 const FoodPage: React.FC = () => {

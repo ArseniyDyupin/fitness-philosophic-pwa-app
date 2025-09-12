@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useI18nStore } from '../stores/i18n.store'
-import { useProfileStore } from '../stores/profile.store'
-import { useTranslations } from '../stores/i18n.store'
+import { useI18nStore } from '@stores/i18n.store'
+import { useProfileStore } from '@stores/profile.store'
+import { useTranslations } from '@stores/i18n.store'
 
 const LanguageSelectionPage: React.FC = () => {
   const navigate = useNavigate()

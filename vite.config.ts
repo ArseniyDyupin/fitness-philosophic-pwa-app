@@ -41,6 +41,7 @@ export default defineConfig({
       '@atoms': '/src/ui/atoms',
       '@molecules': '/src/ui/molecules',
       '@organisms': '/src/ui/organisms',
+      '@modals': '/src/ui/modals',
       '@features': '/src/features',
       '@hooks': '/src/hooks',
       '@stores': '/src/stores',
@@ -48,6 +49,7 @@ export default defineConfig({
       '@utils': '/src/utils',
       '@i18n': '/src/i18n',
       '@types': '/src/types',
+      '@lib': '/src/lib',
       '@': '/src'
     }
   }

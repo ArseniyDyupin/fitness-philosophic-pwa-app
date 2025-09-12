@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
-import { useProfileStore } from '../stores/profile.store'
-import { useI18nStore } from '../stores/i18n.store'
+import { useProfileStore } from '@stores/profile.store'
+import { useI18nStore } from '@stores/i18n.store'
 import { useEffect, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
-import Header from '../components/Header'
+import Header from '@organisms/Header'
 
 // Pages
 import HomePage from '../pages/HomePage'

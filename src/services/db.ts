@@ -1,6 +1,6 @@
 import Dexie from 'dexie'
-import type { Profile, Workout, FoodLog, WeeklyCheckin, AiMessage, PlanSuggestion, ExerciseEstimate, AIWorkoutFeedback } from '../types/models'
-import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '../types/body-metrics'
+import type { Profile, Workout, FoodLog, WeeklyCheckin, AiMessage, PlanSuggestion, ExerciseEstimate, AIWorkoutFeedback } from '../../types/models'
+import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '../../types/body-metrics'
 
 export class AITrainerDB extends Dexie {
   profiles!: Dexie.Table<Profile, string>

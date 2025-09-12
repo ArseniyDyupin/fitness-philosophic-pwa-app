@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useOnboardingStore } from '../../stores/onboarding.store'
-import { useTranslations } from '../../stores/i18n.store'
-import { useProfileStore } from '../../stores/profile.store'
-import OnboardingLayout from '../../components/OnboardingLayout'
+import { useOnboardingStore } from '@stores/onboarding.store'
+import { useTranslations } from '@stores/i18n.store'
+import { useProfileStore } from '@stores/profile.store'
+import OnboardingLayout from '@templates/OnboardingLayout'
 
 const OnboardingDetailedGoals: React.FC = () => {
   const { draft, updateDraft, clearDraft } = useOnboardingStore()

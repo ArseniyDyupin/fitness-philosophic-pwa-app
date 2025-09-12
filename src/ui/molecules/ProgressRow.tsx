@@ -1,5 +1,5 @@
 import React from 'react'
-import { Progress } from '@atoms'
+import Progress from '@atoms/Progress'
 import { cn } from '@utils/cn'
 
 export interface ProgressRowProps {

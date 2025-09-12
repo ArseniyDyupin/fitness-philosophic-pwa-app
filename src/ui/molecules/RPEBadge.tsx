@@ -1,5 +1,5 @@
 import React from 'react'
-import { Badge } from '@atoms'
+import Badge from '@atoms/Badge'
 import { cn } from '@utils/cn'
 
 export interface RPEBadgeProps {

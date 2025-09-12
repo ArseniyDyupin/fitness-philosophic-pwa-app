@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useProfileStore } from '../stores/profile.store'
-import { useI18nStore } from '../stores/i18n.store'
-import { useTranslations } from '../stores/i18n.store'
-import { dbHelpers } from '../services/db'
-import { toastSuccess, toastError } from '../lib/toast'
-import JsonFileButtons from '../components/JsonFileButtons'
-import AISettings from '../components/AISettings'
-import DataImport from '../components/DataImport'
-import ProfileDetailsModal from '../components/ProfileDetailsModal'
-import SettingsBodyMetrics from '../components/settings/SettingsBodyMetrics'
+import { useProfileStore } from '@stores/profile.store'
+import { useI18nStore } from '@stores/i18n.store'
+import { useTranslations } from '@stores/i18n.store'
+import { dbHelpers } from '@services/db'
+import { toastSuccess, toastError } from '@lib/toast'
+import { ExportButton, ImportButton } from '@atoms'
+import AISettings from '@modals/AISettings'
+import DataImport from '@modals/DataImport'
+import ProfileDetailsModal from '@modals/ProfileDetailsModal'
+import { SettingsBodyMetrics } from '@features/metrics/components'
 import { Edit, Check, X, Eye, RefreshCw } from 'lucide-react'
 
 const SettingsPage: React.FC = () => {
@@ -30,6 +30,10 @@ const SettingsPage: React.FC = () => {
   const [isUpgradingDB, setIsUpgradingDB] = useState(false)
   const [isDebuggingDB, setIsDebuggingDB] = useState(false)
   const [isDebuggingDatabase, setIsDebuggingDatabase] = useState(false)
+  
+  // Export/Import states
+  const [isExporting, setIsExporting] = useState(false)
+  const [isImporting, setIsImporting] = useState(false)
 
   if (!profile) {
     return <div>{(t.settingsPage as any)?.loading || 'Loading...'}</div>
@@ -166,6 +170,37 @@ const SettingsPage: React.FC = () => {
       toastError('Database debug failed. Check console for details.')
     } finally {
       setIsDebuggingDatabase(false)
+    }
+  }
+
+  // Export/Import functions
+  const handleExport = async () => {
+    setIsExporting(true)
+    try {
+      // Import the export function
+      const { downloadExport } = await import('@services/export')
+      await downloadExport()
+      toastSuccess(t.exportSuccess || 'Data exported successfully')
+    } catch (error) {
+      console.error('Export failed:', error)
+      toastError(t.error || 'Export failed')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  const handleImport = async (file: File) => {
+    setIsImporting(true)
+    try {
+      // Import the import function
+      const { importData } = await import('@services/import')
+      await importData(file)
+      toastSuccess(t.importSuccess || 'Data imported successfully')
+    } catch (error) {
+      console.error('Import failed:', error)
+      toastError(t.error || 'Import failed')
+    } finally {
+      setIsImporting(false)
     }
   }
 
@@ -460,7 +495,16 @@ const SettingsPage: React.FC = () => {
           {/* Export/Import (Legacy) */}
           <div className="card">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{(t.settingsPage as any)?.dataManagement || 'Data Management'}</h2>
-            <JsonFileButtons />
+            <div className="flex space-x-3">
+              <ExportButton 
+                onClick={handleExport}
+                loading={isExporting}
+              />
+              <ImportButton 
+                onFileSelect={handleImport}
+                loading={isImporting}
+              />
+            </div>
             
             {/* Database Management */}
             <div className="mt-6 pt-6 border-t border-gray-200">

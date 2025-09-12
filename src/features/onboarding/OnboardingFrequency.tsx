@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useOnboardingStore } from '../../stores/onboarding.store'
-import OnboardingLayout from '../../components/OnboardingLayout'
-import { useTranslations } from '../../stores/i18n.store'
+import { useOnboardingStore } from '@stores/onboarding.store'
+import OnboardingLayout from '@templates/OnboardingLayout'
+import { useTranslations } from '@stores/i18n.store'
 
 const OnboardingFrequency: React.FC = () => {
   const { draft, updateDraft } = useOnboardingStore()

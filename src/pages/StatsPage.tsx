@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useTranslations } from '../stores/i18n.store'
-import { useStatsStore } from '../stores/stats.store'
-import { useProfileStore } from '../stores/profile.store'
-import StatsHeader from '../components/stats/StatsHeader'
-import KPIGrid from '../components/stats/KPIGrid'
-import DisciplineBreakdown from '../components/stats/DisciplineBreakdown'
-import Records from '../components/stats/Records'
-import BodyMetricsBlock from '../components/stats/BodyMetricsBlock'
-import AiBodyEvalCard from '../components/stats/AiBodyEvalCard'
-import type { StatsRange } from '../types/stats'
+import { useTranslations } from '@stores/i18n.store'
+import { useStatsStore } from '@stores/stats.store'
+import { useProfileStore } from '@stores/profile.store'
+import StatsHeader from '@organisms/StatsHeader'
+import KpiGrid from '@molecules/KpiGrid'
+import DisciplineBreakdown from '@organisms/DisciplineBreakdown'
+import Records from '@organisms/Records'
+import BodyMetricsBlock from '@organisms/BodyMetricsBlock'
+import { AiBodyEvalCard } from '@features/stats/components'
+import type { StatsRange } from '../../types/stats'
 
 const StatsPage: React.FC = () => {
   const t = useTranslations()
@@ -104,17 +104,39 @@ const StatsPage: React.FC = () => {
           </div>
         )}
 
+
         {/* Stats Content */}
         {statsData && !isLoading && (
           <div className="space-y-6">
             {/* KPI Grid - Always show */}
-            <KPIGrid kpi={statsData.kpi} />
+            <KpiGrid data={statsData.kpi ? [
+              {
+                title: t.statsPage?.totalWorkouts || 'Total Workouts',
+                value: statsData.kpi.totalWorkouts,
+                subtitle: t.statsPage?.sessions || 'sessions'
+              },
+              {
+                title: t.statsPage?.totalCalories || 'Total Calories',
+                value: statsData.kpi.totalCalories,
+                subtitle: t.statsPage?.kcal || 'kcal'
+              },
+              {
+                title: t.statsPage?.totalMinutes || 'Total Minutes',
+                value: statsData.kpi.totalMinutes,
+                subtitle: t.statsPage?.minutes || 'minutes'
+              },
+              ...(statsData.kpi.avgRpe ? [{
+                title: t.statsPage?.avgRpe || 'Average RPE',
+                value: statsData.kpi.avgRpe.toFixed(1),
+                subtitle: 'RPE'
+              }] : [])
+            ] : []} />
 
             {/* Discipline Breakdown - Only show if has data */}
-            <DisciplineBreakdown discipline={statsData.discipline} />
+            {statsData.discipline && <DisciplineBreakdown discipline={statsData.discipline} />}
 
             {/* Personal Records - Only show if has data */}
-            <Records records={statsData.records} />
+            {statsData.records && <Records records={statsData.records} />}
 
             {/* Body Metrics - Only show if configured */}
             <BodyMetricsBlock weekStart={statsData.startDate ? new Date(statsData.startDate) : undefined} />

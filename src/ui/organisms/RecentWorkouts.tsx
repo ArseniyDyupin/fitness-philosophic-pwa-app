@@ -1,8 +1,8 @@
 import React from 'react'
-import { Button } from '@atoms'
-import { WorkoutCard } from './WorkoutCard'
+import Button from '@atoms/Button'
+import WorkoutCard from './WorkoutCard'
 import { cn } from '@utils/cn'
-import type { Workout } from '@types/models'
+import type { Workout } from '../../types/models'
 
 export interface RecentWorkoutsProps {
   workouts: Workout[]

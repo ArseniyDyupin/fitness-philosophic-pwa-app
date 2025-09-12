@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { WorkoutExercise, AIWorkoutFeedback } from '../types/models'
+import type { WorkoutExercise, AIWorkoutFeedback } from '../../types/models'
 import { db, dbHelpers } from './db'
 
 export interface AIReviewPayload {

@@ -1,6 +1,8 @@
 import React from 'react'
-import { Card, Button } from '@atoms'
-import { StatTile, ProgressRow } from '@molecules'
+import Card from '@atoms/Card'
+import Button from '@atoms/Button'
+import StatTile from '@molecules/StatTile'
+import ProgressRow from '@molecules/ProgressRow'
 import { cn } from '@utils/cn'
 
 export interface WeeklyStats {

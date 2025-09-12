@@ -1,8 +1,8 @@
 import { create } from 'zustand'
-import { db } from '../services/db'
+import { db } from '@services/db'
 import { startOfWeek, endOfWeek, isWithinInterval } from 'date-fns'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '../services/kcal'
-import type { Workout } from '../types/models'
+import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/kcal'
+import type { Workout } from '../../types/models'
 
 interface WorkoutState {
   workouts: Workout[]

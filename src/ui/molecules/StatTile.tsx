@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card } from '@atoms'
+import Card from '@atoms/Card'
 import { cn } from '@utils/cn'
 
 export interface StatTileProps {

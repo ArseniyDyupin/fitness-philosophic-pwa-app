@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useWorkoutStore } from '@stores/workout.store'
 import { toastSuccess, toastError } from '@lib/toast'
 import { useTranslations } from '@stores/i18n.store'
-import type { Workout } from '@types/models'
+import type { Workout } from '../../types/models'
 
 export interface CreateWorkoutData {
   name: string

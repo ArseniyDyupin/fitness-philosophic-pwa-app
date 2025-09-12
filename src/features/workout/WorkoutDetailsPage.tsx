@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
-import { useWorkoutStore } from '../../stores/workout.store'
-import { useProfileStore } from '../../stores/profile.store'
-import { useTranslations } from '../../stores/i18n.store'
-import { useAIStore } from '../../stores/ai.store'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '../../services/kcal'
-import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '../../services/ai.estimate'
-import { aiReviewService } from '../../services/ai.review'
-import { dbHelpers } from '../../services/db'
-import { toastSuccess, toastError } from '../../lib/toast'
+import { useWorkoutStore } from '@stores/workout.store'
+import { useProfileStore } from '@stores/profile.store'
+import { useTranslations } from '@stores/i18n.store'
+import { useAIStore } from '@stores/ai.store'
+import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/kcal'
+import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '@services/ai.estimate'
+import { aiReviewService } from '@services/ai.review'
+import { dbHelpers } from '@services/db'
+import { toastSuccess, toastError } from '@lib/toast'
 import { ArrowLeft, Trash2, ArrowRight } from 'lucide-react'
 import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '../../types/models'
 
 // New components
-import WorkoutHeader from '../../components/workout/WorkoutHeader'
-import ExerciseCard from '../../components/workout/ExerciseCard'
-import AiFeedbackCard from '../../components/workout/AiFeedbackCard'
-import EditWorkoutMetaModal from '../../components/workout/EditWorkoutMetaModal'
-import ExerciseEditModal from '../../components/workout/ExerciseEditModal'
+import WorkoutHeader from '@organisms/WorkoutHeader'
+import { AiFeedbackCard, WorkoutExerciseCard } from '@features/workouts/components'
+import EditWorkoutMetaModal from '@modals/EditWorkoutMetaModal'
+import ExerciseEditModal from '@modals/ExerciseEditModal'
 
 const WorkoutDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -375,7 +374,7 @@ const WorkoutDetailsPage: React.FC = () => {
           
           <div className="space-y-2 sm:space-y-3">
             {workout.exercises.map((exercise, index) => (
-              <ExerciseCard
+                <WorkoutExerciseCard
                 key={index}
                 exercise={exercise}
                 index={index}

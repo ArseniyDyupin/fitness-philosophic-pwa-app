@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { aiService } from '../services/ai'
+import { aiService } from '@services/ai'
 
 interface AIState {
   apiKey: string

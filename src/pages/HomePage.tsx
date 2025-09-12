@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useWorkoutStore } from '../stores/workout.store'
-import { useAIStore } from '../stores/ai.store'
-import { useProfileStore } from '../stores/profile.store'
-import { toastSuccess } from '../lib/toast'
-import { useTranslations } from '../stores/i18n.store'
+import { useWorkoutStore } from '@stores/workout.store'
+import { useAIStore } from '@stores/ai.store'
+import { useProfileStore } from '@stores/profile.store'
+import { toastSuccess } from '@lib/toast'
+import { useTranslations } from '@stores/i18n.store'
 import { format, startOfWeek } from 'date-fns'
 
 // Import new dashboard components
-import NextWorkoutCard from '../components/home/NextWorkoutCard'
-import HomeKPI, { type DayStats, type WeekStats } from '../components/home/HomeKPI'
-import RecentWorkouts from '../components/home/RecentWorkouts'
-import HomeBanners from '../components/home/HomeBanners'
-import BodyMetricsModal from '../components/BodyMetricsModal'
+import NextWorkoutCard from '@organisms/NextWorkoutCard'
+import HomeKPI, { type DayStats, type WeekStats } from '@organisms/HomeKPI'
+import RecentWorkouts from '@organisms/RecentWorkouts'
+import HomeBanners from '@organisms/HomeBanners'
+import BodyMetricsModal from '@modals/BodyMetricsModal'
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate()

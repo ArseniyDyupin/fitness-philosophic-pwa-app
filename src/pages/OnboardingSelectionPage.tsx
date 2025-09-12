@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useProfileStore } from '../stores/profile.store'
-import { useTranslations } from '../stores/i18n.store'
+import { useProfileStore } from '@stores/profile.store'
+import { useTranslations } from '@stores/i18n.store'
 
 const OnboardingSelectionPage: React.FC = () => {
   const navigate = useNavigate()

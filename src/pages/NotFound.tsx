@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useTranslations } from '../stores/i18n.store'
+import { useTranslations } from '@stores/i18n.store'
 
 const NotFound: React.FC = () => {
   const t = useTranslations()
