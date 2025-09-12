@@ -17,7 +17,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
   const t = useTranslations()
   const { profile } = useProfileStore()
   const [activeDefs, setActiveDefs] = useState<MetricDef[]>([])
-  const [entries, setEntries] = useState<Record<string, number>>({})
+  const [entries, setEntries] = useState<Record<string, number | string>>({})
   const [notes, setNotes] = useState<Record<string, string>>({})
   const [photos, setPhotos] = useState<PhotoAsset[]>([])
   const [allowPhotoAnalysis, setAllowPhotoAnalysis] = useState(false)
@@ -39,6 +39,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
     try {
       setIsLoading(true)
       const defs = await metricsService.getActiveDefs()
+      console.log(defs, '<<<< defs')
       setActiveDefs(defs)
       
       // Load existing entries for this date
@@ -71,30 +72,90 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
   }
 
   const handleValueChange = (def: MetricDef, value: string) => {
-    const numValue = parseFloat(value)
-    if (isNaN(numValue)) {
+    // Handle empty values
+    if (value === '' || value === null || value === undefined) {
       setEntries(prev => ({ ...prev, [def.key]: 0 }))
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[def.key]
+        return newErrors
+      })
       return
     }
 
-    // Validate value
+    // Handle partial input (like "72." or "72.3" being typed)
+    // Allow partial decimal input without showing errors
+    const trimmedValue = value.trim()
+    
+    // Check if it's a valid partial number (allows decimal point at the end)
+    const isValidPartialNumber = /^-?\d*\.?\d*$/.test(trimmedValue)
+    
+    if (!isValidPartialNumber) {
+      setErrors(prev => ({ ...prev, [def.key]: 'Invalid format' }))
+      return
+    }
+
+    // If it ends with a decimal point, don't validate yet (user is still typing)
+    if (trimmedValue.endsWith('.')) {
+      setEntries(prev => ({ ...prev, [def.key]: trimmedValue }))
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[def.key]
+        return newErrors
+      })
+      return
+    }
+
+    const numValue = Number(trimmedValue)
+ 
+    // Always save the value first
+    setEntries(prev => ({ ...prev, [def.key]: numValue }))
+
+    // Then validate and set errors if needed
+    if (isNaN(numValue)) {
+      setErrors(prev => ({ ...prev, [def.key]: 'Invalid number' }))
+      return
+    }
+
     const validation = metricsService.validateEntry(def, numValue)
     if (!validation.valid) {
       setErrors(prev => ({ ...prev, [def.key]: validation.error || 'Invalid value' }))
-      return
+    } else {
+      // Clear error if validation passes
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[def.key]
+        return newErrors
+      })
     }
-
-    setErrors(prev => {
-      const newErrors = { ...prev }
-      delete newErrors[def.key]
-      return newErrors
-    })
-
-    setEntries(prev => ({ ...prev, [def.key]: numValue }))
   }
 
   const handleNoteChange = (def: MetricDef, note: string) => {
     setNotes(prev => ({ ...prev, [def.key]: note }))
+  }
+
+  const handleValueBlur = (def: MetricDef) => {
+    const currentValue = entries[def.key]
+    if (currentValue === undefined || currentValue === '' || currentValue === 0) return
+
+    // Convert string values back to numbers for validation
+    const numValue = typeof currentValue === 'string' ? Number(currentValue) : currentValue
+    
+    if (isNaN(numValue)) {
+      setErrors(prev => ({ ...prev, [def.key]: 'Invalid number' }))
+      return
+    }
+
+    const validation = metricsService.validateEntry(def, numValue)
+    if (!validation.valid) {
+      setErrors(prev => ({ ...prev, [def.key]: validation.error || 'Invalid value' }))
+    } else {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[def.key]
+        return newErrors
+      })
+    }
   }
 
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +197,10 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
       
       // Validate required fields
       const requiredDefs = activeDefs.filter(def => def.isRequired)
-      const missingRequired = requiredDefs.filter(def => !entries[def.key] || entries[def.key] === 0)
+      const missingRequired = requiredDefs.filter(def => {
+        const value = entries[def.key]
+        return !value || value === 0 || value === ''
+      })
       
       if (missingRequired.length > 0) {
         alert(t.metrics?.fillRequired || 'Please fill in all required fields')
@@ -145,16 +209,24 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
 
       // Create metric entries
       const metricEntries: MetricEntry[] = activeDefs
-        .filter(def => entries[def.key] !== undefined && entries[def.key] !== 0)
-        .map(def => ({
-          id: `entry_${Date.now()}_${def.key}`,
-          defId: def.id,
-          date: dateStr,
-          value: entries[def.key],
-          note: notes[def.key] || undefined,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }))
+        .filter(def => {
+          const value = entries[def.key]
+          return value !== undefined && value !== 0 && value !== ''
+        })
+        .map(def => {
+          const value = entries[def.key]
+          const numValue = typeof value === 'string' ? Number(value) : value
+          
+          return {
+            id: `entry_${Date.now()}_${def.key}`,
+            defId: def.id,
+            date: dateStr,
+            value: numValue,
+            note: notes[def.key] || undefined,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        })
 
       // Save entries and photos
       await Promise.all([
@@ -248,6 +320,8 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
 
   if (!isOpen) return null
 
+  console.log(activeDefs, '<<< activeDefs')
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -287,14 +361,15 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
                     </label>
                     <div className="flex items-center space-x-2">
                       <input
-                        type="number"
                         step={def.precision ? `0.${'0'.repeat(def.precision - 1)}1` : '0.1'}
-                        value={entries[def.key] || ''}
+                        value={entries[def.key] !== undefined ? String(entries[def.key]) : ''}
                         onChange={(e) => handleValueChange(def, e.target.value)}
+                        onBlur={() => handleValueBlur(def)}
                         className={`flex-1 px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
                           errors[def.key] ? 'border-red-300' : 'border-gray-300'
                         }`}
                         placeholder={`${def.min || 0} - ${def.max || 1000}`}
+                        type="number"
                       />
                       <span className="text-sm text-gray-500 min-w-[3rem]">
                         {t.metrics?.units?.[def.unit as keyof typeof t.metrics.units] || def.unit}

@@ -6,20 +6,39 @@ export const metricsService = {
   // Metric Definitions
   async getActiveDefs(): Promise<MetricDef[]> {
     try {
-      // Check if database is open and table exists
+      // Check if database is open
       if (!db.isOpen()) {
         await db.open()
       }
       
-      const tableExists = db.tables.some(table => table.name === 'metric_defs')
-      if (!tableExists) {
-        console.log('metric_defs table does not exist')
-        return []
+      // Check if we have any metrics at all
+      const allMetrics = await db.metric_defs.toArray()
+      console.log('All metrics in DB:', allMetrics)
+      
+      // If no metrics exist, initialize default ones
+      if (allMetrics.length === 0) {
+        console.log('No metrics found, initializing default metrics...')
+        await this.initializeDefaultMetrics()
+        // Try again after initialization
+        const newMetrics = await db.metric_defs.where('isActive').equals('true').toArray()
+        console.log('Active metrics after initialization:', newMetrics)
+        return newMetrics
       }
       
-      return await db.metric_defs.where('isActive').equals(1).toArray()
+      // Try to get active metrics
+      const metrics = await db.metric_defs.where('isActive').equals('true').toArray()
+      console.log('Active metrics:', metrics)
+      
+      // If no active metrics found, try to get any metrics
+      if (metrics.length === 0 && allMetrics.length > 0) {
+        console.log('No active metrics found, returning all metrics')
+        return allMetrics
+      }
+      
+      return metrics
     } catch (error) {
       console.error('Error getting active metric definitions:', error)
+      // If table doesn't exist, return empty array
       return []
     }
   },
@@ -28,8 +47,140 @@ export const metricsService = {
     return await db.metric_defs.orderBy('createdAt').toArray()
   },
 
+  async initializeDefaultMetrics(): Promise<void> {
+    try {
+      const existingMetrics = await db.metric_defs.toArray()
+      if (existingMetrics.length > 0) {
+        console.log('Metrics already initialized')
+        return
+      }
+
+      console.log('Initializing default metrics...')
+      
+      const now = new Date().toISOString()
+      const defaultMetrics: MetricDef[] = [
+        {
+          id: 'weight',
+          key: 'weight',
+          label: 'metrics.default.weight',
+          unit: 'kg',
+          precision: 1,
+          min: 30,
+          max: 200,
+          color: '#3B82F6',
+          isActive: true,
+          isRequired: true,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          id: 'body_fat',
+          key: 'body_fat',
+          label: 'metrics.default.body_fat',
+          unit: '%',
+          precision: 1,
+          min: 5,
+          max: 50,
+          color: '#EF4444',
+          isActive: true,
+          isRequired: false,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          id: 'muscle_mass',
+          key: 'muscle_mass',
+          label: 'metrics.default.muscle_mass',
+          unit: 'kg',
+          precision: 1,
+          min: 20,
+          max: 100,
+          color: '#10B981',
+          isActive: true,
+          isRequired: false,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          id: 'waist',
+          key: 'waist',
+          label: 'metrics.default.waist',
+          unit: 'cm',
+          precision: 1,
+          min: 50,
+          max: 150,
+          color: '#F59E0B',
+          isActive: true,
+          isRequired: false,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          id: 'chest',
+          key: 'chest',
+          label: 'metrics.default.chest',
+          unit: 'cm',
+          precision: 1,
+          min: 70,
+          max: 150,
+          color: '#8B5CF6',
+          isActive: true,
+          isRequired: false,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          id: 'arms',
+          key: 'arms',
+          label: 'metrics.default.arms',
+          unit: 'cm',
+          precision: 1,
+          min: 20,
+          max: 60,
+          color: '#06B6D4',
+          isActive: true,
+          isRequired: false,
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          id: 'legs',
+          key: 'legs',
+          label: 'metrics.default.legs',
+          unit: 'cm',
+          precision: 1,
+          min: 40,
+          max: 80,
+          color: '#84CC16',
+          isActive: true,
+          isRequired: false,
+          createdAt: now,
+          updatedAt: now
+        }
+      ]
+
+      await db.metric_defs.bulkAdd(defaultMetrics)
+      console.log('Default metrics initialized successfully')
+    } catch (error) {
+      console.error('Error initializing default metrics:', error)
+    }
+  },
+
   async getDefById(id: string): Promise<MetricDef | undefined> {
     return await db.metric_defs.get(id)
+  },
+
+  async forceInitializeMetrics(): Promise<void> {
+    try {
+      console.log('Force initializing metrics...')
+      // Clear existing metrics
+      await db.metric_defs.clear()
+      // Initialize default metrics
+      await this.initializeDefaultMetrics()
+      console.log('Metrics force initialized successfully')
+    } catch (error) {
+      console.error('Error force initializing metrics:', error)
+    }
   },
 
   async saveDef(metricDef: MetricDef): Promise<void> {
