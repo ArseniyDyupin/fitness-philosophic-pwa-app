@@ -49,6 +49,7 @@ export default defineConfig({
       '@i18n': '/src/i18n',
       '@types': '/src/types',
       '@lib': '/src/lib',
+      '@navigation': '/src/navigation',
       '@': '/src'
     }
   },
