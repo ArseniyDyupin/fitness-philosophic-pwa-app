@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useProfileStore } from '@stores/profile.store'
 import { useI18nStore } from '@stores/i18n.store'
 import { useTranslations } from '@stores/i18n.store'
-import { dbHelpers } from '@services/db'
+import { dbHelpers } from '@services/data'
 import { toastSuccess, toastError } from '@lib/toast'
 import { ExportButton, ImportButton } from '@/ui/atoms'
 import AISettings from '@modals/settings/AISettings'
@@ -176,7 +176,7 @@ const SettingsPage: React.FC = () => {
     setIsExporting(true)
     try {
       // Import the export function
-      const { downloadExport } = await import('@services/export')
+      const { downloadExport } = await import('@services/data')
       await downloadExport()
       toastSuccess(t.exportSuccess || 'Data exported successfully')
     } catch (error) {
@@ -191,7 +191,7 @@ const SettingsPage: React.FC = () => {
     setIsImporting(true)
     try {
       // Import the import function
-      const { importData } = await import('@services/import')
+      const { importData } = await import('@services/data')
       await importData(file as any)
       toastSuccess(t.importSuccess || 'Data imported successfully')
     } catch (error) {

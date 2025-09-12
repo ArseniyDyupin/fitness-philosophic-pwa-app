@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useOnboardingStore } from '@stores/onboarding.store'
 import { useTranslations } from '@stores/i18n.store'
 import { Upload, Play, FileText, User, CheckCircle, AlertCircle } from 'lucide-react'
-import { validateFile, importData } from '@services/import'
+import { validateFile, importData } from '@services/data'
 import type { ExportBundle } from '@/types/export'
 
 const EntryStep: React.FC = () => {

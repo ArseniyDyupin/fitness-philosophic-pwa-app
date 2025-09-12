@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from '@stores/i18n.store'
-import { aiBodyService } from '@services/aiBody.service'
+import { aiBodyService } from '@services/ai'
 import { Sparkles, TrendingUp, TrendingDown, Minus, Eye, X } from 'lucide-react'
 import { format } from 'date-fns'
 import type { AiBodyEval } from '@/types/body-metrics'

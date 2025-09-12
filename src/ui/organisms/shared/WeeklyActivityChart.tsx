@@ -12,7 +12,7 @@ import {
   Tooltip,
   Legend
 } from 'recharts'
-import { calculateWorkoutDuration } from '@services/kcal'
+import { calculateWorkoutDuration } from '@services/fitness'
 
 interface WeeklyActivityChartProps {
   workouts: Workout[]

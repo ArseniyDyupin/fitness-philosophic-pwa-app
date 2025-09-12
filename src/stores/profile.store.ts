@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { dbHelpers } from '@services/db'
+import { dbHelpers } from '@services/data'
 import type { Profile } from '@/types/models'
 
 interface ProfileState {

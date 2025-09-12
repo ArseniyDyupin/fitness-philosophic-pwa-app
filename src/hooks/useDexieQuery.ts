@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { db } from '@services/db'
+import { db } from '@services/data'
 
 export interface UseDexieQueryOptions {
   enabled?: boolean

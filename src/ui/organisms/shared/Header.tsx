@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslations } from '@stores/i18n.store'
-import { downloadExport } from '@services/export'
+import { downloadExport } from '@services/data'
 import { toastSuccess, toastError } from '@lib/toast'
 import { ArrowLeft, Download, MoreVertical } from 'lucide-react'
 import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'

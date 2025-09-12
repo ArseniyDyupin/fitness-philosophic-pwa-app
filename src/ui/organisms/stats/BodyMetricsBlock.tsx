@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from '@stores/i18n.store'
-import { metricsService } from '@services/metrics.service'
+import { metricsService } from '@services/fitness'
 import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from 'lucide-react'
 import {
   ResponsiveContainer,
@@ -38,7 +38,7 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
       setIsLoading(true)
       
       // Check if database is ready and has the required tables
-      const db = (await import('@services/db')).db
+      const db = (await import('@services/data')).db
       if (!db.isOpen()) {
         await db.open()
       }

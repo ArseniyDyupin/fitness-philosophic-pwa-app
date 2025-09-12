@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import { db } from '@services/db'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/kcal'
+import { db } from '@services/data'
+import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/fitness'
 import { startOfYear, subDays, format, eachDayOfInterval } from 'date-fns'
 import type { Workout } from '@/types/models'
 import type { StatsData, StatsRange, StatsKPI, DisciplineStats, TrendData, PersonalRecords, ConsistencyData, BodyMetricsData } from '@/types/stats'

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslations } from '@stores/i18n.store'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/kcal'
+import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/fitness'
 import type { Workout } from '@/types/models'
 import { Clock, Flame, TrendingUp, MoreVertical, Bot, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'

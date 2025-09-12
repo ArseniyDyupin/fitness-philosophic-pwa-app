@@ -3,14 +3,12 @@ import { useWorkoutStore } from '@stores/workout.store'
 import { useProfileStore } from '@stores/profile.store'
 import { useTranslations, useI18nStore } from '@stores/i18n.store'
 import { useAIStore } from '@stores/ai.store'
-import { aiService } from '@services/ai'
-import { getBatchEstimates, needsAIEstimation, createEstimateInput } from '@services/ai.estimate'
-import { aiReviewService } from '@services/ai.review'
+import { aiService, getBatchEstimates, needsAIEstimation, createEstimateInput, aiReviewService } from '@services/ai'
 import { toastError } from '@lib/toast'
 import type { WorkoutExercise } from '@/types/models'
 import { X, Plus, Edit3, Bot } from 'lucide-react'
 import ExerciseCard from '@organisms/shared/ExerciseCard'
-import { calculateExerciseCalories } from '@services/kcal'
+import { calculateExerciseCalories } from '@services/fitness'
 
 interface WorkoutFormProps {
   isOpen: boolean

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { X, Settings, User, Activity } from 'lucide-react'
 import { useProfileStore } from '@stores/profile.store'
 import { useAIStore } from '@stores/ai.store'
-import { metricsService } from '@services/metrics.service'
+import { metricsService } from '@services/fitness'
 
 interface Banner {
   id: string

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useWorkoutStore } from '@stores/workout.store'
 import { isSameDay } from 'date-fns'
-import { sumWorkoutKcal, sumWorkoutMinutes } from '@services/kcal'
+import { sumWorkoutKcal, sumWorkoutMinutes } from '@services/fitness'
 
 export interface TodayStats {
   calories: number

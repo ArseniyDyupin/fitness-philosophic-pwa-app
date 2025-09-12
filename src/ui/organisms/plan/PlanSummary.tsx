@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslations } from '@stores/i18n.store'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/kcal'
+import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/fitness'
 import type { Workout, Profile } from '@/types/models'
 
 interface PlanSummaryProps {

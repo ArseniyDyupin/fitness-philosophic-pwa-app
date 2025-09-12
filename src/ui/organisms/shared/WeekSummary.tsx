@@ -4,7 +4,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { useProfileStore } from '@stores/profile.store'
 import type { Workout } from '@/types/models'
 import WeeklyActivityChart from '@organisms/shared/WeeklyActivityChart'
-import { calculateWorkoutCalories } from '@services/kcal'
+import { calculateWorkoutCalories } from '@services/fitness'
 
 export interface WeekSummaryProps {
   workouts: Workout[]

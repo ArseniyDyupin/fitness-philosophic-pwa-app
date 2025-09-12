@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { db } from '@services/db'
+import { db } from '@services/data'
 import type { FoodLog } from '@/types/models'
 
 interface FoodState {
