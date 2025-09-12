@@ -173,7 +173,7 @@ const Header: React.FC = () => {
                 variant="primary"
                 showIcon={true}
                 showText={false}
-                className="p-2"
+                className="w-10 h-10 flex items-center justify-center"
                 title={t.header?.generate || 'Generate Workout'}
               />
             </div>
@@ -182,21 +182,34 @@ const Header: React.FC = () => {
             <button
               onClick={handleExport}
               disabled={isExporting}
-              className="btn-secondary flex items-center space-x-2 text-sm pwa-touch-target p-2"
+              className="md:hidden btn-secondary w-10 h-10 flex items-center justify-center text-sm pwa-touch-target"
             >
               {isExporting ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
               ) : (
                 <Download size={16} />
               )}
-              <span className="hidden sm:inline">{t.header?.export || t.exportAll || 'Export Data'}</span>
+            </button>
+            
+            {/* Export Button - Desktop */}
+            <button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="hidden md:flex btn-secondary items-center space-x-2 text-sm pwa-touch-target p-2"
+            >
+              {isExporting ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
+              ) : (
+                <Download size={16} />
+              )}
+              <span>{t.header?.export || t.exportAll || 'Export Data'}</span>
             </button>
             
             {/* Mobile Menu Button */}
             <div className="mobile-menu-container relative">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden btn-secondary flex items-center p-2 text-gray-600 hover:text-gray-900 transition-colors pwa-touch-target"
+                className="md:hidden btn-secondary w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors pwa-touch-target"
                 aria-label="Open navigation menu"
               >
                 <MoreVertical size={16} />
