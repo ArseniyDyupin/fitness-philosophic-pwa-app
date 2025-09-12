@@ -36,7 +36,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@app': '/src/app',
-      '@pages': '/src/pages',
+      '@pages': '/src/ui/pages',
       '@templates': '/src/templates',
       '@atoms': '/src/ui/atoms',
       '@molecules': '/src/ui/molecules',

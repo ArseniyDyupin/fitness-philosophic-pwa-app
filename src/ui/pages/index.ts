@@ -1,0 +1,9 @@
+// Pages barrel export
+export { default as HomePage } from './HomePage'
+export { default as StatsPage } from './StatsPage'
+export { default as SettingsPage } from './SettingsPage'
+export { default as PlanRealizationPage } from './PlanRealizationPage'
+export { default as NotFound } from './NotFound'
+export { default as EntryStep } from './EntryStep'
+export { default as LanguageSelectionPage } from './LanguageSelectionPage'
+export { default as OnboardingSelectionPage } from './OnboardingSelectionPage'
