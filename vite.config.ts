@@ -35,6 +35,19 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      '@app': '/src/app',
+      '@pages': '/src/pages',
+      '@templates': '/src/templates',
+      '@atoms': '/src/ui/atoms',
+      '@molecules': '/src/ui/molecules',
+      '@organisms': '/src/ui/organisms',
+      '@features': '/src/features',
+      '@hooks': '/src/hooks',
+      '@stores': '/src/stores',
+      '@services': '/src/services',
+      '@utils': '/src/utils',
+      '@i18n': '/src/i18n',
+      '@types': '/src/types',
       '@': '/src'
     }
   }
