@@ -26,7 +26,7 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
   }, 0)
 
   const totalDuration = workouts.reduce((sum, workout) => {
-    return sum + (workout.durationMin || workout.exercises.reduce((exSum, exercise) => {
+    return sum + (workout.durationOverrideMin || workout.exercises.reduce((exSum, exercise) => {
       return exSum + (exercise.details.durationMin || 0)
     }, 0))
   }, 0)
@@ -41,7 +41,7 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
   }, 0)
 
   const prevTotalDuration = previousWeekWorkouts.reduce((sum, workout) => {
-    return sum + (workout.durationMin || workout.exercises.reduce((exSum, exercise) => {
+    return sum + (workout.durationOverrideMin || workout.exercises.reduce((exSum, exercise) => {
       return exSum + (exercise.details.durationMin || 0)
     }, 0))
   }, 0)

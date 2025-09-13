@@ -177,7 +177,7 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     dayWorkouts.forEach(workout => {
       if (workout.exercises) {
         calories += calculateWorkoutCalories(workout.exercises, 70, workout.rpe)
-        minutes += workout.durationMin || calculateWorkoutDuration(workout.exercises)
+        minutes += workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
         exercises += workout.exercises.length
       }
       if (workout.rpe && workout.rpe > 0) {
@@ -220,8 +220,8 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
           calories += calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
         }
         
-        // Calculate duration using workout.durationMin || calculateWorkoutDuration
-        const workoutDuration = workout.durationMin || calculateWorkoutDuration(workout.exercises)
+        // Calculate duration using workout.durationOverrideMin || calculateWorkoutDuration
+        const workoutDuration = workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
         minutes += workoutDuration
         
         // Count exercises

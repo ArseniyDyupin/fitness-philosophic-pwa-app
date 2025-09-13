@@ -99,8 +99,9 @@ const WorkoutDetailsPage: React.FC = () => {
     )
   }
 
+  console.log(workout, '<<workout')
   const totalCalories = calculateWorkoutCalories(workout.exercises, profile?.weight || 70, workout.rpe)
-  const totalDuration = workout.durationMin || calculateWorkoutDuration(workout.exercises)
+  const totalDuration = workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
 
   const handleDelete = async () => {
     if (confirm(t.workoutDetailsPage?.deleteConfirm || 'Are you sure you want to delete this workout?')) {

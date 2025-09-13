@@ -25,7 +25,7 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
   useEffect(() => {
     if (isOpen && workout) {
       setEditedDate(workout.date.split('T')[0])
-      setEditedDurationMin(workout.durationOverrideMin || workout.durationMin)
+      setEditedDurationMin(workout.durationOverrideMin)
       setEditedRpe(workout.rpe)
     }
   }, [isOpen, workout])
