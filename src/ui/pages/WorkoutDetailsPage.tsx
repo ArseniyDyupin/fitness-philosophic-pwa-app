@@ -9,6 +9,7 @@ import { getWorkoutTotalCalories, getWorkoutTotalDuration } from '@services/fitn
 import { getBatchEstimates, needsAIEstimation, createEstimateInput, aiReviewService } from '@services/ai'
 import { dbHelpers } from '@services/data'
 import { toastSuccess, toastError } from '@lib/toast'
+import { useErrorHandler } from '@/hooks/useErrorHandler'
 import { ArrowLeft, Trash2, ArrowRight } from 'lucide-react'
 import type { Workout, WorkoutExercise, AIWorkoutFeedback } from '@/types/models'
 
@@ -23,6 +24,7 @@ const WorkoutDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const t = useTranslations()
+  const { handleError, executeWithRetry } = useErrorHandler()
 
   const { getWorkoutById, deleteWorkout, updateWorkout, getPrevNext } = useWorkoutStore()
   const { profile } = useProfileStore()
@@ -104,10 +106,23 @@ const WorkoutDetailsPage: React.FC = () => {
     if (confirm(t.workoutDetailsPage?.deleteConfirm || 'Are you sure you want to delete this workout?')) {
       setIsDeleting(true)
       try {
-        await deleteWorkout(workout.id)
+        await executeWithRetry(
+          () => deleteWorkout(workout.id),
+          {
+            component: 'WorkoutDetailsPage',
+            action: 'deleteWorkout',
+            metadata: { workoutId: workout.id }
+          }
+        )
         navigate('/workouts')
+        toastSuccess('Workout deleted successfully')
       } catch (error) {
-        alert(t.workoutDetailsPage?.failedToDelete || 'Failed to delete workout')
+        await handleError(error as Error, {
+          component: 'WorkoutDetailsPage',
+          action: 'deleteWorkout',
+          metadata: { workoutId: workout.id }
+        })
+        toastError(t.workoutDetailsPage?.failedToDelete || 'Failed to delete workout')
       } finally {
         setIsDeleting(false)
       }
@@ -135,7 +150,17 @@ const WorkoutDetailsPage: React.FC = () => {
         })
       )
       
-      const estimates = await getBatchEstimates(estimateInputs)
+      const estimates = await executeWithRetry(
+        () => getBatchEstimates(estimateInputs),
+        {
+          component: 'WorkoutDetailsPage',
+          action: 'updateAllAIEstimates',
+          metadata: { 
+            workoutId: workout.id,
+            exerciseCount: exercisesNeedingEstimation.length
+          }
+        }
+      )
       
       // Update exercises with estimates
       const updatedExercises = workout.exercises.map(exercise => {
@@ -168,6 +193,11 @@ const WorkoutDetailsPage: React.FC = () => {
       setWorkout(updatedWorkout)
       toastSuccess('AI estimates updated successfully')
     } catch (error) {
+      await handleError(error as Error, {
+        component: 'WorkoutDetailsPage',
+        action: 'updateAllAIEstimates',
+        metadata: { workoutId: workout.id }
+      })
       toastError('Failed to update AI estimates')
     } finally {
       setIsEstimating(false)

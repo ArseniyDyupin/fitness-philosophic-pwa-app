@@ -16,3 +16,12 @@ export { useMemoized, useDeepMemoized, useStableCallback, useMemoizedWithTimeout
 export { useWorkoutCrud } from './useWorkoutCrud'
 export { useGenerateWorkout } from './useGenerateWorkout'
 export { useProfile } from './useProfile'
+
+// Error handling hooks
+export { 
+  useErrorHandler, 
+  ErrorHandlerProvider,
+  useApiErrorHandler,
+  useDatabaseErrorHandler,
+  useValidationErrorHandler
+} from './useErrorHandler'

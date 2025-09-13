@@ -35,11 +35,11 @@ export const aiBodyService = {
       if (photos && photos.length > 0) {
         for (const photo of photos) {
           if (Array.isArray(messages[1].content)) {
-            (messages[1].content as Array<{ type: string; image_url: { url: string } }>).push({
+            (messages[1].content as any).push({
               type: 'image_url',
               image_url: {
                 url: photo.dataUrl,
-                detail: 'low'
+                detail: 'low' as any
               }
             })
           }
@@ -66,7 +66,7 @@ export const aiBodyService = {
     }
   },
 
-  buildPrompt(profile: { weight?: number; age?: number; gender?: string }, metricsHistory: Array<{ date: string; [key: string]: number }>, language: 'ru' | 'en'): string {
+  buildPrompt(profile: any, metricsHistory: Array<{ date: string; metrics: Record<string, number> }>, language: 'ru' | 'en'): string {
     const isRussian = language === 'ru'
     
     let prompt = isRussian 

@@ -1,5 +1,10 @@
 import { db } from '../data/db'
 import type { WorkoutType, ExerciseEstimate, WorkoutExercise } from '@/types/models'
+import { 
+  errorHandler, 
+  retryService, 
+  createApiError
+} from '@/services/error'
 
 export interface EstimateInput {
   type: WorkoutType | "custom"
@@ -79,7 +84,11 @@ async function getCachedEstimate(signature: string): Promise<ExerciseEstimate | 
     const estimate = await db.exercise_estimates.get(hash)
     return estimate || null
   } catch (error) {
-    console.error('Failed to get cached estimate:', error)
+    await errorHandler.handleError(error as Error, {
+      component: 'AIEstimate',
+      action: 'getCachedEstimate',
+      metadata: { signature }
+    })
     return null
   }
 }
@@ -109,7 +118,11 @@ async function saveEstimateToCache(
     
     await db.exercise_estimates.put(estimate)
   } catch (error) {
-    console.error('Failed to save estimate to cache:', error)
+    await errorHandler.handleError(error as Error, {
+      component: 'AIEstimate',
+      action: 'saveEstimateToCache',
+      metadata: { signature, input, result }
+    })
   }
 }
 
@@ -117,7 +130,10 @@ async function saveEstimateToCache(
 async function callOpenAI(input: EstimateInput): Promise<EstimateResult> {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY
   if (!apiKey) {
-    throw new Error('OpenAI API key not configured')
+    throw createApiError('OpenAI API key not configured', {
+      component: 'AIEstimate',
+      action: 'callOpenAI'
+    })
   }
 
   const aiPayload = {
@@ -202,33 +218,34 @@ export async function getExerciseEstimate(
     }
   }
 
-  // Call AI with retries
-  const maxRetries = 2
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const result = await callOpenAI(input)
-      
-      // Save to cache
-      await saveEstimateToCache(signature, input, result)
-      
-      return result
-    } catch (error) {
-      console.warn(`AI estimation attempt ${attempt + 1} failed:`, error)
-      
-      if (attempt < maxRetries) {
-        // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt)))
-      }
+  // Call AI with retry service
+  try {
+      const result = await retryService.executeWithRetry(
+        () => callOpenAI(input),
+        {
+          maxRetries: 2,
+          baseDelay: 1000,
+          backoffMultiplier: 2
+        }
+      )
+    
+    // Save to cache
+    await saveEstimateToCache(signature, input, result)
+    
+    return result
+  } catch (error) {
+    // If all attempts failed, return fallback
+    await errorHandler.handleError(error as Error, {
+      component: 'AIEstimate',
+      action: 'getExerciseEstimate',
+      metadata: { signature, input, fallback: true }
+    })
+    
+    return {
+      kcal: 0,
+      durationMin: undefined,
+      unit: "per-session"
     }
-  }
-
-  // If all attempts failed, return fallback
-  console.error('All AI estimation attempts failed, returning fallback')
-  return {
-    kcal: 0,
-    durationMin: undefined,
-    unit: "per-session"
   }
 }
 

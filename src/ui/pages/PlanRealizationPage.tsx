@@ -126,7 +126,14 @@ const PlanRealizationPage: React.FC = () => {
             return {
               ...exercise!,
               kcalEstimated: profile?.weight
-                ? getWorkoutTotalCalories({ exercises: [exercise!], rpe }, profile.weight)
+                ? getWorkoutTotalCalories({ 
+                    id: 'temp',
+                    date: new Date().toISOString(),
+                    exercises: [exercise!], 
+                    rpe,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                  } as Workout, profile.weight)
                 : undefined
             } as WorkoutExercise
           })
@@ -135,7 +142,14 @@ const PlanRealizationPage: React.FC = () => {
           exercisesWithEstimates = finalExercises.map((exercise) => ({
             ...exercise!,
             kcalEstimated: profile?.weight
-              ? getWorkoutTotalCalories({ exercises: [exercise!], rpe }, profile.weight)
+              ? getWorkoutTotalCalories({
+                  id: 'temp',
+                  date: new Date().toISOString(),
+                  exercises: [exercise!],
+                  rpe,
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
+                } as Workout, profile.weight)
               : undefined
           })) as WorkoutExercise[]
         }
@@ -144,7 +158,14 @@ const PlanRealizationPage: React.FC = () => {
         exercisesWithEstimates = finalExercises.map((exercise) => ({
           ...exercise!,
           kcalEstimated: profile?.weight
-            ? getWorkoutTotalCalories({ exercises: [exercise!], rpe }, profile.weight)
+            ? getWorkoutTotalCalories({
+                id: 'temp',
+                date: new Date().toISOString(),
+                exercises: [exercise!],
+                rpe,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              } as Workout, profile.weight)
             : undefined
         })) as WorkoutExercise[]
       }

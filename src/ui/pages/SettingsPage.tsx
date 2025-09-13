@@ -70,16 +70,17 @@ const SettingsPage: React.FC = () => {
     const errors: Record<string, string> = {}
     
     if (section === 'profile') {
-      if (!data.name?.trim()) {
+      const profileData = data as any
+      if (!profileData.name?.trim()) {
         errors.name = t.settingsPage?.nameRequired || 'Name is required'
       }
-      if (data.age < 10 || data.age > 120) {
+      if (profileData.age < 10 || profileData.age > 120) {
         errors.age = t.settingsPage?.ageInvalid || 'Age must be between 10 and 120'
       }
-      if (data.height < 100 || data.height > 250) {
+      if (profileData.height < 100 || profileData.height > 250) {
         errors.height = t.settingsPage?.heightInvalid || 'Height must be between 100 and 250 cm'
       }
-      if (data.weight <= 0 || data.weight > 500) {
+      if (profileData.weight <= 0 || profileData.weight > 500) {
         errors.weight = t.settingsPage?.weightInvalid || 'Weight must be between 1 and 500 kg'
       }
     }

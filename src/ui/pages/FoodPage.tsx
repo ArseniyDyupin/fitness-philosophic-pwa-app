@@ -196,7 +196,7 @@ const FoodPage: React.FC = () => {
                     <button
                       onClick={() => handleDelete(log.id)}
                       className="p-2 text-red-400 hover:text-red-600 transition-colors"
-                      title={t.foodPage?.deleteEntry || 'Delete entry'}
+                      title="Delete entry"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -232,7 +232,7 @@ const FoodPage: React.FC = () => {
                   value={formData.calories}
                   onChange={(e) => setFormData({ ...formData, calories: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                  placeholder={t.foodPage?.caloriesPlaceholder || 'e.g., 500'}
+                  placeholder="e.g., 500"
                 />
               </div>
 
@@ -287,7 +287,7 @@ const FoodPage: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                  placeholder={t.foodPage?.foodDescriptionPlaceholder || 'What did you eat?'}
+                  placeholder="What did you eat?"
                 />
               </div>
 

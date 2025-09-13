@@ -55,7 +55,7 @@ const BodyMetricsChartModal: React.FC<BodyMetricsChartModalProps> = ({
 
   const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }> }) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload
+      const data = (payload[0] as any).payload
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900">{formatDate(data.date)}</p>

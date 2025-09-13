@@ -18,7 +18,7 @@ export function useForm<T extends Record<string, any>>({
     if (!validationSchema) return null
 
     try {
-      const fieldSchema = validationSchema.shape?.[name]
+      const fieldSchema = (validationSchema as any).shape?.[name]
       if (!fieldSchema) return null
 
       fieldSchema.parse(value)
@@ -36,7 +36,7 @@ export function useForm<T extends Record<string, any>>({
     let isValid = true
 
     try {
-      validationSchema.parse(values)
+      (validationSchema as any).parse(values)
     } catch (error: unknown) {
       (error as { errors?: Array<{ path?: string[]; message: string }> })?.errors?.forEach((err) => {
         const fieldName = err.path?.[0] as keyof T

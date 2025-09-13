@@ -218,7 +218,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   details: { ...exercise.details, customExercise: e.target.value }
                 })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                placeholder={t.exerciseCard?.customExercisePlaceholder || 'e.g., Burpees, Mountain Climbers'}
+                placeholder="e.g., Burpees, Mountain Climbers"
               />
             </div>
             
@@ -353,7 +353,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <button
             onClick={onClone}
             className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-            title={t.exerciseCard?.cloneExercise || 'Clone exercise'}
+            title="Clone exercise"
           >
             <Copy size={16} />
           </button>
@@ -362,14 +362,14 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             className={`p-2 transition-colors ${
               showNotes ? 'text-primary-600' : 'text-gray-400 hover:text-gray-600'
             }`}
-            title={t.exerciseCard?.toggleNotes || 'Toggle notes'}
+            title="Toggle notes"
           >
             <MessageSquare size={16} />
           </button>
           <button
             onClick={onRemove}
             className="p-2 text-red-400 hover:text-red-600 transition-colors"
-            title={t.exerciseCard?.removeExercise || 'Remove exercise'}
+            title="Remove exercise"
           >
             <Trash2 size={16} />
           </button>
@@ -413,7 +413,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 })}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                placeholder={t.exerciseCard?.notesPlaceholder || 'Add any notes about this exercise...'}
+                placeholder="Add any notes about this exercise..."
               />
             </div>
           )}

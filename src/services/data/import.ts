@@ -89,7 +89,14 @@ function migrateWorkout(workout: Workout, profile?: Profile): Workout {
     
     // Calculate missing kcalEstimated
     if (!exercise.kcalEstimated && profile?.weight) {
-      migratedExercise.kcalEstimated = getWorkoutTotalCalories({ exercises: [exercise], rpe: workout.rpe || 5 }, profile.weight)
+      migratedExercise.kcalEstimated = getWorkoutTotalCalories({ 
+        id: workout.id || 'temp',
+        date: workout.date || new Date().toISOString(),
+        exercises: [exercise], 
+        rpe: workout.rpe || 5,
+        createdAt: workout.createdAt || new Date().toISOString(),
+        updatedAt: workout.updatedAt || new Date().toISOString()
+      } as Workout, profile.weight)
     }
     
     return migratedExercise
@@ -103,10 +110,10 @@ function migrateWorkout(workout: Workout, profile?: Profile): Workout {
   return migratedWorkout
 }
 
-function ensureISODates(obj: unknown): unknown {
+function ensureISODates(obj: unknown): any {
   if (!obj) return obj
   
-  const result = { ...obj }
+  const result = { ...(obj as Record<string, any>) }
   
   // Common date fields to convert
   const dateFields = ['date', 'createdAt', 'updatedAt', 'exportedAt']

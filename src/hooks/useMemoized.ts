@@ -112,11 +112,11 @@ function deepEqual(a: unknown, b: unknown): boolean {
   }
 
   if (Array.isArray(a)) {
-    if (a.length !== b.length) {
+    if ((a as any).length !== (b as any).length) {
       return false
     }
     for (let i = 0; i < a.length; i++) {
-      if (!deepEqual(a[i], b[i])) {
+      if (!deepEqual((a as any)[i], (b as any)[i])) {
         return false
       }
     }
@@ -134,7 +134,7 @@ function deepEqual(a: unknown, b: unknown): boolean {
     if (!keysB.includes(key)) {
       return false
     }
-    if (!deepEqual(a[key], b[key])) {
+    if (!deepEqual((a as any)[key], (b as any)[key])) {
       return false
     }
   }
