@@ -375,5 +375,55 @@ export const metricsService = {
       img.onerror = () => reject(new Error('Failed to load image'))
       img.src = URL.createObjectURL(file)
     })
+  },
+
+  // Export/Import methods
+
+  async getAllEntries(): Promise<MetricEntry[]> {
+    try {
+      return await db.metric_entries.toArray()
+    } catch (error) {
+      console.error('Failed to get all metric entries:', error)
+      return []
+    }
+  },
+
+  async getAllPhotos(): Promise<PhotoAsset[]> {
+    try {
+      return await db.photo_assets.toArray()
+    } catch (error) {
+      console.error('Failed to get all photos:', error)
+      return []
+    }
+  },
+
+  async importDefs(defs: MetricDef[]): Promise<void> {
+    try {
+      await db.metric_defs.clear()
+      await db.metric_defs.bulkAdd(defs)
+    } catch (error) {
+      console.error('Failed to import metric definitions:', error)
+      throw error
+    }
+  },
+
+  async importEntries(entries: MetricEntry[]): Promise<void> {
+    try {
+      await db.metric_entries.clear()
+      await db.metric_entries.bulkAdd(entries)
+    } catch (error) {
+      console.error('Failed to import metric entries:', error)
+      throw error
+    }
+  },
+
+  async importPhotos(photos: PhotoAsset[]): Promise<void> {
+    try {
+      await db.photo_assets.clear()
+      await db.photo_assets.bulkAdd(photos)
+    } catch (error) {
+      console.error('Failed to import photos:', error)
+      throw error
+    }
   }
 }

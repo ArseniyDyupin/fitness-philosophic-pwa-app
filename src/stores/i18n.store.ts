@@ -910,7 +910,21 @@ export const translations = {
         score: 'Score',
         tips: 'Recommendations',
         history: 'Assessment History',
-        disclaimer: 'AI assessment is for reference only and is not medical advice.'
+        disclaimer: 'AI assessment is for reference only and is not medical advice.',
+        feedbackTitle: 'AI Analysis Results',
+        overallScore: 'Overall Score',
+        scoreDescription: 'Based on your metrics and progress',
+        excellent: 'Excellent',
+        good: 'Good',
+        fair: 'Fair',
+        poor: 'Poor',
+        recommendations: 'Recommendations',
+        trends: 'Trends & Progress',
+        scoreTrend: 'Score Trend',
+        improvement: 'Improvement',
+        noPreviousData: 'No previous data available for comparison',
+        keyAreas: 'Key Areas',
+        close: 'Close'
       },
       default: {
         weight: 'Weight',
@@ -965,7 +979,18 @@ export const translations = {
       settingsError: 'Failed to update settings',
       analysisComplete: 'AI analysis completed successfully',
       analysisError: 'AI analysis failed, but metrics were saved',
-      saved: 'Metrics saved successfully'
+      saved: 'Metrics saved successfully',
+      // Export/Import
+      exportSuccess: 'Metrics exported successfully',
+      exportError: 'Failed to export metrics',
+      importSuccess: 'Metrics imported successfully',
+      importError: 'Failed to import metrics',
+      fileSizeError: 'File size must be less than 10MB',
+      invalidFileError: 'Invalid file format',
+      exportImport: 'Export/Import Metrics',
+      exportImportDescription: 'Export your metrics data to a JSON file or import from a previously exported file.',
+      export: 'Export',
+      import: 'Import'
     },
     
     // WorkoutForm
@@ -2048,7 +2073,21 @@ export const translations = {
         score: 'Оценка',
         tips: 'Рекомендации',
         history: 'История оценок',
-        disclaimer: 'Оценка ИИ носит ориентировочный характер и не является медицинским советом.'
+        disclaimer: 'Оценка ИИ носит ориентировочный характер и не является медицинским советом.',
+        feedbackTitle: 'Результаты анализа ИИ',
+        overallScore: 'Общая оценка',
+        scoreDescription: 'На основе ваших метрик и прогресса',
+        excellent: 'Отлично',
+        good: 'Хорошо',
+        fair: 'Удовлетворительно',
+        poor: 'Плохо',
+        recommendations: 'Рекомендации',
+        trends: 'Тренды и прогресс',
+        scoreTrend: 'Динамика оценок',
+        improvement: 'Улучшение',
+        noPreviousData: 'Нет предыдущих данных для сравнения',
+        keyAreas: 'Ключевые области',
+        close: 'Закрыть'
       },
       default: {
         weight: 'Вес',
@@ -2103,7 +2142,18 @@ export const translations = {
       settingsError: 'Не удалось обновить настройки',
       analysisComplete: 'Анализ ИИ завершен успешно',
       analysisError: 'Анализ ИИ не удался, но метрики сохранены',
-      saved: 'Метрики успешно сохранены'
+      saved: 'Метрики успешно сохранены',
+      // Export/Import
+      exportSuccess: 'Метрики успешно экспортированы',
+      exportError: 'Не удалось экспортировать метрики',
+      importSuccess: 'Метрики успешно импортированы',
+      importError: 'Не удалось импортировать метрики',
+      fileSizeError: 'Размер файла должен быть менее 10 МБ',
+      invalidFileError: 'Неверный формат файла',
+      exportImport: 'Экспорт/Импорт метрик',
+      exportImportDescription: 'Экспортируйте данные метрик в JSON файл или импортируйте из ранее экспортированного файла.',
+      export: 'Экспорт',
+      import: 'Импорт'
     },
     
     // WorkoutForm

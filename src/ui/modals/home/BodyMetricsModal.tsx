@@ -6,6 +6,7 @@ import { aiBodyService } from '@services/ai'
 import { startOfWeek, format } from 'date-fns'
 import { X, Camera, Save, Sparkles, Loader } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import AiFeedbackModal from './AiFeedbackModal'
 import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '@/types/body-metrics'
 
 interface BodyMetricsModalProps {
@@ -26,6 +27,9 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
   const [isSaving, setIsSaving] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showAiFeedback, setShowAiFeedback] = useState(false)
+  const [currentAiEval, setCurrentAiEval] = useState<AiBodyEval | null>(null)
+  const [previousAiEvals, setPreviousAiEvals] = useState<AiBodyEval[]>([])
 
   const targetDate = weekStart || startOfWeek(new Date(), { weekStartsOn: 1 })
   const dateStr = format(targetDate, 'yyyy-MM-dd')
@@ -40,7 +44,6 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
     try {
       setIsLoading(true)
       const defs = await metricsService.getActiveDefs()
-      console.log(defs, '<<<< defs')
       setActiveDefs(defs)
       
       // Load existing entries for this date
@@ -275,6 +278,17 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
           }
 
           await aiBodyService.saveEvaluation(aiEval)
+          
+          // Load previous evaluations for comparison
+          const previousEvals = await aiBodyService.getEvaluationsByDateRange(
+            new Date(Date.now() - 8 * 7 * 24 * 60 * 60 * 1000).toISOString(),
+            new Date().toISOString()
+          )
+          
+          setCurrentAiEval(aiEval)
+          setPreviousAiEvals(previousEvals.filter(e => e.id !== aiEval.id))
+          setShowAiFeedback(true)
+          
           toast.success(t.metrics.analysisComplete)
         } catch (error) {
           console.error('AI analysis failed:', error)
@@ -285,7 +299,11 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
       }
 
       toast.success(t.metrics.saved)
-      onClose()
+      
+      // Close the metrics modal only if not showing AI feedback
+      if (!withAnalysis) {
+        onClose()
+      }
     } catch (error) {
       console.error('Failed to save metrics:', error)
       toast.error(t.error || 'Failed to save metrics')
@@ -496,6 +514,17 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
           </button>
         </div>
       </div>
+      
+      {/* AI Feedback Modal */}
+      <AiFeedbackModal
+        isOpen={showAiFeedback}
+        onClose={() => {
+          setShowAiFeedback(false)
+          onClose()
+        }}
+        aiEval={currentAiEval}
+        previousEvals={previousAiEvals}
+      />
     </div>
   )
 }

@@ -196,5 +196,27 @@ Be objective and constructive.`
       console.error('Failed to get AI evaluations:', error)
       return []
     }
+  },
+
+  async getEvaluationsByDateRange(_startDate: string, _endDate: string): Promise<AiBodyEval[]> {
+    try {
+      // This would query the database for evaluations within date range
+      // For now, return empty array
+      return []
+    } catch (error) {
+      console.error('Failed to get AI evaluations by date range:', error)
+      return []
+    }
+  },
+
+  async importEvaluations(evaluations: AiBodyEval[]): Promise<void> {
+    try {
+      // This would import evaluations to the database
+      // For now, just log
+      console.log('Importing AI evaluations:', evaluations)
+    } catch (error) {
+      console.error('Failed to import AI evaluations:', error)
+      throw error
+    }
   }
 }
