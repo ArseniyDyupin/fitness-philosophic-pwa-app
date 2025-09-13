@@ -6,39 +6,27 @@ export const metricsService = {
   // Metric Definitions
   async getActiveDefs(): Promise<MetricDef[]> {
     try {
-      // Check if database is open
       if (!db.isOpen()) {
         await db.open()
       }
       
-      // Check if we have any metrics at all
       const allMetrics = await db.metric_defs.toArray()
-      console.log('All metrics in DB:', allMetrics)
       
-      // If no metrics exist, initialize default ones
       if (allMetrics.length === 0) {
-        console.log('No metrics found, initializing default metrics...')
         await this.initializeDefaultMetrics()
-        // Try again after initialization
-        const newMetrics = await db.metric_defs.where('isActive').equals('true').toArray()
-        console.log('Active metrics after initialization:', newMetrics)
-        return newMetrics
+        const newAllMetrics = await db.metric_defs.toArray()
+        return newAllMetrics.filter(metric => metric.isActive)
       }
       
-      // Try to get active metrics
-      const metrics = await db.metric_defs.where('isActive').equals('true').toArray()
-      console.log('Active metrics:', metrics)
+      const activeMetrics = allMetrics.filter(metric => metric.isActive)
       
-      // If no active metrics found, try to get any metrics
-      if (metrics.length === 0 && allMetrics.length > 0) {
-        console.log('No active metrics found, returning all metrics')
+      if (activeMetrics.length === 0 && allMetrics.length > 0) {
         return allMetrics
       }
       
-      return metrics
+      return activeMetrics
     } catch (error) {
       console.error('Error getting active metric definitions:', error)
-      // If table doesn't exist, return empty array
       return []
     }
   },
@@ -51,12 +39,9 @@ export const metricsService = {
     try {
       const existingMetrics = await db.metric_defs.toArray()
       if (existingMetrics.length > 0) {
-        console.log('Metrics already initialized')
         return
       }
 
-      console.log('Initializing default metrics...')
-      
       const now = new Date().toISOString()
       const defaultMetrics: MetricDef[] = [
         {
@@ -68,7 +53,7 @@ export const metricsService = {
           min: 30,
           max: 200,
           color: '#3B82F6',
-          isActive: true,
+          isActive: 'true',
           isRequired: true,
           createdAt: now,
           updatedAt: now
@@ -82,7 +67,7 @@ export const metricsService = {
           min: 5,
           max: 50,
           color: '#EF4444',
-          isActive: true,
+          isActive: 'true',
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -96,7 +81,7 @@ export const metricsService = {
           min: 20,
           max: 100,
           color: '#10B981',
-          isActive: true,
+          isActive: 'true',
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -110,7 +95,7 @@ export const metricsService = {
           min: 50,
           max: 150,
           color: '#F59E0B',
-          isActive: true,
+          isActive: 'true',
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -124,7 +109,7 @@ export const metricsService = {
           min: 70,
           max: 150,
           color: '#8B5CF6',
-          isActive: true,
+          isActive: 'true',
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -138,7 +123,7 @@ export const metricsService = {
           min: 20,
           max: 60,
           color: '#06B6D4',
-          isActive: true,
+          isActive: 'true',
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -152,7 +137,7 @@ export const metricsService = {
           min: 40,
           max: 80,
           color: '#84CC16',
-          isActive: true,
+          isActive: 'true',
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -160,7 +145,6 @@ export const metricsService = {
       ]
 
       await db.metric_defs.bulkAdd(defaultMetrics)
-      console.log('Default metrics initialized successfully')
     } catch (error) {
       console.error('Error initializing default metrics:', error)
     }
@@ -172,12 +156,8 @@ export const metricsService = {
 
   async forceInitializeMetrics(): Promise<void> {
     try {
-      console.log('Force initializing metrics...')
-      // Clear existing metrics
       await db.metric_defs.clear()
-      // Initialize default metrics
       await this.initializeDefaultMetrics()
-      console.log('Metrics force initialized successfully')
     } catch (error) {
       console.error('Error force initializing metrics:', error)
     }
@@ -217,15 +197,8 @@ export const metricsService = {
 
   async getLatestByDef(defId: string): Promise<MetricEntry | undefined> {
     try {
-      // Check if database is open and table exists
       if (!db.isOpen()) {
         await db.open()
-      }
-      
-      const tableExists = db.tables.some(table => table.name === 'metric_entries')
-      if (!tableExists) {
-        console.log('metric_entries table does not exist')
-        return undefined
       }
       
       const entries = await db.metric_entries
@@ -251,7 +224,7 @@ export const metricsService = {
             latestValues[def.key] = latest.value
           }
         } catch (error) {
-          console.warn(`Failed to get latest value for metric ${def.key}:`, error)
+          // Silently skip failed metrics
         }
       }
       
@@ -357,10 +330,9 @@ export const metricsService = {
     }
   },
 
-  async updateSettings(settings: Partial<BodyMetricsSettings>): Promise<void> {
+  async updateSettings(_settings: Partial<BodyMetricsSettings>): Promise<void> {
     // For now, this is a placeholder
     // In the future, this could update profile or separate settings table
-    console.log('Updating metrics settings:', settings)
   },
 
   // Validation
