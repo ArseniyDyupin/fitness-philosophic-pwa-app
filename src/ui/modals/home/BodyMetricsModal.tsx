@@ -30,7 +30,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
   const [showAiFeedback, setShowAiFeedback] = useState(false)
   const [currentAiEval, setCurrentAiEval] = useState<AiBodyEval | null>(null)
   const [previousAiEvals, setPreviousAiEvals] = useState<AiBodyEval[]>([])
-  const [previousMetrics, setPreviousMetrics] = useState<Record<string, number>>({})
+  const [lastMeasurements, setLastMeasurements] = useState<Record<string, { value: number; date: string }>>({})
 
   const targetDate = weekStart || startOfWeek(new Date(), { weekStartsOn: 1 })
   const dateStr = format(targetDate, 'yyyy-MM-dd')
@@ -69,22 +69,25 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
       const existingPhotos = await metricsService.getPhotosByDate(dateStr)
       setPhotos(existingPhotos)
       
-      // Load previous week's metrics for comparison
-      const previousWeekStart = new Date(targetDate)
-      previousWeekStart.setDate(previousWeekStart.getDate() - 7)
-      const previousWeekStr = format(previousWeekStart, 'yyyy-MM-dd')
       
-      const previousEntries = await metricsService.getEntriesByRange(previousWeekStr, previousWeekStr)
-      const previousMetricsMap: Record<string, number> = {}
+      // Load last measurements for each metric
+      const lastMeasurementsMap: Record<string, { value: number; date: string }> = {}
       
-      previousEntries.forEach(entry => {
-        const def = defs.find(d => d.id === entry.defId)
-        if (def) {
-          previousMetricsMap[def.key] = entry.value
+      for (const def of defs) {
+        try {
+          const lastEntry = await metricsService.getLatestByDef(def.id)
+          if (lastEntry) {
+            lastMeasurementsMap[def.key] = {
+              value: lastEntry.value,
+              date: lastEntry.date
+            }
+          }
+        } catch (error) {
+          console.warn(`Failed to load last measurement for ${def.key}:`, error)
         }
-      })
+      }
       
-      setPreviousMetrics(previousMetricsMap)
+      setLastMeasurements(lastMeasurementsMap)
       
     } catch (error) {
       console.error('Failed to load metrics data:', error)
@@ -330,6 +333,35 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
     }
   }
 
+  const getMetricStatusColor = (def: MetricDef, value: number): string => {
+    // Define normal ranges for different metrics
+    const normalRanges: Record<string, { min: number; max: number }> = {
+      weight: { min: 50, max: 120 }, // kg
+      height: { min: 150, max: 200 }, // cm
+      bicep: { min: 25, max: 45 }, // cm
+      waist: { min: 60, max: 100 }, // cm
+      chest: { min: 80, max: 120 }, // cm
+      thigh: { min: 45, max: 70 }, // cm
+      bodyFat: { min: 8, max: 25 }, // %
+      muscle: { min: 30, max: 50 }, // %
+      water: { min: 45, max: 65 }, // %
+      bone: { min: 2, max: 5 }, // kg
+    }
+    
+    const range = normalRanges[def.key]
+    if (!range) {
+      return 'text-gray-600 bg-gray-100' // Default gray for unknown metrics
+    }
+    
+    if (value >= range.min && value <= range.max) {
+      return 'text-green-600 bg-green-100' // Green for normal
+    } else if (value >= range.min * 0.9 && value <= range.max * 1.1) {
+      return 'text-yellow-600 bg-yellow-100' // Yellow for slightly off
+    } else {
+      return 'text-red-600 bg-red-100' // Red for significantly off
+    }
+  }
+
   const getMetricsHistory = async () => {
     // Get last 8 weeks of metrics for analysis
     const history = []
@@ -399,10 +431,15 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
                         {t.metrics?.default?.[def.key as keyof typeof t.metrics.default] || def.label}
                         {def.isRequired && <span className="text-red-500 ml-1">*</span>}
                       </label>
-                      {previousMetrics[def.key] !== undefined && (
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                          {t.metrics?.previous || 'Previous'}: {previousMetrics[def.key]} {t.metrics?.units?.[def.unit as keyof typeof t.metrics.units] || def.unit}
-                        </span>
+                      {lastMeasurements[def.key] && (
+                        <div className="text-right">
+                          <div className={`text-xs px-2 py-1 rounded ${getMetricStatusColor(def, lastMeasurements[def.key].value)}`}>
+                            {t.metrics?.lastMeasurement || 'Last measurement'}: {lastMeasurements[def.key].value} {t.metrics?.units?.[def.unit as keyof typeof t.metrics.units] || def.unit}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {format(new Date(lastMeasurements[def.key].date), 'MMM d, yyyy')}
+                          </div>
+                        </div>
                       )}
                     </div>
                     <div className="flex items-center space-x-2">

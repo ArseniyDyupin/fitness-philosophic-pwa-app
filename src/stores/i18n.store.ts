@@ -992,6 +992,7 @@ export const translations = {
       export: 'Export',
       import: 'Import',
       previous: 'Previous',
+      lastMeasurement: 'Last measurement',
       addMetrics: 'Add Body Metrics',
       addMetricsDescription: 'Track your body measurements and progress'
     },
@@ -2158,6 +2159,7 @@ export const translations = {
       export: 'Экспорт',
       import: 'Импорт',
       previous: 'Предыдущее',
+      lastMeasurement: 'Последнее измерение',
       addMetrics: 'Добавить метрики тела',
       addMetricsDescription: 'Отслеживайте измерения тела и прогресс'
     },
