@@ -30,6 +30,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
   const [showAiFeedback, setShowAiFeedback] = useState(false)
   const [currentAiEval, setCurrentAiEval] = useState<AiBodyEval | null>(null)
   const [previousAiEvals, setPreviousAiEvals] = useState<AiBodyEval[]>([])
+  const [previousMetrics, setPreviousMetrics] = useState<Record<string, number>>({})
 
   const targetDate = weekStart || startOfWeek(new Date(), { weekStartsOn: 1 })
   const dateStr = format(targetDate, 'yyyy-MM-dd')
@@ -67,6 +68,23 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
       // Load existing photos for this date
       const existingPhotos = await metricsService.getPhotosByDate(dateStr)
       setPhotos(existingPhotos)
+      
+      // Load previous week's metrics for comparison
+      const previousWeekStart = new Date(targetDate)
+      previousWeekStart.setDate(previousWeekStart.getDate() - 7)
+      const previousWeekStr = format(previousWeekStart, 'yyyy-MM-dd')
+      
+      const previousEntries = await metricsService.getEntriesByRange(previousWeekStr, previousWeekStr)
+      const previousMetricsMap: Record<string, number> = {}
+      
+      previousEntries.forEach(entry => {
+        const def = defs.find(d => d.id === entry.defId)
+        if (def) {
+          previousMetricsMap[def.key] = entry.value
+        }
+      })
+      
+      setPreviousMetrics(previousMetricsMap)
       
     } catch (error) {
       console.error('Failed to load metrics data:', error)
@@ -376,10 +394,17 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
               <div className="space-y-4">
                 {activeDefs.map((def) => (
                   <div key={def.id} className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      {t.metrics?.default?.[def.key as keyof typeof t.metrics.default] || def.label}
-                      {def.isRequired && <span className="text-red-500 ml-1">*</span>}
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {t.metrics?.default?.[def.key as keyof typeof t.metrics.default] || def.label}
+                        {def.isRequired && <span className="text-red-500 ml-1">*</span>}
+                      </label>
+                      {previousMetrics[def.key] !== undefined && (
+                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                          {t.metrics?.previous || 'Previous'}: {previousMetrics[def.key]} {t.metrics?.units?.[def.unit as keyof typeof t.metrics.units] || def.unit}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center space-x-2">
                       <input
                         step={def.precision ? `0.${'0'.repeat(def.precision - 1)}1` : '0.1'}

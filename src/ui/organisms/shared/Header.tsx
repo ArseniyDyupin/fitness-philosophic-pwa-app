@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslations } from '@stores/i18n.store'
 import { downloadExport } from '@services/data'
+import { metricsService } from '@services/fitness'
 import { toastSuccess, toastError } from '@lib/toast'
 import { ArrowLeft, Download, MoreVertical } from 'lucide-react'
+import { startOfWeek, format } from 'date-fns'
 import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'
 import Button from '@atoms/Button'
 import ReminderBanner from '@molecules/shared/ReminderBanner'
@@ -17,6 +19,25 @@ const Header: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false)
   const [isMetricsModalOpen, setIsMetricsModalOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [hasWeeklyMetrics, setHasWeeklyMetrics] = useState(false)
+
+  // Check if weekly metrics exist
+  const checkWeeklyMetrics = async () => {
+    try {
+      const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 })
+      const weekStr = format(weekStart, 'yyyy-MM-dd')
+      const entries = await metricsService.getEntriesByRange(weekStr, weekStr)
+      setHasWeeklyMetrics(entries.length > 0)
+    } catch (error) {
+      console.error('Failed to check weekly metrics:', error)
+      setHasWeeklyMetrics(false)
+    }
+  }
+
+  // Check metrics on component mount and when modal closes
+  useEffect(() => {
+    checkWeeklyMetrics()
+  }, [])
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -74,14 +95,16 @@ const Header: React.FC = () => {
 
   return (
     <>
-      {/* Reminder Banner */}
-      <ReminderBanner 
-        title={t.header?.metricsReminder || 'Weekly Metrics Reminder'}
-        message={t.header?.metricsReminderMessage || 'Don\'t forget to log your weekly body metrics'}
-        onAction={() => setIsMetricsModalOpen(true)}
-        actionText={t.header?.logMetrics || 'Log Metrics'}
-        variant="info"
-      />
+      {/* Reminder Banner - only show if no weekly metrics */}
+      {!hasWeeklyMetrics && (
+        <ReminderBanner 
+          title={t.header?.metricsReminder || 'Weekly Metrics Reminder'}
+          message={t.header?.metricsReminderMessage || 'Don\'t forget to log your weekly body metrics'}
+          onAction={() => setIsMetricsModalOpen(true)}
+          actionText={t.header?.logMetrics || 'Log Metrics'}
+          variant="info"
+        />
+      )}
       
       <header className="bg-white shadow-sm border-b border-gray-200 pwa-safe-area">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -280,7 +303,11 @@ const Header: React.FC = () => {
       {/* Body Metrics Modal */}
       <BodyMetricsModal
         isOpen={isMetricsModalOpen}
-        onClose={() => setIsMetricsModalOpen(false)}
+        onClose={() => {
+          setIsMetricsModalOpen(false)
+          // Recheck metrics after modal closes
+          setTimeout(checkWeeklyMetrics, 500)
+        }}
       />
     </header>
     </>

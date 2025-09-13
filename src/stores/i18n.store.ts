@@ -990,7 +990,8 @@ export const translations = {
       exportImport: 'Export/Import Metrics',
       exportImportDescription: 'Export your metrics data to a JSON file or import from a previously exported file.',
       export: 'Export',
-      import: 'Import'
+      import: 'Import',
+      previous: 'Previous'
     },
     
     // WorkoutForm
@@ -2153,7 +2154,8 @@ export const translations = {
       exportImport: 'Экспорт/Импорт метрик',
       exportImportDescription: 'Экспортируйте данные метрик в JSON файл или импортируйте из ранее экспортированного файла.',
       export: 'Экспорт',
-      import: 'Импорт'
+      import: 'Импорт',
+      previous: 'Предыдущее'
     },
     
     // WorkoutForm

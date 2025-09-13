@@ -189,10 +189,21 @@ export const metricsService = {
   },
 
   async getEntriesByRange(startDate: string, endDate: string): Promise<MetricEntry[]> {
-    return await db.metric_entries
-      .where('date')
-      .between(startDate, endDate)
-      .sortBy('date')
+    try {
+      // Get all entries from database
+      const allEntries = await db.metric_entries.toArray()
+      
+      // Filter entries that fall within the date range
+      const filteredEntries = allEntries.filter(entry => {
+        const entryDate = entry.date
+        return entryDate >= startDate && entryDate <= endDate
+      })
+      
+      return filteredEntries.sort((a, b) => a.date.localeCompare(b.date))
+    } catch (error) {
+      console.error('Failed to get entries by range:', error)
+      return []
+    }
   },
 
   async getLatestByDef(defId: string): Promise<MetricEntry | undefined> {
