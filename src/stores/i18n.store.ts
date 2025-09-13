@@ -377,7 +377,9 @@ export const translations = {
         showAll: 'Show All',
         empty: 'No workouts yet',
         add: 'Add Workout',
-        import: 'Import JSON'
+        import: 'Import JSON',
+        viewAll: 'View All',
+        moreWorkouts: 'more workouts'
       },
       banners: {
         metrics: 'Time to update measurements for the past week',
@@ -856,7 +858,11 @@ export const translations = {
         moderate: 'Moderate',
         hard: 'Hard',
         never: 'Never',
-        na: 'N/A'
+        na: 'N/A',
+        source: {
+          ai: 'AI',
+          manual: 'Manual'
+        }
       },
       chart: {
         calories: 'Calories',
@@ -948,7 +954,18 @@ export const translations = {
       confirmDelete: 'Are you sure you want to delete this metric?',
       note: 'Add a note...',
       recentEntries: 'Recent Entries',
-      noEntries: 'No recent entries'
+      noEntries: 'No recent entries',
+      // Toast messages
+      metricUpdated: 'Metric updated successfully',
+      metricDeleted: 'Metric deleted successfully',
+      metricCreated: 'Metric created successfully',
+      saveError: 'Failed to save metric',
+      deleteError: 'Failed to delete metric',
+      settingsUpdated: 'Settings updated successfully',
+      settingsError: 'Failed to update settings',
+      analysisComplete: 'AI analysis completed successfully',
+      analysisError: 'AI analysis failed, but metrics were saved',
+      saved: 'Metrics saved successfully'
     },
     
     // WorkoutForm
@@ -1016,7 +1033,8 @@ export const translations = {
       aiReviewed: 'AI Reviewed',
       reps: 'reps',
       min: 'min',
-      km: 'km'
+      km: 'km',
+      rpe: 'RPE'
     },
     
     // Exercise types
@@ -1490,7 +1508,9 @@ export const translations = {
         showAll: 'Показать все',
         empty: 'Пока нет тренировок',
         add: 'Добавить тренировку',
-        import: 'Импорт JSON'
+        import: 'Импорт JSON',
+        viewAll: 'Показать все',
+        moreWorkouts: 'тренировок'
       },
       banners: {
         metrics: 'Пора обновить измерения за прошедшую неделю',
@@ -1976,7 +1996,11 @@ export const translations = {
         moderate: 'Умеренно',
         hard: 'Сложно',
         never: 'Никогда',
-        na: 'Н/Д'
+        na: 'Н/Д',
+        source: {
+          ai: 'ИИ',
+          manual: 'Вручную'
+        }
       },
       chart: {
         calories: 'Калории',
@@ -2068,7 +2092,18 @@ export const translations = {
       confirmDelete: 'Вы уверены, что хотите удалить эту метрику?',
       note: 'Добавить заметку...',
       recentEntries: 'Последние записи',
-      noEntries: 'Нет последних записей'
+      noEntries: 'Нет последних записей',
+      // Toast messages
+      metricUpdated: 'Метрика успешно обновлена',
+      metricDeleted: 'Метрика успешно удалена',
+      metricCreated: 'Метрика успешно создана',
+      saveError: 'Не удалось сохранить метрику',
+      deleteError: 'Не удалось удалить метрику',
+      settingsUpdated: 'Настройки успешно обновлены',
+      settingsError: 'Не удалось обновить настройки',
+      analysisComplete: 'Анализ ИИ завершен успешно',
+      analysisError: 'Анализ ИИ не удался, но метрики сохранены',
+      saved: 'Метрики успешно сохранены'
     },
     
     // WorkoutForm
@@ -2136,7 +2171,8 @@ export const translations = {
       aiReviewed: 'Проанализировано ИИ',
       reps: 'повт.',
       min: 'мин',
-      km: 'км'
+      km: 'км',
+      rpe: 'RPE'
     },
     
     // Exercise types

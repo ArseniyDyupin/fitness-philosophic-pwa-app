@@ -170,10 +170,10 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
       {workout.rpe && (
         <div className="flex items-center justify-between">
           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getRpeColor(workout.rpe)}`}>
-            RPE {workout.rpe} - {getRpeLabel(workout.rpe)}
+            {t.workoutCard?.rpe} {workout.rpe} - {getRpeLabel(workout.rpe)}
           </span>
           <span className="text-xs text-gray-500">
-            {workout.rpeSource === 'ai' ? 'AI' : 'Manual'}
+            {workout.rpeSource === 'ai' ? t.statsPage?.rpe?.source?.ai : t.statsPage?.rpe?.source?.manual}
           </span>
         </div>
       )}

@@ -2,6 +2,7 @@ import React from 'react'
 import Button from '@atoms/Button'
 import { Sparkles } from 'lucide-react'
 import { cn } from '@utils/cn'
+import { useTranslations } from '@stores/i18n.store'
 
 export interface GenerateWorkoutButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost'
@@ -26,6 +27,8 @@ const GenerateWorkoutButton: React.FC<GenerateWorkoutButtonProps> = ({
   onClick,
   children
 }) => {
+  const t = useTranslations()
+  
   return (
     <Button
       variant={variant}
@@ -36,7 +39,7 @@ const GenerateWorkoutButton: React.FC<GenerateWorkoutButtonProps> = ({
       title={title}
     >
       {showIcon && <Sparkles size={16} className="mr-2" />}
-      {children || (showText && 'Generate Workout')}
+      {children || (showText && t.homeDashboard?.cta?.generateWorkout)}
     </Button>
   )
 }

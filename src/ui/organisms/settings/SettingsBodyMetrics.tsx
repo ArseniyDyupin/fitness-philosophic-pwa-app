@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { metricsService } from '@services/fitness'
 import { Plus, Trash2, Edit, Save, X, TestTube } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 import type { MetricDef, BodyMetricsSettings } from '@/types/body-metrics'
 
 const SettingsBodyMetrics: React.FC = () => {
@@ -53,8 +54,11 @@ const SettingsBodyMetrics: React.FC = () => {
       const updated = { ...metric, isActive: !metric.isActive, updatedAt: new Date().toISOString() }
       await metricsService.saveDef(updated)
       setMetricDefs(prev => prev.map(m => m.id === metric.id ? updated : m))
+      
+      toast.success(t.metrics.metricUpdated)
     } catch (error) {
       console.error('Failed to toggle metric:', error)
+      toast.error(t.metrics.saveError)
     }
   }
 
@@ -66,14 +70,16 @@ const SettingsBodyMetrics: React.FC = () => {
     try {
       await metricsService.deleteDef(metric.id)
       setMetricDefs(prev => prev.filter(m => m.id !== metric.id))
+      toast.success(t.metrics.metricDeleted)
     } catch (error) {
       console.error('Failed to delete metric:', error)
+      toast.error(t.metrics.deleteError)
     }
   }
 
   const handleSaveMetric = async () => {
     if (!newMetric.key || !newMetric.label) {
-      alert(t.metrics?.fillRequired || 'Please fill in required fields')
+      toast.error(t.metrics?.fillRequired || 'Please fill in required fields')
       return
     }
 
@@ -97,8 +103,10 @@ const SettingsBodyMetrics: React.FC = () => {
       
       if (editingMetric) {
         setMetricDefs(prev => prev.map(m => m.id === metric.id ? metric : m))
+        toast.success(t.metrics.metricUpdated)
       } else {
         setMetricDefs(prev => [...prev, metric])
+        toast.success(t.metrics.metricCreated)
       }
 
       setShowAddForm(false)
@@ -116,6 +124,7 @@ const SettingsBodyMetrics: React.FC = () => {
       })
     } catch (error) {
       console.error('Failed to save metric:', error)
+      toast.error(t.metrics.saveError)
     }
   }
 
@@ -151,8 +160,10 @@ const SettingsBodyMetrics: React.FC = () => {
       const newSettings = { ...settings, [key]: value }
       setSettings(newSettings)
       await metricsService.updateSettings(newSettings)
+      toast.success(t.metrics.settingsUpdated)
     } catch (error) {
       console.error('Failed to update settings:', error)
+      toast.error(t.metrics.settingsError)
     }
   }
 

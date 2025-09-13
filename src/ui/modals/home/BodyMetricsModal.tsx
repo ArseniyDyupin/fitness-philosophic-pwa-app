@@ -5,6 +5,7 @@ import { metricsService } from '@services/fitness'
 import { aiBodyService } from '@services/ai'
 import { startOfWeek, format } from 'date-fns'
 import { X, Camera, Save, Sparkles, Loader } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '@/types/body-metrics'
 
 interface BodyMetricsModalProps {
@@ -203,7 +204,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
       })
       
       if (missingRequired.length > 0) {
-        alert(t.metrics?.fillRequired || 'Please fill in all required fields')
+        toast.error(t.metrics.fillRequired)
         return
       }
 
@@ -274,18 +275,20 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
           }
 
           await aiBodyService.saveEvaluation(aiEval)
+          toast.success(t.metrics.analysisComplete)
         } catch (error) {
           console.error('AI analysis failed:', error)
-          // Don't fail the save if AI analysis fails
+          toast.error(t.metrics.analysisError)
         } finally {
           setIsAnalyzing(false)
         }
       }
 
+      toast.success(t.metrics.saved)
       onClose()
     } catch (error) {
       console.error('Failed to save metrics:', error)
-      alert(t.error || 'Failed to save metrics')
+      toast.error(t.error || 'Failed to save metrics')
     } finally {
       setIsSaving(false)
     }
