@@ -25,7 +25,6 @@ export async function exportAll(): Promise<ExportBundle> {
     
     return bundle
   } catch (error) {
-    console.error('Failed to export data:', error)
     throw new Error('Failed to export data')
   }
 }
@@ -55,7 +54,6 @@ export async function downloadExport(): Promise<void> {
     // Cleanup
     URL.revokeObjectURL(url)
   } catch (error) {
-    console.error('Failed to download export:', error)
     throw new Error('Failed to download export')
   }
 }

@@ -90,7 +90,7 @@ function deepCompare(prev: React.DependencyList, next: React.DependencyList): bo
  * @param b - Second value
  * @returns True if values are deeply equal
  */
-function deepEqual(a: any, b: any): boolean {
+function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) {
     return true
   }
@@ -148,7 +148,7 @@ function deepEqual(a: any, b: any): boolean {
  * @param deps - Dependencies array
  * @returns Memoized callback
  */
-export function useStableCallback<T extends (...args: any[]) => any>(
+export function useStableCallback<T extends (...args: unknown[]) => unknown>(
   callback: T,
   deps: React.DependencyList
 ): T {

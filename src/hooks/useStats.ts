@@ -3,6 +3,7 @@ import { useWorkoutStore } from '@stores/workout.store'
 import { endOfWeek, isWithinInterval } from 'date-fns'
 import { sumWorkoutKcal, sumWorkoutMinutes } from '@services/fitness'
 import type { StatsPeriod, UseStatsOptions } from '@/types/hooks'
+import type { Workout } from '@/types/models'
 
 export interface StatsResult {
   calories: number
@@ -46,7 +47,7 @@ function isCacheValid(timestamp: number): boolean {
  * @returns Calculated statistics result
  */
 function calculateStats(
-  workouts: any[],
+  workouts: Workout[],
   period: StatsPeriod,
   includeIncomplete: boolean = false,
   userWeight: number = 70

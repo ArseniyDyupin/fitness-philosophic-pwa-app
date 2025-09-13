@@ -55,7 +55,6 @@ const PlanRealizationPage: React.FC = () => {
         navigate('/')
       }
     } catch (error) {
-      console.error('Failed to load plan:', error)
       toastError(t.error || 'Failed to load plan')
     }
   }
@@ -173,7 +172,6 @@ const PlanRealizationPage: React.FC = () => {
         navigate('/workouts')
       }, 1500)
     } catch (error) {
-      console.error('Failed to save workout:', error)
       toastError(t.error || 'Failed to save workout')
     } finally {
       setIsSaving(false)
@@ -215,7 +213,6 @@ const PlanRealizationPage: React.FC = () => {
       toastSuccess(t.plan?.adjust?.apply || 'Plan adjusted successfully')
       
     } catch (error) {
-      console.error('Failed to adjust plan:', error)
       toastError(t.error || 'Failed to adjust plan')
     } finally {
       setIsAdjusting(false)

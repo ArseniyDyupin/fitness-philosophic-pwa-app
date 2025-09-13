@@ -56,7 +56,7 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
       }
       
       // Check if metric_defs table exists and has data
-      const tableExists = db.tables.some((table: any) => table.name === 'metric_defs')
+      const tableExists = db.tables.some((table) => table.name === 'metric_defs')
       if (!tableExists) {
         setMetricDefs([])
         setLatestValues({})
@@ -150,12 +150,12 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
     const sortedDates = Array.from(allDates).sort()
     
     return sortedDates.map(date => {
-      const dataPoint: any = { date: format(new Date(date), 'MMM d') }
+      const dataPoint: Record<string, string | number> = { date: format(new Date(date), 'MMM d') }
       
       selectedMetrics.forEach(key => {
         const trend = trends[key]
         const point = trend?.find(p => p.date === date)
-        dataPoint[key] = point?.value || null
+        dataPoint[key] = point?.value || 0
       })
       
       return dataPoint

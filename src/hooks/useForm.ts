@@ -23,8 +23,8 @@ export function useForm<T extends Record<string, any>>({
 
       fieldSchema.parse(value)
       return null
-    } catch (error: any) {
-      return error.errors?.[0]?.message || 'Invalid value'
+    } catch (error: unknown) {
+      return (error as { errors?: Array<{ message: string }> })?.errors?.[0]?.message || 'Invalid value'
     }
   }, [validationSchema])
 
@@ -37,8 +37,8 @@ export function useForm<T extends Record<string, any>>({
 
     try {
       validationSchema.parse(values)
-    } catch (error: any) {
-      error.errors?.forEach((err: any) => {
+    } catch (error: unknown) {
+      (error as { errors?: Array<{ path?: string[]; message: string }> })?.errors?.forEach((err) => {
         const fieldName = err.path?.[0] as keyof T
         if (fieldName) {
           newErrors[fieldName] = err.message

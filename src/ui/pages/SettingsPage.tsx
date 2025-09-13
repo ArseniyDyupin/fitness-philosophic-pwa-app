@@ -66,7 +66,7 @@ const SettingsPage: React.FC = () => {
     setValidationErrors({})
   }
 
-  const validateData = (section: string, data: any): Record<string, string> => {
+  const validateData = (section: string, data: unknown): Record<string, string> => {
     const errors: Record<string, string> = {}
     
     if (section === 'profile') {

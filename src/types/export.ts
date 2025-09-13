@@ -14,15 +14,15 @@ export interface ExportBundle {
   workouts: Workout[]
   food: FoodLog[]
   checkins: WeeklyCheckin[]
-  weeklyData: any[] // For compatibility
+  weeklyData: unknown[] // For compatibility
   ai: AiMessage[]
   plans: PlanSuggestion[]
-  ai_feedback: any[]
-  metric_defs: any[]
-  metric_entries: any[]
-  photo_assets: any[]
-  ai_body_evals: any[]
-  exercise_estimates: any[]
+  ai_feedback: unknown[]
+  metric_defs: unknown[]
+  metric_entries: unknown[]
+  photo_assets: unknown[]
+  ai_body_evals: unknown[]
+  exercise_estimates: unknown[]
 }
 
 export interface ImportStats {

@@ -72,7 +72,7 @@ const EntryStep: React.FC = () => {
     fileInputRef.current?.click()
   }
 
-  const formatProfileSummary = (profile: any) => {
+  const formatProfileSummary = (profile: { name?: string; age?: number; weight?: number; gender?: string; frequency?: number }) => {
     return {
       name: profile.name || 'Not set',
       age: profile.age || 'Not set',

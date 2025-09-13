@@ -2,7 +2,7 @@ import React from 'react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-const cn = (...inputs: any[]) => twMerge(clsx(inputs))
+const cn = (...inputs: (string | undefined | null | boolean)[]) => twMerge(clsx(inputs))
 
 interface SkeletonProps {
   className?: string

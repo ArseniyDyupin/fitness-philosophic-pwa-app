@@ -107,7 +107,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
                 onUpdateAnalysis()
               }}
               className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
-              title="Update AI Analysis"
+              title={t.workoutCard?.updateAiAnalysis || 'Update AI Analysis'}
             >
               <Bot size={14} />
             </button>
@@ -119,7 +119,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
                 onEdit()
               }}
               className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
-              title="Edit workout"
+              title={t.workoutCard?.editWorkout || 'Edit workout'}
             >
               <MoreVertical size={14} />
             </button>
@@ -131,7 +131,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
                 onDelete()
               }}
               className="p-1 text-gray-400 hover:text-red-600 transition-colors touch-manipulation"
-              title="Delete workout"
+              title={t.workoutCard?.deleteWorkout || 'Delete workout'}
             >
               <Trash2 size={14} />
             </button>

@@ -332,7 +332,7 @@ const SettingsBodyMetrics: React.FC = () => {
                 </label>
                 <select
                   value={newMetric.unit || 'cm'}
-                  onChange={(e) => setNewMetric({ ...newMetric, unit: e.target.value as any })}
+                  onChange={(e) => setNewMetric({ ...newMetric, unit: e.target.value as 'cm' | 'kg' | 'count' | '%' | 'custom' })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="kg">kg</option>

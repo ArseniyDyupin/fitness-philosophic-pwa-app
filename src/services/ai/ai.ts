@@ -169,7 +169,7 @@ Respond with JSON in this exact format:
     }
   }
 
-  async parseWorkoutText(workoutText: string, language: 'en' | 'ru' = 'ru', abortController?: AbortController): Promise<any[]> {
+  async parseWorkoutText(workoutText: string, language: 'en' | 'ru' = 'ru', abortController?: AbortController): Promise<Array<{ type: string; details: Record<string, unknown> }>> {
     const exerciseSchema = {
       type: "string (run|pullups|pushups|plank|custom)",
       details: {

@@ -3,7 +3,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { useProfileStore } from '@stores/profile.store'
 import { useWorkoutStore } from '@stores/workout.store'
 import { aiService } from '@services/ai'
-import type { PlanSuggestion } from '@/types/models'
+import type { PlanSuggestion, Workout } from '@/types/models'
 import { X, Calendar, MessageSquare, Activity, Sparkles, Loader } from 'lucide-react'
 
 interface GenerateWorkoutModalProps {
@@ -87,9 +87,9 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
     return new Date(dateString).toLocaleDateString()
   }
 
-  const formatWorkoutSummary = (workout: any) => {
-    const exercises = workout.exercises.map((e: any) => e.type).join(', ')
-    const calories = workout.exercises.reduce((sum: number, e: any) => sum + (e.kcalEstimated || 0), 0)
+  const formatWorkoutSummary = (workout: Workout) => {
+    const exercises = workout.exercises.map((e) => e.type).join(', ')
+    const calories = workout.exercises.reduce((sum: number, e) => sum + (e.kcalEstimated || 0), 0)
     return `${exercises} • ${Math.round(calories)} ккал • RPE ${workout.rpe || 'не указан'}`
   }
 

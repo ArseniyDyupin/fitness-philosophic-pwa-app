@@ -125,10 +125,10 @@ setInterval(() => {
  * @param keyGenerator - Function to generate rate limit key
  * @returns Decorator function
  */
-export function withRateLimit<T extends (...args: any[]) => Promise<any>>(
+export function withRateLimit<T extends (...args: unknown[]) => Promise<unknown>>(
   keyGenerator: (...args: Parameters<T>) => string
 ) {
-  return function (_target: any, _propertyName: string, descriptor: PropertyDescriptor) {
+  return function (_target: unknown, _propertyName: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value
 
     descriptor.value = async function (...args: Parameters<T>) {

@@ -53,7 +53,7 @@ const BodyMetricsChartModal: React.FC<BodyMetricsChartModalProps> = ({
     return `${metricDef.label} (${unit})`
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (

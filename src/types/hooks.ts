@@ -3,7 +3,7 @@ import type { AsyncState } from './api'
 // Hook Options
 export interface UseAsyncOptions {
   immediate?: boolean
-  onSuccess?: (data: any) => void
+  onSuccess?: (data: unknown) => void
   onError?: (error: Error) => void
   retry?: boolean | number
   retryDelay?: number
@@ -25,13 +25,13 @@ export interface UseMutationOptions<T = any> {
 }
 
 // Hook Return Types
-export interface UseAsyncReturn<T = any> extends AsyncState<T> {
-  execute: (...args: any[]) => Promise<T>
+export interface UseAsyncReturn<T = unknown> extends AsyncState<T> {
+  execute: (...args: unknown[]) => Promise<T>
   reset: () => void
   retry: () => Promise<T>
 }
 
-export interface UseQueryReturn<T = any> extends AsyncState<T> {
+export interface UseQueryReturn<T = unknown> extends AsyncState<T> {
   refetch: () => Promise<T>
   invalidate: () => void
   isStale: boolean
@@ -71,9 +71,9 @@ export interface UseStatsOptions {
 }
 
 // Form Hook Types
-export interface UseFormOptions<T = Record<string, any>> {
+export interface UseFormOptions<T = Record<string, unknown>> {
   initialValues: T
-  validationSchema?: any // Zod schema
+  validationSchema?: unknown // Zod schema
   onSubmit: (values: T) => void | Promise<void>
   validateOnChange?: boolean
   validateOnBlur?: boolean

@@ -103,7 +103,7 @@ function migrateWorkout(workout: Workout, profile?: Profile): Workout {
   return migratedWorkout
 }
 
-function ensureISODates(obj: any): any {
+function ensureISODates(obj: unknown): unknown {
   if (!obj) return obj
   
   const result = { ...obj }
@@ -368,7 +368,6 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
     return stats
   } catch (error) {
-    console.error('Failed to import data:', error)
     throw new ImportError('Failed to import data', 'IMPORT_ERROR')
   }
 }

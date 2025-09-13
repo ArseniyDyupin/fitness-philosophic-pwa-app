@@ -141,7 +141,7 @@ export function calculateWorkoutDuration(exercises: WorkoutExercise[]): number {
 /**
  * Sum calories for multiple workouts
  */
-export function sumWorkoutKcal(workouts: any[], userWeight: number): number {
+export function sumWorkoutKcal(workouts: Workout[], userWeight: number): number {
   return workouts.reduce((total, workout) => {
     if (workout.exercises) {
       return total + calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
@@ -153,7 +153,7 @@ export function sumWorkoutKcal(workouts: any[], userWeight: number): number {
 /**
  * Sum minutes for multiple workouts
  */
-export function sumWorkoutMinutes(workouts: any[]): number {
+export function sumWorkoutMinutes(workouts: Workout[]): number {
   return workouts.reduce((total, workout) => {
     if (workout.exercises) {
       return total + (workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises))
@@ -165,7 +165,7 @@ export function sumWorkoutMinutes(workouts: any[]): number {
 /**
  * Calculate total duration for a single workout (including override)
  */
-export function getWorkoutTotalDuration(workout: any): number {
+export function getWorkoutTotalDuration(workout: Workout): number {
   if (!workout.exercises) return 0
   return workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
 }
@@ -173,7 +173,7 @@ export function getWorkoutTotalDuration(workout: any): number {
 /**
  * Calculate total calories for a single workout
  */
-export function getWorkoutTotalCalories(workout: any, userWeight: number): number {
+export function getWorkoutTotalCalories(workout: Workout, userWeight: number): number {
   if (!workout.exercises) return 0
   return calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
 }

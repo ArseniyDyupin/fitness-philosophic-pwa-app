@@ -65,14 +65,12 @@ const WorkoutDetailsPage: React.FC = () => {
       const feedback = await dbHelpers.getAIFeedbackByWorkout(workout.id)
       setAiFeedback(feedback || null)
     } catch (error) {
-      console.error('Failed to load AI feedback:', error)
       if (error instanceof Error && (error.message.includes('NotFoundError') || error.message.includes('object stores was not found'))) {
         try {
           await dbHelpers.forceUpgrade()
           const feedback = await dbHelpers.getAIFeedbackByWorkout(workout.id)
           setAiFeedback(feedback || null)
         } catch (retryError) {
-          console.error('Failed to load AI feedback after upgrade:', retryError)
           setAiFeedback(null)
         }
       } else {
@@ -109,7 +107,6 @@ const WorkoutDetailsPage: React.FC = () => {
         await deleteWorkout(workout.id)
         navigate('/workouts')
       } catch (error) {
-        console.error('Failed to delete workout:', error)
         alert(t.workoutDetailsPage?.failedToDelete || 'Failed to delete workout')
       } finally {
         setIsDeleting(false)
@@ -171,7 +168,6 @@ const WorkoutDetailsPage: React.FC = () => {
       setWorkout(updatedWorkout)
       toastSuccess('AI estimates updated successfully')
     } catch (error) {
-      console.error('Failed to update AI estimates:', error)
       toastError('Failed to update AI estimates')
     } finally {
       setIsEstimating(false)
@@ -190,13 +186,11 @@ const WorkoutDetailsPage: React.FC = () => {
         try {
           await dbHelpers.getAIFeedbackByWorkout(workout.id)
         } catch (error) {
-          console.error('DEBUG: Failed to get AI feedback after analysis:', error)
       }
       }, 1000)
       
       toastSuccess(t.workoutDetailsPage?.analysisUpdated || 'Analysis updated')
     } catch (error) {
-      console.error('Failed to update AI analysis:', error)
       let errorMessage = t.workoutAnalysis?.error || 'Failed to perform AI analysis'
       
       if (error instanceof Error) {
@@ -206,7 +200,6 @@ const WorkoutDetailsPage: React.FC = () => {
             await dbHelpers.forceUpgrade()
             errorMessage = t.workoutDetailsPage?.databaseUpdated || 'Database updated. Please try again'
           } catch (upgradeError) {
-            console.error('Failed to upgrade database:', upgradeError)
             errorMessage = t.workoutDetailsPage?.databaseError || 'Database error: Please refresh the page and try again'
           }
         } else if (error.message.includes('API key')) {
@@ -231,7 +224,6 @@ const WorkoutDetailsPage: React.FC = () => {
       setWorkout({ ...workout, ...updatedWorkout })
       toastSuccess(t.workoutDetailsPage?.metaModal?.saved || 'Data updated')
     } catch (error) {
-      console.error('Failed to save workout metadata:', error)
       toastError(t.workoutDetailsPage?.updateFailed || 'Failed to update')
     }
   }
@@ -283,7 +275,6 @@ const WorkoutDetailsPage: React.FC = () => {
             }
           }
         } catch (error) {
-          console.error('Failed to get AI estimate:', error)
           // Continue without AI estimate
         }
       }
@@ -304,7 +295,6 @@ const WorkoutDetailsPage: React.FC = () => {
         toastSuccess(t.workoutDetailsPage?.exerciseUpdated || 'Exercise updated successfully')
       }
     } catch (error) {
-      console.error('Failed to update exercise:', error)
       toastError(t.workoutDetailsPage?.updateFailed || 'Failed to update exercise')
     }
   }
