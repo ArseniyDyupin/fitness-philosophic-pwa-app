@@ -13,7 +13,13 @@ const ExportBundleSchema = z.object({
   food: z.array(z.any()).default([]),
   checkins: z.array(z.any()).default([]),
   ai: z.array(z.any()).default([]),
-  plans: z.array(z.any()).default([])
+  plans: z.array(z.any()).default([]),
+  ai_feedback: z.array(z.any()).default([]),
+  metric_defs: z.array(z.any()).default([]),
+  metric_entries: z.array(z.any()).default([]),
+  photo_assets: z.array(z.any()).default([]),
+  ai_body_evals: z.array(z.any()).default([]),
+  exercise_estimates: z.array(z.any()).default([])
 })
 
 export class ImportError extends Error {
@@ -126,7 +132,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
   }
 
   try {
-    await db.transaction('rw', [db.profiles, db.workouts, db.food, db.checkins, db.ai, db.plans], async () => {
+    await db.transaction('rw', [db.profiles, db.workouts, db.food, db.checkins, db.ai, db.plans, db.ai_feedback, db.metric_defs, db.metric_entries, db.photo_assets, db.ai_body_evals, db.exercise_estimates], async () => {
       if (mode === 'replace') {
         // Clear all tables
         await Promise.all([
@@ -135,7 +141,13 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
           db.food.clear(),
           db.checkins.clear(),
           db.ai.clear(),
-          db.plans.clear()
+          db.plans.clear(),
+          db.ai_feedback.clear(),
+          db.metric_defs.clear(),
+          db.metric_entries.clear(),
+          db.photo_assets.clear(),
+          db.ai_body_evals.clear(),
+          db.exercise_estimates.clear()
         ])
       }
 
@@ -246,6 +258,108 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
                 (plan.createdAt && existing.createdAt && plan.createdAt > existing.createdAt)) {
               await db.plans.put(plan)
               stats.plansUpserted++
+            }
+          }
+        }
+      }
+
+      // Import AI feedback
+      if (bundle.ai_feedback?.length) {
+        const migratedAiFeedback = bundle.ai_feedback.map(ensureISODates)
+        
+        if (mode === 'replace') {
+          await db.ai_feedback.bulkPut(migratedAiFeedback)
+        } else {
+          for (const feedback of migratedAiFeedback) {
+            const existing = await db.ai_feedback.get(feedback.id)
+            if (!existing || 
+                (feedback.createdAt && existing.createdAt && feedback.createdAt > existing.createdAt)) {
+              await db.ai_feedback.put(feedback)
+            }
+          }
+        }
+      }
+
+      // Import metric definitions
+      if (bundle.metric_defs?.length) {
+        const migratedMetricDefs = bundle.metric_defs.map(ensureISODates)
+        
+        if (mode === 'replace') {
+          await db.metric_defs.bulkPut(migratedMetricDefs)
+        } else {
+          for (const def of migratedMetricDefs) {
+            const existing = await db.metric_defs.get(def.id)
+            if (!existing || 
+                (def.updatedAt && existing.updatedAt && def.updatedAt > existing.updatedAt)) {
+              await db.metric_defs.put(def)
+            }
+          }
+        }
+      }
+
+      // Import metric entries
+      if (bundle.metric_entries?.length) {
+        const migratedMetricEntries = bundle.metric_entries.map(ensureISODates)
+        
+        if (mode === 'replace') {
+          await db.metric_entries.bulkPut(migratedMetricEntries)
+        } else {
+          for (const entry of migratedMetricEntries) {
+            const existing = await db.metric_entries.get(entry.id)
+            if (!existing || 
+                (entry.date && existing.date && entry.date > existing.date)) {
+              await db.metric_entries.put(entry)
+            }
+          }
+        }
+      }
+
+      // Import photo assets
+      if (bundle.photo_assets?.length) {
+        const migratedPhotoAssets = bundle.photo_assets.map(ensureISODates)
+        
+        if (mode === 'replace') {
+          await db.photo_assets.bulkPut(migratedPhotoAssets)
+        } else {
+          for (const photo of migratedPhotoAssets) {
+            const existing = await db.photo_assets.get(photo.id)
+            if (!existing || 
+                (photo.date && existing.date && photo.date > existing.date)) {
+              await db.photo_assets.put(photo)
+            }
+          }
+        }
+      }
+
+      // Import AI body evaluations
+      if (bundle.ai_body_evals?.length) {
+        const migratedAiBodyEvals = bundle.ai_body_evals.map(ensureISODates)
+        
+        if (mode === 'replace') {
+          await db.ai_body_evals.bulkPut(migratedAiBodyEvals)
+        } else {
+          for (const evaluation of migratedAiBodyEvals) {
+            const existing = await db.ai_body_evals.get(evaluation.id)
+            if (!existing || 
+                (evaluation.createdAt && existing.createdAt && evaluation.createdAt > existing.createdAt)) {
+              await db.ai_body_evals.put(evaluation)
+            }
+          }
+        }
+      }
+
+      // Import exercise estimates
+      if (bundle.exercise_estimates?.length) {
+        const migratedExerciseEstimates = bundle.exercise_estimates.map(ensureISODates)
+        
+        if (mode === 'replace') {
+          await db.exercise_estimates.bulkPut(migratedExerciseEstimates)
+        } else {
+          for (const estimate of migratedExerciseEstimates) {
+            const existing = await db.exercise_estimates.get(estimate.id)
+            if (!existing || 
+                (estimate.createdAt && existing.createdAt && estimate.createdAt > existing.createdAt)) {
+              await db.exercise_estimates.put(estimate)
             }
           }
         }

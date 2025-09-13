@@ -17,6 +17,12 @@ export interface ExportBundle {
   weeklyData: any[] // For compatibility
   ai: AiMessage[]
   plans: PlanSuggestion[]
+  ai_feedback: any[]
+  metric_defs: any[]
+  metric_entries: any[]
+  photo_assets: any[]
+  ai_body_evals: any[]
+  exercise_estimates: any[]
 }
 
 export interface ImportStats {

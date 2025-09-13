@@ -15,6 +15,12 @@ export async function exportAll(): Promise<ExportBundle> {
       weeklyData: [], // For compatibility
       ai: await db.ai.toArray(),
       plans: await db.plans.toArray(),
+      ai_feedback: await db.ai_feedback.toArray(),
+      metric_defs: await db.metric_defs.toArray(),
+      metric_entries: await db.metric_entries.toArray(),
+      photo_assets: await db.photo_assets.toArray(),
+      ai_body_evals: await db.ai_body_evals.toArray(),
+      exercise_estimates: await db.exercise_estimates.toArray(),
     }
     
     return bundle
