@@ -8,6 +8,7 @@ import KpiGrid from '@molecules/stats/KpiGrid'
 import DisciplineBreakdown from '@organisms/stats/DisciplineBreakdown'
 import Records from '@organisms/stats/Records'
 import BodyMetricsBlock from '@organisms/stats/BodyMetricsBlock'
+import BodyMetricsActionBlock from '@organisms/stats/BodyMetricsActionBlock'
 import AiBodyEvalCard from '@organisms/stats/AiBodyEvalCard'
 import type { StatsRange } from '@/types/stats'
 
@@ -141,6 +142,9 @@ const StatsPage: React.FC = () => {
             {/* Body Metrics - Only show if configured */}
             <BodyMetricsBlock weekStart={statsData.startDate ? new Date(statsData.startDate) : undefined} />
 
+            {/* Body Metrics Action Block - Always show */}
+            <BodyMetricsActionBlock />
+
             {/* AI Body Evaluation - Only show if has data */}
             <AiBodyEvalCard weekStart={statsData.startDate ? new Date(statsData.startDate) : undefined} />
           </div>
@@ -148,14 +152,19 @@ const StatsPage: React.FC = () => {
 
         {/* Empty State */}
         {!statsData && !isLoading && !error && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">📊</div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              {t.statsPage?.noData || 'No Data Available'}
-            </h2>
-            <p className="text-lg text-gray-600">
-              {t.statsPage?.noDataMessage || 'Start tracking your workouts to see your statistics here.'}
-            </p>
+          <div className="space-y-6">
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">📊</div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                {t.statsPage?.noData || 'No Data Available'}
+              </h2>
+              <p className="text-lg text-gray-600">
+                {t.statsPage?.noDataMessage || 'Start tracking your workouts to see your statistics here.'}
+              </p>
+            </div>
+            
+            {/* Body Metrics Action Block - Show even in empty state */}
+            <BodyMetricsActionBlock />
           </div>
         )}
       </main>

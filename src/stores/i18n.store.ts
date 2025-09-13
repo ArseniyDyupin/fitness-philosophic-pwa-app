@@ -991,7 +991,9 @@ export const translations = {
       exportImportDescription: 'Export your metrics data to a JSON file or import from a previously exported file.',
       export: 'Export',
       import: 'Import',
-      previous: 'Previous'
+      previous: 'Previous',
+      addMetrics: 'Add Body Metrics',
+      addMetricsDescription: 'Track your body measurements and progress'
     },
     
     // WorkoutForm
@@ -2155,7 +2157,9 @@ export const translations = {
       exportImportDescription: 'Экспортируйте данные метрик в JSON файл или импортируйте из ранее экспортированного файла.',
       export: 'Экспорт',
       import: 'Импорт',
-      previous: 'Предыдущее'
+      previous: 'Предыдущее',
+      addMetrics: 'Добавить метрики тела',
+      addMetricsDescription: 'Отслеживайте измерения тела и прогресс'
     },
     
     // WorkoutForm
