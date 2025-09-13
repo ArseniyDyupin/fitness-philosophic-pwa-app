@@ -158,7 +158,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
         aiReviewService.reviewWorkout(savedWorkout.id)
           .then(() => {
             // Show success toast (could be implemented with a toast system)
-            console.log('AI analysis completed successfully')
+            // AI analysis completed successfully
           })
           .catch((error) => {
             console.error('AI analysis failed:', error)
@@ -192,7 +192,6 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
     try {
       // Use AI to parse workout text
       const parsedExercises = await aiService.parseWorkoutText(textInput, currentLanguage)
-      console.log(parsedExercises, '<<<parsedExercises')
       setExercises(parsedExercises as WorkoutExercise[])
       setMode('form')
     } catch (error) {

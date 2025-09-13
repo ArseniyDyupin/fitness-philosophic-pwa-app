@@ -85,7 +85,7 @@ const HomeBanners: React.FC<HomeBannersProps> = ({ onOpenMetricsModal }) => {
           }
         }
       } catch (error) {
-        console.log(t.homeDashboard?.banners?.bodyMetricsCheckFailed || 'Body metrics check failed:', error)
+        // Body metrics check failed - silently continue
       }
 
       // Check if user hasn't worked out in a while

@@ -58,7 +58,6 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
       // Check if metric_defs table exists and has data
       const tableExists = db.tables.some((table: any) => table.name === 'metric_defs')
       if (!tableExists) {
-        console.log('Body metrics tables not found - skipping body metrics block')
         setMetricDefs([])
         setLatestValues({})
         setTrends({})

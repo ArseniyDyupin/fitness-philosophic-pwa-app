@@ -34,14 +34,14 @@ const WeekSection: React.FC<WeekSectionProps> = ({
     navigate(`/workouts/${workoutId}`)
   }
 
-  const handleDeleteWorkout = (workoutId: string) => {
+  const handleDeleteWorkout = (_workoutId: string) => {
     // This will be handled by the parent component
-    console.log('Delete workout:', workoutId)
+    // TODO: Implement workout deletion
   }
 
-  const handleUpdateAnalysis = (workoutId: string) => {
+  const handleUpdateAnalysis = (_workoutId: string) => {
     // This will be handled by the parent component
-    console.log('Update analysis for workout:', workoutId)
+    // TODO: Implement analysis update
   }
 
   if (workouts.length === 0) {

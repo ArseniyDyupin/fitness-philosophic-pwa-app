@@ -33,7 +33,6 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
   useEffect(() => {
     setCurrentStep(stepNumber)
   }, [stepNumber])
-  console.log(isDraftComplete(), '<<<< isDraftComplete')
 
   const handleNext = () => {
     if (canProceed && isStepValid(currentStep)) {

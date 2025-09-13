@@ -176,11 +176,10 @@ Be objective and constructive.`
     }
   },
 
-  async saveEvaluation(evaluation: AiBodyEval): Promise<void> {
+  async saveEvaluation(_evaluation: AiBodyEval): Promise<void> {
     try {
       // This would save to the database
       // For now, we'll use a placeholder
-      console.log('Saving AI body evaluation:', evaluation)
     } catch (error) {
       console.error('Failed to save AI evaluation:', error)
       throw error
@@ -209,11 +208,10 @@ Be objective and constructive.`
     }
   },
 
-  async importEvaluations(evaluations: AiBodyEval[]): Promise<void> {
+  async importEvaluations(_evaluations: AiBodyEval[]): Promise<void> {
     try {
       // This would import evaluations to the database
-      // For now, just log
-      console.log('Importing AI evaluations:', evaluations)
+      // For now, just return success
     } catch (error) {
       console.error('Failed to import AI evaluations:', error)
       throw error

@@ -152,7 +152,7 @@ const SettingsBodyMetrics: React.FC = () => {
 
   const handleTestEntry = () => {
     // This would open the metrics modal for testing
-    console.log('Opening test metrics entry modal')
+    // TODO: Implement test metrics entry modal
   }
 
   const handleSettingsChange = async (key: keyof BodyMetricsSettings, value: string | number | boolean) => {

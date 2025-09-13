@@ -138,17 +138,6 @@ const SettingsPage: React.FC = () => {
     setIsDebuggingDB(true)
     try {
       const allFeedback = await dbHelpers.getAllAIFeedback()
-      console.log('=== DEBUG: All AI Feedback ===')
-      console.log('Count:', allFeedback.length)
-      allFeedback.forEach((feedback, index) => {
-        console.log(`Feedback ${index + 1}:`, {
-          id: feedback.id,
-          workoutId: feedback.workoutId,
-          rpe: feedback.rpe,
-          review: feedback.review?.substring(0, 100) + '...',
-          createdAt: feedback.createdAt
-        })
-      })
       toastSuccess(t.settingsPage?.debugSuccess?.replace('{{count}}', allFeedback.length.toString()) || `Found ${allFeedback.length} AI feedback records. Check console for details.`)
     } catch (error) {
       console.error('Failed to debug database:', error)
