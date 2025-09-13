@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { metricsService } from '@services/fitness'
-import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from 'lucide-react'
+import { ChevronDown, ChevronUp, TrendingUp, TrendingDown, ExternalLink, BarChart3 } from 'lucide-react'
 import {
   ResponsiveContainer,
   LineChart,
@@ -13,6 +13,7 @@ import {
   Legend
 } from 'recharts'
 import { format } from 'date-fns'
+import BodyMetricsChartModal from '@modals/stats/BodyMetricsChartModal'
 import type { MetricDef } from '@/types/body-metrics'
 
 interface BodyMetricsBlockProps {
@@ -28,6 +29,17 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
   const [deltas, setDeltas] = useState<Record<string, number>>({})
   const [selectedMetrics, setSelectedMetrics] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [chartModal, setChartModal] = useState<{
+    isOpen: boolean
+    metricKey: string
+    metricData: Array<{ date: string; value: number }>
+    metricDef: MetricDef | null
+  }>({
+    isOpen: false,
+    metricKey: '',
+    metricData: [],
+    metricDef: null
+  })
 
   useEffect(() => {
     loadData()
@@ -159,6 +171,24 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
     )
   }
 
+  const openChart = (metricKey: string) => {
+    const metricDef = metricDefs.find(d => d.key === metricKey)
+    if (!metricDef) return
+
+    const metricData = trends[metricKey] || []
+    
+    setChartModal({
+      isOpen: true,
+      metricKey,
+      metricData,
+      metricDef
+    })
+  }
+
+  const closeChart = () => {
+    setChartModal(prev => ({ ...prev, isOpen: false }))
+  }
+
   if (isLoading) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
@@ -176,9 +206,12 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          {t.metrics?.title || 'Body Metrics'}
-        </h2>
+        <div className="flex items-center space-x-2">
+          <BarChart3 className="w-5 h-5 text-blue-500" />
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t.metrics?.title || 'Body Metrics'}
+          </h2>
+        </div>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
@@ -188,33 +221,50 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
         </button>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {metricDefs.map((def) => {
           const value = latestValues[def.key]
           const delta = deltas[def.key]
+          const hasTrendData = trends[def.key] && trends[def.key].length > 0
           
           if (value === undefined) return null
           
           return (
-            <div key={def.id} className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <div
-                  className="w-3 h-3 rounded-full mr-2"
-                  style={{ backgroundColor: def.color }}
-                />
-                <span className="text-sm text-gray-600">
-                  {t.metrics?.default?.[def.key as keyof typeof t.metrics.default] || def.label}
-                </span>
-              </div>
-              <div className="text-xl font-bold text-gray-900 mb-1">
-                {formatValue(def, value)}
-              </div>
-              {delta !== 0 && (
-                <div className={`text-sm flex items-center justify-center ${getDeltaColor(delta)}`}>
-                  {getDeltaIcon(delta)}
-                  <span className="ml-1">{formatDelta(def, delta)}</span>
+            <div key={def.id} className="relative">
+              <div className="bg-gray-50 rounded-lg p-4 text-center">
+                <div 
+                  className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3"
+                  style={{ backgroundColor: def.color + '20' }}
+                >
+                  <div
+                    className="w-6 h-6 rounded-full"
+                    style={{ backgroundColor: def.color }}
+                  />
                 </div>
+                <div className="text-xl font-bold text-gray-900 mb-1">
+                  {formatValue(def, value)}
+                </div>
+                <div className="text-sm text-gray-600 mb-2">
+                  {t.metrics?.default?.[def.key as keyof typeof t.metrics.default] || def.label}
+                </div>
+                {delta !== 0 && (
+                  <div className={`text-sm flex items-center justify-center ${getDeltaColor(delta)}`}>
+                    {getDeltaIcon(delta)}
+                    <span className="ml-1">{formatDelta(def, delta)}</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* View Chart Button */}
+              {hasTrendData && (
+                <button
+                  onClick={() => openChart(def.key)}
+                  className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
+                  title={t.statsPage?.records?.viewChart || 'View Chart'}
+                >
+                  <ExternalLink size={14} />
+                </button>
               )}
             </div>
           )
@@ -310,6 +360,17 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Chart Modal */}
+      {chartModal.metricDef && (
+        <BodyMetricsChartModal
+          isOpen={chartModal.isOpen}
+          onClose={closeChart}
+          metricKey={chartModal.metricKey}
+          metricData={chartModal.metricData}
+          metricDef={chartModal.metricDef}
+        />
       )}
     </div>
   )
