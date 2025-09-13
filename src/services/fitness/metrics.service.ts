@@ -53,7 +53,7 @@ export const metricsService = {
           min: 30,
           max: 200,
           color: '#3B82F6',
-          isActive: 'true',
+          isActive: true,
           isRequired: true,
           createdAt: now,
           updatedAt: now
@@ -67,7 +67,7 @@ export const metricsService = {
           min: 5,
           max: 50,
           color: '#EF4444',
-          isActive: 'true',
+          isActive: true,
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -81,7 +81,7 @@ export const metricsService = {
           min: 20,
           max: 100,
           color: '#10B981',
-          isActive: 'true',
+          isActive: true,
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -95,7 +95,7 @@ export const metricsService = {
           min: 50,
           max: 150,
           color: '#F59E0B',
-          isActive: 'true',
+          isActive: true,
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -109,7 +109,7 @@ export const metricsService = {
           min: 70,
           max: 150,
           color: '#8B5CF6',
-          isActive: 'true',
+          isActive: true,
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -123,7 +123,7 @@ export const metricsService = {
           min: 20,
           max: 60,
           color: '#06B6D4',
-          isActive: 'true',
+          isActive: true,
           isRequired: false,
           createdAt: now,
           updatedAt: now
@@ -137,7 +137,7 @@ export const metricsService = {
           min: 40,
           max: 80,
           color: '#84CC16',
-          isActive: 'true',
+          isActive: true,
           isRequired: false,
           createdAt: now,
           updatedAt: now
