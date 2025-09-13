@@ -12,7 +12,7 @@ import {
   Tooltip,
   Legend
 } from 'recharts'
-import { calculateWorkoutDuration } from '@services/fitness'
+import { getWorkoutTotalDuration } from '@services/fitness'
 
 interface WeeklyActivityChartProps {
   workouts: Workout[]
@@ -149,7 +149,7 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ workouts, wee
         
         // Calculate total duration
         const durationMinTotal = completedWorkouts.reduce((total, workout) => {
-          return total + (workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises))
+          return total + getWorkoutTotalDuration(workout)
         }, 0)
 
         // Create details for tooltip
@@ -157,7 +157,7 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ workouts, wee
           id: workout.id,
           rpe: workout.rpe,
           kcal: workout.exercises.reduce((sum, exercise) => sum + (exercise.kcalEstimated || 0), 0),
-          durationMin: workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises),
+          durationMin: getWorkoutTotalDuration(workout),
           exercisesShort: createExerciseSummary(workout.exercises)
         }))
         

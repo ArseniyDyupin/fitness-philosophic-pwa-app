@@ -4,7 +4,9 @@ export {
   calculateWorkoutCalories, 
   calculateWorkoutDuration,
   sumWorkoutKcal, 
-  sumWorkoutMinutes 
+  sumWorkoutMinutes,
+  getWorkoutTotalDuration,
+  getWorkoutTotalCalories
 } from './kcal'
 
 export { metricsService } from './metrics.service'

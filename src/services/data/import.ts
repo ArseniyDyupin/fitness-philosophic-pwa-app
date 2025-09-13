@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { db } from './db'
-import { calculateWorkoutCalories } from '../fitness/kcal'
+import { getWorkoutTotalCalories } from '../fitness/kcal'
 import type { ExportBundle, ImportStats, ImportPreview } from '@/types/export'
 import type { Workout, WorkoutExercise, Profile } from '@/types/models'
 
@@ -89,7 +89,7 @@ function migrateWorkout(workout: Workout, profile?: Profile): Workout {
     
     // Calculate missing kcalEstimated
     if (!exercise.kcalEstimated && profile?.weight) {
-      migratedExercise.kcalEstimated = calculateWorkoutCalories([exercise], profile.weight, workout.rpe || 5)
+      migratedExercise.kcalEstimated = getWorkoutTotalCalories({ exercises: [exercise], rpe: workout.rpe || 5 }, profile.weight)
     }
     
     return migratedExercise

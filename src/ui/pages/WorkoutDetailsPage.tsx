@@ -5,7 +5,7 @@ import { useWorkoutStore } from '@stores/workout.store'
 import { useProfileStore } from '@stores/profile.store'
 import { useTranslations } from '@stores/i18n.store'
 import { useAIStore } from '@stores/ai.store'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/fitness'
+import { getWorkoutTotalCalories, getWorkoutTotalDuration } from '@services/fitness'
 import { getBatchEstimates, needsAIEstimation, createEstimateInput, aiReviewService } from '@services/ai'
 import { dbHelpers } from '@services/data'
 import { toastSuccess, toastError } from '@lib/toast'
@@ -99,8 +99,8 @@ const WorkoutDetailsPage: React.FC = () => {
     )
   }
 
-  const totalCalories = calculateWorkoutCalories(workout.exercises, profile?.weight || 70, workout.rpe)
-  const totalDuration = workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
+  const totalCalories = getWorkoutTotalCalories(workout, profile?.weight || 70)
+  const totalDuration = getWorkoutTotalDuration(workout)
 
   const handleDelete = async () => {
     if (confirm(t.workoutDetailsPage?.deleteConfirm || 'Are you sure you want to delete this workout?')) {

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { db } from '@services/data'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/fitness'
+import { calculateWorkoutCalories, calculateWorkoutDuration, getWorkoutTotalDuration, getWorkoutTotalCalories } from '@services/fitness'
 import { startOfYear, subDays, format, eachDayOfInterval } from 'date-fns'
 import type { Workout } from '@/types/models'
 import type { StatsData, StatsRange, StatsKPI, DisciplineStats, TrendData, PersonalRecords, ConsistencyData, BodyMetricsData } from '@/types/stats'
@@ -41,9 +41,9 @@ const getDateRange = (range: StatsRange, startDate?: string, endDate?: string) =
 const calculateKPI = (workouts: Workout[], userWeight: number): StatsKPI => {
   const totalWorkouts = workouts.length
   const totalCalories = workouts.reduce((sum, workout) => 
-    sum + calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe), 0)
+    sum + getWorkoutTotalCalories(workout, userWeight), 0)
   const totalMinutes = workouts.reduce((sum, workout) => 
-    sum + (workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)), 0)
+    sum + getWorkoutTotalDuration(workout), 0)
   
   const avgRpe = workouts.length > 0 
     ? workouts.reduce((sum, workout) => sum + (workout.rpe || 0), 0) / workouts.length 
@@ -82,7 +82,7 @@ const calculateDisciplineStats = (workouts: Workout[], userWeight: number): Disc
   workouts.forEach(workout => {
     workout.exercises.forEach(exercise => {
       const calories = calculateWorkoutCalories([exercise], userWeight, workout.rpe)
-      const minutes = exercise.details.durationMin || 0
+      const minutes = calculateWorkoutDuration([exercise])
       
       switch (exercise.type) {
         case 'run':
@@ -138,8 +138,8 @@ const calculateTrends = (workouts: Workout[], userWeight: number): TrendData[] =
   
   workouts.forEach(workout => {
     const date = workout.date.split('T')[0]
-    const calories = calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
-    const minutes = workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
+    const calories = getWorkoutTotalCalories(workout, userWeight)
+    const minutes = getWorkoutTotalDuration(workout)
     const distance = workout.exercises
       .filter(ex => ex.type === 'run')
       .reduce((sum, ex) => sum + (ex.details.distanceKm || 0), 0)
@@ -257,8 +257,8 @@ const calculateConsistency = (workouts: Workout[], startDate: Date | null, endDa
   
   workouts.forEach(workout => {
     const date = workout.date.split('T')[0]
-    const calories = calculateWorkoutCalories(workout.exercises, 70, workout.rpe) // Default weight
-    const minutes = workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
+    const calories = getWorkoutTotalCalories(workout, 70) // Default weight
+    const minutes = getWorkoutTotalDuration(workout)
     
     const existing = dailyData.get(date) || { calories: 0, minutes: 0, workouts: 0 }
     dailyData.set(date, {

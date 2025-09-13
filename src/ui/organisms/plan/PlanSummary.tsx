@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslations } from '@stores/i18n.store'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/fitness'
+import { getWorkoutTotalCalories, getWorkoutTotalDuration } from '@services/fitness'
 import type { Workout, Profile } from '@/types/models'
 
 interface PlanSummaryProps {
@@ -12,9 +12,9 @@ const PlanSummary: React.FC<PlanSummaryProps> = ({ workout, profile }) => {
   const t = useTranslations()
 
   const totalCalories = profile?.weight 
-    ? calculateWorkoutCalories(workout.exercises, profile.weight, workout.rpe || 5)
+    ? getWorkoutTotalCalories(workout, profile.weight)
     : 0
-  const totalDuration = calculateWorkoutDuration(workout.exercises)
+  const totalDuration = getWorkoutTotalDuration(workout)
 
   return (
     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">

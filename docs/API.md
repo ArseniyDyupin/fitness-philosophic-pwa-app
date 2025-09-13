@@ -194,7 +194,9 @@ import {
   calculateWorkoutCalories,
   calculateWorkoutDuration,
   sumWorkoutKcal,
-  sumWorkoutMinutes
+  sumWorkoutMinutes,
+  getWorkoutTotalCalories,
+  getWorkoutTotalDuration
 } from '@/services/fitness'
 
 // Расчет калорий для упражнения
@@ -206,11 +208,11 @@ const exerciseKcal = calculateExerciseCalories({
   userWeight: 70
 })
 
-// Расчет калорий для тренировки
-const workoutKcal = calculateWorkoutCalories(workout, userWeight)
+// Расчет калорий для тренировки (включая override)
+const workoutKcal = getWorkoutTotalCalories(workout, userWeight)
 
-// Расчет продолжительности тренировки
-const duration = calculateWorkoutDuration(workout)
+// Расчет продолжительности тренировки (включая override)
+const duration = getWorkoutTotalDuration(workout)
 
 // Суммирование калорий и времени
 const totalKcal = sumWorkoutKcal(workouts)

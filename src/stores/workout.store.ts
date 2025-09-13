@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { db } from '@services/data'
 import { startOfWeek, endOfWeek, isWithinInterval } from 'date-fns'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/fitness'
+import { getWorkoutTotalDuration, getWorkoutTotalCalories } from '@services/fitness'
 import type { Workout } from '@/types/models'
 
 interface WorkoutState {
@@ -176,8 +176,8 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
 
     dayWorkouts.forEach(workout => {
       if (workout.exercises) {
-        calories += calculateWorkoutCalories(workout.exercises, 70, workout.rpe)
-        minutes += workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
+        calories += getWorkoutTotalCalories(workout, 70)
+        minutes += getWorkoutTotalDuration(workout)
         exercises += workout.exercises.length
       }
       if (workout.rpe && workout.rpe > 0) {
@@ -217,12 +217,11 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
       if (workout.exercises && workout.exercises.length > 0) {
         // Calculate calories using the proper function
         if (userWeight) {
-          calories += calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
+          calories += getWorkoutTotalCalories(workout, userWeight)
         }
         
-        // Calculate duration using workout.durationOverrideMin || calculateWorkoutDuration
-        const workoutDuration = workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
-        minutes += workoutDuration
+        // Calculate duration using unified function
+        minutes += getWorkoutTotalDuration(workout)
         
         // Count exercises
         exercises += workout.exercises.length

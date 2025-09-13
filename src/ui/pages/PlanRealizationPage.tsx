@@ -4,7 +4,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { useProfileStore } from '@stores/profile.store'
 import { useWorkoutStore } from '@stores/workout.store'
 import { useAIStore } from '@stores/ai.store'
-import { calculateWorkoutCalories } from '@services/fitness'
+import { getWorkoutTotalCalories } from '@services/fitness'
 import { getBatchEstimates, needsAIEstimation, createEstimateInput, aiService } from '@services/ai'
 import { db } from '@services/data'
 import { toastSuccess, toastError } from '@lib/toast'
@@ -127,7 +127,7 @@ const PlanRealizationPage: React.FC = () => {
             return {
               ...exercise!,
               kcalEstimated: profile?.weight
-                ? calculateWorkoutCalories([exercise!], profile.weight, rpe)
+                ? getWorkoutTotalCalories({ exercises: [exercise!], rpe }, profile.weight)
                 : undefined
             } as WorkoutExercise
           })
@@ -136,7 +136,7 @@ const PlanRealizationPage: React.FC = () => {
           exercisesWithEstimates = finalExercises.map((exercise) => ({
             ...exercise!,
             kcalEstimated: profile?.weight
-              ? calculateWorkoutCalories([exercise!], profile.weight, rpe)
+              ? getWorkoutTotalCalories({ exercises: [exercise!], rpe }, profile.weight)
               : undefined
           })) as WorkoutExercise[]
         }
@@ -145,7 +145,7 @@ const PlanRealizationPage: React.FC = () => {
         exercisesWithEstimates = finalExercises.map((exercise) => ({
           ...exercise!,
           kcalEstimated: profile?.weight
-            ? calculateWorkoutCalories([exercise!], profile.weight, rpe)
+            ? getWorkoutTotalCalories({ exercises: [exercise!], rpe }, profile.weight)
             : undefined
         })) as WorkoutExercise[]
       }

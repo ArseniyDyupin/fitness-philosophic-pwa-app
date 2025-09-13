@@ -4,7 +4,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { useProfileStore } from '@stores/profile.store'
 import type { Workout } from '@/types/models'
 import WeeklyActivityChart from '@organisms/shared/WeeklyActivityChart'
-import { calculateWorkoutCalories } from '@services/fitness'
+import { getWorkoutTotalCalories, getWorkoutTotalDuration } from '@services/fitness'
 
 export interface WeekSummaryProps {
   workouts: Workout[]
@@ -22,13 +22,11 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
   const [isExpanded, setIsExpanded] = useState(true)
 
   const totalCalories = workouts.reduce((sum, workout) => {
-    return sum + calculateWorkoutCalories(workout.exercises, profile?.weight || 70, workout.rpe)
+    return sum + getWorkoutTotalCalories(workout, profile?.weight || 70)
   }, 0)
 
   const totalDuration = workouts.reduce((sum, workout) => {
-    return sum + (workout.durationOverrideMin || workout.exercises.reduce((exSum, exercise) => {
-      return exSum + (exercise.details.durationMin || 0)
-    }, 0))
+    return sum + getWorkoutTotalDuration(workout)
   }, 0)
 
 
@@ -37,13 +35,11 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
     : 0
 
   const prevTotalCalories = previousWeekWorkouts.reduce((sum, workout) => {
-    return sum + calculateWorkoutCalories(workout.exercises, profile?.weight || 70, workout.rpe)
+    return sum + getWorkoutTotalCalories(workout, profile?.weight || 70)
   }, 0)
 
   const prevTotalDuration = previousWeekWorkouts.reduce((sum, workout) => {
-    return sum + (workout.durationOverrideMin || workout.exercises.reduce((exSum, exercise) => {
-      return exSum + (exercise.details.durationMin || 0)
-    }, 0))
+    return sum + getWorkoutTotalDuration(workout)
   }, 0)
 
   const prevAvgRpe = previousWeekWorkouts.length > 0 

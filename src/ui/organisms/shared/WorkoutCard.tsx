@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslations } from '@stores/i18n.store'
-import { calculateWorkoutCalories, calculateWorkoutDuration } from '@services/fitness'
+import { getWorkoutTotalCalories, getWorkoutTotalDuration } from '@services/fitness'
 import type { Workout } from '@/types/models'
 import { Clock, Flame, TrendingUp, MoreVertical, Bot, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'
@@ -24,8 +24,8 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
 }) => {
   const t = useTranslations()
   
-  const totalCalories = calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
-  const totalDuration = workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
+  const totalCalories = getWorkoutTotalCalories(workout, userWeight)
+  const totalDuration = getWorkoutTotalDuration(workout)
   
   const formatDate = (date: string) => {
     const today = new Date()

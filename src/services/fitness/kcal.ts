@@ -156,8 +156,24 @@ export function sumWorkoutKcal(workouts: any[], userWeight: number): number {
 export function sumWorkoutMinutes(workouts: any[]): number {
   return workouts.reduce((total, workout) => {
     if (workout.exercises) {
-      return total + calculateWorkoutDuration(workout.exercises)
+      return total + (workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises))
     }
     return total
   }, 0)
+}
+
+/**
+ * Calculate total duration for a single workout (including override)
+ */
+export function getWorkoutTotalDuration(workout: any): number {
+  if (!workout.exercises) return 0
+  return workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
+}
+
+/**
+ * Calculate total calories for a single workout
+ */
+export function getWorkoutTotalCalories(workout: any, userWeight: number): number {
+  if (!workout.exercises) return 0
+  return calculateWorkoutCalories(workout.exercises, userWeight, workout.rpe)
 }
