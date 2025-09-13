@@ -99,7 +99,6 @@ const WorkoutDetailsPage: React.FC = () => {
     )
   }
 
-  console.log(workout, '<<workout')
   const totalCalories = calculateWorkoutCalories(workout.exercises, profile?.weight || 70, workout.rpe)
   const totalDuration = workout.durationOverrideMin || calculateWorkoutDuration(workout.exercises)
 
