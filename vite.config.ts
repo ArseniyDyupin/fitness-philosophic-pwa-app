@@ -12,22 +12,37 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       },
       manifest: {
-        name: 'AI Trainer',
-        short_name: 'AI Trainer',
-        description: 'AI-powered fitness trainer',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        name: 'AI Тренер',
+        short_name: 'AI Тренер',
+        description: 'ИИ-тренер по фитнесу с отслеживанием тренировок и аналитикой',
+        theme_color: '#2563eb',
+        background_color: '#0f172a',
         display: 'standalone',
+        start_url: '/',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'icons/android-chrome-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'icons/android-chrome-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: 'icons/maskable-icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: 'icons/maskable-icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       }
