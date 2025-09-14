@@ -120,7 +120,7 @@ const WorkoutDetailsPage: React.FC = () => {
         }
       )
       navigate('/workouts')
-      toastSuccess('Workout deleted successfully')
+      toastSuccess(t.workoutDetailsPage?.deletedSuccessfully || 'Workout deleted successfully')
     } catch (error) {
       await handleError(error as Error, {
         component: 'WorkoutDetailsPage',
@@ -142,7 +142,7 @@ const WorkoutDetailsPage: React.FC = () => {
       const exercisesNeedingEstimation = workout.exercises.filter(needsAIEstimation)
       
       if (exercisesNeedingEstimation.length === 0) {
-        toastSuccess('All exercises already have estimates')
+        toastSuccess(t.workoutDetailsPage?.allEstimatesReady || 'All exercises already have estimates')
         return
       }
       
@@ -195,14 +195,14 @@ const WorkoutDetailsPage: React.FC = () => {
       
       await updateWorkout(workout.id, updatedWorkout)
       setWorkout(updatedWorkout)
-      toastSuccess('AI estimates updated successfully')
+      toastSuccess(t.workoutDetailsPage?.estimatesUpdated || 'AI estimates updated successfully')
     } catch (error) {
       await handleError(error as Error, {
         component: 'WorkoutDetailsPage',
         action: 'updateAllAIEstimates',
         metadata: { workoutId: workout.id }
       })
-      toastError('Failed to update AI estimates')
+      toastError(t.workoutDetailsPage?.estimatesUpdateFailed || 'Failed to update AI estimates')
     } finally {
       setIsEstimating(false)
     }
@@ -364,8 +364,8 @@ const WorkoutDetailsPage: React.FC = () => {
               onClick={handleDelete}
               disabled={isDeleting}
               className="btn-secondary text-red-600 hover:text-red-700 flex items-center space-x-1 sm:space-x-2 touch-manipulation focus-visible-ring"
-              title="Delete workout"
-              aria-label="Delete workout"
+              title={t.workoutDetailsPage?.delete || "Delete workout"}
+              aria-label={t.workoutDetailsPage?.delete || "Delete workout"}
             >
             <Trash2 size={16} className="sm:w-4 sm:h-4" />
             <span className="text-sm sm:text-base">{isDeleting ? (t.workoutDetailsPage?.deleting || 'Deleting...') : (t.workoutDetailsPage?.delete || 'Delete')}</span>
@@ -444,10 +444,10 @@ const WorkoutDetailsPage: React.FC = () => {
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={confirmDelete}
-        title="Delete Workout"
-        message="Are you sure you want to delete this workout? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t.workoutDetailsPage?.deleteConfirm?.title || "Delete Workout"}
+        message={t.workoutDetailsPage?.deleteConfirm?.message || "Are you sure you want to delete this workout? This action cannot be undone."}
+        confirmText={t.workoutDetailsPage?.deleteConfirm?.confirm || "Delete"}
+        cancelText={t.workoutDetailsPage?.deleteConfirm?.cancel || "Cancel"}
         isLoading={isDeleting}
         type="danger"
       />
