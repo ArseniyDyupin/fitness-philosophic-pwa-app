@@ -30,11 +30,8 @@ const GenerateWorkoutButton: React.FC<GenerateWorkoutButtonProps> = ({
   const t = useTranslations()
   
   const handleClick = () => {
-    console.log('GenerateWorkoutButton clicked, onClick:', !!onClick)
     if (onClick) {
       onClick()
-    } else {
-      console.warn('GenerateWorkoutButton: onClick is not provided')
     }
   }
   

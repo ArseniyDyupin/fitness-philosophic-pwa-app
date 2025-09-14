@@ -8,7 +8,7 @@ export interface CreateWorkoutData {
   name: string
   description?: string
   date: string
-  exercises: any[]
+  exercises: Workout['exercises']
   rpe?: number
   notes?: string
 }

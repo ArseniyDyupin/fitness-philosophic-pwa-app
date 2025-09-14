@@ -185,7 +185,6 @@ const SettingsPage: React.FC = () => {
     setIsCheckingUpdates(true)
     try {
       const pwaStatus = getPWAStatus()
-      console.log('PWA Status:', pwaStatus)
       
       if (pwaStatus.hasServiceWorker) {
         checkForUpdates()

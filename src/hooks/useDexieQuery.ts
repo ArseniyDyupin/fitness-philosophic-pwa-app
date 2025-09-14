@@ -10,7 +10,7 @@ export interface UseDexieQueryOptions {
 export function useDexieQuery<T>(
   _tableName: keyof typeof db,
   queryFn: () => Promise<T>,
-  deps: any[] = [],
+  deps: unknown[] = [],
   options: UseDexieQueryOptions = {}
 ): {
   data: T | undefined

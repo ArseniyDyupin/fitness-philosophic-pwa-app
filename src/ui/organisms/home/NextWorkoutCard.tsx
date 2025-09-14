@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { useNavigate } from 'react-router-dom'
 import { Calendar, Clock, Zap, Target, Play, CheckCircle, Settings, Plus } from 'lucide-react'
-import type { Workout } from '@/types/models'
+import type { Workout, PlanSuggestion } from '@/types/models'
 import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'
 import WorkoutForm from '@organisms/workouts/WorkoutForm'
 import GenerateWorkoutModal from '@modals/shared/GenerateWorkoutModal'
@@ -34,19 +34,14 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
     }
   }
 
-  const handlePlanGenerated = (plan: any) => {
+  const handlePlanGenerated = (_plan: PlanSuggestion) => {
     setIsGenerateModalOpen(false)
     // For now, just close the modal
     // In the future, this could save the plan or navigate to it
-    console.log('Plan generated:', plan)
   }
 
   const handleGenerateClick = () => {
-    console.log('Generate button clicked in NextWorkoutCard, opening modal')
-    console.log('hasApiKey:', hasApiKey)
-    console.log('isGenerateModalOpen before:', isGenerateModalOpen)
     setIsGenerateModalOpen(true)
-    console.log('isGenerateModalOpen after:', true)
   }
 
   const formatDuration = (minutes: number): string => {

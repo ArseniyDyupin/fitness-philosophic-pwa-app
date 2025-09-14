@@ -12,6 +12,7 @@ import Button from '@atoms/Button'
 import ReminderBanner from '@molecules/shared/ReminderBanner'
 import BodyMetricsModal from '@modals/home/BodyMetricsModal'
 import GenerateWorkoutModal from '@modals/shared/GenerateWorkoutModal'
+import type { PlanSuggestion } from '@/types/models'
 
 const Header: React.FC = () => {
   const t = useTranslations()
@@ -74,19 +75,14 @@ const Header: React.FC = () => {
     }
   }
 
-  const handlePlanGenerated = (plan: any) => {
+  const handlePlanGenerated = (_plan: PlanSuggestion) => {
     setIsGenerateModalOpen(false)
     // For now, just close the modal
     // In the future, this could save the plan or navigate to it
-    console.log('Plan generated:', plan)
   }
 
   const handleGenerateClick = () => {
-    console.log('Generate button clicked, opening modal')
-    console.log('hasKey():', hasKey())
-    console.log('isGenerateModalOpen before:', isGenerateModalOpen)
     setIsGenerateModalOpen(true)
-    console.log('isGenerateModalOpen after:', true)
   }
 
   const handleBack = () => {

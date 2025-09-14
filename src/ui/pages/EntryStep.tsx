@@ -7,6 +7,7 @@ import { Upload, Play, FileText, User, CheckCircle, AlertCircle } from 'lucide-r
 import { validateFile, importData } from '@services/data'
 import { toastSuccess, toastError } from '@lib/toast'
 import type { ExportBundle } from '@/types/export'
+import type { Profile } from '@/types/models'
 
 const EntryStep: React.FC = () => {
   const navigate = useNavigate()
@@ -83,7 +84,7 @@ const EntryStep: React.FC = () => {
     fileInputRef.current?.click()
   }
 
-  const formatProfileSummary = (profile: any) => {
+  const formatProfileSummary = (profile: Profile) => {
     const notSet = 'Not set'
     return {
       name: profile.name || notSet,
@@ -91,9 +92,9 @@ const EntryStep: React.FC = () => {
       gender: profile.gender || notSet,
       height: profile.height ? `${profile.height} cm` : notSet,
       weight: profile.weight ? `${profile.weight} kg` : notSet,
-      goals: profile.goal?.types?.join(', ') || notSet,
-      workouts: profile.workouts?.length || 0,
-      foodLogs: profile.food?.length || 0
+      goals: profile.goal || notSet,
+      workouts: 0, // Will be calculated from workouts store
+      foodLogs: 0 // Will be calculated from food store
     }
   }
 
