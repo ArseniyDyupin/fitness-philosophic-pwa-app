@@ -1,0 +1,6 @@
+export { default as OnboardingGoals } from './OnboardingGoals'
+export { default as OnboardingConstraints } from './OnboardingConstraints'
+export { default as OnboardingDetailedGoals } from './OnboardingDetailedGoals'
+export { default as OnboardingEquipment } from './OnboardingEquipment'
+export { default as OnboardingMetrics } from './OnboardingMetrics'
+export { default as OnboardingFrequency } from './OnboardingFrequency'

@@ -1,217 +1,128 @@
-import { defineStore } from 'pinia'
-import { ref, computed, readonly } from 'vue'
-import { dbHelpers } from '@/services/db'
-import { useI18nStore } from '@/stores/i18n.store'
-import type { Profile, Goal } from '@/types/models'
+import { create } from 'zustand'
+import { dbHelpers } from '@services/data'
+import type { Profile } from '@/types/models'
 
-export const useProfileStore = defineStore('profile', () => {
-  const profile = ref<Profile | null>(null)
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
-
-  // Computed properties
-  const hasCompletedOnboarding = computed(() => profile.value !== null)
-  const currentWeight = computed(() => profile.value?.weight || 0)
-  const currentGoal = computed(() => profile.value?.goal)
-
+interface ProfileState {
+  profile: Profile | null
+  isLoading: boolean
+  error: string | null
+  
   // Actions
-  async function loadProfile() {
-    isLoading.value = true
-    error.value = null
-    
+  loadProfile: () => Promise<void>
+  saveProfile: (profile: Partial<Profile>) => Promise<void>
+  createProfile: (profileData: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  importProfile: (jsonData: any) => Promise<void>
+  exportProfile: () => Promise<any>
+  clearProfile: () => void
+}
+
+export const useProfileStore = create<ProfileState>((set, get) => ({
+  profile: null,
+  isLoading: false,
+  error: null,
+
+  loadProfile: async () => {
+    set({ isLoading: true, error: null })
     try {
-      const loadedProfile = await dbHelpers.getProfile()
-      profile.value = loadedProfile || null
-      
-      // Set language in i18n store if profile exists
-      if (loadedProfile) {
-        const i18nStore = useI18nStore()
-        i18nStore.setLanguageFromProfile(loadedProfile.language)
+      const profile = await dbHelpers.getProfile()
+      if (profile) {
+        set({ profile })
       }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to load profile'
+      set({ error: err instanceof Error ? err.message : 'Failed to load profile' })
     } finally {
-      isLoading.value = false
+      set({ isLoading: false })
     }
-  }
+  },
 
-  async function saveProfile(newProfile: Profile) {
-    isLoading.value = true
-    error.value = null
-    
-    try {
-      await dbHelpers.saveProfile(newProfile)
-      profile.value = newProfile
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to save profile'
-      throw err
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  async function createProfile(profileData: Partial<Profile>) {
-    isLoading.value = true
-    error.value = null
-    
-    try {
-      const newProfile: Profile = {
-        id: 'me',
-        name: profileData.name || '',
-        age: profileData.age || 25,
-        gender: profileData.gender || 'male',
-        height: profileData.height || 170,
-        weight: profileData.weight || 70,
-        goal: profileData.goal || {
-          types: ['general_fitness'],
-          description: ''
-        },
-        constraints: profileData.constraints || [],
-        equipment: profileData.equipment || [],
-        frequency: profileData.frequency || 3,
-        duration: profileData.duration || 30,
-        language: (profileData.language || localStorage.getItem('selectedLanguage') || 'en') as 'en' | 'ru',
-        goalsDetailed: profileData.goalsDetailed || '',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-      
-      await dbHelpers.saveProfile(newProfile)
-      profile.value = newProfile
-      
-      // Set language in i18n store
-      const i18nStore = useI18nStore()
-      i18nStore.setLanguageFromProfile(newProfile.language)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create profile'
-      throw err
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  async function updateProfile(updates: Partial<Profile>) {
-    if (!profile.value) {
+  saveProfile: async (profileData: Partial<Profile>) => {
+    const currentProfile = get().profile
+    if (!currentProfile) {
       throw new Error('No profile to update')
     }
 
-    const updatedProfile: Profile = {
-      ...profile.value,
-      ...updates,
-      updatedAt: new Date()
-    }
-
-    await saveProfile(updatedProfile)
-  }
-
-  async function updateGoal(goal: Goal) {
-    await updateProfile({ goal })
-  }
-
-  async function updateWeight(weight: number) {
-    await updateProfile({ weight })
-  }
-
-  async function updateConstraints(constraints: string[]) {
-    await updateProfile({ constraints })
-  }
-
-  async function updateEquipment(equipment: string[]) {
-    await updateProfile({ equipment })
-  }
-
-  async function updateFrequency(frequency: number) {
-    await updateProfile({ frequency })
-  }
-
-  async function updateDuration(duration: number) {
-    await updateProfile({ duration })
-  }
-
-  async function importProfile(importedProfile: any) {
-    isLoading.value = true
-    error.value = null
-    
+    set({ isLoading: true, error: null })
     try {
-      // Validate required fields
+      const updatedProfile: Profile = {
+        ...currentProfile,
+        ...profileData,
+        updatedAt: new Date().toISOString()
+      }
+      
+      await dbHelpers.saveProfile(updatedProfile)
+      set({ profile: updatedProfile })
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : 'Failed to save profile' })
+      throw err
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  createProfile: async (profileData: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>) => {
+    set({ isLoading: true, error: null })
+    try {
+      const newProfile: Profile = {
+        ...profileData,
+        id: 'me',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+      
+      await dbHelpers.saveProfile(newProfile)
+      set({ profile: newProfile })
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : 'Failed to create profile' })
+      throw err
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  importProfile: async (jsonData: any) => {
+    set({ isLoading: true, error: null })
+    try {
+      // Validate and transform imported data
+      const importedProfile = jsonData.profile || jsonData
+      
       if (!importedProfile.id || !importedProfile.gender || !importedProfile.age || 
           !importedProfile.height || !importedProfile.weight || !importedProfile.goal) {
-        throw new Error('Invalid profile data: missing required fields')
+        throw new Error('Invalid profile data')
       }
 
-      // Transform imported profile to match our schema
       const transformedProfile: Profile = {
-        id: importedProfile.id,
-        name: importedProfile.name || '',
-        age: importedProfile.age,
-        gender: importedProfile.gender,
-        height: importedProfile.height,
-        weight: importedProfile.weight,
-        goal: importedProfile.goal,
-        constraints: importedProfile.constraints || [],
-        equipment: importedProfile.equipment || [],
-        frequency: importedProfile.frequency || 3,
-        duration: importedProfile.duration || 30,
+        ...importedProfile,
+        id: 'me', // Always use 'me' as ID
         language: importedProfile.language || 'en',
         goalsDetailed: importedProfile.goalsDetailed || '',
-        createdAt: importedProfile.createdAt || new Date(),
-        updatedAt: new Date()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       }
 
       await dbHelpers.saveProfile(transformedProfile)
-      profile.value = transformedProfile
-      
-      // Set language in i18n store
-      const i18nStore = useI18nStore()
-      i18nStore.setLanguageFromProfile(transformedProfile.language)
+      set({ profile: transformedProfile })
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to import profile'
+      set({ error: err instanceof Error ? err.message : 'Failed to import profile' })
       throw err
     } finally {
-      isLoading.value = false
+      set({ isLoading: false })
     }
-  }
+  },
 
-  async function exportProfile(): Promise<any> {
-    if (!profile.value) {
+  exportProfile: async () => {
+    const currentProfile = get().profile
+    if (!currentProfile) {
       throw new Error('No profile to export')
     }
 
     return {
-      ...profile.value,
       schemaVersion: 1,
-      exportedAt: new Date()
+      exportedAt: new Date().toISOString(),
+      profile: currentProfile
     }
-  }
+  },
 
-  function clearError() {
-    error.value = null
+  clearProfile: () => {
+    set({ profile: null, error: null })
   }
-
-  return {
-    // State
-    profile: readonly(profile),
-    isLoading: readonly(isLoading),
-    error: readonly(error),
-    
-    // Computed
-    hasCompletedOnboarding,
-    currentWeight,
-    currentGoal,
-    
-    // Actions
-    loadProfile,
-    saveProfile,
-    createProfile,
-    updateProfile,
-    updateGoal,
-    updateWeight,
-    updateConstraints,
-    updateEquipment,
-    updateFrequency,
-    updateDuration,
-    importProfile,
-    exportProfile,
-    clearError
-  }
-})
+}))

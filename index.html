@@ -1,15 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#10b981" />
-    <meta name="description" content="AI Trainer - Offline-first fitness tracking with AI coaching" />
-    <title>AI Trainer</title>
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="shortcut icon" href="/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>AI Тренер - Фитнес PWA</title>
+    <meta name="description" content="ИИ-тренер по фитнесу с отслеживанием тренировок и аналитикой" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="AI Тренер" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    
+    <!-- Additional PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/icons/site.webmanifest" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="AI Тренер" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/icons/app-icon-192.png" as="image" type="image/png" />
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/app/main.ts"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/app/main.tsx"></script>
   </body>
 </html>

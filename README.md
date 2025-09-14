@@ -1,220 +1,248 @@
-# AI Trainer PWA
+# 🏋️ Fitness PWA
 
-A Progressive Web App for offline-first fitness tracking with AI coaching capabilities.
+> Прогрессивное веб-приложение для управления тренировками с AI-помощником
 
-## Features
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 
-- **Offline-First**: Works completely offline with IndexedDB storage
-- **Workout Tracking**: Log and track various types of workouts with automatic calorie calculation
-- **Food Logging**: Track daily nutrition intake
-- **Weekly Check-ins**: Monitor progress with weight, measurements, and optional photos
-- **AI Coaching**: Get personalized workout analysis and recommendations using OpenAI
-- **PWA Support**: Install as a native app on mobile and desktop
-- **Data Export/Import**: Backup and restore all your data
+## ✨ Особенности
 
-## Tech Stack
+- 🤖 **AI-генерация тренировок** с помощью OpenAI
+- 📱 **PWA** - работает офлайн и устанавливается как приложение
+- 🌍 **Интернационализация** - поддержка русского и английского языков
+- 📊 **Детальная статистика** тренировок и прогресса
+- 🎯 **Atomic Design** - модульная архитектура компонентов
+- ⚡ **Высокая производительность** - lazy loading и оптимизация
+- 🔒 **Безопасность** - валидация данных и rate limiting
+- 📈 **Аналитика** - отслеживание метрик и прогресса
 
-- **Frontend**: Vue 3 + TypeScript
-- **State Management**: Pinia
-- **Database**: IndexedDB (via Dexie)
-- **UI**: Tailwind CSS + Headless UI
-- **Forms**: vee-validate + zod
-- **PWA**: vite-plugin-pwa
-- **Date Handling**: date-fns
-- **AI Integration**: OpenAI GPT-3.5
+## 🚀 Быстрый старт
 
-## Getting Started
+### Предварительные требования
 
-### Prerequisites
+- Node.js 18+ 
+- npm или yarn
+- OpenAI API ключ (для AI функций)
 
-- Node.js 16+ 
-- npm or yarn
+### Установка
 
-### Installation
-
-1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd ai-trainer-pwa
-```
+# Клонирование репозитория
+git clone https://github.com/your-username/fitness-pwa.git
+cd fitness-pwa
 
-2. Install dependencies:
-```bash
+# Установка зависимостей
 npm install
-```
 
-3. Start the development server:
-```bash
+# Запуск в режиме разработки
 npm run dev
 ```
 
-4. Open your browser and navigate to `http://localhost:5173`
+### Настройка
 
-### Building for Production
+1. **Откройте приложение** в браузере (обычно `http://localhost:5173`)
+2. **Выберите язык** (русский/английский)
+3. **Заполните профиль** с вашими данными
+4. **Добавьте OpenAI API ключ** в настройках (опционально)
+
+## 🏗️ Архитектура
+
+Приложение построено с использованием современных принципов разработки:
+
+### Atomic Design
+```
+Atoms → Molecules → Organisms → Templates → Pages
+```
+
+### Технологический стек
+- **Frontend**: React 18, TypeScript, Vite
+- **Стилизация**: Tailwind CSS, Framer Motion
+- **Состояние**: Zustand, React Hooks
+- **Данные**: IndexedDB (Dexie), OpenAI API
+- **Валидация**: Zod
+- **PWA**: Vite PWA Plugin
+
+### Структура проекта
+```
+src/
+├── app/                    # Главный компонент
+├── navigation/             # Логика навигации
+├── ui/                     # UI компоненты
+│   ├── atoms/             # Базовые элементы
+│   ├── molecules/         # Составные компоненты
+│   ├── organisms/         # Сложные блоки
+│   ├── pages/             # Страницы
+│   └── modals/            # Модальные окна
+├── hooks/                  # Кастомные хуки
+├── stores/                 # Управление состоянием
+├── services/               # Бизнес-логика
+├── types/                  # Типизация
+└── utils/                  # Утилиты
+```
+
+## 📖 Документация
+
+- [🏗️ Архитектура](./docs/ARCHITECTURE.md) - подробное описание архитектуры
+- [🧩 Компоненты](./docs/COMPONENTS.md) - документация UI компонентов
+- [🔄 Хуки](./docs/HOOKS.md) - кастомные React хуки
+- [🔌 API](./docs/API.md) - сервисы и API
+- [🎨 Стилизация](./docs/STYLING.md) - работа со стилями
+- [🧪 Тестирование](./docs/TESTING.md) - тестирование приложения
+
+## 🎯 Основные функции
+
+### 🏋️ Управление тренировками
+- Создание и редактирование тренировок
+- Добавление упражнений с весами и повторениями
+- Отслеживание RPE (Rate of Perceived Exertion)
+- История тренировок
+
+### 🤖 AI-помощник
+- Генерация персонализированных тренировок
+- Анализ техники выполнения упражнений
+- Рекомендации по улучшению
+- Оценка прогресса
+
+### 📊 Статистика и аналитика
+- Детальная статистика по тренировкам
+- Графики прогресса
+- Анализ калорий и времени
+- Сравнение периодов
+
+### 📱 PWA функции
+- Работа в офлайн режиме
+- Установка как нативное приложение
+- Push уведомления
+- Быстрая загрузка
+
+## 🛠️ Разработка
+
+### Доступные команды
+
+```bash
+# Разработка
+npm run dev          # Запуск dev сервера
+npm run build        # Сборка для продакшена
+npm run preview      # Предварительный просмотр сборки
+
+# Качество кода
+npm run lint         # Проверка ESLint
+npm run lint:fix     # Автоисправление ESLint
+npm run type-check   # Проверка TypeScript
+
+# Тестирование
+npm run test         # Запуск тестов
+npm run test:watch   # Тесты в watch режиме
+npm run test:coverage # Покрытие тестами
+```
+
+### Стандарты кода
+
+- **TypeScript** - строгая типизация
+- **ESLint** - линтинг кода
+- **Prettier** - форматирование
+- **Conventional Commits** - стандарт коммитов
+
+### Git workflow
+
+```bash
+# Создание feature ветки
+git checkout -b feature/new-feature
+
+# Коммит изменений
+git commit -m "feat: add new workout generation"
+
+# Push и создание PR
+git push origin feature/new-feature
+```
+
+## 🚀 Развертывание
+
+### Продакшен сборка
 
 ```bash
 npm run build
 ```
 
-The built files will be in the `dist` directory.
+### Развертывание на Vercel
 
-### PWA Installation
+```bash
+# Установка Vercel CLI
+npm i -g vercel
 
-1. Open the app in a supported browser (Chrome, Edge, Safari)
-2. Look for the install prompt or use the browser's menu to "Install App"
-3. The app will be installed and work offline
-
-## Configuration
-
-### AI Integration
-
-To use AI features, you'll need an OpenAI API key:
-
-1. Get an API key from [OpenAI](https://platform.openai.com/api-keys)
-2. Go to Settings in the app
-3. Enter your API key and test the connection
-
-### Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-VITE_APP_TITLE=AI Trainer
-VITE_APP_DESCRIPTION=Offline-first fitness tracking with AI coaching
+# Развертывание
+vercel --prod
 ```
 
-## Usage
+### Развертывание на Netlify
 
-### First Time Setup
+```bash
+# Установка Netlify CLI
+npm i -g netlify-cli
 
-1. Complete the onboarding process to set up your profile
-2. Configure your fitness goals and preferences
-3. Set up AI integration (optional)
-
-### Daily Usage
-
-1. **Add Workouts**: Track your exercise sessions with automatic calorie calculation
-2. **Log Food**: Record your daily nutrition intake
-3. **Weekly Check-ins**: Monitor your progress with measurements and photos
-4. **AI Analysis**: Get personalized recommendations for your next workout
-
-### Data Management
-
-- **Export**: Download all your data as a JSON file
-- **Import**: Restore your data from a previously exported file
-- **Reset**: Clear all data (use with caution)
-
-## Project Structure
-
-```
-src/
-├── app/                 # Main app files
-├── components/          # Reusable Vue components
-├── features/           # Feature-specific pages
-│   ├── onboarding/     # Onboarding flow
-│   ├── workout/        # Workout management
-│   ├── food/           # Food logging
-│   └── week/           # Weekly views
-├── stores/             # Pinia stores
-├── services/           # Business logic and external services
-├── types/              # TypeScript type definitions
-├── utils/              # Utility functions
-└── assets/             # Static assets
+# Развертывание
+netlify deploy --prod --dir=dist
 ```
 
-## Development
+## 📊 Производительность
 
-### Available Scripts
+### Метрики
+- **First Contentful Paint**: < 1.5s
+- **Largest Contentful Paint**: < 2.5s
+- **Cumulative Layout Shift**: < 0.1
+- **First Input Delay**: < 100ms
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run typecheck` - Run TypeScript type checking
+### Оптимизации
+- Lazy loading страниц
+- Code splitting
+- Мемоизация вычислений
+- Оптимизация изображений
+- Service Worker кэширование
 
-### Code Style
+## 🔒 Безопасность
 
-The project uses:
-- ESLint for code linting
-- Prettier for code formatting
-- TypeScript for type safety
+- Валидация всех входных данных с Zod
+- Rate limiting для AI API
+- Локальное хранение данных
+- HTTPS в продакшене
+- Content Security Policy
 
-### Database Schema
+## 🤝 Вклад в проект
 
-The app uses IndexedDB with the following tables:
-- `profiles` - User profile and preferences
-- `workouts` - Workout sessions
-- `foodLogs` - Food intake records
-- `checkins` - Weekly progress check-ins
-- `aiPlans` - AI-generated workout plans
+Мы приветствуем вклад в развитие проекта! Пожалуйста, ознакомьтесь с [CONTRIBUTING.md](./CONTRIBUTING.md) для получения подробной информации.
 
-## Testing
+### Как помочь
+1. 🐛 **Сообщения об ошибках** - создавайте issues
+2. 💡 **Предложения** - предлагайте новые функции
+3. 🔧 **Исправления** - отправляйте pull requests
+4. 📖 **Документация** - улучшайте документацию
 
-### Manual Test Cases
+## 📄 Лицензия
 
-1. **Onboarding Flow**
-   - Complete all onboarding steps
-   - Verify profile is saved and editable
+Этот проект лицензирован под MIT License - см. файл [LICENSE](./LICENSE) для деталей.
 
-2. **Workout Management**
-   - Create a workout (e.g., 30min run, weight 73kg)
-   - Verify calorie calculation > 0
-   - Edit and delete workouts
+## 🙏 Благодарности
 
-3. **AI Integration**
-   - Set up API key
-   - Evaluate a workout
-   - Verify JSON response and PlanCard creation
+- [React](https://reactjs.org/) - UI библиотека
+- [OpenAI](https://openai.com/) - AI API
+- [Tailwind CSS](https://tailwindcss.com/) - CSS фреймворк
+- [Vite](https://vitejs.dev/) - сборщик
+- [Dexie](https://dexie.org/) - IndexedDB wrapper
 
-4. **Food Logging**
-   - Add food entries
-   - Verify daily balance calculation
+## 📞 Поддержка
 
-5. **Weekly Check-ins**
-   - Add check-in with photo
-   - Verify photo persists after reload
+Если у вас есть вопросы или проблемы:
 
-6. **Data Export/Import**
-   - Export data to JSON
-   - Import into empty database
-   - Verify data integrity
+- 📧 Email: support@fitness-pwa.com
+- 💬 Discord: [Наш сервер](https://discord.gg/fitness-pwa)
+- 📱 Telegram: [@fitness_pwa](https://t.me/fitness_pwa)
 
-7. **PWA Features**
-   - Install as PWA
-   - Test offline functionality
-   - Verify cached routes work
+---
 
-## Limitations
-
-- No cloud backup/sync (data is local only)
-- No integrations with Health/Strava
-- No streaming AI responses
-- No complex periodization/calendar features
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
-
-## Support
-
-For issues and questions:
-1. Check the documentation
-2. Search existing issues
-3. Create a new issue with detailed information
-
-## Roadmap
-
-- [ ] Cloud backup/sync
-- [ ] Health app integrations
-- [ ] Advanced analytics
-- [ ] Social features
-- [ ] Custom workout templates
-- [ ] Nutrition database integration
+<div align="center">
+  <p>Сделано с ❤️ для фитнес-энтузиастов</p>
+  <p>⭐ Поставьте звезду, если проект вам понравился!</p>
+</div>
