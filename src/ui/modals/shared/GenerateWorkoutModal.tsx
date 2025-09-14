@@ -96,14 +96,11 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
   }
 
   if (!isOpen) {
-    console.log('GenerateWorkoutModal: not open, returning null')
     return null
   }
 
-  console.log('GenerateWorkoutModal: rendering modal')
-
   return (
-    <div className="fixed inset-0 bg-red-500 bg-opacity-75 flex items-center justify-center z-[9999] p-2 sm:p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200">
