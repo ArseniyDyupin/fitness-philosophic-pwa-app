@@ -29,12 +29,21 @@ const GenerateWorkoutButton: React.FC<GenerateWorkoutButtonProps> = ({
 }) => {
   const t = useTranslations()
   
+  const handleClick = () => {
+    console.log('GenerateWorkoutButton clicked, onClick:', !!onClick)
+    if (onClick) {
+      onClick()
+    } else {
+      console.warn('GenerateWorkoutButton: onClick is not provided')
+    }
+  }
+  
   return (
     <Button
       variant={variant}
       size={size}
       disabled={disabled}
-      onClick={onClick}
+      onClick={handleClick}
       className={cn(className)}
       title={title}
     >

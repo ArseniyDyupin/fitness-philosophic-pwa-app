@@ -126,11 +126,11 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-6 mb-4 sm:mb-6">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div className="flex items-center space-x-2">
-          <Trophy className="w-5 h-5 text-yellow-500" />
-          <h2 className="text-lg font-semibold text-gray-900">
+          <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900">
             {t.statsPage?.records?.title || 'Personal Records'}
           </h2>
         </div>
@@ -139,12 +139,12 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
           className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
           aria-label={isExpanded ? 'Collapse' : 'Expand'}
         >
-          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
       </div>
 
       {/* Records Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
         {recordItems.map((item) => {
           const key = item.key as keyof PersonalRecords
           const hasRecord = records[key] !== undefined && records[key] !== null
@@ -153,14 +153,14 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
 
           return (
             <div key={item.key} className="relative">
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${item.bgColor} mb-3`}>
-                  <span className="text-2xl">{item.icon}</span>
+              <div className="bg-gray-50 rounded-lg p-2 sm:p-4 text-center">
+                <div className={`inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-full ${item.bgColor} mb-2 sm:mb-3`}>
+                  <span className="text-lg sm:text-2xl">{item.icon}</span>
                 </div>
-                <div className={`text-xl font-bold ${item.color} mb-1`}>
+                <div className={`text-sm sm:text-xl font-bold ${item.color} mb-1`}>
                   {item.value}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-xs sm:text-sm text-gray-600">
                   {item.label}
                 </div>
               </div>
@@ -169,10 +169,10 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
               {records.dates?.[key] && records.dates[key].length > 0 && (
                 <button
                   onClick={() => openChart(key, item.label)}
-                  className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
+                  className="absolute top-1 right-1 sm:top-2 sm:right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
                   title={t.statsPage?.records?.viewChart || 'View Chart'}
                 >
-                  <ExternalLink size={14} />
+                  <ExternalLink size={12} />
                 </button>
               )}
             </div>
@@ -182,8 +182,8 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
 
       {/* Expanded View */}
       {isExpanded && (
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <div className="space-y-4">
+        <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200">
+          <div className="space-y-3 sm:space-y-4">
             {recordItems.map((item) => {
               const key = item.key as keyof PersonalRecords
               const hasRecord = records[key] !== undefined && records[key] !== null
@@ -191,21 +191,21 @@ const Records: React.FC<RecordsProps> = ({ records }) => {
               if (!hasRecord) return null
 
               return (
-                <div key={item.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{item.icon}</span>
+                <div key={item.key} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <span className="text-xl sm:text-2xl">{item.icon}</span>
                     <div>
-                      <div className="font-medium text-gray-900">{item.label}</div>
-                      <div className={`text-lg font-bold ${item.color}`}>{item.value}</div>
+                      <div className="text-sm sm:text-base font-medium text-gray-900">{item.label}</div>
+                      <div className={`text-base sm:text-lg font-bold ${item.color}`}>{item.value}</div>
                     </div>
                   </div>
                   {records.dates?.[key] && records.dates[key].length > 0 && (
                     <button
                       onClick={() => openChart(key, item.label)}
-                      className="flex items-center space-x-1 px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors touch-manipulation"
+                      className="flex items-center space-x-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors touch-manipulation"
                     >
-                      <ExternalLink size={14} />
-                      <span>{t.statsPage?.records?.viewChart || 'View Chart'}</span>
+                      <ExternalLink size={12} />
+                      <span className="hidden sm:inline">{t.statsPage?.records?.viewChart || 'View Chart'}</span>
                     </button>
                   )}
                 </div>

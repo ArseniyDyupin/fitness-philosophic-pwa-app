@@ -83,7 +83,10 @@ const Header: React.FC = () => {
 
   const handleGenerateClick = () => {
     console.log('Generate button clicked, opening modal')
+    console.log('hasKey():', hasKey())
+    console.log('isGenerateModalOpen before:', isGenerateModalOpen)
     setIsGenerateModalOpen(true)
+    console.log('isGenerateModalOpen after:', true)
   }
 
   const handleBack = () => {

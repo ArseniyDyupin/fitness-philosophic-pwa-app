@@ -43,7 +43,10 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
 
   const handleGenerateClick = () => {
     console.log('Generate button clicked in NextWorkoutCard, opening modal')
+    console.log('hasApiKey:', hasApiKey)
+    console.log('isGenerateModalOpen before:', isGenerateModalOpen)
     setIsGenerateModalOpen(true)
+    console.log('isGenerateModalOpen after:', true)
   }
 
   const formatDuration = (minutes: number): string => {

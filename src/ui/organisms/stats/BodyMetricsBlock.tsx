@@ -203,11 +203,11 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-6 mb-4 sm:mb-6">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div className="flex items-center space-x-2">
-          <BarChart3 className="w-5 h-5 text-blue-500" />
-          <h2 className="text-lg font-semibold text-gray-900">
+          <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900">
             {t.metrics?.title || 'Body Metrics'}
           </h2>
         </div>
@@ -216,12 +216,12 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
           className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
           aria-label={isExpanded ? 'Collapse' : 'Expand'}
         >
-          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
         {metricDefs.map((def) => {
           const value = latestValues[def.key]
           const delta = deltas[def.key]
@@ -231,24 +231,24 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
           
           return (
             <div key={def.id} className="relative">
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-gray-50 rounded-lg p-2 sm:p-4 text-center">
                 <div 
-                  className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3"
+                  className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-full mb-2 sm:mb-3"
                   style={{ backgroundColor: def.color + '20' }}
                 >
                   <div
-                    className="w-6 h-6 rounded-full"
+                    className="w-4 h-4 sm:w-6 sm:h-6 rounded-full"
                     style={{ backgroundColor: def.color }}
                   />
                 </div>
-                <div className="text-xl font-bold text-gray-900 mb-1">
+                <div className="text-sm sm:text-xl font-bold text-gray-900 mb-1">
                   {formatValue(def, value)}
                 </div>
-                <div className="text-sm text-gray-600 mb-2">
+                <div className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
                   {t.metrics?.default?.[def.key as keyof typeof t.metrics.default] || def.label}
                 </div>
                 {delta !== 0 && (
-                  <div className={`text-sm flex items-center justify-center ${getDeltaColor(delta)}`}>
+                  <div className={`text-xs sm:text-sm flex items-center justify-center ${getDeltaColor(delta)}`}>
                     {getDeltaIcon(delta)}
                     <span className="ml-1">{formatDelta(def, delta)}</span>
                   </div>
@@ -259,10 +259,10 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
               {hasTrendData && (
                 <button
                   onClick={() => openChart(def.key)}
-                  className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
+                  className="absolute top-1 right-1 sm:top-2 sm:right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
                   title={t.statsPage?.records?.viewChart || 'View Chart'}
                 >
-                  <ExternalLink size={14} />
+                  <ExternalLink size={12} />
                 </button>
               )}
             </div>
@@ -271,9 +271,9 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
       </div>
 
       {isExpanded && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Chart Controls */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1 sm:gap-2">
             {metricDefs.map((def) => (
               <label key={def.id} className="flex items-center">
                 <input
@@ -282,7 +282,7 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
                   onChange={() => handleMetricToggle(def.key)}
                   className="sr-only"
                 />
-                <span className={`px-3 py-1 rounded-full text-sm cursor-pointer transition-colors ${
+                <span className={`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm cursor-pointer transition-colors ${
                   selectedMetrics.includes(def.key)
                     ? 'text-white'
                     : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
@@ -298,13 +298,14 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
 
           {/* Chart */}
           {selectedMetrics.length > 0 && (
-            <div className="h-80">
+            <div className="h-64 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={prepareChartData()}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
+                  <XAxis dataKey="date" fontSize={12} />
                   <YAxis 
                     label={{ value: 'Value', angle: -90, position: 'insideLeft' }}
+                    fontSize={12}
                   />
                   <Tooltip />
                   <Legend />
@@ -319,7 +320,7 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
                         dataKey={key}
                         stroke={def.color}
                         strokeWidth={2}
-                        dot={{ r: 4 }}
+                        dot={{ r: 3 }}
                         connectNulls={false}
                         name={t.metrics?.default?.[def.key as keyof typeof t.metrics.default] || def.label}
                       />
@@ -332,18 +333,18 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
 
           {/* Recent Entries Table */}
           <div>
-            <h3 className="text-md font-medium text-gray-900 mb-3">
+            <h3 className="text-sm sm:text-md font-medium text-gray-900 mb-2 sm:mb-3">
               {t.metrics?.recentEntries || 'Recent Entries'}
             </h3>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-2 py-1 sm:px-3 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Date
                     </th>
                     {metricDefs.map((def) => (
-                      <th key={def.id} className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th key={def.id} className="px-2 py-1 sm:px-3 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {t.metrics?.default?.[def.key as keyof typeof t.metrics.default] || def.label}
                       </th>
                     ))}
@@ -352,7 +353,7 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {/* This would be populated with recent entries */}
                   <tr>
-                    <td colSpan={metricDefs.length + 1} className="px-3 py-4 text-center text-gray-500">
+                    <td colSpan={metricDefs.length + 1} className="px-2 py-3 sm:px-3 sm:py-4 text-center text-gray-500 text-sm">
                       {t.metrics?.noEntries || 'No recent entries'}
                     </td>
                   </tr>
