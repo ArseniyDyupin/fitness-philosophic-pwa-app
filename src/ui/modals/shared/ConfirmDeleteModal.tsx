@@ -69,8 +69,8 @@ export default function ConfirmDeleteModal({
           <button
             onClick={onClose}
             className="hit-44-sm focus-visible-ring rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
-            aria-label="Close modal"
-            title="Close modal"
+            aria-label="Закрыть модальное окно"
+            title="Закрыть модальное окно"
             disabled={isLoading}
           >
             <X className="w-5 h-5" />

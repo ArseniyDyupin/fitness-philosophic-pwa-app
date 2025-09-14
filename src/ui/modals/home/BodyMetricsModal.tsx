@@ -506,7 +506,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
                       <div key={photo.id} className="relative">
                         <img
                           src={photo.dataUrl}
-                          alt="Uploaded photo"
+                          alt={t.metrics?.uploadedPhoto || "Uploaded photo"}
                           className="w-full h-24 object-cover rounded-lg"
                         />
                         <button

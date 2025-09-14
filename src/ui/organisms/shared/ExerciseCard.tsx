@@ -353,8 +353,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <button
             onClick={onClone}
             className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors rounded-lg"
-            title="Clone exercise"
-            aria-label="Clone exercise"
+            title={t.workoutDetailsPage?.exercise?.clone || "Clone exercise"}
+            aria-label={t.workoutDetailsPage?.exercise?.clone || "Clone exercise"}
           >
             <Copy size={16} />
           </button>
@@ -363,16 +363,16 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             className={`hit-44 focus-visible-ring transition-colors rounded-lg ${
               showNotes ? 'text-primary-600' : 'text-gray-400 hover:text-gray-600'
             }`}
-            title="Toggle notes"
-            aria-label={showNotes ? "Hide notes" : "Show notes"}
+            title={t.workoutDetailsPage?.exercise?.toggleNotes || "Toggle notes"}
+            aria-label={showNotes ? (t.workoutDetailsPage?.exercise?.hideNotes || "Hide notes") : (t.workoutDetailsPage?.exercise?.showNotes || "Show notes")}
           >
             <MessageSquare size={16} />
           </button>
           <button
             onClick={onRemove}
             className="hit-44 focus-visible-ring text-red-400 hover:text-red-600 transition-colors rounded-lg"
-            title="Remove exercise"
-            aria-label="Remove exercise"
+            title={t.workoutDetailsPage?.exercise?.remove || "Remove exercise"}
+            aria-label={t.workoutDetailsPage?.exercise?.remove || "Remove exercise"}
           >
             <Trash2 size={16} />
           </button>

@@ -154,10 +154,10 @@ const SettingsPage: React.FC = () => {
     setIsDebuggingDatabase(true)
     try {
       await dbHelpers.debugDatabase()
-      toastSuccess('Database debug info logged to console')
+      toastSuccess(t.settingsPage?.debugSuccess || 'Database debug info logged to console')
     } catch (error) {
       console.error('Database debug failed:', error)
-      toastError('Database debug failed. Check console for details.')
+      toastError(t.settingsPage?.debugError || 'Database debug failed. Check console for details.')
     } finally {
       setIsDebuggingDatabase(false)
     }
@@ -173,10 +173,10 @@ const SettingsPage: React.FC = () => {
         checkForUpdates()
         toastSuccess(t.pwa?.updateAvailable || 'Checking for updates...')
       } else {
-        toastError('Service Worker not supported')
+        toastError(t.pwa?.serviceWorkerNotSupported || 'Service Worker not supported')
       }
     } catch (error) {
-      toastError('Failed to check for updates')
+      toastError(t.pwa?.checkUpdatesFailed || 'Failed to check for updates')
     } finally {
       setIsCheckingUpdates(false)
     }
@@ -563,12 +563,12 @@ const SettingsPage: React.FC = () => {
                   {isDebuggingDatabase ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
-                      <span>Debugging...</span>
+                      <span>{t.settingsPage?.debugging || 'Debugging...'}</span>
                     </>
                   ) : (
                     <>
                       <RefreshCw size={16} />
-                      <span>Debug Database</span>
+                      <span>{t.settingsPage?.debugDatabase || 'Debug Database'}</span>
                     </>
                   )}
                 </button>

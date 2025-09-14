@@ -343,6 +343,10 @@ export const translations = {
     // Food
     foodLog: 'Food Log',
     addFoodLog: 'Add Food Log',
+    foodPage: {
+      noEntries: 'No food entries for this date. Click "Add Food Log" to get started.',
+      deleteEntry: 'Delete entry'
+    },
     
     // Settings
     exportProfile: 'Export Profile',
@@ -468,7 +472,8 @@ export const translations = {
       forceDatabaseUpgrade: 'Force Database Upgrade',
       debugging: 'Debugging...',
       debugAIFeedback: 'Debug AI Feedback',
-      databaseHelpText: 'Use "Force Database Upgrade" if you encounter database errors. Use "Debug AI Feedback" to check what AI feedback records exist.',
+      databaseHelpText: 'Use "Force Database Upgrade" if you encounter database errors. Use "Debug AI Feedback" to check what AI feedback records exist. Use "Check Updates" to manually check for PWA updates.',
+      debugDatabase: 'Debug Database',
       english: 'English',
       russian: 'Русский',
       save: 'Save',
@@ -1008,7 +1013,8 @@ export const translations = {
       previous: 'Previous',
       lastMeasurement: 'Last measurement',
       addMetrics: 'Add Body Metrics',
-      addMetricsDescription: 'Track your body measurements and progress'
+      addMetricsDescription: 'Track your body measurements and progress',
+      uploadedPhoto: 'Uploaded photo'
     },
     
     // WorkoutForm
@@ -1179,7 +1185,12 @@ export const translations = {
         holds: 'holds',
         sec: 'sec',
         km: 'km',
-        min: 'min'
+        min: 'min',
+        clone: 'Clone exercise',
+        toggleNotes: 'Toggle notes',
+        hideNotes: 'Hide notes',
+        showNotes: 'Show notes',
+        remove: 'Remove exercise'
       },
       metaModal: {
         title: 'Change workout metadata',
@@ -1200,7 +1211,8 @@ export const translations = {
       commaSeparated: 'comma separated',
       seconds: 'Seconds',
       exerciseName: 'Exercise Name',
-      notes: 'Notes'
+      notes: 'Notes',
+      notesPlaceholder: 'Add notes about this exercise...'
     },
     
     // AISettings
@@ -1240,7 +1252,9 @@ export const translations = {
       later: 'Later',
       offlineReady: 'App ready to work offline',
       installPrompt: 'Install App',
-      installDescription: 'Install this app on your device for a better experience'
+      installDescription: 'Install this app on your device for a better experience',
+      serviceWorkerNotSupported: 'Service Worker not supported',
+      checkUpdatesFailed: 'Failed to check for updates'
     }
   },
   
@@ -1536,6 +1550,10 @@ export const translations = {
     // Food
     foodLog: 'Дневник питания',
     addFoodLog: 'Добавить запись',
+    foodPage: {
+      noEntries: 'Нет записей питания на эту дату. Нажмите "Добавить запись" чтобы начать.',
+      deleteEntry: 'Удалить запись'
+    },
     
     // Settings
     exportProfile: 'Экспорт профиля',
@@ -1661,7 +1679,8 @@ export const translations = {
       forceDatabaseUpgrade: 'Принудительное обновление БД',
       debugging: 'Отладка...',
       debugAIFeedback: 'Отладка AI обратной связи',
-      databaseHelpText: 'Используйте "Принудительное обновление БД" при ошибках базы данных. Используйте "Отладка AI обратной связи" для проверки записей AI обратной связи.',
+      databaseHelpText: 'Используйте "Принудительное обновление БД" при ошибках базы данных. Используйте "Отладка AI обратной связи" для проверки записей AI обратной связи. Используйте "Проверить обновления" для ручной проверки обновлений PWA.',
+      debugDatabase: 'Отладка базы данных',
       english: 'English',
       russian: 'Русский',
       save: 'Сохранить',
@@ -2208,7 +2227,8 @@ export const translations = {
       previous: 'Предыдущее',
       lastMeasurement: 'Последнее измерение',
       addMetrics: 'Добавить метрики тела',
-      addMetricsDescription: 'Отслеживайте измерения тела и прогресс'
+      addMetricsDescription: 'Отслеживайте измерения тела и прогресс',
+      uploadedPhoto: 'Загруженное фото'
     },
     
     // WorkoutForm
@@ -2379,7 +2399,12 @@ export const translations = {
         holds: 'удержания',
         sec: 'сек',
         km: 'км',
-        min: 'мин'
+        min: 'мин',
+        clone: 'Клонировать упражнение',
+        toggleNotes: 'Переключить заметки',
+        hideNotes: 'Скрыть заметки',
+        showNotes: 'Показать заметки',
+        remove: 'Удалить упражнение'
       },
       metaModal: {
         title: 'Изменить мета-данные тренировки',
@@ -2400,7 +2425,8 @@ export const translations = {
       commaSeparated: 'через запятую',
       seconds: 'Секунды',
       exerciseName: 'Название упражнения',
-      notes: 'Заметки'
+      notes: 'Заметки',
+      notesPlaceholder: 'Добавьте заметки об этом упражнении...'
     },
     
     // AISettings
@@ -2440,7 +2466,9 @@ export const translations = {
       later: 'Позже',
       offlineReady: 'Приложение доступно офлайн',
       installPrompt: 'Установить приложение',
-      installDescription: 'Установите это приложение на ваше устройство для лучшего опыта'
+      installDescription: 'Установите это приложение на ваше устройство для лучшего опыта',
+      serviceWorkerNotSupported: 'Service Worker не поддерживается',
+      checkUpdatesFailed: 'Не удалось проверить обновления'
     }
   }
 }

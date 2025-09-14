@@ -170,7 +170,7 @@ const FoodPage: React.FC = () => {
             new Date(log.date).toDateString() === new Date(selectedDate).toDateString()
           ).length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              <p>No food entries for this date. Click "Add Food Log" to get started.</p>
+              <p>{t.foodPage?.noEntries || 'No food entries for this date. Click "Add Food Log" to get started.'}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -196,8 +196,8 @@ const FoodPage: React.FC = () => {
                     <button
                       onClick={() => handleDelete(log.id)}
                       className="hit-44 focus-visible-ring text-red-400 hover:text-red-600 transition-colors rounded-lg"
-                      title="Delete entry"
-                      aria-label="Delete entry"
+                      title={t.foodPage?.deleteEntry || "Delete entry"}
+                      aria-label={t.foodPage?.deleteEntry || "Delete entry"}
                     >
                       <Trash2 size={16} />
                     </button>

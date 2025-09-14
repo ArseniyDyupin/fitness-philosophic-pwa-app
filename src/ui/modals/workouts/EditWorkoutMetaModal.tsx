@@ -79,8 +79,8 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
             <button
               onClick={onClose}
               className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors rounded-lg"
-              aria-label="Close modal"
-              title="Close modal"
+              aria-label={t.close || "Close modal"}
+              title={t.close || "Close modal"}
             >
               <X size={20} />
             </button>
@@ -112,7 +112,7 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
                 max="300"
                 value={editedDurationMin || ''}
                 onChange={(e) => setEditedDurationMin(e.target.value ? parseInt(e.target.value) : undefined)}
-                placeholder="Optional"
+                placeholder={t.workoutForm?.optional || "Optional"}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -159,7 +159,7 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
               disabled={isSaving}
               className="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus-visible-ring disabled:opacity-50"
             >
-              {isSaving ? 'Saving...' : (t.workoutDetailsPage?.metaModal?.save || 'Save')}
+              {isSaving ? (t.saving || 'Saving...') : (t.workoutDetailsPage?.metaModal?.save || 'Save')}
             </button>
           </div>
         </div>

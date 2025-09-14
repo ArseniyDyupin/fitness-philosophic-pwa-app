@@ -71,8 +71,8 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
             <button
               onClick={onClose}
               className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors touch-manipulation rounded-lg"
-              aria-label="Close modal"
-              title="Close modal"
+              aria-label={t.close || "Close modal"}
+              title={t.close || "Close modal"}
             >
               <X size={18} className="sm:w-5 sm:h-5" />
             </button>
@@ -221,7 +221,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                 onChange={(e) => updateExerciseField('notes', e.target.value)}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
-                placeholder="Add notes about this exercise..."
+                placeholder={t.workoutDetailsPage?.notesPlaceholder || "Add notes about this exercise..."}
               />
             </div>
           </div>
@@ -243,7 +243,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
               {isSaving ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span>Saving...</span>
+                  <span>{t.saving || 'Saving...'}</span>
                 </>
               ) : (
                 <>

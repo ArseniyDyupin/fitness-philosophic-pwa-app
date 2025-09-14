@@ -107,8 +107,8 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
                 onUpdateAnalysis()
               }}
               className="hit-44-sm focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors touch-manipulation rounded-lg"
-              title="Update AI Analysis"
-              aria-label="Update AI Analysis"
+              title={t.workoutDetailsPage?.actions?.updateAnalysis || "Update AI Analysis"}
+              aria-label={t.workoutDetailsPage?.actions?.updateAnalysis || "Update AI Analysis"}
             >
               <Bot size={14} />
             </button>
@@ -120,8 +120,8 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
                 onEdit()
               }}
               className="hit-44-sm focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors touch-manipulation rounded-lg"
-              title="Edit workout"
-              aria-label="Edit workout"
+              title={t.workoutDetailsPage?.editWorkout || "Edit workout"}
+              aria-label={t.workoutDetailsPage?.editWorkout || "Edit workout"}
             >
               <MoreVertical size={14} />
             </button>
@@ -133,8 +133,8 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
                 onDelete()
               }}
               className="hit-44-sm focus-visible-ring text-gray-400 hover:text-red-600 transition-colors touch-manipulation rounded-lg"
-              title="Delete workout"
-              aria-label="Delete workout"
+              title={t.workoutDetailsPage?.delete || "Delete workout"}
+              aria-label={t.workoutDetailsPage?.delete || "Delete workout"}
             >
               <Trash2 size={14} />
             </button>
