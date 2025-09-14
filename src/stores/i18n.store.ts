@@ -179,7 +179,19 @@ export const translations = {
         importCardDescription: 'Restore your data from a backup file',
         startCardTitle: 'Start Onboarding',
         startCardDescription: 'Create a new profile step by step',
-        helpText: 'Choose to either import an existing profile or create a new one from scratch.'
+        helpText: 'Choose to either import an existing profile or create a new one from scratch.',
+        profileFound: 'Profile Found!',
+        data: 'Data:',
+        workouts: 'workouts',
+        foodLogs: 'food logs',
+        checkIns: 'check-ins',
+        importMode: 'Import Mode',
+        replaceAllData: 'Replace all data',
+        mergeWithExisting: 'Merge with existing',
+        beginOnboarding: 'Begin Onboarding',
+        setFitnessGoals: 'Set your fitness goals',
+        configureProfile: 'Configure your profile',
+        startTrackingWorkouts: 'Start tracking workouts'
       },
       progress: {
         stepOf: 'Step {{current}} of {{total}}'
@@ -1351,7 +1363,19 @@ export const translations = {
         importCardDescription: 'Восстановите свои данные из резервной копии',
         startCardTitle: 'Начать настройку',
         startCardDescription: 'Создайте новый профиль шаг за шагом',
-        helpText: 'Выберите, чтобы импортировать существующий профиль или создать новый с нуля.'
+        helpText: 'Выберите, чтобы импортировать существующий профиль или создать новый с нуля.',
+        profileFound: 'Профиль найден!',
+        data: 'Данные:',
+        workouts: 'тренировок',
+        foodLogs: 'записей питания',
+        checkIns: 'проверок',
+        importMode: 'Режим импорта',
+        replaceAllData: 'Заменить все данные',
+        mergeWithExisting: 'Объединить с существующими',
+        beginOnboarding: 'Начать настройку',
+        setFitnessGoals: 'Установить фитнес-цели',
+        configureProfile: 'Настроить профиль',
+        startTrackingWorkouts: 'Начать отслеживание тренировок'
       },
       progress: {
         stepOf: 'Шаг {{current}} из {{total}}'

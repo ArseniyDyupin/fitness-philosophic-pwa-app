@@ -4,6 +4,7 @@ import { useOnboardingStore } from '@stores/onboarding.store'
 import { useTranslations } from '@stores/i18n.store'
 import { Upload, Play, FileText, User, CheckCircle, AlertCircle } from 'lucide-react'
 import { validateFile, importData } from '@services/data'
+import { toastSuccess, toastError } from '@lib/toast'
 import type { ExportBundle } from '@/types/export'
 
 const EntryStep: React.FC = () => {
@@ -51,10 +52,15 @@ const EntryStep: React.FC = () => {
       // Clear onboarding draft since we imported a profile
       clearDraft()
       
+      // Show success toast
+      toastSuccess(t.importSuccess || 'Profile imported successfully!')
+      
       // Redirect to home
       navigate('/')
     } catch (error) {
-      setImportError(error instanceof Error ? error.message : t.error || 'Import failed')
+      const errorMessage = error instanceof Error ? error.message : t.error || 'Import failed'
+      setImportError(errorMessage)
+      toastError(errorMessage)
     } finally {
       setIsImporting(false)
     }
@@ -73,13 +79,14 @@ const EntryStep: React.FC = () => {
   }
 
   const formatProfileSummary = (profile: any) => {
+    const notSet = (t as any).notSet || 'Not set'
     return {
-      name: profile.name || 'Not set',
-      age: profile.age || 'Not set',
-      gender: profile.gender || 'Not set',
-      height: profile.height ? `${profile.height} cm` : 'Not set',
-      weight: profile.weight ? `${profile.weight} kg` : 'Not set',
-      goals: profile.goal?.types?.join(', ') || 'Not set',
+      name: profile.name || notSet,
+      age: profile.age || notSet,
+      gender: profile.gender || notSet,
+      height: profile.height ? `${profile.height} ${(t as any).cm || 'cm'}` : notSet,
+      weight: profile.weight ? `${profile.weight} ${(t as any).kg || 'kg'}` : notSet,
+      goals: profile.goal?.types?.join(', ') || notSet,
       workouts: profile.workouts?.length || 0,
       foodLogs: profile.food?.length || 0
     }
@@ -140,7 +147,7 @@ const EntryStep: React.FC = () => {
                 <div className="border border-green-200 bg-green-50 rounded-lg p-4">
                   <div className="flex items-center space-x-2 mb-3">
                     <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span className="font-medium text-green-800">Profile Found!</span>
+                    <span className="font-medium text-green-800">{t.onboarding?.entry?.profileFound || 'Profile Found!'}</span>
                   </div>
                   
                   <div className="space-y-2 text-sm">
@@ -155,9 +162,9 @@ const EntryStep: React.FC = () => {
                     )}
                     
                     <div className="text-green-700">
-                      <span className="font-medium">Data:</span> {importPreview.workouts?.length || 0} workouts, 
-                      {importPreview.food?.length || 0} food logs, 
-                      {importPreview.checkins?.length || 0} check-ins
+                      <span className="font-medium">{t.onboarding?.entry?.data || 'Data:'}</span> {importPreview.workouts?.length || 0} {t.onboarding?.entry?.workouts || 'workouts'}, 
+                      {importPreview.food?.length || 0} {t.onboarding?.entry?.foodLogs || 'food logs'}, 
+                      {importPreview.checkins?.length || 0} {t.onboarding?.entry?.checkIns || 'check-ins'}
                     </div>
                   </div>
 
@@ -165,7 +172,7 @@ const EntryStep: React.FC = () => {
                   <div className="mt-4 space-y-3">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Import Mode
+                        {t.onboarding?.entry?.importMode || 'Import Mode'}
                       </label>
                       <div className="space-x-4">
                         <label className="flex items-center">
@@ -176,7 +183,7 @@ const EntryStep: React.FC = () => {
                             onChange={(e) => setImportMode(e.target.value as 'replace' | 'merge')}
                             className="mr-2"
                           />
-                          <span className="text-sm">Replace all data</span>
+                          <span className="text-sm">{t.onboarding?.entry?.replaceAllData || 'Replace all data'}</span>
                         </label>
                         <label className="flex items-center">
                           <input
@@ -186,7 +193,7 @@ const EntryStep: React.FC = () => {
                             onChange={(e) => setImportMode(e.target.value as 'replace' | 'merge')}
                             className="mr-2"
                           />
-                          <span className="text-sm">Merge with existing</span>
+                          <span className="text-sm">{t.onboarding?.entry?.mergeWithExisting || 'Merge with existing'}</span>
                         </label>
                       </div>
                     </div>
@@ -232,15 +239,15 @@ const EntryStep: React.FC = () => {
               <div className="text-sm text-gray-600 space-y-2">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Set your fitness goals</span>
+                  <span>{t.onboarding?.entry?.setFitnessGoals || 'Set your fitness goals'}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Configure your profile</span>
+                  <span>{t.onboarding?.entry?.configureProfile || 'Configure your profile'}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Start tracking workouts</span>
+                  <span>{t.onboarding?.entry?.startTrackingWorkouts || 'Start tracking workouts'}</span>
                 </div>
               </div>
 
@@ -249,7 +256,7 @@ const EntryStep: React.FC = () => {
                 className="btn-primary w-full flex items-center justify-center space-x-2"
               >
                 <User size={20} />
-                <span>Begin Onboarding</span>
+                <span>{t.onboarding?.entry?.beginOnboarding || 'Begin Onboarding'}</span>
               </button>
             </div>
           </div>
