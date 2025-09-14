@@ -412,17 +412,17 @@ const SettingsBodyMetrics: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex justify-end space-x-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-2">
               <button
                 onClick={handleCancelEdit}
-                className="btn-secondary flex items-center space-x-2"
+                className="btn-secondary flex items-center justify-center space-x-2 w-full sm:w-auto"
               >
                 <X size={16} />
                 <span>{t.cancel || 'Cancel'}</span>
               </button>
               <button
                 onClick={handleSaveMetric}
-                className="btn-primary flex items-center space-x-2"
+                className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto"
               >
                 <Save size={16} />
                 <span>{t.save || 'Save'}</span>
