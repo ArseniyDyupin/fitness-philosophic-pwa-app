@@ -78,8 +78,9 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
             </h3>
             <button
               onClick={onClose}
-              className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors rounded-lg"
               aria-label="Close modal"
+              title="Close modal"
             >
               <X size={20} />
             </button>
@@ -96,7 +97,7 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
                 type="date"
                 value={editedDate}
                 onChange={(e) => setEditedDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
               />
             </div>
             
@@ -112,7 +113,7 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
                 value={editedDurationMin || ''}
                 onChange={(e) => setEditedDurationMin(e.target.value ? parseInt(e.target.value) : undefined)}
                 placeholder="Optional"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Leave empty to use calculated duration from exercises
@@ -149,14 +150,14 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
             <button
               onClick={onClose}
               disabled={isSaving}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus-visible-ring disabled:opacity-50"
             >
               {t.workoutDetailsPage?.metaModal?.cancel || 'Cancel'}
             </button>
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus-visible-ring disabled:opacity-50"
             >
               {isSaving ? 'Saving...' : (t.workoutDetailsPage?.metaModal?.save || 'Save')}
             </button>

@@ -70,8 +70,9 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
             </h3>
             <button
               onClick={onClose}
-              className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
+              className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors touch-manipulation rounded-lg"
               aria-label="Close modal"
+              title="Close modal"
             >
               <X size={18} className="sm:w-5 sm:h-5" />
             </button>
@@ -87,7 +88,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
               <select
                 value={editedExercise.type}
                 onChange={(e) => updateExerciseType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
               >
                 <option value="run">{t.exerciseTypes?.run || 'Run'}</option>
                 <option value="pullups">{t.exerciseTypes?.pullups || 'Pull-ups'}</option>
@@ -109,7 +110,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                     step="0.1"
                     value={editedExercise.details.distanceKm || ''}
                     onChange={(e) => updateExerciseField('distanceKm', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
                   />
                 </div>
                 <div>
@@ -120,7 +121,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                     type="number"
                     value={editedExercise.details.durationMin || ''}
                     onChange={(e) => updateExerciseField('durationMin', parseInt(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
                   />
                 </div>
               </div>
@@ -136,7 +137,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                     type="number"
                     value={editedExercise.details.sets || ''}
                     onChange={(e) => updateExerciseField('sets', parseInt(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
                   />
                 </div>
                 <div>
@@ -148,7 +149,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                     value={editedExercise.details.repsPerSet?.join(',') || ''}
                     onChange={(e) => updateExerciseField('repsPerSet', e.target.value.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r)))}
                     placeholder="10,8,6"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
                   />
                 </div>
               </div>
@@ -164,7 +165,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                   value={editedExercise.details.seconds?.join(',') || ''}
                   onChange={(e) => updateExerciseField('seconds', e.target.value.split(',').map(s => parseInt(s.trim())).filter(s => !isNaN(s)))}
                   placeholder="60,45,30"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
                 />
               </div>
             )}
@@ -179,7 +180,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                     type="text"
                     value={editedExercise.details.customExercise || ''}
                     onChange={(e) => updateExerciseField('customExercise', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -191,7 +192,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                       type="number"
                       value={editedExercise.details.durationMin || ''}
                       onChange={(e) => updateExerciseField('durationMin', parseInt(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
                     />
                   </div>
                   <div>
@@ -203,7 +204,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                       value={editedExercise.details.repsPerSet?.join(',') || ''}
                       onChange={(e) => updateExerciseField('repsPerSet', e.target.value.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r)))}
                       placeholder="20,15,10"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
                     />
                   </div>
                 </div>
@@ -219,7 +220,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                 value={editedExercise.details.notes || ''}
                 onChange={(e) => updateExerciseField('notes', e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible-ring"
                 placeholder="Add notes about this exercise..."
               />
             </div>
@@ -230,14 +231,14 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
             <button
               onClick={onClose}
               disabled={isSaving}
-              className="px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 touch-manipulation"
+              className="px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus-visible-ring disabled:opacity-50 touch-manipulation"
             >
               {t.cancel || 'Cancel'}
             </button>
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-3 sm:px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 flex items-center space-x-1 sm:space-x-2 touch-manipulation"
+              className="px-3 sm:px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus-visible-ring disabled:opacity-50 flex items-center space-x-1 sm:space-x-2 touch-manipulation"
             >
               {isSaving ? (
                 <>

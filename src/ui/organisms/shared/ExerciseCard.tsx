@@ -352,24 +352,27 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <div className="flex items-center space-x-2">
           <button
             onClick={onClone}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors rounded-lg"
             title="Clone exercise"
+            aria-label="Clone exercise"
           >
             <Copy size={16} />
           </button>
           <button
             onClick={() => setShowNotes(!showNotes)}
-            className={`p-2 transition-colors ${
+            className={`hit-44 focus-visible-ring transition-colors rounded-lg ${
               showNotes ? 'text-primary-600' : 'text-gray-400 hover:text-gray-600'
             }`}
             title="Toggle notes"
+            aria-label={showNotes ? "Hide notes" : "Show notes"}
           >
             <MessageSquare size={16} />
           </button>
           <button
             onClick={onRemove}
-            className="p-2 text-red-400 hover:text-red-600 transition-colors"
+            className="hit-44 focus-visible-ring text-red-400 hover:text-red-600 transition-colors rounded-lg"
             title="Remove exercise"
+            aria-label="Remove exercise"
           >
             <Trash2 size={16} />
           </button>

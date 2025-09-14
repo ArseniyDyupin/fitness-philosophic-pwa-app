@@ -193,7 +193,8 @@ const Header: React.FC = () => {
                 variant="primary"
                 showIcon={true}
                 showText={true}
-                className="text-sm"
+                className="focus-visible-ring text-sm"
+                title={t.header?.generate || 'Создать тренировку'}
               />
             </div>
             
@@ -203,7 +204,7 @@ const Header: React.FC = () => {
                 variant="primary"
                 showIcon={true}
                 showText={false}
-                className="w-10 h-10 flex items-center justify-center"
+                className="hit-44 focus-visible-ring w-10 h-10 flex items-center justify-center"
                 title={t.header?.generate || 'Создать тренировку'}
               />
             </div>
@@ -213,7 +214,9 @@ const Header: React.FC = () => {
               onClick={handleExport}
               disabled={isExporting}
               loading={isExporting}
-              className="md:hidden w-10 h-10 flex items-center justify-center"
+              className="hit-44 focus-visible-ring md:hidden w-10 h-10 flex items-center justify-center"
+              title={t.header?.export || 'Export data'}
+              aria-label={t.header?.export || 'Export data'}
             >
               <Download size={16} />
             </Button>
@@ -224,7 +227,9 @@ const Header: React.FC = () => {
               disabled={isExporting}
               loading={isExporting}
               variant="secondary"
-              className="hidden md:flex items-center space-x-2 text-sm p-2"
+              className="focus-visible-ring hidden md:flex items-center space-x-2 text-sm p-2"
+              title={t.header?.export || t.exportAll || 'Экспорт данных'}
+              aria-label={t.header?.export || t.exportAll || 'Экспорт данных'}
             >
               <Download size={16} />
               <span>{t.header?.export || t.exportAll || 'Экспорт данных'}</span>
@@ -235,8 +240,9 @@ const Header: React.FC = () => {
               <Button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 variant="secondary"
-                className="md:hidden w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900"
+                className="hit-44 focus-visible-ring md:hidden w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900"
                 aria-label={t.header?.openMenu || 'Открыть меню навигации'}
+                title={t.header?.openMenu || 'Открыть меню навигации'}
               >
                 <MoreVertical size={16} />
               </Button>

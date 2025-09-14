@@ -195,8 +195,9 @@ const FoodPage: React.FC = () => {
                     </div>
                     <button
                       onClick={() => handleDelete(log.id)}
-                      className="p-2 text-red-400 hover:text-red-600 transition-colors"
+                      className="hit-44 focus-visible-ring text-red-400 hover:text-red-600 transition-colors rounded-lg"
                       title="Delete entry"
+                      aria-label="Delete entry"
                     >
                       <Trash2 size={16} />
                     </button>

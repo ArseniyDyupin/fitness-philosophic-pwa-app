@@ -22,5 +22,26 @@ export default {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.hit-44': {
+          '@apply min-w-11 min-h-11 p-2': {},
+        },
+        '.hit-44-sm': {
+          '@apply min-w-10 min-h-10 p-1.5': {},
+        },
+        '.hit-44-lg': {
+          '@apply min-w-12 min-h-12 p-3': {},
+        },
+        '.focus-visible-ring': {
+          '@apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2': {},
+        },
+        '.focus-visible-ring-inset': {
+          '@apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset': {},
+        }
+      }
+      addUtilities(newUtilities)
+    }
+  ],
 }

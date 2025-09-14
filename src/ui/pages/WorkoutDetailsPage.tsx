@@ -19,6 +19,7 @@ import AiFeedbackCard from '@organisms/workouts/AiFeedbackCard'
 import WorkoutExerciseCard from '@organisms/workouts/WorkoutExerciseCard'
 import EditWorkoutMetaModal from '@modals/workouts/EditWorkoutMetaModal'
 import ExerciseEditModal from '@modals/workouts/ExerciseEditModal'
+import { ConfirmDeleteModal } from '@modals/shared'
 
 const WorkoutDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -32,6 +33,7 @@ const WorkoutDetailsPage: React.FC = () => {
   
   const [workout, setWorkout] = useState(getWorkoutById(id!))
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   
   // States
   const [isEstimating, setIsEstimating] = useState(false)
@@ -102,30 +104,32 @@ const WorkoutDetailsPage: React.FC = () => {
   const totalCalories = getWorkoutTotalCalories(workout, profile?.weight || 70)
   const totalDuration = getWorkoutTotalDuration(workout)
 
-  const handleDelete = async () => {
-    if (confirm(t.workoutDetailsPage?.deleteConfirm || 'Are you sure you want to delete this workout?')) {
-      setIsDeleting(true)
-      try {
-        await executeWithRetry(
-          () => deleteWorkout(workout.id),
-          {
-            component: 'WorkoutDetailsPage',
-            action: 'deleteWorkout',
-            metadata: { workoutId: workout.id }
-          }
-        )
-        navigate('/workouts')
-        toastSuccess('Workout deleted successfully')
-      } catch (error) {
-        await handleError(error as Error, {
+  const handleDelete = () => {
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDelete = async () => {
+    setIsDeleting(true)
+    try {
+      await executeWithRetry(
+        () => deleteWorkout(workout.id),
+        {
           component: 'WorkoutDetailsPage',
           action: 'deleteWorkout',
           metadata: { workoutId: workout.id }
-        })
-        toastError(t.workoutDetailsPage?.failedToDelete || 'Failed to delete workout')
-      } finally {
-        setIsDeleting(false)
-      }
+        }
+      )
+      navigate('/workouts')
+      toastSuccess('Workout deleted successfully')
+    } catch (error) {
+      await handleError(error as Error, {
+        component: 'WorkoutDetailsPage',
+        action: 'deleteWorkout',
+        metadata: { workoutId: workout.id }
+      })
+      toastError(t.workoutDetailsPage?.failedToDelete || 'Failed to delete workout')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -359,7 +363,9 @@ const WorkoutDetailsPage: React.FC = () => {
             <button
               onClick={handleDelete}
               disabled={isDeleting}
-            className="btn-secondary text-red-600 hover:text-red-700 flex items-center space-x-1 sm:space-x-2 touch-manipulation"
+              className="btn-secondary text-red-600 hover:text-red-700 flex items-center space-x-1 sm:space-x-2 touch-manipulation focus-visible-ring"
+              title="Delete workout"
+              aria-label="Delete workout"
             >
             <Trash2 size={16} className="sm:w-4 sm:h-4" />
             <span className="text-sm sm:text-base">{isDeleting ? (t.workoutDetailsPage?.deleting || 'Deleting...') : (t.workoutDetailsPage?.delete || 'Delete')}</span>
@@ -432,6 +438,19 @@ const WorkoutDetailsPage: React.FC = () => {
           onSave={handleSaveExercise}
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Workout"
+        message="Are you sure you want to delete this workout? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={isDeleting}
+        type="danger"
+      />
     </div>
   )
 }
