@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import './tailwind.css'
 import './i18n.ts'
+import '@services/pwa' // Инициализация PWA
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

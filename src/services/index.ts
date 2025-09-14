@@ -6,3 +6,6 @@ export * from './data'
 
 // Fitness Services
 export * from './fitness'
+
+// PWA Services
+export * from './pwa'

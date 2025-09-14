@@ -1231,6 +1231,16 @@ export const translations = {
       helpStep3: 'Go to API Keys section',
       helpStep4: 'Create a new secret key',
       helpStep5: 'Copy the key and paste it above'
+    },
+
+    // PWA
+    pwa: {
+      updateAvailable: 'Update Available',
+      update: 'Update',
+      later: 'Later',
+      offlineReady: 'App ready to work offline',
+      installPrompt: 'Install App',
+      installDescription: 'Install this app on your device for a better experience'
     }
   },
   
@@ -2421,6 +2431,16 @@ export const translations = {
       helpStep3: 'Перейдите в раздел API Keys',
       helpStep4: 'Создайте новый секретный ключ',
       helpStep5: 'Скопируйте ключ и вставьте его выше'
+    },
+
+    // PWA
+    pwa: {
+      updateAvailable: 'Доступно обновление',
+      update: 'Обновить',
+      later: 'Позже',
+      offlineReady: 'Приложение доступно офлайн',
+      installPrompt: 'Установить приложение',
+      installDescription: 'Установите это приложение на ваше устройство для лучшего опыта'
     }
   }
 }

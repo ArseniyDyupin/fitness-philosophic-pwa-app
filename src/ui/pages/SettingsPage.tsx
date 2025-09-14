@@ -4,6 +4,7 @@ import { useI18nStore } from '@stores/i18n.store'
 import { useTranslations } from '@stores/i18n.store'
 import { dbHelpers } from '@services/data'
 import { toastSuccess, toastError } from '@lib/toast'
+import { checkForUpdates, getPWAStatus } from '@services/pwa'
 import { ExportButton, ImportButton } from '@/ui/atoms'
 import AISettings from '@modals/settings/AISettings'
 import DataImport from '@modals/settings/DataImport'
@@ -28,6 +29,7 @@ const SettingsPage: React.FC = () => {
   const [isUpgradingDB, setIsUpgradingDB] = useState(false)
   const [isDebuggingDB, setIsDebuggingDB] = useState(false)
   const [isDebuggingDatabase, setIsDebuggingDatabase] = useState(false)
+  const [isCheckingUpdates, setIsCheckingUpdates] = useState(false)
   
   // Export/Import states
   const [isExporting, setIsExporting] = useState(false)
@@ -158,6 +160,25 @@ const SettingsPage: React.FC = () => {
       toastError('Database debug failed. Check console for details.')
     } finally {
       setIsDebuggingDatabase(false)
+    }
+  }
+
+  const handleCheckUpdates = async () => {
+    setIsCheckingUpdates(true)
+    try {
+      const pwaStatus = getPWAStatus()
+      console.log('PWA Status:', pwaStatus)
+      
+      if (pwaStatus.hasServiceWorker) {
+        checkForUpdates()
+        toastSuccess(t.pwa?.updateAvailable || 'Checking for updates...')
+      } else {
+        toastError('Service Worker not supported')
+      }
+    } catch (error) {
+      toastError('Failed to check for updates')
+    } finally {
+      setIsCheckingUpdates(false)
     }
   }
 
@@ -551,9 +572,27 @@ const SettingsPage: React.FC = () => {
                     </>
                   )}
                 </button>
+                
+                <button
+                  onClick={handleCheckUpdates}
+                  disabled={isCheckingUpdates}
+                  className="flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isCheckingUpdates ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-700"></div>
+                      <span>{t.pwa?.updateAvailable || 'Checking...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw size={16} />
+                      <span>{t.pwa?.update || 'Check Updates'}</span>
+                    </>
+                  )}
+                </button>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                {t.settingsPage?.databaseHelpText || 'Use "Force Database Upgrade" if you encounter database errors. Use "Debug AI Feedback" to check what AI feedback records exist.'}
+                {t.settingsPage?.databaseHelpText || 'Use "Force Database Upgrade" if you encounter database errors. Use "Debug AI Feedback" to check what AI feedback records exist. Use "Check Updates" to manually check for PWA updates.'}
               </p>
             </div>
           </div>
