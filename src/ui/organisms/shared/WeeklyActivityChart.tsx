@@ -86,15 +86,15 @@ const WeeklyTooltip: React.FC<any> = ({ active, payload, label }) => {
               {t.weeklyPage?.tooltip?.workout || 'Workout Details'}:
             </div>
             <div className="space-y-1 max-h-32 overflow-y-auto">
-              {data.details.slice(0, 4).map((detail: any, index: number) => (
+              {data.details.slice(0, 4).map((detail: Record<string, unknown>, index: number) => (
                 <div key={index} className="text-xs text-gray-600">
                   <div className="font-medium">
-                    {detail.rpe ? `RPE ${detail.rpe}` : ''} • {Math.round(detail.durationMin)} мин • {Math.round(detail.kcal)} kcal
+                    {detail.rpe ? `RPE ${detail.rpe}` : ''} • {Math.round(detail.durationMin as number)} мин • {Math.round(detail.kcal as number)} kcal
                   </div>
                   <div className="text-gray-500 truncate">
-                    {detail.exercisesShort.length > 50 
-                      ? detail.exercisesShort.substring(0, 50) + '...' 
-                      : detail.exercisesShort}
+                    {(detail.exercisesShort as string).length > 50
+                      ? (detail.exercisesShort as string).substring(0, 50) + '...'
+                      : detail.exercisesShort as string}
                   </div>
                 </div>
               ))}

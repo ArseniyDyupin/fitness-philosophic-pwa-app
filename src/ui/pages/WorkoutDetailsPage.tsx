@@ -171,12 +171,12 @@ const WorkoutDetailsPage: React.FC = () => {
         const needsEstimate = needsAIEstimation(exercise)
         if (needsEstimate) {
           const estimateIndex = exercisesNeedingEstimation.findIndex(e => e === exercise)
-          const estimate = estimates[estimateIndex]
+          const estimate = (estimates as unknown[])[estimateIndex]
           
           if (estimate) {
             return {
               ...exercise,
-              kcalEstimated: estimate.kcal,
+              kcalEstimated: (estimate as { kcal: number }).kcal,
               estimateMeta: {
                 source: 'ai' as const,
                 updatedAt: new Date().toISOString()

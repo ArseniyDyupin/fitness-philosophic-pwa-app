@@ -244,8 +244,8 @@ export class ErrorHandler {
     })
   }
 
-  private isAppError(error: any): error is AppError {
-    return error && typeof error === 'object' && 'type' in error && 'severity' in error
+  private isAppError(error: unknown): error is AppError {
+    return !!(error && typeof error === 'object' && 'type' in error && 'severity' in error)
   }
 
   private isRetryable(type: ErrorType): boolean {

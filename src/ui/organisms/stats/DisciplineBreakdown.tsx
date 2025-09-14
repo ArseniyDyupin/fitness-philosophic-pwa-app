@@ -60,19 +60,19 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
   const totalMinutes = Object.values(discipline).reduce((sum, stats) => sum + stats.minutes, 0)
   const totalValue = chartType === 'calories' ? totalCalories : totalMinutes
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: Record<string, unknown> }> }) => {
     if (active && payload && payload.length) {
-      const data = (payload[0] as any).payload
-      const percentage = ((data.value / totalValue) * 100).toFixed(1)
+      const data = payload[0].payload
+      const percentage = (((data.value as number) / totalValue) * 100).toFixed(1)
       
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-900">{data.name}</p>
+          <p className="font-medium text-gray-900">{data.name as string}</p>
           <p className="text-sm text-gray-600">
-            {chartType === 'calories' ? (t.statsPage?.chart?.calories || 'Calories') : (t.statsPage?.chart?.minutes || 'Minutes')}: {data.value.toLocaleString()}
+            {chartType === 'calories' ? (t.statsPage?.chart?.calories || 'Calories') : (t.statsPage?.chart?.minutes || 'Minutes')}: {(data.value as number).toLocaleString()}
           </p>
           <p className="text-sm text-gray-500">{percentage}{t.statsPage?.chart?.ofTotal || '% of total'}</p>
-          <p className="text-sm text-gray-500">{t.statsPage?.chart?.sessions || 'Sessions:'} {data.sessions}</p>
+          <p className="text-sm text-gray-500">{t.statsPage?.chart?.sessions || 'Sessions:'} {data.sessions as number}</p>
         </div>
       )
     }

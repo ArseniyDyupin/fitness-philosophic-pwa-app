@@ -2,7 +2,14 @@ import { z } from 'zod'
 import { db } from './db'
 import { getWorkoutTotalCalories } from '../fitness/kcal'
 import type { ExportBundle, ImportStats, ImportPreview } from '@/types/export'
-import type { Workout, WorkoutExercise, Profile } from '@/types/models'
+import type { 
+  Workout, 
+  WorkoutExercise, 
+  Profile, 
+  AIWorkoutFeedback, 
+  ExerciseEstimate 
+} from '@/types/models'
+import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '@/types/body-metrics'
 
 // Zod schema for validation
 const ExportBundleSchema = z.object({
@@ -110,21 +117,21 @@ function migrateWorkout(workout: Workout, profile?: Profile): Workout {
   return migratedWorkout
 }
 
-function ensureISODates(obj: unknown): any {
+function ensureISODates<T>(obj: T): T {
   if (!obj) return obj
   
-  const result = { ...(obj as Record<string, any>) }
+  const result = { ...(obj as Record<string, unknown>) }
   
   // Common date fields to convert
   const dateFields = ['date', 'createdAt', 'updatedAt', 'exportedAt']
   
   for (const field of dateFields) {
     if (result[field] && typeof result[field] !== 'string') {
-      result[field] = new Date(result[field]).toISOString()
+      result[field] = new Date(result[field] as string | number | Date).toISOString()
     }
   }
   
-  return result
+  return result as T
 }
 
 export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge' = 'replace'): Promise<ImportStats> {
@@ -275,13 +282,13 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         const migratedAiFeedback = bundle.ai_feedback.map(ensureISODates)
         
         if (mode === 'replace') {
-          await db.ai_feedback.bulkPut(migratedAiFeedback)
+          await db.ai_feedback.bulkPut(migratedAiFeedback as AIWorkoutFeedback[])
         } else {
           for (const feedback of migratedAiFeedback) {
-            const existing = await db.ai_feedback.get(feedback.id)
+            const existing = await db.ai_feedback.get((feedback as AIWorkoutFeedback).id)
             if (!existing || 
-                (feedback.createdAt && existing.createdAt && feedback.createdAt > existing.createdAt)) {
-              await db.ai_feedback.put(feedback)
+                ((feedback as AIWorkoutFeedback).createdAt && existing.createdAt && (feedback as AIWorkoutFeedback).createdAt > existing.createdAt)) {
+              await db.ai_feedback.put(feedback as AIWorkoutFeedback)
             }
           }
         }
@@ -292,13 +299,13 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         const migratedMetricDefs = bundle.metric_defs.map(ensureISODates)
         
         if (mode === 'replace') {
-          await db.metric_defs.bulkPut(migratedMetricDefs)
+          await db.metric_defs.bulkPut(migratedMetricDefs as MetricDef[])
         } else {
           for (const def of migratedMetricDefs) {
-            const existing = await db.metric_defs.get(def.id)
+            const existing = await db.metric_defs.get((def as MetricDef).id)
             if (!existing || 
-                (def.updatedAt && existing.updatedAt && def.updatedAt > existing.updatedAt)) {
-              await db.metric_defs.put(def)
+                ((def as MetricDef).updatedAt && existing.updatedAt && (def as MetricDef).updatedAt > existing.updatedAt)) {
+              await db.metric_defs.put(def as MetricDef)
             }
           }
         }
@@ -309,13 +316,13 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         const migratedMetricEntries = bundle.metric_entries.map(ensureISODates)
         
         if (mode === 'replace') {
-          await db.metric_entries.bulkPut(migratedMetricEntries)
+          await db.metric_entries.bulkPut(migratedMetricEntries as MetricEntry[])
         } else {
           for (const entry of migratedMetricEntries) {
-            const existing = await db.metric_entries.get(entry.id)
+            const existing = await db.metric_entries.get((entry as MetricEntry).id)
             if (!existing || 
-                (entry.date && existing.date && entry.date > existing.date)) {
-              await db.metric_entries.put(entry)
+                ((entry as MetricEntry).date && existing.date && (entry as MetricEntry).date > existing.date)) {
+              await db.metric_entries.put(entry as MetricEntry)
             }
           }
         }
@@ -326,13 +333,13 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         const migratedPhotoAssets = bundle.photo_assets.map(ensureISODates)
         
         if (mode === 'replace') {
-          await db.photo_assets.bulkPut(migratedPhotoAssets)
+          await db.photo_assets.bulkPut(migratedPhotoAssets as PhotoAsset[])
         } else {
           for (const photo of migratedPhotoAssets) {
-            const existing = await db.photo_assets.get(photo.id)
+            const existing = await db.photo_assets.get((photo as PhotoAsset).id)
             if (!existing || 
-                (photo.date && existing.date && photo.date > existing.date)) {
-              await db.photo_assets.put(photo)
+                ((photo as PhotoAsset).date && existing.date && (photo as PhotoAsset).date > existing.date)) {
+              await db.photo_assets.put(photo as PhotoAsset)
             }
           }
         }
@@ -343,13 +350,13 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         const migratedAiBodyEvals = bundle.ai_body_evals.map(ensureISODates)
         
         if (mode === 'replace') {
-          await db.ai_body_evals.bulkPut(migratedAiBodyEvals)
+          await db.ai_body_evals.bulkPut(migratedAiBodyEvals as AiBodyEval[])
         } else {
           for (const evaluation of migratedAiBodyEvals) {
-            const existing = await db.ai_body_evals.get(evaluation.id)
+            const existing = await db.ai_body_evals.get((evaluation as AiBodyEval).id)
             if (!existing || 
-                (evaluation.createdAt && existing.createdAt && evaluation.createdAt > existing.createdAt)) {
-              await db.ai_body_evals.put(evaluation)
+                ((evaluation as AiBodyEval).createdAt && existing.createdAt && (evaluation as AiBodyEval).createdAt > existing.createdAt)) {
+              await db.ai_body_evals.put(evaluation as AiBodyEval)
             }
           }
         }
@@ -360,13 +367,13 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         const migratedExerciseEstimates = bundle.exercise_estimates.map(ensureISODates)
         
         if (mode === 'replace') {
-          await db.exercise_estimates.bulkPut(migratedExerciseEstimates)
+          await db.exercise_estimates.bulkPut(migratedExerciseEstimates as ExerciseEstimate[])
         } else {
           for (const estimate of migratedExerciseEstimates) {
-            const existing = await db.exercise_estimates.get(estimate.id)
+            const existing = await db.exercise_estimates.get((estimate as ExerciseEstimate).id)
             if (!existing || 
-                (estimate.createdAt && existing.createdAt && estimate.createdAt > existing.createdAt)) {
-              await db.exercise_estimates.put(estimate)
+                ((estimate as ExerciseEstimate).createdAt && existing.createdAt && (estimate as ExerciseEstimate).createdAt > existing.createdAt)) {
+              await db.exercise_estimates.put(estimate as ExerciseEstimate)
             }
           }
         }

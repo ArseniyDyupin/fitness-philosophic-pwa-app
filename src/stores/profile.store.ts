@@ -11,8 +11,8 @@ interface ProfileState {
   loadProfile: () => Promise<void>
   saveProfile: (profile: Partial<Profile>) => Promise<void>
   createProfile: (profileData: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
-  importProfile: (jsonData: any) => Promise<void>
-  exportProfile: () => Promise<any>
+  importProfile: (jsonData: unknown) => Promise<void>
+  exportProfile: () => Promise<{ schemaVersion: number; exportedAt: string; profile: Profile }>
   clearProfile: () => void
 }
 
@@ -79,11 +79,11 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  importProfile: async (jsonData: any) => {
+  importProfile: async (jsonData: unknown) => {
     set({ isLoading: true, error: null })
     try {
       // Validate and transform imported data
-      const importedProfile = jsonData.profile || jsonData
+      const importedProfile = (jsonData as { profile?: Profile }).profile || jsonData as Profile
       
       if (!importedProfile || typeof importedProfile !== 'object') {
         throw new Error('Invalid profile data')

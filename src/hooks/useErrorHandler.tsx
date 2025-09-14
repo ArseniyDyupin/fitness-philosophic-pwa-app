@@ -19,10 +19,10 @@ import {
 interface ErrorHandlerContextType {
   handleError: (error: Error | AppError, context?: Partial<ErrorContext>) => Promise<void>
   executeWithRetry: (
-    fn: any,
+    fn: () => Promise<unknown>,
     context?: Partial<ErrorContext>,
     customRetryConfig?: { maxRetries?: number; baseDelay?: number; backoffMultiplier?: number }
-  ) => Promise<any>
+  ) => Promise<unknown>
   createError: (
     message: string,
     type?: ErrorType,
@@ -49,7 +49,7 @@ export function ErrorHandlerProvider({ children, component }: ErrorHandlerProvid
       return handleError(error, { ...context, component })
     }, [component]),
 
-    executeWithRetry: useCallback((fn: any, context?: Partial<ErrorContext>, customRetryConfig?: { maxRetries?: number; baseDelay?: number; backoffMultiplier?: number }) => {
+    executeWithRetry: useCallback((fn: () => Promise<unknown>, context?: Partial<ErrorContext>, customRetryConfig?: { maxRetries?: number; baseDelay?: number; backoffMultiplier?: number }) => {
       return executeWithRetry(fn, { ...context, component }, customRetryConfig)
     }, [component]),
 
@@ -99,7 +99,7 @@ export function useErrorHandler(): ErrorHandlerContextType {
       handleError: async (error: Error | AppError, context?: Partial<ErrorContext>) => {
         return handleError(error, context)
       },
-      executeWithRetry: (fn: any, context?: Partial<ErrorContext>, customRetryConfig?: { maxRetries?: number; baseDelay?: number; backoffMultiplier?: number }) => {
+      executeWithRetry: (fn: () => Promise<unknown>, context?: Partial<ErrorContext>, customRetryConfig?: { maxRetries?: number; baseDelay?: number; backoffMultiplier?: number }) => {
         return executeWithRetry(fn, context, customRetryConfig)
       },
       createError: (
@@ -141,7 +141,7 @@ export function useApiErrorHandler() {
       return handleError(apiError, context)
     }, [handleError, createError]),
     
-    executeApiCall: useCallback((apiCall: any, context?: Partial<ErrorContext>) => {
+    executeApiCall: useCallback((apiCall: () => Promise<unknown>, context?: Partial<ErrorContext>) => {
       return executeWithRetry(apiCall, context, {
         maxRetries: 3,
         baseDelay: 1000,

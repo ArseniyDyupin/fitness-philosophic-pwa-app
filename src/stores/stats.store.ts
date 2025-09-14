@@ -312,7 +312,7 @@ export const useStatsStore = create<StatsState>((set) => ({
       }
       
       // Calculate stats
-      const userWeight = 70 // TODO: Get from profile
+      const userWeight = 70 // Default weight, should be from profile
       const kpi = calculateKPI(workouts, userWeight)
       const discipline = calculateDisciplineStats(workouts, userWeight)
       const trends = calculateTrends(workouts, userWeight)
