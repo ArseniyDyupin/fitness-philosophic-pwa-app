@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useOnboardingStore } from '@stores/onboarding.store'
+import { useProfileStore } from '@stores/profile.store'
 import { useTranslations } from '@stores/i18n.store'
 import { Upload, Play, FileText, User, CheckCircle, AlertCircle } from 'lucide-react'
 import { validateFile, importData } from '@services/data'
@@ -10,6 +11,7 @@ import type { ExportBundle } from '@/types/export'
 const EntryStep: React.FC = () => {
   const navigate = useNavigate()
   const { clearDraft } = useOnboardingStore()
+  const { loadProfile } = useProfileStore()
   const t = useTranslations()
   
   const [isImporting, setIsImporting] = useState(false)
@@ -52,11 +54,14 @@ const EntryStep: React.FC = () => {
       // Clear onboarding draft since we imported a profile
       clearDraft()
       
+      // Load the imported profile to update app state
+      await loadProfile()
+      
       // Show success toast
       toastSuccess(t.importSuccess || 'Profile imported successfully!')
       
-      // Redirect to home
-      navigate('/')
+      // Redirect to workouts page
+      navigate('/workouts')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t.error || 'Import failed'
       setImportError(errorMessage)
