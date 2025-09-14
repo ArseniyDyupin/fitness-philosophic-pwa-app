@@ -21,6 +21,8 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
   const { profile } = useProfileStore()
   const { workouts } = useWorkoutStore()
   
+  console.log('GenerateWorkoutModal render:', { isOpen, profile: !!profile, workouts: workouts.length })
+  
   const [futureDate, setFutureDate] = useState('')
   const [preferences, setPreferences] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)

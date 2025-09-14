@@ -129,10 +129,10 @@ const AISettings: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex space-x-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={handleSaveKey}
-            className="btn-primary"
+            className="btn-primary w-full sm:w-auto"
           >
             {t.aiSettings?.saveKey || 'Save Key'}
           </button>
@@ -142,7 +142,7 @@ const AISettings: React.FC = () => {
               <button
                 onClick={handleTestConnection}
                 disabled={isTestingConnection}
-                className="btn-secondary flex items-center space-x-2"
+                className="btn-secondary flex items-center justify-center space-x-2 w-full sm:w-auto"
               >
                 {isTestingConnection ? (
                   <Loader size={16} className="animate-spin" />
@@ -159,7 +159,7 @@ const AISettings: React.FC = () => {
               
               <button
                 onClick={handleClearKey}
-                className="btn-secondary text-red-600 hover:text-red-700"
+                className="btn-secondary text-red-600 hover:text-red-700 w-full sm:w-auto"
               >
                 {t.aiSettings?.clearKey || 'Clear Key'}
               </button>

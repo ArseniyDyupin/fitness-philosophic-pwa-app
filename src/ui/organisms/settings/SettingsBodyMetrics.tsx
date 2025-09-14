@@ -222,17 +222,19 @@ const SettingsBodyMetrics: React.FC = () => {
 
       {/* Default Metrics */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">
-            {t.metrics?.defaultMetrics || 'Default Metrics'}
-          </h3>
-          <button
-            onClick={handleTestEntry}
-            className="btn-secondary flex items-center space-x-2 text-sm"
-          >
-            <TestTube size={16} />
-            <span>{t.metrics?.testEntry || 'Test Entry'}</span>
-          </button>
+        <div className="mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {t.metrics?.defaultMetrics || 'Default Metrics'}
+            </h3>
+            <button
+              onClick={handleTestEntry}
+              className="btn-secondary flex items-center justify-center space-x-2 text-sm w-full sm:w-auto"
+            >
+              <TestTube size={16} />
+              <span>{t.metrics?.testEntry || 'Test Entry'}</span>
+            </button>
+          </div>
         </div>
 
         <div className="space-y-3">
@@ -284,17 +286,19 @@ const SettingsBodyMetrics: React.FC = () => {
 
       {/* Add Custom Metric */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">
-            {t.metrics?.customMetrics || 'Custom Metrics'}
-          </h3>
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="btn-primary flex items-center space-x-2 text-sm"
-          >
-            <Plus size={16} />
-            <span>{t.metrics?.addCustom || 'Add Custom'}</span>
-          </button>
+        <div className="mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {t.metrics?.customMetrics || 'Custom Metrics'}
+            </h3>
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="btn-primary flex items-center justify-center space-x-2 text-sm w-full sm:w-auto"
+            >
+              <Plus size={16} />
+              <span>{t.metrics?.addCustom || 'Add Custom'}</span>
+            </button>
+          </div>
         </div>
 
         {showAddForm && (

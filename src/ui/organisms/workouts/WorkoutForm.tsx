@@ -248,23 +248,19 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               <Edit3 size={16} />
               <span>{t.workoutForm?.formMode || 'Form Mode'}</span>
             </button>
-            <button
-              onClick={() => setMode('text')}
-              disabled={!isAIConfigured}
-              className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-colors focus-visible-ring ${
-                mode === 'text'
-                  ? 'bg-primary-600 text-white'
-                  : isAIConfigured 
-                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              <Bot size={16} />
-              <span>{t.workoutForm?.textMode || 'Text Mode'}</span>
-              {!isAIConfigured && (
-                <span className="text-xs">{t.workoutForm?.aiRequired || '(AI required)'}</span>
-              )}
-            </button>
+            {isAIConfigured && (
+              <button
+                onClick={() => setMode('text')}
+                className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-colors focus-visible-ring ${
+                  mode === 'text'
+                    ? 'bg-primary-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Bot size={16} />
+                <span>{t.workoutForm?.textMode || 'Text Mode'}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -355,15 +351,17 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
 
             {/* Exercises */}
             <div>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">{t.workoutForm?.exercises || 'Exercises'}</h3>
-                <button
-                  onClick={addExercise}
-                  className="btn-primary flex items-center space-x-2"
-                >
-                  <Plus size={16} />
-                  <span>{t.workoutForm?.addExercise || 'Add Exercise'}</span>
-                </button>
+              <div className="mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <h3 className="text-lg font-medium text-gray-900">{t.workoutForm?.exercises || 'Exercises'}</h3>
+                  <button
+                    onClick={addExercise}
+                    className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto"
+                  >
+                    <Plus size={16} />
+                    <span>{t.workoutForm?.addExercise || 'Add Exercise'}</span>
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -391,12 +389,14 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               <div className="bg-gray-50 rounded-lg p-4">
                 <h4 className="font-medium text-gray-900 mb-2">{t.workoutForm?.workoutSummary || 'Workout Summary'}</h4>
                 <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-600">{t.workoutForm?.estimatesWillBeCalculated || 'Estimates will be calculated after saving'}</span>
-                    <div className="font-medium text-sm text-gray-500">
-                      {isEstimating ? (t.workoutForm?.aiEstimationInProgress || 'AI estimation in progress...') : (t.workoutForm?.caloriesWillBeEstimated || 'Calories and duration will be estimated automatically')}
+                  {hasKey() && (
+                    <div>
+                      <span className="text-gray-600">{t.workoutForm?.estimatesWillBeCalculated || 'Estimates will be calculated after saving'}</span>
+                      <div className="font-medium text-sm text-gray-500">
+                        {isEstimating ? (t.workoutForm?.aiEstimationInProgress || 'AI estimation in progress...') : (t.workoutForm?.caloriesWillBeEstimated || 'Calories and duration will be estimated automatically')}
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div>
                     <span className="text-gray-600">{t.workoutForm?.exercisesCount || 'Exercises:'}</span>
                     <div className="font-medium">{exercises.length}</div>
@@ -448,12 +448,12 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
               disabled={exercises.length === 0 || isEstimating || isAnalyzing}
               className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus-visible-ring"
             >
-              {isEstimating ? (
+              {hasKey() && isEstimating ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   <span>{t.workoutForm?.aiEstimationInProgress || 'AI estimation...'}</span>
                 </>
-              ) : isAnalyzing ? (
+              ) : hasKey() && isAnalyzing ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   <span>{t.workoutAnalysis?.starting || 'Starting AI analysis...'}</span>

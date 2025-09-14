@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { useProfileStore } from '@stores/profile.store'
+import { useAIStore } from '@stores/ai.store'
 import { metricsService } from '@services/fitness'
 import { aiBodyService } from '@services/ai'
 import { startOfWeek, format } from 'date-fns'
@@ -18,6 +19,7 @@ interface BodyMetricsModalProps {
 const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, weekStart }) => {
   const t = useTranslations()
   const { profile } = useProfileStore()
+  const { hasKey } = useAIStore()
   const [activeDefs, setActiveDefs] = useState<MetricDef[]>([])
   const [entries, setEntries] = useState<Record<string, number | string>>({})
   const [notes, setNotes] = useState<Record<string, string>>({})
@@ -522,18 +524,20 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
               </div>
 
               {/* AI Analysis Consent */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="photo-analysis"
-                  checked={allowPhotoAnalysis}
-                  onChange={(e) => setAllowPhotoAnalysis(e.target.checked)}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-                <label htmlFor="photo-analysis" className="text-sm text-gray-700">
-                  {t.metrics?.modal?.consent || 'Allow sending photos for AI analysis'}
-                </label>
-              </div>
+              {hasKey() && (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="photo-analysis"
+                    checked={allowPhotoAnalysis}
+                    onChange={(e) => setAllowPhotoAnalysis(e.target.checked)}
+                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                  <label htmlFor="photo-analysis" className="text-sm text-gray-700">
+                    {t.metrics?.modal?.consent || 'Allow sending photos for AI analysis'}
+                  </label>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -560,18 +564,20 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
             <span>{t.metrics?.modal?.save || 'Save'}</span>
           </button>
           
-          <button
-            onClick={() => handleSave(true)}
-            disabled={isSaving || isLoading || isAnalyzing}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 focus-visible-ring"
-          >
-            {isAnalyzing ? (
-              <Loader className="animate-spin h-4 w-4" />
-            ) : (
-              <Sparkles className="h-4 w-4" />
-            )}
-            <span>{t.metrics?.modal?.saveAndAnalyze || 'Save and Analyze'}</span>
-          </button>
+          {hasKey() && (
+            <button
+              onClick={() => handleSave(true)}
+              disabled={isSaving || isLoading || isAnalyzing}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 focus-visible-ring"
+            >
+              {isAnalyzing ? (
+                <Loader className="animate-spin h-4 w-4" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              <span>{t.metrics?.modal?.saveAndAnalyze || 'Save and Analyze'}</span>
+            </button>
+          )}
         </div>
       </div>
       

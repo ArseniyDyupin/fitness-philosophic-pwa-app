@@ -46,31 +46,31 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
 
   return (
     <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-4">
+      <div className="max-w-4xl mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4">
         {/* Main header row */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-3 sm:space-y-0">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 sm:mb-4 space-y-2 sm:space-y-0">
           {/* Left side - Title and navigation */}
           <div className="flex-1">
-            <div className="flex items-center space-x-2 sm:space-x-4 mb-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+            <div className="flex items-center space-x-2 sm:space-x-4 mb-1 sm:mb-2">
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">
                 {t.workoutDetailsPage?.workoutDetails || 'Workout Details'}
               </h1>
             </div>
             
             {/* Date below title */}
-            <div className="text-sm text-gray-600">
+            <div className="text-xs sm:text-sm text-gray-600">
               {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
             </div>
           </div>
           
           {/* Right side - Action buttons */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full sm:w-auto">
             {/* Update Analysis (Primary) */}
             {hasKey && (
               <button
                 onClick={onUpdateAnalysis}
                 disabled={isAnalyzing}
-                className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+                className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                 title={t.workoutDetailsPage?.actions?.updateAnalysis || 'Update analysis'}
               >
                 {isAnalyzing ? (
@@ -82,7 +82,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                   <>
                     <RefreshCw size={14} className="sm:w-4 sm:h-4" />
                     <span className="text-xs sm:text-sm hidden sm:inline">{t.workoutDetailsPage?.actions?.updateAnalysis || 'Update Analysis'}</span>
-                    <span className="text-xs sm:hidden">Update</span>
+                    <span className="text-xs sm:hidden">{t.workoutDetailsPage?.actions?.updateAnalysisShort || 'Update'}</span>
                   </>
                 )}
               </button>
@@ -93,7 +93,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
               <button
                 onClick={onUpdateEstimates}
                 disabled={isEstimating}
-                className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+                className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                 title={t.workoutDetailsPage?.actions?.recalcEstimates || 'Recalculate AI estimates'}
               >
                 {isEstimating ? (
@@ -105,7 +105,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                   <>
                     <Bot size={14} className="sm:w-4 sm:h-4" />
                     <span className="text-xs sm:text-sm hidden sm:inline">{t.workoutDetailsPage?.actions?.recalcEstimates || 'Recalculate AI Estimates'}</span>
-                    <span className="text-xs sm:hidden">Recalc</span>
+                    <span className="text-xs sm:hidden">{t.workoutDetailsPage?.actions?.recalcEstimatesShort || 'Recalc'}</span>
                   </>
                 )}
               </button>
@@ -114,18 +114,18 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
             {/* Edit Meta (Tertiary) */}
             <button
               onClick={onEditMeta}
-              className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors touch-manipulation"
+              className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors touch-manipulation"
               title={t.workoutDetailsPage?.actions?.editMeta || 'Change date/duration/RPE'}
             >
               <Settings size={14} className="sm:w-4 sm:h-4" />
               <span className="text-xs sm:text-sm hidden sm:inline">{t.workoutDetailsPage?.actions?.editMeta || 'Change date/duration/RPE'}</span>
-              <span className="text-xs sm:hidden">Edit</span>
+              <span className="text-xs sm:hidden">{t.workoutDetailsPage?.actions?.editMetaShort || 'Edit'}</span>
             </button>
           </div>
         </div>
         
         {/* Metrics row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-4 gap-1 sm:gap-4">
           <MetricCard
             value={totalCalories}
             label={t.workoutDetailsPage?.metrics?.calories || 'Total Calories'}

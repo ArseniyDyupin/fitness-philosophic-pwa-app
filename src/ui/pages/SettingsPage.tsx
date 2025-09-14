@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useProfileStore } from '@stores/profile.store'
 import { useI18nStore } from '@stores/i18n.store'
 import { useTranslations } from '@stores/i18n.store'
@@ -35,6 +36,22 @@ const SettingsPage: React.FC = () => {
   // Export/Import states
   const [isExporting, setIsExporting] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
+  
+  // Refs for scrolling
+  const aiSettingsRef = useRef<HTMLDivElement>(null)
+  const location = useLocation()
+
+  // Handle scrolling to AI settings
+  useEffect(() => {
+    if (location.state?.scrollToAI && aiSettingsRef.current) {
+      setTimeout(() => {
+        aiSettingsRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        })
+      }, 100)
+    }
+  }, [location.state])
 
   if (!profile) {
     return <div>{t.settingsPage?.loading || 'Loading...'}</div>
@@ -488,7 +505,7 @@ const SettingsPage: React.FC = () => {
 
 
           {/* AI Configuration */}
-          <div className="card">
+          <div ref={aiSettingsRef} className="card">
             <AISettings />
           </div>
 

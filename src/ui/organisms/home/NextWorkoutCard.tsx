@@ -5,6 +5,7 @@ import { Calendar, Clock, Zap, Target, Play, CheckCircle, Settings, Plus } from 
 import type { Workout } from '@/types/models'
 import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'
 import WorkoutForm from '@organisms/workouts/WorkoutForm'
+import GenerateWorkoutModal from '@modals/shared/GenerateWorkoutModal'
 
 interface NextWorkoutCardProps {
   plan?: Workout
@@ -24,12 +25,25 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
   const t = useTranslations()
   const navigate = useNavigate()
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
 
   const handleFormSuccess = (workoutId?: string) => {
     setIsFormOpen(false)
     if (workoutId) {
       navigate(`/workouts/${workoutId}`)
     }
+  }
+
+  const handlePlanGenerated = (plan: any) => {
+    setIsGenerateModalOpen(false)
+    // For now, just close the modal
+    // In the future, this could save the plan or navigate to it
+    console.log('Plan generated:', plan)
+  }
+
+  const handleGenerateClick = () => {
+    console.log('Generate button clicked in NextWorkoutCard, opening modal')
+    setIsGenerateModalOpen(true)
   }
 
   const formatDuration = (minutes: number): string => {
@@ -196,6 +210,7 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
                 size="md"
                 showIcon={true}
                 showText={true}
+                onClick={handleGenerateClick}
               />
             ) : (
               <button
@@ -224,6 +239,13 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         onSuccess={handleFormSuccess}
+      />
+      
+      {/* Generate Workout Modal */}
+      <GenerateWorkoutModal
+        isOpen={isGenerateModalOpen}
+        onClose={() => setIsGenerateModalOpen(false)}
+        onPlanGenerated={handlePlanGenerated}
       />
     </>
   )

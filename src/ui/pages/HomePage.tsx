@@ -6,6 +6,7 @@ import { useProfileStore } from '@stores/profile.store'
 import { toastSuccess } from '@lib/toast'
 import { useTranslations } from '@stores/i18n.store'
 import { format, startOfWeek } from 'date-fns'
+import { Bot, Settings } from 'lucide-react'
 
 // Import new dashboard components
 import NextWorkoutCard from '@organisms/home/NextWorkoutCard'
@@ -66,6 +67,14 @@ const HomePage: React.FC = () => {
     navigate('/settings')
   }
 
+  const handleOpenAISettings = () => {
+    navigate('/settings', { state: { scrollToAI: true } })
+  }
+
+  const handleViewWorkout = (workout: Workout) => {
+    navigate(`/workouts/${workout.id}`)
+  }
+
   const handleEditWorkout = (workout: Workout) => {
     navigate(`/workouts/${workout.id}`)
   }
@@ -81,6 +90,36 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Main Dashboard Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* AI Key Notification */}
+        {!hasKey() && (
+          <div className="mb-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <Bot className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-blue-800">
+                    {t.metrics?.ai?.keyRequired || 'AI Key Required'}
+                  </h3>
+                  <p className="mt-1 text-sm text-blue-700">
+                    {t.metrics?.ai?.keyRequiredDescription || 'To activate AI features like workout analysis and text mode, you need to add your AI API key.'}
+                  </p>
+                  <div className="mt-3">
+                    <button
+                      onClick={handleOpenAISettings}
+                      className="inline-flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                    >
+                      <Settings className="h-4 w-4" />
+                      <span>{t.metrics?.ai?.addKey || 'Add AI Key'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
           {/* Next Workout Card - Takes up 8 columns on desktop */}
@@ -108,6 +147,7 @@ const HomePage: React.FC = () => {
         <div className="mb-6">
           <RecentWorkouts
             workouts={recentWorkouts}
+            onViewWorkout={handleViewWorkout}
             onEditWorkout={handleEditWorkout}
             onDeleteWorkout={handleDeleteWorkout}
           />

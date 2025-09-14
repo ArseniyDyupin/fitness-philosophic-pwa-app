@@ -29,8 +29,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
 }) => {
   return (
     <div className={cn('text-center', className)}>
-      <div className={cn('text-2xl sm:text-3xl font-bold mb-1 sm:mb-2', colorClasses[color])}>
-        {Icon && <Icon size={20} className="inline-block mr-1 sm:mr-2 sm:w-6 sm:h-6" />}
+      <div className={cn('text-sm sm:text-3xl font-bold mb-0.5 sm:mb-2', colorClasses[color])}>
+        {Icon && <Icon size={12} className="inline-block mr-0.5 sm:mr-2 sm:w-6 sm:h-6" />}
         {value}
       </div>
       <div 

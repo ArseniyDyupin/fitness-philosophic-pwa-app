@@ -939,6 +939,9 @@ export const translations = {
         photosAdded: '{{count}} photos added'
       },
       ai: {
+        keyRequired: 'AI Key Required',
+        keyRequiredDescription: 'To activate AI features like workout analysis and text mode, you need to add your AI API key.',
+        addKey: 'Add AI Key',
         summary: 'AI Assessment',
         score: 'Score',
         tips: 'Recommendations',
@@ -1034,6 +1037,7 @@ export const translations = {
       hard: 'Hard',
       veryHard: 'Very Hard',
       exercises: 'Exercises',
+      exercise: 'Exercise',
       addExercise: 'Add Exercise',
       noExercisesAdded: 'No exercises added yet. Click "Add Exercise" to get started.',
       workoutSummary: 'Workout Summary',
@@ -1160,8 +1164,11 @@ export const translations = {
       },
       actions: {
         updateAnalysis: 'Update Analysis',
+        updateAnalysisShort: 'Update',
         recalcEstimates: 'Recalculate AI Estimates',
+        recalcEstimatesShort: 'Recalc',
         editMeta: 'Change date/duration/RPE',
+        editMetaShort: 'Edit',
         toWeek: 'To Week',
         prev: 'Previous',
         next: 'Next'
@@ -2159,6 +2166,9 @@ export const translations = {
         photosAdded: 'Добавлено {{count}} фото'
       },
       ai: {
+        keyRequired: 'Требуется ключ ИИ',
+        keyRequiredDescription: 'Для активации функций ИИ, таких как анализ тренировок и текстовый режим, необходимо добавить ваш API ключ ИИ.',
+        addKey: 'Добавить ключ ИИ',
         summary: 'Оценка ИИ',
         score: 'Оценка',
         tips: 'Рекомендации',
@@ -2254,6 +2264,7 @@ export const translations = {
       hard: 'Тяжело',
       veryHard: 'Очень тяжело',
       exercises: 'Упражнения',
+      exercise: 'Упражнение',
       addExercise: 'Добавить упражнение',
       noExercisesAdded: 'Упражнения еще не добавлены. Нажмите "Добавить упражнение" чтобы начать.',
       workoutSummary: 'Сводка тренировки',
@@ -2380,8 +2391,11 @@ export const translations = {
       },
       actions: {
         updateAnalysis: 'Обновить анализ',
+        updateAnalysisShort: 'Обновить',
         recalcEstimates: 'Пересчитать AI-оценки',
+        recalcEstimatesShort: 'Пересчитать',
         editMeta: 'Изменить дату/длительность/RPE',
+        editMetaShort: 'Изменить',
         toWeek: 'К неделе',
         prev: 'Предыдущая',
         next: 'Следующая'

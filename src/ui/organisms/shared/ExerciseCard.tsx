@@ -63,7 +63,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
     switch (exercise.type) {
       case 'run':
         return (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t.durationMinutes}
@@ -222,7 +222,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Mode
@@ -345,7 +345,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
           </button>
           <h4 className="font-medium text-gray-900">
-            Exercise {index + 1} — {exerciseTypes.find(t => t.value === exercise.type)?.label}
+            {t.workoutForm?.exercise || 'Exercise'} {index + 1} — {exerciseTypes.find(t => t.value === exercise.type)?.label}
           </h4>
         </div>
         

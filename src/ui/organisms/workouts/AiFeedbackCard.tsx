@@ -62,29 +62,31 @@ const AiFeedbackCard: React.FC<AiFeedbackCardProps> = ({
   if (!feedback) {
     return (
       <div className="card">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-            <span className="text-2xl">🤖</span>
-            <span>{t.workoutDetailsPage?.ai?.feedback || 'AI Feedback'}</span>
-          </h3>
-          <button
-            onClick={onUpdateAnalysis}
-            disabled={isAnalyzing}
-            className="flex items-center space-x-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title={t.workoutDetailsPage?.actions?.updateAnalysis || 'Update analysis'}
-          >
-            {isAnalyzing ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
-                <span className="text-sm">{t.workoutAnalysis?.starting || 'Analyzing...'}</span>
-              </>
-            ) : (
-              <>
-                <RefreshCw size={16} />
-                <span className="text-sm">{t.workoutDetailsPage?.actions?.updateAnalysis || 'Update Analysis'}</span>
-              </>
-            )}
-          </button>
+        <div className="mb-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+              <span className="text-2xl">🤖</span>
+              <span>{t.workoutDetailsPage?.ai?.feedback || 'AI Feedback'}</span>
+            </h3>
+            <button
+              onClick={onUpdateAnalysis}
+              disabled={isAnalyzing}
+              className="flex items-center justify-center space-x-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+              title={t.workoutDetailsPage?.actions?.updateAnalysis || 'Update analysis'}
+            >
+              {isAnalyzing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
+                  <span className="text-sm">{t.workoutAnalysis?.starting || 'Analyzing...'}</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw size={16} />
+                  <span className="text-sm">{t.workoutDetailsPage?.actions?.updateAnalysis || 'Update Analysis'}</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
         
         <div className="text-center py-8 text-gray-500">
@@ -101,47 +103,49 @@ const AiFeedbackCard: React.FC<AiFeedbackCardProps> = ({
 
   return (
     <div className="card">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-          <span className="text-2xl">🤖</span>
-          <span>{t.workoutDetailsPage?.ai?.feedback || 'AI Feedback'}</span>
-          <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
-            {feedback.model}
-          </span>
-        </h3>
-        <div className="flex items-center space-x-3">
-          <div className="text-xs text-gray-500">
-            {t.workoutDetailsPage?.ai?.updated || 'updated'}: {format(new Date(feedback.createdAt), 'MMM d, yyyy')}
+      <div className="mb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+            <span className="text-2xl">🤖</span>
+            <span>{t.workoutDetailsPage?.ai?.feedback || 'AI Feedback'}</span>
+            <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
+              {feedback.model}
+            </span>
+          </h3>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <div className="text-xs text-gray-500">
+              {t.workoutDetailsPage?.ai?.updated || 'updated'}: {format(new Date(feedback.createdAt), 'MMM d, yyyy')}
+            </div>
+            <button
+              onClick={onUpdateAnalysis}
+              disabled={isAnalyzing}
+              className="flex items-center justify-center space-x-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+              title={t.workoutDetailsPage?.actions?.updateAnalysis || 'Update analysis'}
+            >
+              {isAnalyzing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
+                  <span className="text-sm">{t.workoutAnalysis?.starting || 'Analyzing...'}</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw size={16} />
+                  <span className="text-sm">{t.workoutDetailsPage?.actions?.updateAnalysis || 'Update Analysis'}</span>
+                </>
+              )}
+            </button>
           </div>
-          <button
-            onClick={onUpdateAnalysis}
-            disabled={isAnalyzing}
-            className="flex items-center space-x-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title={t.workoutDetailsPage?.actions?.updateAnalysis || 'Update analysis'}
-          >
-            {isAnalyzing ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-700"></div>
-                <span className="text-sm">{t.workoutAnalysis?.starting || 'Analyzing...'}</span>
-              </>
-            ) : (
-              <>
-                <RefreshCw size={16} />
-                <span className="text-sm">{t.workoutDetailsPage?.actions?.updateAnalysis || 'Update Analysis'}</span>
-              </>
-            )}
-          </button>
         </div>
       </div>
       
       <div className="space-y-4">
         {/* RPE Badge */}
         {feedback.rpe && (
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
             <span className="text-sm font-medium text-gray-700">
               {t.workoutAnalysis?.rpe || 'RPE'}: 
             </span>
-            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRpeColor(feedback.rpe)}`}>
+            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRpeColor(feedback.rpe)} w-fit`}>
               {feedback.rpe} - {getRpeLabel(feedback.rpe)}
             </span>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslations } from '@stores/i18n.store'
+import { useAIStore } from '@stores/ai.store'
 import { downloadExport } from '@services/data'
 import { metricsService } from '@services/fitness'
 import { toastSuccess, toastError } from '@lib/toast'
@@ -10,16 +11,19 @@ import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'
 import Button from '@atoms/Button'
 import ReminderBanner from '@molecules/shared/ReminderBanner'
 import BodyMetricsModal from '@modals/home/BodyMetricsModal'
+import GenerateWorkoutModal from '@modals/shared/GenerateWorkoutModal'
 
 const Header: React.FC = () => {
   const t = useTranslations()
   const location = useLocation()
   const navigate = useNavigate()
+  const { hasKey } = useAIStore()
   
   const [isExporting, setIsExporting] = useState(false)
   const [isMetricsModalOpen, setIsMetricsModalOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [hasWeeklyMetrics, setHasWeeklyMetrics] = useState(false)
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
 
   // Check if weekly metrics exist
   const checkWeeklyMetrics = async () => {
@@ -68,6 +72,18 @@ const Header: React.FC = () => {
     } finally {
       setIsExporting(false)
     }
+  }
+
+  const handlePlanGenerated = (plan: any) => {
+    setIsGenerateModalOpen(false)
+    // For now, just close the modal
+    // In the future, this could save the plan or navigate to it
+    console.log('Plan generated:', plan)
+  }
+
+  const handleGenerateClick = () => {
+    console.log('Generate button clicked, opening modal')
+    setIsGenerateModalOpen(true)
   }
 
   const handleBack = () => {
@@ -188,26 +204,32 @@ const Header: React.FC = () => {
           {/* Right side: Action buttons */}
           <div className="flex items-center space-x-2">
             {/* Generate Workout Button - Desktop */}
-            <div className="hidden md:block">
-              <GenerateWorkoutButton
-                variant="primary"
-                showIcon={true}
-                showText={true}
-                className="focus-visible-ring text-sm"
-                title={t.header?.generate || 'Создать тренировку'}
-              />
-            </div>
+            {hasKey() && (
+              <div className="hidden md:block">
+                <GenerateWorkoutButton
+                  variant="primary"
+                  showIcon={true}
+                  showText={true}
+                  className="focus-visible-ring text-sm"
+                  title={t.header?.generate || 'Создать тренировку'}
+                  onClick={handleGenerateClick}
+                />
+              </div>
+            )}
             
             {/* Generate Workout Button - Mobile (icon only, same size as export) */}
-            <div className="md:hidden">
-              <GenerateWorkoutButton
-                variant="primary"
-                showIcon={true}
-                showText={false}
-                className="hit-44 focus-visible-ring w-10 h-10 flex items-center justify-center"
-                title={t.header?.generate || 'Создать тренировку'}
-              />
-            </div>
+            {hasKey() && (
+              <div className="md:hidden">
+                <GenerateWorkoutButton
+                  variant="primary"
+                  showIcon={true}
+                  showText={false}
+                  className="hit-44 focus-visible-ring w-10 h-10 flex items-center justify-center"
+                  title={t.header?.generate || 'Создать тренировку'}
+                  onClick={handleGenerateClick}
+                />
+              </div>
+            )}
             
             {/* Export Button */}
             <Button
@@ -314,6 +336,13 @@ const Header: React.FC = () => {
           // Recheck metrics after modal closes
           setTimeout(checkWeeklyMetrics, 500)
         }}
+      />
+      
+      {/* Generate Workout Modal */}
+      <GenerateWorkoutModal
+        isOpen={isGenerateModalOpen}
+        onClose={() => setIsGenerateModalOpen(false)}
+        onPlanGenerated={handlePlanGenerated}
       />
     </header>
     </>
