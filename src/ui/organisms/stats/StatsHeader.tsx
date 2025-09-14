@@ -96,7 +96,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
             {/* Custom Date Picker */}
             {isCustomOpen && (
               <div className="absolute right-0 sm:right-0 left-0 sm:left-auto top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 w-full sm:min-w-80 max-w-none">
-                <form onSubmit={handleCustomDateSubmit} className="space-y-4">
+                <form onSubmit={handleCustomDateSubmit} className="space-y-4 sm:min-w-80 w-full-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       {t.statsPage?.customDate?.startDate || 'Start Date'}
