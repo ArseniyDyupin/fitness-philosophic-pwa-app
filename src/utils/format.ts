@@ -95,6 +95,7 @@ export const formatPercentage = (value?: number, precision: number = 0): string 
  * @param date - Date string or Date object
  * @param locale - Locale for formatting (default: 'en-US')
  * @returns Formatted date string
+ * @deprecated Use useLocalizedDate from @utils/dateUtils instead
  */
 export const formatDate = (date: string | Date, locale: string = 'en-US'): string => {
   const d = typeof date === 'string' ? new Date(date) : date
@@ -110,6 +111,7 @@ export const formatDate = (date: string | Date, locale: string = 'en-US'): strin
  * @param date - Date string or Date object
  * @param locale - Locale for formatting (default: 'en-US')
  * @returns Formatted time string
+ * @deprecated Use useLocalizedDate from @utils/dateUtils instead
  */
 export const formatTime = (date: string | Date, locale: string = 'en-US'): string => {
   const d = typeof date === 'string' ? new Date(date) : date
@@ -124,6 +126,7 @@ export const formatTime = (date: string | Date, locale: string = 'en-US'): strin
  * @param date - Date string or Date object
  * @param locale - Locale for formatting (default: 'en-US')
  * @returns Formatted relative time string
+ * @deprecated Use useLocalizedDate from @utils/dateUtils instead
  */
 export const formatRelativeTime = (date: string | Date, locale: string = 'en-US'): string => {
   const d = typeof date === 'string' ? new Date(date) : date

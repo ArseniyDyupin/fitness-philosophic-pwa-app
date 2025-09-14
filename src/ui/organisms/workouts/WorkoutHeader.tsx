@@ -1,7 +1,7 @@
 import React from 'react'
 import { Bot, RefreshCw, Settings } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
-import { format } from 'date-fns'
+import { useLocalizedDate } from '@utils/dateUtils'
 import MetricCard from '@atoms/MetricCard'
 import type { Workout } from '@/types/models'
 
@@ -31,6 +31,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   onEditMeta
 }) => {
   const t = useTranslations()
+  const { format } = useLocalizedDate()
 
   const getRpeColor = (rpe: number): 'green' | 'yellow' | 'red' => {
     if (rpe <= 3) return 'green'

@@ -4,7 +4,8 @@ import { useProfileStore } from '@stores/profile.store'
 import { useAIStore } from '@stores/ai.store'
 import { metricsService } from '@services/fitness'
 import { aiBodyService } from '@services/ai'
-import { startOfWeek, format } from 'date-fns'
+import { startOfWeek } from 'date-fns'
+import { useLocalizedDate } from '@utils/dateUtils'
 import { X, Camera, Save, Sparkles, Loader } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import AiFeedbackModal from './AiFeedbackModal'
@@ -18,6 +19,7 @@ interface BodyMetricsModalProps {
 
 const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, weekStart }) => {
   const t = useTranslations()
+  const { format } = useLocalizedDate()
   const { profile } = useProfileStore()
   const { hasKey } = useAIStore()
   const [activeDefs, setActiveDefs] = useState<MetricDef[]>([])

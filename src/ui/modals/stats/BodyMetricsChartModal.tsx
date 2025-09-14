@@ -10,7 +10,8 @@ import {
   CartesianGrid,
   Tooltip
 } from 'recharts'
-import { format, parseISO } from 'date-fns'
+import { parseISO } from 'date-fns'
+import { useLocalizedDate } from '@utils/dateUtils'
 import type { MetricDef } from '@/types/body-metrics'
 
 interface BodyMetricsChartModalProps {
@@ -31,6 +32,7 @@ const BodyMetricsChartModal: React.FC<BodyMetricsChartModalProps> = ({
   metricDef
 }) => {
   const t = useTranslations()
+  const { format } = useLocalizedDate()
 
   if (!isOpen) return null
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslations } from '@stores/i18n.store'
-import { format, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns'
+import { eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns'
+import { useLocalizedDate } from '@utils/dateUtils'
 import { WorkoutExercise, Workout } from '@/types/models'
 import {
   ResponsiveContainer,
@@ -56,6 +57,7 @@ const createExerciseSummary = (exercises: WorkoutExercise[]): string => {
 // Custom tooltip component
 const WeeklyTooltip: React.FC<any> = ({ active, payload, label }) => {
   const t = useTranslations()
+  const { format } = useLocalizedDate()
   
   if (active && payload && payload.length) {
     const data = (payload[0] as any).payload
@@ -113,6 +115,7 @@ const WeeklyTooltip: React.FC<any> = ({ active, payload, label }) => {
 
 const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ workouts, weekStart }) => {
   const t = useTranslations()
+  const { format } = useLocalizedDate()
   const [chartData, setChartData] = useState<DayData[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
 

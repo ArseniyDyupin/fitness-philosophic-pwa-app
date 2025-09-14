@@ -10,7 +10,8 @@ import {
   CartesianGrid,
   Tooltip
 } from 'recharts'
-import { format, parseISO } from 'date-fns'
+import { parseISO } from 'date-fns'
+import { useLocalizedDate } from '@utils/dateUtils'
 
 interface RecordChartModalProps {
   isOpen: boolean
@@ -32,6 +33,7 @@ const RecordChartModal: React.FC<RecordChartModalProps> = ({
   recordLabel
 }) => {
   const t = useTranslations()
+  const { format } = useLocalizedDate()
 
   if (!isOpen) return null
 

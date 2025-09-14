@@ -12,7 +12,7 @@ import {
   Tooltip,
   Legend
 } from 'recharts'
-import { format } from 'date-fns'
+import { useLocalizedDate } from '@utils/dateUtils'
 import BodyMetricsChartModal from '@modals/stats/BodyMetricsChartModal'
 import type { MetricDef } from '@/types/body-metrics'
 
@@ -22,6 +22,7 @@ interface BodyMetricsBlockProps {
 
 const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
   const t = useTranslations()
+  const { format } = useLocalizedDate()
   const [isExpanded, setIsExpanded] = useState(false)
   const [metricDefs, setMetricDefs] = useState<MetricDef[]>([])
   const [latestValues, setLatestValues] = useState<Record<string, number>>({})

@@ -1,8 +1,8 @@
 import React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
-import { format, startOfWeek, endOfWeek, addWeeks } from 'date-fns'
-import { ru, enUS } from 'date-fns/locale'
+import { startOfWeek, endOfWeek, addWeeks } from 'date-fns'
+import { useLocalizedDate } from '@utils/dateUtils'
 
 export interface WeekNavigatorProps {
   selectedWeekStart: Date
@@ -20,16 +20,14 @@ const WeekNavigator: React.FC<WeekNavigatorProps> = ({
   isCurrentWeek
 }) => {
   const t = useTranslations()
-  const { language } = useTranslations()
-
-  const locale = language === 'ru' ? ru : enUS
+  const { format } = useLocalizedDate()
 
   const weekStart = startOfWeek(selectedWeekStart, { weekStartsOn: 1 })
   const weekEnd = endOfWeek(selectedWeekStart, { weekStartsOn: 1 })
 
   const formatWeekRange = () => {
-    const startStr = format(weekStart, 'MMM d', { locale })
-    const endStr = format(weekEnd, 'MMM d, yyyy', { locale })
+    const startStr = format(weekStart, 'MMM d')
+    const endStr = format(weekEnd, 'MMM d, yyyy')
     return `${startStr} — ${endStr}`
   }
 

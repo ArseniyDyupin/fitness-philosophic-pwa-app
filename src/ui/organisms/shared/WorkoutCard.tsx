@@ -3,7 +3,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { getWorkoutTotalCalories, getWorkoutTotalDuration } from '@services/fitness'
 import type { Workout } from '@/types/models'
 import { Clock, Flame, TrendingUp, MoreVertical, Bot, Trash2 } from 'lucide-react'
-import { format } from 'date-fns'
+import { useLocalizedDate } from '@utils/dateUtils'
 
 export interface WorkoutCardProps {
   workout: Workout
@@ -23,25 +23,13 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
   onUpdateAnalysis
 }) => {
   const t = useTranslations()
+  const { formats } = useLocalizedDate()
   
   const totalCalories = getWorkoutTotalCalories(workout, userWeight)
   const totalDuration = getWorkoutTotalDuration(workout)
   
   const formatDate = (date: string) => {
-    const today = new Date()
-    const workoutDate = new Date(date)
-    
-    if (workoutDate.toDateString() === today.toDateString()) {
-      return t.workoutCard?.today || 'Today'
-    }
-    
-    const yesterday = new Date(today)
-    yesterday.setDate(yesterday.getDate() - 1)
-    if (workoutDate.toDateString() === yesterday.toDateString()) {
-      return t.workoutCard?.yesterday || 'Yesterday'
-    }
-    
-    return format(workoutDate, 'MMM d, yyyy')
+    return formats.relative(date)
   }
 
   const getRpeColor = (rpe: number) => {
