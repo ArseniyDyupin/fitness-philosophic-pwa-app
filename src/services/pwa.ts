@@ -46,7 +46,7 @@ const showUpdateToast = () => {
     toast.dismiss(toastId)
   })
   
-  const toastId = toast(toastElement, {
+  const toastId = toast(toastElement as any, {
     duration: Infinity,
     position: 'top-center',
     style: {
@@ -93,10 +93,10 @@ export const updateSW = registerSW({
     console.log('PWA: App ready to work offline')
     showOfflineToast()
   },
-  onRegistered(registration) {
+  onRegistered(registration: ServiceWorkerRegistration) {
     console.log('PWA: Service Worker registered', registration)
   },
-  onRegisterError(error) {
+  onRegisterError(error: Error) {
     console.error('PWA: Service Worker registration failed', error)
   }
 })
