@@ -17,8 +17,8 @@ export const aiBodyService = {
         {
           role: 'system',
           content: language === 'ru' 
-            ? 'Ты - эксперт по фитнесу и анализу тела. Анализируй метрики и фото пользователя, дай краткую оценку прогресса.'
-            : 'You are a fitness and body analysis expert. Analyze user metrics and photos, provide a brief progress assessment.'
+            ? 'Ты — опытный фитнес-эксперт и аналитик тела с позитивным подходом. Твоя задача — мотивировать пользователя, анализируя его прогресс. Будь поддерживающим и вдохновляющим, но честным в оценках. Подчеркивай достижения и давай конструктивные советы для дальнейшего развития.'
+            : 'You are an experienced fitness and body analysis expert with a positive approach. Your goal is to motivate the user by analyzing their progress. Be supportive and inspiring, but honest in your assessments. Highlight achievements and provide constructive advice for further development.'
         },
         {
           role: 'user',
@@ -107,34 +107,34 @@ Metrics history for the last ${metricsHistory.length} weeks:
     prompt += isRussian 
       ? `
 
-Проанализируй тенденции и дай оценку прогресса. Верни ответ в формате JSON:
+Проанализируй тенденции и дай мотивирующую оценку прогресса. Верни ответ в формате JSON:
 {
   "score": число от 0 до 100 (общая оценка прогресса),
-  "summary": "краткое резюме на 2-3 предложения",
-  "tips": ["совет 1", "совет 2", "совет 3"],
+  "summary": "вдохновляющее резюме на 2-3 предложения, подчеркивающее достижения",
+  "tips": ["мотивирующий совет 1", "практический совет 2", "вдохновляющий совет 3"],
   "tags": ["тег1", "тег2"],
   "comparedTo": {
     "weeks": количество недель для сравнения,
-    "note": "краткое сравнение с предыдущим периодом"
+    "note": "позитивное сравнение с предыдущим периодом, подчеркивающее рост"
   }
 }
 
-Будь объективным и конструктивным.`
+Будь честным, но вдохновляющим. Подчеркивай прогресс и достижения, давай практические советы для дальнейшего развития.`
       : `
 
-Analyze trends and provide a progress assessment. Return response in JSON format:
+Analyze trends and provide a motivating progress assessment. Return response in JSON format:
 {
   "score": number from 0 to 100 (overall progress score),
-  "summary": "brief summary in 2-3 sentences",
-  "tips": ["tip 1", "tip 2", "tip 3"],
+  "summary": "inspiring summary in 2-3 sentences, highlighting achievements",
+  "tips": ["motivating tip 1", "practical tip 2", "inspiring tip 3"],
   "tags": ["tag1", "tag2"],
   "comparedTo": {
     "weeks": number of weeks for comparison,
-    "note": "brief comparison with previous period"
+    "note": "positive comparison with previous period, highlighting growth"
   }
 }
 
-Be objective and constructive.`
+Be honest but inspiring. Highlight progress and achievements, provide practical advice for further development.`
 
     return prompt
   },

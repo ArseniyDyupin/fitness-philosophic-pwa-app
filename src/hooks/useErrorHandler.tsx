@@ -2,10 +2,9 @@
  * Hook for using the centralized error handling system
  */
 
-import React, { useCallback, useContext, createContext, ReactNode } from 'react'
+import { useCallback, useContext, createContext, ReactNode } from 'react'
 import { 
   errorHandler, 
-  retryService, 
   errorLogger,
   errorRecovery,
   createError,
@@ -50,13 +49,9 @@ export function ErrorHandlerProvider({ children, component }: ErrorHandlerProvid
       return handleError(error, { ...context, component })
     }, [component]),
 
-    executeWithRetry: useCallback(async <T>(
-      fn: () => Promise<T>,
-      context?: Partial<ErrorContext>,
-      customRetryConfig?: any
-    ) => {
+    executeWithRetry: useCallback(async (fn: any, context?: Partial<ErrorContext>, customRetryConfig?: any) => {
       return executeWithRetry(fn, { ...context, component }, customRetryConfig)
-    }, [component]),
+    }, [component]) as <T>(fn: () => Promise<T>, context?: Partial<ErrorContext>, customRetryConfig?: any) => Promise<T>,
 
     createError: useCallback((
       message: string,
@@ -68,15 +63,15 @@ export function ErrorHandlerProvider({ children, component }: ErrorHandlerProvid
     }, [component]),
 
     logError: useCallback((message: string, error?: AppError, context?: ErrorContext, metadata?: Record<string, unknown>) => {
-      errorLogger.error(message, error, { ...context, component }, metadata)
+      errorLogger.error(message, error, { ...context, component, timestamp: Date.now() }, metadata)
     }, [component]),
 
     logInfo: useCallback((message: string, context?: ErrorContext, metadata?: Record<string, unknown>) => {
-      errorLogger.info(message, { ...context, component }, metadata)
+      errorLogger.info(message, { ...context, component, timestamp: Date.now() }, metadata)
     }, [component]),
 
     logWarning: useCallback((message: string, context?: ErrorContext, metadata?: Record<string, unknown>) => {
-      errorLogger.warn(message, { ...context, component }, metadata)
+      errorLogger.warn(message, { ...context, component, timestamp: Date.now() }, metadata)
     }, [component]),
 
     attemptRecovery: useCallback(async (error: AppError) => {
@@ -104,11 +99,7 @@ export function useErrorHandler(): ErrorHandlerContextType {
       handleError: async (error: Error | AppError, context?: Partial<ErrorContext>) => {
         return handleError(error, context)
       },
-      executeWithRetry: async <T>(
-        fn: () => Promise<T>,
-        context?: Partial<ErrorContext>,
-        customRetryConfig?: any
-      ) => {
+      executeWithRetry: async (fn: any, context?: Partial<ErrorContext>, customRetryConfig?: any) => {
         return executeWithRetry(fn, context, customRetryConfig)
       },
       createError: (
@@ -150,10 +141,7 @@ export function useApiErrorHandler() {
       return handleError(apiError, context)
     }, [handleError, createError]),
     
-    executeApiCall: useCallback(async <T>(
-      apiCall: () => Promise<T>,
-      context?: Partial<ErrorContext>
-    ) => {
+    executeApiCall: useCallback(async (apiCall: any, context?: Partial<ErrorContext>) => {
       return executeWithRetry(apiCall, context, {
         maxRetries: 3,
         baseDelay: 1000,

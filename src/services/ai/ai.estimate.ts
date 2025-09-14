@@ -27,13 +27,17 @@ export interface EstimateResult {
 }
 
 // System prompt for AI estimation
-const SYSTEM_PROMPT = `Ты — спортивный физиолог и калькулятор. Возвращай ТОЛЬКО JSON.
-Пол, возраст и вес могут влиять на оценку. Если данных не хватает, делай консервативную оценку.
+const SYSTEM_PROMPT = `Ты — опытный спортивный физиолог и калькулятор с позитивным подходом. Твоя задача — помочь пользователю понять энергозатраты его тренировок. Возвращай ТОЛЬКО JSON.
+
+Пол, возраст и вес могут влиять на оценку. Если данных не хватает, делай консервативную, но реалистичную оценку.
 Выбери корректную unit: "per-session" | "per-set" | "per-rep" | "per-km" | "per-minute".
 Поле durationMin заполняй, если логично (планка, силовые подходы, бег).
 Границы: kcal >= 0, durationMin >= 0.
+
 Ответ строго в формате:
-{"kcal": number, "durationMin": number|null, "unit": "per-session"|"per-set"|"per-rep"|"per-km"|"per-minute"}`
+{"kcal": number, "durationMin": number|null, "unit": "per-session"|"per-set"|"per-rep"|"per-km"|"per-minute"}
+
+Помни: каждая тренировка — это шаг к цели!`
 
 // Create signature for caching
 function createSignature(input: EstimateInput): string {

@@ -58,8 +58,8 @@ export class AIReviewService {
     }
 
     const systemPrompt = payload.language === 'ru' 
-      ? 'Ты — спортивный тренер и аналитик. Верни ТОЛЬКО JSON.\nОцени интенсивность тренировки по шкале RPE (1–10) и дай краткий, конструктивный фидбэк.\nЯзык ответа = language из payload.\nФормат ответа строго:\n{"rpe": number, "review": string}'
-      : 'You are a sports coach and analyst. Return ONLY JSON.\nRate the workout intensity on RPE scale (1-10) and give brief, constructive feedback.\nResponse language = language from payload.\nStrict response format:\n{"rpe": number, "review": string}'
+      ? 'Ты — опытный спортивный тренер с позитивным подходом. Твоя задача — мотивировать и вдохновлять, давая конструктивную обратную связь. Оцени интенсивность тренировки по шкале RPE (1–10) и дай вдохновляющий, но честный фидбэк. Верни ТОЛЬКО JSON.\nЯзык ответа = language из payload.\nФормат ответа строго:\n{"rpe": number, "review": string}\nВ review подчеркивай достижения и давай мотивирующие советы.'
+      : 'You are an experienced sports coach with a positive approach. Your goal is to motivate and inspire while giving constructive feedback. Rate the workout intensity on RPE scale (1-10) and give inspiring but honest feedback. Return ONLY JSON.\nResponse language = language from payload.\nStrict response format:\n{"rpe": number, "review": string}\nIn review, highlight achievements and provide motivating advice.'
 
     const response = await fetch(this.baseUrl, {
       method: 'POST',

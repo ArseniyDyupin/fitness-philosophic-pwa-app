@@ -63,8 +63,8 @@ export class AIService {
     }
 
     const systemPrompt = language === 'ru' 
-      ? 'Вы - ИИ-тренер по фитнесу. Всегда отвечайте только валидным JSON. Никакого дополнительного текста.'
-      : 'You are a fitness coach AI. Always respond with valid JSON only. No additional text.'
+      ? 'Ты — опытный ИИ-тренер по фитнесу с позитивным подходом. Твоя задача — мотивировать и вдохновлять пользователей, помогая им достигать своих целей. Всегда отвечай только валидным JSON. Никакого дополнительного текста.'
+      : 'You are an experienced AI fitness coach with a positive approach. Your goal is to motivate and inspire users, helping them achieve their goals. Always respond with valid JSON only. No additional text.'
 
     const response = await fetch(this.baseUrl, {
       method: 'POST',
@@ -190,11 +190,11 @@ Respond with JSON in this exact format:
     }
 
     const prompt = language === 'ru'
-      ? `Проанализируйте описание тренировки и верните JSON массив упражнений в точном формате.
+      ? `Ты — опытный фитнес-тренер, который помогает пользователям структурировать их тренировки. Проанализируй описание тренировки и верни JSON массив упражнений в точном формате.
 
 Текст тренировки: "${workoutText}"
 
-Верните JSON массив объектов, где каждый объект имеет структуру:
+Верни JSON массив объектов, где каждый объект имеет структуру:
 ${JSON.stringify(exerciseSchema, null, 2)}
 
 Правила парсинга:
@@ -218,8 +218,8 @@ ${JSON.stringify(exerciseSchema, null, 2)}
 - "подтягивания 10-8-6" → [{"type": "pullups", "details": {"sets": 3, "repsPerSet": [10, 8, 6]}, "kcalEstimated": 0}]
 - "планка 60 секунд" → [{"type": "plank", "details": {"seconds": [60]}, "kcalEstimated": 0}]
 
-Верните ТОЛЬКО валидный JSON массив, никакого дополнительного текста.`
-      : `Analyze the workout description and return a JSON array of exercises in the exact format.
+Верни ТОЛЬКО валидный JSON массив, никакого дополнительного текста. Помни: каждая тренировка — это шаг к цели!`
+      : `You are an experienced fitness trainer helping users structure their workouts. Analyze the workout description and return a JSON array of exercises in the exact format.
 
 Workout text: "${workoutText}"
 
@@ -247,7 +247,7 @@ Examples:
 - "pull-ups 10-8-6" → [{"type": "pullups", "details": {"sets": 3, "repsPerSet": [10, 8, 6]}, "kcalEstimated": 0}]
 - "plank 60 seconds" → [{"type": "plank", "details": {"seconds": [60]}, "kcalEstimated": 0}]
 
-Return ONLY valid JSON array, no additional text.`
+Return ONLY valid JSON array, no additional text. Remember: every workout is a step towards your goal!`
 
     try {
       const response = await this.makeRequest(prompt, language, abortController)
@@ -287,7 +287,8 @@ Return ONLY valid JSON array, no additional text.`
     }
 
     const systemPrompt = language === 'ru' 
-      ? `Ты — персональный тренер. Верни ТОЛЬКО JSON без текста.
+      ? `Ты — опытный персональный тренер с позитивным подходом. Твоя задача — мотивировать и вдохновлять, давая конструктивные советы. Будь поддерживающим, но честным. Верни ТОЛЬКО JSON без текста.
+
 Формат:
 {
   "review": string,
@@ -303,8 +304,10 @@ Return ONLY valid JSON array, no additional text.`
 { "type":"run"|"pullups"|"pushups"|"plank"|"custom",
   "details":{ "distanceKm"?:number, "durationMin"?:number, "sets"?:number, "repsPerSet"?:number[], "seconds"?:number[], "customExercise"?:string, "notes"?:string }
 }
-Никаких комментариев вне JSON.`
-      : `You are a personal trainer. Return ONLY JSON without any text.
+
+В review и tips используй вдохновляющий, но не льстивый тон. Подчеркивай прогресс и давай практические советы.`
+      : `You are an experienced personal trainer with a positive approach. Your goal is to motivate and inspire while giving constructive advice. Be supportive but honest. Return ONLY JSON without any text.
+
 Format:
 {
   "review": string,
@@ -320,10 +323,11 @@ Where WorkoutExercise:
 { "type":"run"|"pullups"|"pushups"|"plank"|"custom",
   "details":{ "distanceKm"?:number, "durationMin"?:number, "sets"?:number, "repsPerSet"?:number[], "seconds"?:number[], "customExercise"?:string, "notes"?:string }
 }
-No comments outside JSON.`
+
+In review and tips, use an inspiring but not overly flattering tone. Highlight progress and give practical advice.`
 
     const userPrompt = language === 'ru'
-      ? `Создай план тренировки для пользователя:
+      ? `Создай вдохновляющий план тренировки для пользователя, который стремится к своим целям:
 - Возраст: ${profile.age} лет
 - Пол: ${profile.gender}
 - Рост: ${profile.height} см
@@ -337,8 +341,8 @@ No comments outside JSON.`
   `${w.exercises.map(e => e.type).join(', ')} (RPE ${w.rpe || 'не указан'})`
 ).join('; ')}
 
-Создай разнообразную тренировку с учетом прогресса и целей.${additionalPrompt ? `\n\nДополнительные требования:\n${additionalPrompt}` : ''}`
-      : `Create a workout plan for user:
+Создай разнообразную, мотивирующую тренировку с учетом прогресса и целей. В review подчеркни достижения и дай вдохновляющие советы.${additionalPrompt ? `\n\nДополнительные требования:\n${additionalPrompt}` : ''}`
+      : `Create an inspiring workout plan for a user who is committed to achieving their goals:
 - Age: ${profile.age} years
 - Gender: ${profile.gender}
 - Height: ${profile.height} cm
@@ -352,7 +356,7 @@ Recent workouts (${recentWorkouts.length}): ${recentWorkouts.slice(0, 3).map(w =
   `${w.exercises.map(e => e.type).join(', ')} (RPE ${w.rpe || 'not specified'})`
 ).join('; ')}
 
-Create a varied workout considering progress and goals.${additionalPrompt ? `\n\nAdditional requirements:\n${additionalPrompt}` : ''}`
+Create a varied, motivating workout considering progress and goals. In review, highlight achievements and provide inspiring advice.${additionalPrompt ? `\n\nAdditional requirements:\n${additionalPrompt}` : ''}`
 
     try {
       const response = await fetch(this.baseUrl, {
