@@ -9,8 +9,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        skipWaiting: true,      // сразу активировать новый SW
+        clientsClaim: true,     // новый SW сразу “забирает” открытые вкладки
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,woff2}']
       },
+      includeAssets: ['icons/**'],
       manifest: {
         name: 'AI Тренер',
         short_name: 'AI Тренер',

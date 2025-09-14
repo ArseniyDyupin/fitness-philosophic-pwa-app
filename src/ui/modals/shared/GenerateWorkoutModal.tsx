@@ -96,23 +96,23 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             {t.plan?.generateModal?.title || 'Generate New Workout'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="hit-44 focus-visible-ring hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <X size={20} />
+            <X size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Date Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -170,18 +170,18 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-gray-200">
           <button
             onClick={onClose}
             disabled={isGenerating}
-            className="btn-secondary"
+            className="btn-secondary focus-visible-ring"
           >
             {t.plan?.generateModal?.cancel || 'Cancel'}
           </button>
           <button
             onClick={handleGenerate}
             disabled={isGenerating}
-            className="btn-primary flex items-center space-x-2"
+            className="btn-primary flex items-center justify-center space-x-2 focus-visible-ring"
           >
             {isGenerating ? (
               <Loader className="animate-spin" size={16} />

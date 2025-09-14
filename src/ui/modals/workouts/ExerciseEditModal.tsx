@@ -54,7 +54,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="flex min-h-screen items-center justify-center p-2 sm:p-4">
         {/* Backdrop */}
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
@@ -62,7 +62,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
         />
         
         {/* Modal */}
-        <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full max-h-[95vh] overflow-y-auto mx-2 sm:mx-0">
+        <div className="relative bg-white rounded-lg shadow-xl max-w-sm sm:max-w-md w-full max-h-[95vh] overflow-y-auto mx-2 sm:mx-0">
           {/* Header */}
           <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 sticky top-0 bg-white">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">
