@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { useNavigate } from 'react-router-dom'
 import { useProfileStore } from '@stores/profile.store'
@@ -6,6 +6,7 @@ import { useWorkoutStore } from '@stores/workout.store'
 import { useAIStore } from '@stores/ai.store'
 import { Zap, Clock, Target, Calendar, Activity } from 'lucide-react'
 import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'
+import GenerateWorkoutModal from '../../modals/shared/GenerateWorkoutModal'
 
 export interface DayStats {
   calories: number
@@ -32,6 +33,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
   const { profile } = useProfileStore()
   const { getWorkoutsByDate } = useWorkoutStore()
   const { hasKey } = useAIStore()
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
 
   const formatDuration = (minutes: number): string => {
     const hours = Math.floor(minutes / 60)
@@ -147,8 +149,14 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
               size="md"
               showIcon={true}
               showText={true}
+              onClick={() => setIsGenerateModalOpen(true)}
             />
           )}
+          <GenerateWorkoutModal
+            isOpen={isGenerateModalOpen}
+            onClose={() => setIsGenerateModalOpen(false)}
+            onPlanGenerated={() => setIsGenerateModalOpen(false)}
+          />
         </div>
       )}
 
