@@ -95,7 +95,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
 
             {/* Custom Date Picker */}
             {isCustomOpen && (
-              <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 min-w-80">
+              <div className="absolute right-0 sm:right-0 left-0 sm:left-auto top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 w-full sm:min-w-80 max-w-none">
                 <form onSubmit={handleCustomDateSubmit} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -105,11 +105,11 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
                       type="date"
                       value={customStartDate || ''}
                       onChange={(e) => {
-                        if (onCustomDateChange && customEndDate) {
-                          onCustomDateChange(e.target.value, customEndDate)
+                        if (onCustomDateChange) {
+                          onCustomDateChange(e.target.value, customEndDate || '')
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 text-base"
                     />
                   </div>
                   <div>
@@ -120,24 +120,24 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({
                       type="date"
                       value={customEndDate || ''}
                       onChange={(e) => {
-                        if (onCustomDateChange && customStartDate) {
-                          onCustomDateChange(customStartDate, e.target.value)
+                        if (onCustomDateChange) {
+                          onCustomDateChange(customStartDate || '', e.target.value)
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 text-base"
                     />
                   </div>
-                  <div className="flex justify-end space-x-2">
+                  <div className="flex flex-col sm:flex-row justify-end gap-2 sm:space-x-2">
                     <button
                       type="button"
                       onClick={() => setIsCustomOpen(false)}
-                      className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800"
+                      className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 w-full sm:w-auto"
                     >
                       {t.statsPage?.customDate?.cancel || 'Cancel'}
                     </button>
                     <button
                       type="submit"
-                      className="px-3 py-1.5 text-sm bg-primary-600 text-white rounded-md hover:bg-primary-700"
+                      className="px-4 py-2 text-sm bg-primary-600 text-white rounded-md hover:bg-primary-700 w-full sm:w-auto"
                     >
                       {t.statsPage?.customDate?.apply || 'Apply'}
                     </button>

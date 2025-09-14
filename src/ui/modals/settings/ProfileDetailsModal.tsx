@@ -118,7 +118,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[95vh] overflow-hidden">
         {/* Header */}
         <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
@@ -157,7 +157,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6 overflow-y-auto max-h-[60vh]">
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[50vh] sm:max-h-[60vh]">
           {activeTab === 'general' && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -375,66 +375,101 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                 </div>
               </div>
 
-              {/* Constraints and Equipment - display only for now */}
-              {profile.constraints && profile.constraints.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t.profile?.constraints || 'Constraints'}
-                  </label>
-                  <p className="text-gray-900 py-2">{profile.constraints.join(', ')}</p>
-                </div>
-              )}
+              {/* Constraints */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t.profile?.constraints || 'Constraints'}
+                </label>
+                {isEditMode ? (
+                  <input
+                    type="text"
+                    value={editedData.constraints?.join(', ') || ''}
+                    onChange={(e) => setEditedData({ 
+                      ...editedData, 
+                      constraints: e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0)
+                    })}
+                    placeholder="Enter constraints separated by commas"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  />
+                ) : (
+                  <p className="text-gray-900 py-2">
+                    {profile.constraints && profile.constraints.length > 0 
+                      ? profile.constraints.join(', ') 
+                      : 'No constraints specified'
+                    }
+                  </p>
+                )}
+              </div>
 
-              {profile.equipment && profile.equipment.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t.profile?.equipment || 'Equipment'}
-                  </label>
-                  <p className="text-gray-900 py-2">{profile.equipment.join(', ')}</p>
-                </div>
-              )}
+              {/* Equipment */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t.profile?.equipment || 'Equipment'}
+                </label>
+                {isEditMode ? (
+                  <input
+                    type="text"
+                    value={editedData.equipment?.join(', ') || ''}
+                    onChange={(e) => setEditedData({ 
+                      ...editedData, 
+                      equipment: e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0)
+                    })}
+                    placeholder="Enter equipment separated by commas"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  />
+                ) : (
+                  <p className="text-gray-900 py-2">
+                    {profile.equipment && profile.equipment.length > 0 
+                      ? profile.equipment.join(', ') 
+                      : 'No equipment specified'
+                    }
+                  </p>
+                )}
+              </div>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 p-4 sm:p-6 border-t border-gray-200 bg-gray-50">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors focus-visible-ring rounded-lg"
-          >
-            {t.profile?.close || 'Close'}
-          </button>
-          
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-            {!isEditMode ? (
-              <button
-                onClick={() => setIsEditMode(true)}
-                className="btn-primary flex items-center justify-center space-x-1 focus-visible-ring"
-              >
-                <Edit size={16} />
-                <span>{t.profile?.update || 'Update'}</span>
-              </button>
-            ) : (
-              <>
+        <div className="flex flex-col gap-3 p-4 sm:p-6 border-t border-gray-200 bg-gray-50 pb-6 sm:pb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors focus-visible-ring rounded-lg w-full sm:w-auto"
+            >
+              {t.profile?.close || 'Close'}
+            </button>
+            
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              {!isEditMode ? (
                 <button
-                  onClick={handleCancel}
-                  disabled={isSaving}
-                  className="btn-secondary flex items-center justify-center space-x-1 focus-visible-ring"
+                  onClick={() => setIsEditMode(true)}
+                  className="btn-primary flex items-center justify-center space-x-1 focus-visible-ring w-full sm:w-auto"
                 >
-                  <X size={16} />
-                  <span>{t.profile?.cancel || 'Cancel'}</span>
+                  <Edit size={16} />
+                  <span>{t.profile?.update || 'Update'}</span>
                 </button>
-                <button
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="btn-primary flex items-center justify-center space-x-1 focus-visible-ring"
-                >
-                  <Save size={16} />
-                  <span>{isSaving ? (t.profile?.saving || 'Saving...') : (t.profile?.save || 'Save')}</span>
-                </button>
-              </>
-            )}
+              ) : (
+                <>
+                  <button
+                    onClick={handleCancel}
+                    disabled={isSaving}
+                    className="btn-secondary flex items-center justify-center space-x-1 focus-visible-ring w-full sm:w-auto"
+                  >
+                    <X size={16} />
+                    <span>{t.profile?.cancel || 'Cancel'}</span>
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="btn-primary flex items-center justify-center space-x-1 focus-visible-ring w-full sm:w-auto"
+                  >
+                    <Save size={16} />
+                    <span>{isSaving ? (t.profile?.saving || 'Saving...') : (t.profile?.save || 'Save')}</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
