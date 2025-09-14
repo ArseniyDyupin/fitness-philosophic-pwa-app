@@ -13,6 +13,7 @@ import HomeKPI, { type DayStats, type WeekStats } from '@organisms/home/HomeKPI'
 import RecentWorkouts from '@organisms/home/RecentWorkouts'
 import HomeBanners from '@organisms/home/HomeBanners'
 import BodyMetricsModal from '@modals/home/BodyMetricsModal'
+import type { Workout } from '@/types/models'
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate()
@@ -65,7 +66,7 @@ const HomePage: React.FC = () => {
     navigate('/settings')
   }
 
-  const handleEditWorkout = (workout: any) => {
+  const handleEditWorkout = (workout: Workout) => {
     navigate(`/workouts/${workout.id}`)
   }
 

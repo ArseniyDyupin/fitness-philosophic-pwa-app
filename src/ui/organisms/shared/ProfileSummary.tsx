@@ -20,7 +20,7 @@ const ProfileSummary: React.FC = () => {
     return Math.round((completedFields.length / requiredFields.length) * 100)
   }
 
-  const formatValue = (key: string, value: any) => {
+  const formatValue = (key: string, value: unknown) => {
     if (value === undefined || value === '') return 'Not set'
     
     switch (key) {

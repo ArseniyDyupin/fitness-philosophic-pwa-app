@@ -62,7 +62,7 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload
+      const data = (payload[0] as any).payload
       const percentage = ((data.value / totalValue) * 100).toFixed(1)
       
       return (

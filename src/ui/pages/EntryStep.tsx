@@ -84,13 +84,13 @@ const EntryStep: React.FC = () => {
   }
 
   const formatProfileSummary = (profile: any) => {
-    const notSet = (t as any).notSet || 'Not set'
+    const notSet = 'Not set'
     return {
       name: profile.name || notSet,
       age: profile.age || notSet,
       gender: profile.gender || notSet,
-      height: profile.height ? `${profile.height} ${(t as any).cm || 'cm'}` : notSet,
-      weight: profile.weight ? `${profile.weight} ${(t as any).kg || 'kg'}` : notSet,
+      height: profile.height ? `${profile.height} cm` : notSet,
+      weight: profile.weight ? `${profile.weight} kg` : notSet,
       goals: profile.goal?.types?.join(', ') || notSet,
       workouts: profile.workouts?.length || 0,
       foodLogs: profile.food?.length || 0

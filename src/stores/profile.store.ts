@@ -85,16 +85,15 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       // Validate and transform imported data
       const importedProfile = jsonData.profile || jsonData
       
-      if (!importedProfile.id || !importedProfile.gender || !importedProfile.age || 
-          !importedProfile.height || !importedProfile.weight || !importedProfile.goal) {
+      if (!importedProfile || typeof importedProfile !== 'object') {
         throw new Error('Invalid profile data')
       }
 
       const transformedProfile: Profile = {
-        ...importedProfile,
+        ...(importedProfile as any),
         id: 'me', // Always use 'me' as ID
-        language: importedProfile.language || 'en',
-        goalsDetailed: importedProfile.goalsDetailed || '',
+        language: (importedProfile as any).language || 'en',
+        goalsDetailed: (importedProfile as any).goalsDetailed || '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       }

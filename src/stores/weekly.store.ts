@@ -4,7 +4,7 @@ import type { WeeklyCheckin } from '@/types/models'
 
 interface WeeklyState {
   checkins: WeeklyCheckin[]
-  weeklyData: any[] // For export/import compatibility
+  weeklyData: Array<Record<string, unknown>> // For export/import compatibility
   isLoading: boolean
   error: string | null
   

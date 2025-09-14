@@ -4,6 +4,7 @@ import { useI18nStore } from '@stores/i18n.store'
 import { useTranslations } from '@stores/i18n.store'
 import { toastSuccess, toastError } from '@lib/toast'
 import { X, Edit, Save } from 'lucide-react'
+import type { Profile } from '@/types/models'
 
 interface ProfileDetailsModalProps {
   isOpen: boolean
@@ -21,7 +22,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
   const t = useTranslations()
   
   const [isEditMode, setIsEditMode] = useState(initialEditMode)
-  const [editedData, setEditedData] = useState<any>({})
+  const [editedData, setEditedData] = useState<Partial<Profile>>({})
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const [isSaving, setIsSaving] = useState(false)
   const [activeTab, setActiveTab] = useState<'general' | 'goals'>('general')
@@ -53,19 +54,19 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
     if (!editedData.name?.trim()) {
       errors.name = t.profile?.nameRequired || 'Name is required'
     }
-    if (editedData.age < 10 || editedData.age > 100) {
+    if (editedData.age && (editedData.age < 10 || editedData.age > 100)) {
       errors.age = t.profile?.ageRange || 'Age must be between 10 and 100'
     }
-    if (editedData.height < 100 || editedData.height > 250) {
+    if (editedData.height && (editedData.height < 100 || editedData.height > 250)) {
       errors.height = t.profile?.heightRange || 'Height must be between 100 and 250 cm'
     }
-    if (editedData.weight < 30 || editedData.weight > 300) {
+    if (editedData.weight && (editedData.weight < 30 || editedData.weight > 300)) {
       errors.weight = t.profile?.weightRange || 'Weight must be between 30 and 300 kg'
     }
-    if (editedData.frequency < 1 || editedData.frequency > 14) {
+    if (editedData.frequency && (editedData.frequency < 1 || editedData.frequency > 14)) {
       errors.frequency = t.profile?.frequencyRange || 'Frequency must be between 1 and 14'
     }
-    if (editedData.duration < 5 || editedData.duration > 300) {
+    if (editedData.duration && (editedData.duration < 5 || editedData.duration > 300)) {
       errors.duration = t.profile?.durationRange || 'Duration must be between 5 and 300 minutes'
     }
     
@@ -90,7 +91,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
       await saveProfile(updatedProfile)
       
       if (editedData.language !== profile?.language) {
-        setLanguage(editedData.language)
+        if (editedData.language) setLanguage(editedData.language)
       }
       
       setIsEditMode(false)
@@ -211,7 +212,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                   {isEditMode ? (
                     <select
                       value={editedData.gender || ''}
-                      onChange={(e) => setEditedData({ ...editedData, gender: e.target.value })}
+                      onChange={(e) => setEditedData({ ...editedData, gender: e.target.value as any })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="male">{t.profile?.male || 'Male'}</option>
@@ -276,7 +277,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
                   {isEditMode ? (
                     <select
                       value={editedData.language || ''}
-                      onChange={(e) => setEditedData({ ...editedData, language: e.target.value })}
+                      onChange={(e) => setEditedData({ ...editedData, language: e.target.value as any })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="en">{t.profile?.english || 'English'}</option>

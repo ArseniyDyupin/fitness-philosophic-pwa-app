@@ -18,11 +18,11 @@ import {
 
 interface ErrorHandlerContextType {
   handleError: (error: Error | AppError, context?: Partial<ErrorContext>) => Promise<void>
-  executeWithRetry: <T>(
-    fn: () => Promise<T>,
+  executeWithRetry: (
+    fn: any,
     context?: Partial<ErrorContext>,
-    customRetryConfig?: any
-  ) => Promise<T>
+    customRetryConfig?: { maxRetries?: number; baseDelay?: number; backoffMultiplier?: number }
+  ) => Promise<any>
   createError: (
     message: string,
     type?: ErrorType,
@@ -33,7 +33,7 @@ interface ErrorHandlerContextType {
   logInfo: (message: string, context?: ErrorContext, metadata?: Record<string, unknown>) => void
   logWarning: (message: string, context?: ErrorContext, metadata?: Record<string, unknown>) => void
   attemptRecovery: (error: AppError) => Promise<boolean>
-  getMetrics: () => any
+  getMetrics: () => { totalErrors: number; errorsByType: Record<string, number>; errorsBySeverity: Record<string, number> }
 }
 
 const ErrorHandlerContext = createContext<ErrorHandlerContextType | null>(null)
@@ -49,9 +49,9 @@ export function ErrorHandlerProvider({ children, component }: ErrorHandlerProvid
       return handleError(error, { ...context, component })
     }, [component]),
 
-    executeWithRetry: useCallback(async (fn: any, context?: Partial<ErrorContext>, customRetryConfig?: any) => {
+    executeWithRetry: useCallback((fn: any, context?: Partial<ErrorContext>, customRetryConfig?: { maxRetries?: number; baseDelay?: number; backoffMultiplier?: number }) => {
       return executeWithRetry(fn, { ...context, component }, customRetryConfig)
-    }, [component]) as <T>(fn: () => Promise<T>, context?: Partial<ErrorContext>, customRetryConfig?: any) => Promise<T>,
+    }, [component]),
 
     createError: useCallback((
       message: string,
@@ -99,7 +99,7 @@ export function useErrorHandler(): ErrorHandlerContextType {
       handleError: async (error: Error | AppError, context?: Partial<ErrorContext>) => {
         return handleError(error, context)
       },
-      executeWithRetry: async (fn: any, context?: Partial<ErrorContext>, customRetryConfig?: any) => {
+      executeWithRetry: (fn: any, context?: Partial<ErrorContext>, customRetryConfig?: { maxRetries?: number; baseDelay?: number; backoffMultiplier?: number }) => {
         return executeWithRetry(fn, context, customRetryConfig)
       },
       createError: (
@@ -141,7 +141,7 @@ export function useApiErrorHandler() {
       return handleError(apiError, context)
     }, [handleError, createError]),
     
-    executeApiCall: useCallback(async (apiCall: any, context?: Partial<ErrorContext>) => {
+    executeApiCall: useCallback((apiCall: any, context?: Partial<ErrorContext>) => {
       return executeWithRetry(apiCall, context, {
         maxRetries: 3,
         baseDelay: 1000,

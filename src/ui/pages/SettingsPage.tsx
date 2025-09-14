@@ -11,6 +11,7 @@ import DataImport from '@modals/settings/DataImport'
 import ProfileDetailsModal from '@modals/settings/ProfileDetailsModal'
 import SettingsBodyMetrics from '@organisms/settings/SettingsBodyMetrics'
 import { Edit, Check, X, Eye, RefreshCw } from 'lucide-react'
+import type { Profile } from '@/types/models'
 
 const SettingsPage: React.FC = () => {
   const { profile, saveProfile } = useProfileStore()
@@ -19,7 +20,7 @@ const SettingsPage: React.FC = () => {
   
   // Editing states
   const [editingSection, setEditingSection] = useState<string | null>(null)
-  const [editedData, setEditedData] = useState<any>({})
+  const [editedData, setEditedData] = useState<Partial<Profile>>({})
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const [isSaving, setIsSaving] = useState(false)
   
@@ -103,7 +104,7 @@ const SettingsPage: React.FC = () => {
     try {
       if (section === 'language') {
         await saveProfile({ language: editedData.language })
-        setLanguage(editedData.language)
+        if (editedData.language) setLanguage(editedData.language)
       } else {
         await saveProfile(editedData)
       }
@@ -262,7 +263,7 @@ const SettingsPage: React.FC = () => {
                       name="editLanguage"
                   value="en"
                       checked={editedData.language === 'en'}
-                      onChange={(e) => setEditedData({ ...editedData, language: e.target.value })}
+                      onChange={(e) => setEditedData({ ...editedData, language: e.target.value as any })}
                   className="border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                     <span className="ml-3 text-gray-700">{t.english}</span>
@@ -273,7 +274,7 @@ const SettingsPage: React.FC = () => {
                       name="editLanguage"
                   value="ru"
                       checked={editedData.language === 'ru'}
-                      onChange={(e) => setEditedData({ ...editedData, language: e.target.value })}
+                      onChange={(e) => setEditedData({ ...editedData, language: e.target.value as any })}
                   className="border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                     <span className="ml-3 text-gray-700">{t.russian}</span>
@@ -396,7 +397,7 @@ const SettingsPage: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">{t.settingsPage?.gender || 'Gender'}</label>
                     <select
                       value={editedData.gender || ''}
-                      onChange={(e) => setEditedData({ ...editedData, gender: e.target.value })}
+                      onChange={(e) => setEditedData({ ...editedData, gender: e.target.value as any })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="male">{t.settingsPage?.male || 'Male'}</option>

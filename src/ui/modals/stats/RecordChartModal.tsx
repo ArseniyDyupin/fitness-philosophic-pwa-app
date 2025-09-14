@@ -79,7 +79,7 @@ const RecordChartModal: React.FC<RecordChartModalProps> = ({
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload
+      const data = (payload[0] as any).payload
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900">{formatDate(data.date)}</p>

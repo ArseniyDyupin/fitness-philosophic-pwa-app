@@ -128,7 +128,7 @@ export class RetryService {
   /**
    * Create a retry wrapper for a function
    */
-  public createRetryWrapper<T extends (...args: any[]) => Promise<any>>(
+  public createRetryWrapper<T extends (...args: unknown[]) => Promise<unknown>>(
     fn: T,
     options: RetryOptions = {},
     context: string = 'Wrapped'
@@ -194,7 +194,7 @@ export class RetryService {
   /**
    * Retry with circuit breaker pattern
    */
-  public createCircuitBreaker<T extends (...args: any[]) => Promise<any>>(
+  public createCircuitBreaker<T extends (...args: unknown[]) => Promise<unknown>>(
     fn: T,
     options: {
       failureThreshold?: number
@@ -262,7 +262,7 @@ export class RetryService {
   }
 
   private shouldRetry(error: Error, config: Required<RetryConfig>): boolean {
-    return config.retryCondition(error as any)
+    return config.retryCondition ? config.retryCondition(error as any) : this.defaultRetryCondition(error)
   }
 
   private defaultRetryCondition(error: Error): boolean {

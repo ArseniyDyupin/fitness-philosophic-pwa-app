@@ -58,8 +58,8 @@ const WeeklyTooltip: React.FC<any> = ({ active, payload, label }) => {
   const t = useTranslations()
   
   if (active && payload && payload.length) {
-    const data = payload[0].payload
-    const date = new Date(label)
+    const data = (payload[0] as any).payload
+    const date = new Date(label || '')
     return (
       <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg max-w-sm">
         <div className="text-sm font-semibold text-gray-900 mb-2">
