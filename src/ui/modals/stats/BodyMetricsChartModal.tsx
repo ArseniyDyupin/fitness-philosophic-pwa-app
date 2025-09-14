@@ -50,7 +50,8 @@ const BodyMetricsChartModal: React.FC<BodyMetricsChartModalProps> = ({
 
   const getYAxisLabel = (): string => {
     const unit = t.metrics?.units?.[metricDef.unit as keyof typeof t.metrics.units] || metricDef.unit
-    return `${metricDef.label} (${unit})`
+    const translatedLabel = t.metrics?.default?.[metricDef.key as keyof typeof t.metrics.default] || metricDef.label
+    return `${translatedLabel} (${unit})`
   }
 
   const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }> }) => {
@@ -60,7 +61,7 @@ const BodyMetricsChartModal: React.FC<BodyMetricsChartModalProps> = ({
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900">{formatDate(data.date)}</p>
           <p className="text-sm text-gray-600">
-            {metricDef.label}: {formatValue(data.value)}
+            {t.metrics?.default?.[metricDef.key as keyof typeof t.metrics.default] || metricDef.label}: {formatValue(data.value)}
           </p>
         </div>
       )
@@ -82,7 +83,7 @@ const BodyMetricsChartModal: React.FC<BodyMetricsChartModalProps> = ({
           <div className="flex items-center space-x-2">
             <TrendingUp className="w-5 h-5 text-blue-500" />
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-              {metricDef.label} - {t.statsPage?.chart?.progress || 'Progress'}
+              {t.metrics?.default?.[metricDef.key as keyof typeof t.metrics.default] || metricDef.label} - {t.statsPage?.chart?.progress || 'Progress'}
             </h2>
           </div>
           <button

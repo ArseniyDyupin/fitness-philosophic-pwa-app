@@ -303,7 +303,9 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
                 <LineChart data={prepareChartData()}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
-                  <YAxis />
+                  <YAxis 
+                    label={{ value: 'Value', angle: -90, position: 'insideLeft' }}
+                  />
                   <Tooltip />
                   <Legend />
                   {selectedMetrics.map((key) => {

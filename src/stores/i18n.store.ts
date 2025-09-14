@@ -704,7 +704,9 @@ export const translations = {
         runKm: 'Distance (km)',
         runMin: 'Duration (min)',
         reps: 'Reps',
-        seconds: 'Seconds'
+        seconds: 'Seconds',
+        value: 'Value',
+        time: 'Time (min)'
       },
       tooltip: {
         date: 'Date',
@@ -915,6 +917,18 @@ export const translations = {
       reminder: 'Time to update measurements for the past week',
       fillNow: 'Fill Now',
       snooze: 'Snooze',
+      default: {
+        weight: 'Weight',
+        waist: 'Waist',
+        chest: 'Chest',
+        bicep: 'Bicep',
+        thigh: 'Thigh',
+        bodyFat: 'Body Fat',
+        body_fat: 'Body Fat',
+        muscle_mass: 'Muscle Mass',
+        arms: 'Arms',
+        legs: 'Legs'
+      },
       modal: {
         title: 'Weekly Measurements',
         addPhoto: 'Add Photo',
@@ -944,14 +958,6 @@ export const translations = {
         noPreviousData: 'No previous data available for comparison',
         keyAreas: 'Key Areas',
         close: 'Close'
-      },
-      default: {
-        weight: 'Weight',
-        waist: 'Waist',
-        chest: 'Chest',
-        bicep: 'Bicep',
-        thigh: 'Thigh',
-        bodyFat: 'Body Fat %'
       },
       units: {
         kg: 'kg',
@@ -1918,7 +1924,9 @@ export const translations = {
         runKm: 'Дистанция (км)',
         runMin: 'Длительность бега (мин)',
         reps: 'Повторения',
-        seconds: 'Секунды'
+        seconds: 'Секунды',
+        value: 'Значение',
+        time: 'Время (мин)'
       },
       tooltip: {
         date: 'Дата',
@@ -2129,6 +2137,18 @@ export const translations = {
       reminder: 'Пора обновить измерения за прошедшую неделю',
       fillNow: 'Заполнить',
       snooze: 'Отложить',
+      default: {
+        weight: 'Вес',
+        waist: 'Талия',
+        chest: 'Грудь',
+        bicep: 'Бицепс',
+        thigh: 'Бедро',
+        bodyFat: 'Жир',
+        body_fat: 'Жир',
+        muscle_mass: 'Мышцы',
+        arms: 'Руки',
+        legs: 'Ноги'
+      },
       modal: {
         title: 'Еженедельные измерения',
         addPhoto: 'Добавить фото',
@@ -2158,14 +2178,6 @@ export const translations = {
         noPreviousData: 'Нет предыдущих данных для сравнения',
         keyAreas: 'Ключевые области',
         close: 'Закрыть'
-      },
-      default: {
-        weight: 'Вес',
-        waist: 'Талия',
-        chest: 'Грудь',
-        bicep: 'Бицепс',
-        thigh: 'Бедро',
-        bodyFat: 'Процент жира'
       },
       units: {
         kg: 'кг',

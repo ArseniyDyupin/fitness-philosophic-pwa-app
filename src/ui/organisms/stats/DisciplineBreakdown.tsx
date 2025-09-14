@@ -162,7 +162,9 @@ const DisciplineBreakdown: React.FC<DisciplineBreakdownProps> = ({ discipline })
               <BarChart data={barData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis />
+                <YAxis 
+                  label={{ value: chartType === 'calories' ? (t.statsPage?.chart?.calories || 'Calories') : (t.statsPage?.chart?.time || 'Time (min)'), angle: -90, position: 'insideLeft' }}
+                />
                 <Tooltip />
                 <Legend />
                 {chartType === 'calories' ? (
