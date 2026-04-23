@@ -3,6 +3,7 @@ import type { Profile, Workout, PlanSuggestion } from '@/types/models'
 import { db } from '../data/db'
 import { z } from 'zod'
 import { aiRateLimiter } from './rateLimiter'
+import { AI_CONFIG } from '@/constants'
 
 export class AIService {
   private apiKey: string = ''
@@ -55,8 +56,11 @@ export class AIService {
       throw new Error('API key not set')
     }
 
-    // Check rate limit
-    const rateLimitKey = `ai-request-${Date.now().toString().slice(0, -3)}` // Per minute
+    // Check rate limit. We use a single stable key per browser session so that
+    // the sliding window in RateLimiter actually enforces AI_CONFIG.RATE_LIMIT_REQUESTS
+    // across all requests. The previous time-bucketed key created a fresh bucket
+    // every second, effectively disabling the limiter.
+    const rateLimitKey = 'ai-request'
     if (!aiRateLimiter.isAllowed(rateLimitKey)) {
       const remainingTime = aiRateLimiter.getTimeUntilReset(rateLimitKey)
       throw new Error(`Rate limit exceeded. Please wait ${Math.ceil(remainingTime / 1000)} seconds before making another AI request.`)
@@ -73,7 +77,7 @@ export class AIService {
         'Authorization': `Bearer ${this.apiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: AI_CONFIG.DEFAULT_MODEL,
         messages: [
           {
             role: 'system',

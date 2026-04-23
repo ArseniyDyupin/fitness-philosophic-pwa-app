@@ -2,6 +2,8 @@
 
 > Прогрессивное веб-приложение для управления тренировками с AI-помощником
 
+**Live demo:** [fitness-philosophic-pwa-app.vercel.app](https://fitness-philosophic-pwa-app.vercel.app/)
+
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -31,8 +33,8 @@
 
 ```bash
 # Клонирование репозитория
-git clone https://github.com/your-username/fitness-pwa.git
-cd fitness-pwa
+git clone https://github.com/ArseniyDyupin/fitness-philosophic-pwa-app.git
+cd fitness-philosophic-pwa-app
 
 # Установка зависимостей
 npm install
@@ -234,11 +236,7 @@ netlify deploy --prod --dir=dist
 
 ## 📞 Поддержка
 
-Если у вас есть вопросы или проблемы:
-
-- 📧 Email: support@fitness-pwa.com
-- 💬 Discord: [Наш сервер](https://discord.gg/fitness-pwa)
-- 📱 Telegram: [@fitness_pwa](https://t.me/fitness_pwa)
+Если у вас есть вопросы или проблемы — откройте [issue на GitHub](https://github.com/ArseniyDyupin/fitness-philosophic-pwa-app/issues).
 
 ---
 

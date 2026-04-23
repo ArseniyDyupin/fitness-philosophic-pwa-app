@@ -160,11 +160,7 @@ src/
 
 ## 📞 Поддержка
 
-Если у вас есть вопросы по документации:
-
-- 📧 Email: docs@fitness-pwa.com
-- 💬 Discord: [Наш сервер](https://discord.gg/fitness-pwa)
-- 📱 Telegram: [@fitness_pwa](https://t.me/fitness_pwa)
+Если у вас есть вопросы по документации — откройте [issue на GitHub](https://github.com/ArseniyDyupin/fitness-philosophic-pwa-app/issues).
 
 ## 📄 Лицензия
 
