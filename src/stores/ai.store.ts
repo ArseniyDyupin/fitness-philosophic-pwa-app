@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { aiService } from '@services/ai'
+import type { AIPlan } from '@/types/models'
 
 interface AIState {
   apiKey: string
@@ -8,6 +9,7 @@ interface AIState {
   isTestingConnection: boolean
   lastConnectionTest: Date | null
   connectionTestResult: boolean | null
+  plans: AIPlan[]
   
   // Actions
   setApiKey: (key: string) => void
@@ -15,6 +17,10 @@ interface AIState {
   testConnection: () => Promise<boolean>
   checkConfiguration: () => void
   hasKey: () => boolean
+  addPlan: (plan: AIPlan) => Promise<void>
+  updatePlan: (id: string, plan: Partial<AIPlan>) => Promise<void>
+  deletePlan: (id: string) => Promise<void>
+  loadPlans: () => Promise<void>
 }
 
 export const useAIStore = create<AIState>()(
@@ -25,6 +31,7 @@ export const useAIStore = create<AIState>()(
       isTestingConnection: false,
       lastConnectionTest: null,
       connectionTestResult: null,
+      plans: [],
 
       setApiKey: (key: string) => {
         aiService.setApiKey(key)
@@ -78,6 +85,32 @@ export const useAIStore = create<AIState>()(
 
       hasKey: () => {
         return aiService.hasApiKey()
+      },
+
+      addPlan: async (plan: AIPlan) => {
+        set(state => ({
+          plans: [...state.plans, plan]
+        }))
+      },
+
+      updatePlan: async (id: string, planData: Partial<AIPlan>) => {
+        set(state => ({
+          plans: state.plans.map(plan =>
+            plan.id === id ? { ...plan, ...planData } : plan
+          )
+        }))
+      },
+
+      deletePlan: async (id: string) => {
+        set(state => ({
+          plans: state.plans.filter(plan => plan.id !== id)
+        }))
+      },
+
+      loadPlans: async () => {
+        // For now, just return empty array
+        // In a real implementation, this would load from a database
+        set({ plans: [] })
       }
     }),
     {

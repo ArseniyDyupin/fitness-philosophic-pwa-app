@@ -1,345 +1,231 @@
-import { googleDriveService, type SyncData } from './googleDrive'
-import { z } from 'zod'
+import {
+  GoogleDriveError,
+  googleDriveService,
+  type GoogleDriveErrorCode
+} from './googleDrive'
+import {
+  db,
+  exportAll,
+  importData,
+  ImportError,
+  parseExportBundle
+} from './data'
+import type { ExportBundle, ImportStats } from '@/types/export'
 
-// Validation schema for sync data
-const SyncDataSchema = z.object({
-  schemaVersion: z.number(),
-  exportedAt: z.string(),
-  profile: z.object({
-    id: z.string(),
-    name: z.string(),
-    age: z.number(),
-    gender: z.enum(['male', 'female', 'other']),
-    height: z.number(),
-    weight: z.number(),
-    goal: z.string(),
-    constraints: z.array(z.string()),
-    equipment: z.array(z.string()),
-    frequency: z.number(),
-    duration: z.number(),
-    language: z.enum(['en', 'ru']),
-    goalsDetailed: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string()
-  }).optional(),
-  workouts: z.array(z.any()),
-  foodLogs: z.array(z.any()),
-  checkins: z.array(z.any()),
-  aiPlans: z.array(z.any())
-})
+export type SyncStats = ImportStats
 
-export interface SyncStats {
-  profile: { updated: boolean; created: boolean }
-  workouts: { added: number; updated: number; skipped: number }
-  foodLogs: { added: number; updated: number; skipped: number }
-  checkins: { added: number; updated: number; skipped: number }
-  aiPlans: { added: number; updated: number; skipped: number }
+export type DataSyncErrorCode =
+  | GoogleDriveErrorCode
+  | 'OPERATION_IN_PROGRESS'
+  | 'DATA_EXPORT_FAILED'
+  | 'DATA_IMPORT_FAILED'
+
+export class DataSyncError extends Error {
+  constructor(public readonly code: DataSyncErrorCode) {
+    super(code)
+    this.name = 'DataSyncError'
+  }
 }
 
-class DataSyncService {
-  private _isUploading = false
-  private _isDownloading = false
+interface DriveSyncClient {
+  isAuthenticated: () => boolean
+  uploadSyncData: (data: ExportBundle) => Promise<unknown>
+  downloadSyncData: () => Promise<unknown>
+  getSyncFileInfo: () => Promise<{
+    exists: boolean
+    lastModified?: string
+    size?: string
+  }>
+}
 
-  // Upload data to Google Drive
+interface DataSyncServiceOptions {
+  driveService?: DriveSyncClient
+  exportData?: typeof exportAll
+  parseData?: typeof parseExportBundle
+  mergeData?: typeof importData
+  reloadStoreMirrors?: () => Promise<void>
+}
+
+export function getDataSyncErrorCode(error: unknown): DataSyncErrorCode | null {
+  if (
+    error instanceof GoogleDriveError ||
+    error instanceof DataSyncError
+  ) {
+    return error.code
+  }
+
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    typeof error.code === 'string'
+  ) {
+    return error.code as DataSyncErrorCode
+  }
+
+  return null
+}
+
+export class DataSyncService {
+  private activeOperation: 'upload' | 'download' | null = null
+  private readonly driveService: DriveSyncClient
+  private readonly exportData: typeof exportAll
+  private readonly parseData: typeof parseExportBundle
+  private readonly mergeData: typeof importData
+  private readonly reloadMirrors: () => Promise<void>
+
+  constructor(options: DataSyncServiceOptions = {}) {
+    this.driveService = options.driveService ?? googleDriveService
+    this.exportData = options.exportData ?? exportAll
+    this.parseData = options.parseData ?? parseExportBundle
+    this.mergeData = options.mergeData ?? importData
+    this.reloadMirrors = options.reloadStoreMirrors ?? (() => this.reloadStoreMirrors())
+  }
+
   async uploadData(): Promise<void> {
-    if (this._isUploading) {
-      throw new Error('Upload already in progress')
-    }
+    return this.runExclusive('upload', async () => {
+      this.assertAuthenticated()
 
-    if (!googleDriveService.isAuthenticated()) {
-      throw new Error('Not authenticated with Google Drive')
-    }
-
-    this._isUploading = true
-
-    try {
-      // Collect all data from stores
-      const syncData = await this.collectAllData()
-      
-      // Upload to Google Drive
-      await googleDriveService.uploadSyncData(syncData)
-      
-      console.log('Data uploaded successfully')
-    } catch (error) {
-      console.error('Upload failed:', error)
-      throw error
-    } finally {
-      this._isUploading = false
-    }
-  }
-
-  // Download and merge data from Google Drive
-  async downloadAndMergeData(): Promise<SyncStats> {
-    if (this._isDownloading) {
-      throw new Error('Download already in progress')
-    }
-
-    if (!googleDriveService.isAuthenticated()) {
-      throw new Error('Not authenticated with Google Drive')
-    }
-
-    this._isDownloading = true
-
-    try {
-      // Download data from Google Drive
-      const remoteData = await googleDriveService.downloadSyncData()
-      
-      // Validate data
-      const validatedData = SyncDataSchema.parse(remoteData)
-      
-      // Merge with local data
-      const stats = await this.mergeData(validatedData)
-      
-      console.log('Data downloaded and merged successfully', stats)
-      return stats
-    } catch (error) {
-      console.error('Download and merge failed:', error)
-      throw error
-    } finally {
-      this._isDownloading = false
-    }
-  }
-
-  // Check if sync file exists on Google Drive
-  async checkSyncFileExists(): Promise<boolean> {
-    try {
-      if (!googleDriveService.isAuthenticated()) {
-        return false
+      let syncData
+      try {
+        syncData = await this.exportData()
+      } catch {
+        throw new DataSyncError('DATA_EXPORT_FAILED')
       }
 
-      const fileInfo = await googleDriveService.getSyncFileInfo()
-      return fileInfo?.exists || false
-    } catch (error) {
-      console.error('Failed to check sync file existence:', error)
+      await this.driveService.uploadSyncData(syncData)
+    })
+  }
+
+  async downloadAndMergeData(): Promise<SyncStats> {
+    return this.runExclusive('download', async () => {
+      this.assertAuthenticated()
+      const remoteData = await this.driveService.downloadSyncData()
+
+      let validatedData
+      try {
+        validatedData = this.parseData(remoteData)
+      } catch (error) {
+        if (error instanceof ImportError) {
+          throw new GoogleDriveError('INVALID_SYNC_DATA')
+        }
+        throw error
+      }
+
+      let stats: ImportStats
+      try {
+        stats = await this.mergeData(validatedData, 'merge')
+      } catch {
+        throw new DataSyncError('DATA_IMPORT_FAILED')
+      }
+
+      await this.reloadMirrors()
+      return stats
+    })
+  }
+
+  async checkSyncFileExists(): Promise<boolean> {
+    if (!this.driveService.isAuthenticated()) {
       return false
     }
+
+    const fileInfo = await this.driveService.getSyncFileInfo()
+    return fileInfo.exists
   }
 
-  // Get sync file info
-  async getSyncFileInfo(): Promise<{ lastModified: string; size: number } | null> {
-    try {
-      if (!googleDriveService.isAuthenticated()) {
-        return null
-      }
-
-      const fileInfo = await googleDriveService.getSyncFileInfo()
-      if (!fileInfo?.exists || !fileInfo.lastModified || !fileInfo.size) {
-        return null
-      }
-
-      return {
-        lastModified: fileInfo.lastModified,
-        size: parseInt(fileInfo.size) || 0
-      }
-    } catch (error) {
-      console.error('Failed to get sync file info:', error)
+  async getSyncFileInfo(): Promise<{
+    lastModified: string
+    size: number
+  } | null> {
+    if (!this.driveService.isAuthenticated()) {
       return null
     }
-  }
 
-  // Private methods
-  private async collectAllData(): Promise<SyncData> {
-    // Dynamic imports to avoid SSR issues
-    const { useProfileStore } = await import('@/stores/profile.store')
-    const { useWorkoutStore } = await import('@/stores/workout.store')
-    const { useFoodStore } = await import('@/stores/food.store')
-    const { useWeeklyStore } = await import('@/stores/weekly.store')
-    const { useAIStore } = await import('@/stores/ai.store')
+    const fileInfo = await this.driveService.getSyncFileInfo()
+    if (!fileInfo.exists || !fileInfo.lastModified) {
+      return null
+    }
 
-    const profileStore = useProfileStore.getState()
-    const workoutStore = useWorkoutStore.getState()
-    const foodStore = useFoodStore.getState()
-    const weeklyStore = useWeeklyStore.getState()
-    const aiStore = useAIStore.getState()
+    const parsedSize = fileInfo.size === undefined
+      ? 0
+      : Number.parseInt(fileInfo.size, 10)
 
     return {
-      schemaVersion: 1,
-      exportedAt: new Date().toISOString(),
-      profile: profileStore.profile || undefined,
-      workouts: workoutStore.workouts,
-      foodLogs: foodStore.foodLogs,
-      checkins: weeklyStore.checkins,
-      aiPlans: aiStore.plans || []
+      lastModified: fileInfo.lastModified,
+      size: Number.isFinite(parsedSize) ? parsedSize : 0
     }
   }
 
-  private async mergeData(remoteData: SyncData): Promise<SyncStats> {
-    const stats: SyncStats = {
-      profile: { updated: false, created: false },
-      workouts: { added: 0, updated: 0, skipped: 0 },
-      foodLogs: { added: 0, updated: 0, skipped: 0 },
-      checkins: { added: 0, updated: 0, skipped: 0 },
-      aiPlans: { added: 0, updated: 0, skipped: 0 }
-    }
-
-    // Dynamic imports to avoid SSR issues
-    const { useProfileStore } = await import('@/stores/profile.store')
-    const profileStore = useProfileStore.getState()
-
-    // Merge profile
-    if (remoteData.profile) {
-      const localProfile = profileStore.profile
-      
-      if (!localProfile) {
-        // Create new profile
-        await profileStore.createProfile(remoteData.profile)
-        stats.profile.created = true
-      } else {
-        // Update existing profile if remote is newer
-        const localTime = new Date(localProfile.updatedAt).getTime()
-        const remoteTime = new Date(remoteData.profile.updatedAt).getTime()
-        
-        if (remoteTime > localTime) {
-          await profileStore.saveProfile(remoteData.profile)
-          stats.profile.updated = true
-        }
-      }
-    }
-
-    // Merge workouts
-    stats.workouts = await this.mergeWorkouts(remoteData.workouts)
-
-    // Merge food logs
-    stats.foodLogs = await this.mergeFoodLogs(remoteData.foodLogs)
-
-    // Merge checkins
-    stats.checkins = await this.mergeCheckins(remoteData.checkins)
-
-    // Merge AI plans
-    stats.aiPlans = await this.mergeAIPlans(remoteData.aiPlans)
-
-    return stats
-  }
-
-  private async mergeWorkouts(remoteWorkouts: any[]): Promise<{ added: number; updated: number; skipped: number }> {
-    const { useWorkoutStore } = await import('@/stores/workout.store')
-    const workoutStore = useWorkoutStore.getState()
-    const localWorkouts = workoutStore.workouts
-    const stats = { added: 0, updated: 0, skipped: 0 }
-
-    for (const remoteWorkout of remoteWorkouts) {
-      const localWorkout = localWorkouts.find(w => w.id === remoteWorkout.id)
-      
-      if (!localWorkout) {
-        // Add new workout
-        await workoutStore.addWorkout(remoteWorkout)
-        stats.added++
-      } else {
-        // Update if remote is newer
-        const localTime = new Date(localWorkout.updatedAt).getTime()
-        const remoteTime = new Date(remoteWorkout.updatedAt).getTime()
-        
-        if (remoteTime > localTime) {
-          await workoutStore.updateWorkout(remoteWorkout.id, remoteWorkout)
-          stats.updated++
-        } else {
-          stats.skipped++
-        }
-      }
-    }
-
-    return stats
-  }
-
-  private async mergeFoodLogs(remoteFoodLogs: any[]): Promise<{ added: number; updated: number; skipped: number }> {
-    const { useFoodStore } = await import('@/stores/food.store')
-    const foodStore = useFoodStore.getState()
-    const localFoodLogs = foodStore.foodLogs
-    const stats = { added: 0, updated: 0, skipped: 0 }
-
-    for (const remoteFoodLog of remoteFoodLogs) {
-      const localFoodLog = localFoodLogs.find(f => f.id === remoteFoodLog.id)
-      
-      if (!localFoodLog) {
-        // Add new food log
-        await foodStore.addFoodLog(remoteFoodLog)
-        stats.added++
-      } else {
-        // Update if remote is newer
-        const localTime = new Date(localFoodLog.updatedAt).getTime()
-        const remoteTime = new Date(remoteFoodLog.updatedAt).getTime()
-        
-        if (remoteTime > localTime) {
-          await foodStore.updateFoodLog(remoteFoodLog.id, remoteFoodLog)
-          stats.updated++
-        } else {
-          stats.skipped++
-        }
-      }
-    }
-
-    return stats
-  }
-
-  private async mergeCheckins(remoteCheckins: any[]): Promise<{ added: number; updated: number; skipped: number }> {
-    const { useWeeklyStore } = await import('@/stores/weekly.store')
-    const weeklyStore = useWeeklyStore.getState()
-    const localCheckins = weeklyStore.checkins
-    const stats = { added: 0, updated: 0, skipped: 0 }
-
-    for (const remoteCheckin of remoteCheckins) {
-      const localCheckin = localCheckins.find(c => c.id === remoteCheckin.id)
-      
-      if (!localCheckin) {
-        // Add new checkin
-        await weeklyStore.addCheckin(remoteCheckin)
-        stats.added++
-      } else {
-        // Update if remote is newer
-        const localTime = new Date(localCheckin.createdAt).getTime()
-        const remoteTime = new Date(remoteCheckin.createdAt).getTime()
-        
-        if (remoteTime > localTime) {
-          await weeklyStore.updateCheckin(remoteCheckin.id, remoteCheckin)
-          stats.updated++
-        } else {
-          stats.skipped++
-        }
-      }
-    }
-
-    return stats
-  }
-
-  private async mergeAIPlans(remoteAIPlans: any[]): Promise<{ added: number; updated: number; skipped: number }> {
-    const { useAIStore } = await import('@/stores/ai.store')
-    const aiStore = useAIStore.getState()
-    const localPlans = aiStore.plans || []
-    const stats = { added: 0, updated: 0, skipped: 0 }
-
-    for (const remotePlan of remoteAIPlans) {
-      const localPlan = localPlans.find(p => p.id === remotePlan.id)
-      
-      if (!localPlan) {
-        // Add new AI plan
-        await aiStore.addPlan(remotePlan)
-        stats.added++
-      } else {
-        // Update if remote is newer
-        const localTime = new Date(localPlan.createdAt).getTime()
-        const remoteTime = new Date(remotePlan.createdAt).getTime()
-        
-        if (remoteTime > localTime) {
-          await aiStore.updatePlan(remotePlan.id, remotePlan)
-          stats.updated++
-        } else {
-          stats.skipped++
-        }
-      }
-    }
-
-    return stats
-  }
-
-  // Utility methods
   isUploading(): boolean {
-    return this._isUploading
+    return this.activeOperation === 'upload'
   }
 
   isDownloading(): boolean {
-    return this._isDownloading
+    return this.activeOperation === 'download'
+  }
+
+  private assertAuthenticated(): void {
+    if (!this.driveService.isAuthenticated()) {
+      throw new GoogleDriveError('AUTH_REQUIRED')
+    }
+  }
+
+  private async runExclusive<T>(
+    operation: 'upload' | 'download',
+    callback: () => Promise<T>
+  ): Promise<T> {
+    if (this.activeOperation) {
+      throw new DataSyncError('OPERATION_IN_PROGRESS')
+    }
+
+    this.activeOperation = operation
+    try {
+      return await callback()
+    } finally {
+      this.activeOperation = null
+    }
+  }
+
+  private async reloadStoreMirrors(): Promise<void> {
+    const [
+      { useProfileStore },
+      { useWorkoutStore },
+      { useFoodStore },
+      { useWeeklyStore },
+      { useI18nStore }
+    ] = await Promise.all([
+      import('@/stores/profile.store'),
+      import('@/stores/workout.store'),
+      import('@/stores/food.store'),
+      import('@/stores/weekly.store'),
+      import('@/stores/i18n.store')
+    ])
+
+    const [profile, workouts, foodLogs, checkins] = await Promise.all([
+      db.profiles.get('me'),
+      db.workouts.orderBy('date').reverse().toArray(),
+      db.food.orderBy('date').reverse().toArray(),
+      db.checkins.orderBy('weekStart').reverse().toArray()
+    ])
+
+    useProfileStore.setState({
+      profile: profile ?? null,
+      error: null
+    })
+    useWorkoutStore.setState({
+      workouts,
+      error: null
+    })
+    useFoodStore.setState({
+      foodLogs,
+      error: null
+    })
+    useWeeklyStore.setState({
+      checkins,
+      error: null
+    })
+    useI18nStore.getState().setLanguageFromProfile()
   }
 }
 
-// Create singleton instance
 export const dataSyncService = new DataSyncService()

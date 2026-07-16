@@ -11,6 +11,7 @@ import AISettings from '@modals/settings/AISettings'
 import DataImport from '@modals/settings/DataImport'
 import ProfileDetailsModal from '@modals/settings/ProfileDetailsModal'
 import SettingsBodyMetrics from '@organisms/settings/SettingsBodyMetrics'
+import { GoogleDriveSync } from '@/ui/organisms/GoogleDriveSync'
 import { Edit, Check, X, Eye, RefreshCw } from 'lucide-react'
 import type { Profile } from '@/types/models'
 
@@ -613,6 +614,9 @@ const SettingsPage: React.FC = () => {
               </p>
             </div>
           </div>
+
+          {/* Google Drive Sync */}
+          <GoogleDriveSync />
         </div>
 
 

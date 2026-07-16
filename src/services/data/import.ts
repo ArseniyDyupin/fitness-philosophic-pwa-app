@@ -11,28 +11,159 @@ import type {
 } from '@/types/models'
 import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '@/types/body-metrics'
 
-// Zod schema for validation
+const ISOStringSchema = z.string().refine(
+  value => !Number.isNaN(Date.parse(value)),
+  'Expected an ISO-compatible date string'
+)
+
+const EntitySchema = z.object({
+  id: z.string().min(1)
+}).passthrough()
+
+const WorkoutExerciseSchema = z.object({
+  type: z.enum(['run', 'pullups', 'pushups', 'plank', 'custom']),
+  details: z.record(z.unknown())
+}).passthrough()
+
+const ProfileSchema = EntitySchema.extend({
+  name: z.string(),
+  age: z.number(),
+  gender: z.enum(['male', 'female', 'other']),
+  height: z.number(),
+  weight: z.number(),
+  goal: z.string(),
+  constraints: z.array(z.string()),
+  equipment: z.array(z.string()),
+  frequency: z.number(),
+  duration: z.number(),
+  language: z.enum(['en', 'ru']),
+  goalsDetailed: z.string(),
+  createdAt: ISOStringSchema,
+  updatedAt: ISOStringSchema
+})
+
+const WorkoutSchema = EntitySchema.extend({
+  date: ISOStringSchema,
+  exercises: z.array(WorkoutExerciseSchema),
+  createdAt: ISOStringSchema,
+  updatedAt: ISOStringSchema
+})
+
+const FoodSchema = EntitySchema.extend({
+  calories: z.number(),
+  date: ISOStringSchema,
+  createdAt: ISOStringSchema,
+  updatedAt: ISOStringSchema
+})
+
+const CheckinSchema = EntitySchema.extend({
+  weekStart: ISOStringSchema,
+  weight: z.number(),
+  allowPhotoInAI: z.boolean(),
+  createdAt: ISOStringSchema
+})
+
+const AiMessageSchema = EntitySchema.extend({
+  type: z.enum(['workout_review', 'weekly_advice', 'general']),
+  content: z.string(),
+  createdAt: ISOStringSchema
+})
+
+const PlanSchema = EntitySchema.extend({
+  type: z.enum(['workout', 'nutrition', 'recovery']),
+  title: z.string(),
+  description: z.string(),
+  forDate: ISOStringSchema,
+  createdAt: ISOStringSchema
+})
+
+const AiFeedbackSchema = EntitySchema.extend({
+  workoutId: z.string().min(1),
+  language: z.enum(['en', 'ru']),
+  rpe: z.number(),
+  review: z.string(),
+  model: z.string(),
+  createdAt: ISOStringSchema
+})
+
+const MetricDefSchema = EntitySchema.extend({
+  key: z.string(),
+  label: z.string(),
+  unit: z.enum(['kg', 'cm', '%', 'count', 'custom']),
+  isActive: z.boolean(),
+  createdAt: ISOStringSchema,
+  updatedAt: ISOStringSchema
+})
+
+const MetricEntrySchema = EntitySchema.extend({
+  defId: z.string().min(1),
+  date: ISOStringSchema,
+  value: z.number(),
+  createdAt: ISOStringSchema,
+  updatedAt: ISOStringSchema
+})
+
+const PhotoAssetSchema = EntitySchema.extend({
+  date: ISOStringSchema,
+  kind: z.enum(['front', 'side', 'back', 'other']),
+  mime: z.string(),
+  dataUrl: z.string(),
+  createdAt: ISOStringSchema
+})
+
+const AiBodyEvalSchema = EntitySchema.extend({
+  weekStart: ISOStringSchema,
+  model: z.string(),
+  language: z.enum(['en', 'ru']),
+  consent: z.boolean(),
+  summary: z.string(),
+  createdAt: ISOStringSchema
+})
+
+const ExerciseEstimateSchema = EntitySchema.extend({
+  signature: z.string(),
+  type: z.enum(['run', 'pullups', 'pushups', 'plank', 'custom']),
+  model: z.string(),
+  kcal: z.number(),
+  unit: z.enum(['per-session', 'per-set', 'per-rep', 'per-km', 'per-minute']),
+  createdAt: ISOStringSchema,
+  updatedAt: ISOStringSchema
+})
+
+// Structural validation shared by local import and Google Drive sync.
 const ExportBundleSchema = z.object({
   schemaVersion: z.literal(1),
-  exportedAt: z.string(),
-  profile: z.any().optional(),
-  workouts: z.array(z.any()).default([]),
-  food: z.array(z.any()).default([]),
-  checkins: z.array(z.any()).default([]),
-  ai: z.array(z.any()).default([]),
-  plans: z.array(z.any()).default([]),
-  ai_feedback: z.array(z.any()).default([]),
-  metric_defs: z.array(z.any()).default([]),
-  metric_entries: z.array(z.any()).default([]),
-  photo_assets: z.array(z.any()).default([]),
-  ai_body_evals: z.array(z.any()).default([]),
-  exercise_estimates: z.array(z.any()).default([])
-})
+  exportedAt: ISOStringSchema,
+  profile: ProfileSchema.optional(),
+  workouts: z.array(WorkoutSchema).default([]),
+  food: z.array(FoodSchema).default([]),
+  checkins: z.array(CheckinSchema).default([]),
+  weeklyData: z.array(z.unknown()).default([]),
+  ai: z.array(AiMessageSchema).default([]),
+  plans: z.array(PlanSchema).default([]),
+  ai_feedback: z.array(AiFeedbackSchema).default([]),
+  metric_defs: z.array(MetricDefSchema).default([]),
+  metric_entries: z.array(MetricEntrySchema).default([]),
+  photo_assets: z.array(PhotoAssetSchema).default([]),
+  ai_body_evals: z.array(AiBodyEvalSchema).default([]),
+  exercise_estimates: z.array(ExerciseEstimateSchema).default([])
+}).passthrough()
 
 export class ImportError extends Error {
   constructor(message: string, public code: 'FILE_TOO_LARGE' | 'INVALID_FORMAT' | 'PARSE_ERROR' | 'VALIDATION_ERROR' | 'IMPORT_ERROR') {
     super(message)
     this.name = 'ImportError'
+  }
+}
+
+export function parseExportBundle(data: unknown): ExportBundle {
+  try {
+    return ExportBundleSchema.parse(data) as unknown as ExportBundle
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new ImportError('Invalid backup data', 'VALIDATION_ERROR')
+    }
+    throw error
   }
 }
 
@@ -51,16 +182,16 @@ export async function validateFile(file: File): Promise<ExportBundle> {
   try {
     const text = await file.text()
     const data = JSON.parse(text)
-    
-    // Validate with Zod
-    const bundle = ExportBundleSchema.parse(data)
-    
-    return bundle as ExportBundle
+
+    return parseExportBundle(data)
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      throw new ImportError('Invalid file format', 'VALIDATION_ERROR')
+    if (error instanceof ImportError) {
+      throw error
     }
-    throw new ImportError('Failed to parse file', 'PARSE_ERROR')
+    if (error instanceof SyntaxError) {
+      throw new ImportError('Failed to parse file', 'PARSE_ERROR')
+    }
+    throw new ImportError('Invalid file format', 'VALIDATION_ERROR')
   }
 }
 
@@ -123,7 +254,7 @@ function ensureISODates<T>(obj: T): T {
   const result = { ...(obj as Record<string, unknown>) }
   
   // Common date fields to convert
-  const dateFields = ['date', 'createdAt', 'updatedAt', 'exportedAt']
+  const dateFields = ['date', 'weekStart', 'forDate', 'createdAt', 'updatedAt', 'exportedAt']
   
   for (const field of dateFields) {
     if (result[field] && typeof result[field] !== 'string') {
@@ -132,6 +263,49 @@ function ensureISODates<T>(obj: T): T {
   }
   
   return result as T
+}
+
+function getTimestamp(
+  value: Record<string, unknown>,
+  fields: string[]
+): number | null {
+  for (const field of fields) {
+    const candidate = value[field]
+    if (typeof candidate !== 'string') {
+      continue
+    }
+
+    const timestamp = Date.parse(candidate)
+    if (!Number.isNaN(timestamp)) {
+      return timestamp
+    }
+  }
+
+  return null
+}
+
+export function isRemoteRecordNewer(
+  remote: unknown,
+  local: unknown,
+  timestampFields: string[]
+): boolean {
+  if (
+    typeof remote !== 'object' ||
+    remote === null ||
+    typeof local !== 'object' ||
+    local === null
+  ) {
+    return false
+  }
+
+  const remoteTimestamp = getTimestamp(remote as Record<string, unknown>, timestampFields)
+  const localTimestamp = getTimestamp(local as Record<string, unknown>, timestampFields)
+
+  if (remoteTimestamp === null) {
+    return false
+  }
+
+  return localTimestamp === null || remoteTimestamp > localTimestamp
 }
 
 export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge' = 'replace'): Promise<ImportStats> {
@@ -167,15 +341,20 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import profile
       if (bundle.profile) {
-        const migratedProfile = ensureISODates(bundle.profile)
+        const migratedProfile = {
+          ...ensureISODates(bundle.profile),
+          id: 'me'
+        }
+
         if (mode === 'replace') {
           await db.profiles.put(migratedProfile)
           stats.profileReplaced = true
         } else {
-          // In merge mode, always replace profile (there should be only one)
-          await db.profiles.clear()
-          await db.profiles.put(migratedProfile)
-          stats.profileReplaced = true
+          const existing = await db.profiles.get('me')
+          if (!existing || isRemoteRecordNewer(migratedProfile, existing, ['updatedAt', 'createdAt'])) {
+            await db.profiles.put(migratedProfile)
+            stats.profileReplaced = true
+          }
         }
       }
 
@@ -190,9 +369,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
           // Merge mode: check updatedAt or just put
           for (const workout of migratedWorkouts) {
             const existing = await db.workouts.get(workout.id)
-            if (!existing || 
-                (workout.updatedAt && existing.updatedAt && workout.updatedAt > existing.updatedAt) ||
-                !existing.updatedAt) {
+            if (!existing || isRemoteRecordNewer(workout, existing, ['updatedAt', 'createdAt', 'date'])) {
               await db.workouts.put(workout)
               stats.workoutsUpserted++
             }
@@ -210,9 +387,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const food of migratedFood) {
             const existing = await db.food.get(food.id)
-            if (!existing || 
-                (food.updatedAt && existing.updatedAt && food.updatedAt > existing.updatedAt) ||
-                !existing.updatedAt) {
+            if (!existing || isRemoteRecordNewer(food, existing, ['updatedAt', 'createdAt', 'date'])) {
               await db.food.put(food)
               stats.foodUpserted++
             }
@@ -230,8 +405,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const checkin of migratedCheckins) {
             const existing = await db.checkins.get(checkin.id)
-            if (!existing || 
-                (checkin.createdAt && existing.createdAt && checkin.createdAt > existing.createdAt)) {
+            if (!existing || isRemoteRecordNewer(checkin, existing, ['createdAt', 'weekStart'])) {
               await db.checkins.put(checkin)
               stats.checkinsUpserted++
             }
@@ -249,8 +423,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const ai of migratedAi) {
             const existing = await db.ai.get(ai.id)
-            if (!existing || 
-                (ai.createdAt && existing.createdAt && ai.createdAt > existing.createdAt)) {
+            if (!existing || isRemoteRecordNewer(ai, existing, ['createdAt'])) {
               await db.ai.put(ai)
               stats.aiUpserted++
             }
@@ -268,8 +441,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const plan of migratedPlans) {
             const existing = await db.plans.get(plan.id)
-            if (!existing || 
-                (plan.createdAt && existing.createdAt && plan.createdAt > existing.createdAt)) {
+            if (!existing || isRemoteRecordNewer(plan, existing, ['createdAt', 'forDate'])) {
               await db.plans.put(plan)
               stats.plansUpserted++
             }
@@ -286,8 +458,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const feedback of migratedAiFeedback) {
             const existing = await db.ai_feedback.get((feedback as AIWorkoutFeedback).id)
-            if (!existing || 
-                ((feedback as AIWorkoutFeedback).createdAt && existing.createdAt && (feedback as AIWorkoutFeedback).createdAt > existing.createdAt)) {
+            if (!existing || isRemoteRecordNewer(feedback, existing, ['createdAt'])) {
               await db.ai_feedback.put(feedback as AIWorkoutFeedback)
             }
           }
@@ -303,8 +474,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const def of migratedMetricDefs) {
             const existing = await db.metric_defs.get((def as MetricDef).id)
-            if (!existing || 
-                ((def as MetricDef).updatedAt && existing.updatedAt && (def as MetricDef).updatedAt > existing.updatedAt)) {
+            if (!existing || isRemoteRecordNewer(def, existing, ['updatedAt', 'createdAt'])) {
               await db.metric_defs.put(def as MetricDef)
             }
           }
@@ -320,8 +490,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const entry of migratedMetricEntries) {
             const existing = await db.metric_entries.get((entry as MetricEntry).id)
-            if (!existing || 
-                ((entry as MetricEntry).date && existing.date && (entry as MetricEntry).date > existing.date)) {
+            if (!existing || isRemoteRecordNewer(entry, existing, ['updatedAt', 'createdAt', 'date'])) {
               await db.metric_entries.put(entry as MetricEntry)
             }
           }
@@ -337,8 +506,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const photo of migratedPhotoAssets) {
             const existing = await db.photo_assets.get((photo as PhotoAsset).id)
-            if (!existing || 
-                ((photo as PhotoAsset).date && existing.date && (photo as PhotoAsset).date > existing.date)) {
+            if (!existing || isRemoteRecordNewer(photo, existing, ['createdAt', 'date'])) {
               await db.photo_assets.put(photo as PhotoAsset)
             }
           }
@@ -354,8 +522,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const evaluation of migratedAiBodyEvals) {
             const existing = await db.ai_body_evals.get((evaluation as AiBodyEval).id)
-            if (!existing || 
-                ((evaluation as AiBodyEval).createdAt && existing.createdAt && (evaluation as AiBodyEval).createdAt > existing.createdAt)) {
+            if (!existing || isRemoteRecordNewer(evaluation, existing, ['createdAt', 'weekStart'])) {
               await db.ai_body_evals.put(evaluation as AiBodyEval)
             }
           }
@@ -371,8 +538,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
         } else {
           for (const estimate of migratedExerciseEstimates) {
             const existing = await db.exercise_estimates.get((estimate as ExerciseEstimate).id)
-            if (!existing || 
-                ((estimate as ExerciseEstimate).createdAt && existing.createdAt && (estimate as ExerciseEstimate).createdAt > existing.createdAt)) {
+            if (!existing || isRemoteRecordNewer(estimate, existing, ['updatedAt', 'createdAt'])) {
               await db.exercise_estimates.put(estimate as ExerciseEstimate)
             }
           }
@@ -382,6 +548,9 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
     return stats
   } catch (error) {
+    if (error instanceof ImportError) {
+      throw error
+    }
     throw new ImportError('Failed to import data', 'IMPORT_ERROR')
   }
 }

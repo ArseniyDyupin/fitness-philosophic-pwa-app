@@ -1,0 +1,4 @@
+interface:
+  display_name: "Debugger"
+  short_description: "Production-style triage across browser, data, and API paths"
+  default_prompt: "Use $debugger to investigate an unknown or cross-domain fitness app defect."

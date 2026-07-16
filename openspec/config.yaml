@@ -1,0 +1,36 @@
+schema: spec-driven
+
+context: |
+  Application: Fitness Philosophic PWA, a React 18 and TypeScript browser application built
+  with Vite, Zustand, Dexie/IndexedDB, Tailwind CSS, React Router, and vite-plugin-pwa.
+  Domain: onboarding, workout tracking and plans, exercises, RPE, kcal/duration, body metrics,
+  statistics, OpenAI-generated coaching, local backups, and optional Google Drive sync.
+  Source of truth: user instructions and current source take precedence over planning artifacts.
+  Agent routing: read AGENTS.md, CLAUDE.md, and the matching project specialist.
+  Critical constraints:
+  - Preserve user fitness data across Dexie migrations, import/export, merge, and sync.
+  - Never log, export, or sync API keys, OAuth tokens, authorization headers, or credentials.
+  - Treat AI output as untrusted JSON and validate it before persistence or rendering.
+  - Preserve Russian and English behavior for user-visible text and AI output.
+  - Account for offline, service-worker update, and browser-storage behavior.
+  - Fitness guidance must respect physical constraints and avoid medical certainty.
+  - Verification claims must name the exact automated, browser, mocked, or live-provider path.
+
+rules:
+  proposal:
+    - State the user-visible outcome, motivation, scope, non-goals, and assumptions.
+    - Identify privacy, health-safety, offline, migration, compatibility, and external-service risks.
+    - Name affected specialist domains and any browser, API-key, OAuth, or account dependencies.
+  specs:
+    - Define observable happy paths, validation failures, network/offline failures, and recovery.
+    - Cover data preservation and conflict behavior for persisted or synchronized data.
+    - Include responsive, accessible, Russian, and English behavior for user-facing changes.
+  design:
+    - Reference existing source integration points and project patterns.
+    - Explain storage schema, state synchronization, secret handling, AI validation, and PWA cache impacts.
+    - Prefer a narrow design without new dependencies unless explicitly justified.
+  tasks:
+    - Split implementation into reviewable steps with regression coverage beside changed behavior.
+    - Include npm run lint, npm run typecheck, relevant Vitest, and npm run build as applicable.
+    - Include explicit browser, offline, OpenAI, or Google Drive verification when required.
+    - End with an honest verification summary and independent cross-review for non-trivial code.

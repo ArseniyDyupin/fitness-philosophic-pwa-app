@@ -1,0 +1,4 @@
+interface:
+  display_name: "PWA & Offline"
+  short_description: "Service worker, install, updates, and offline behavior"
+  default_prompt: "Use $pwa-offline to change or diagnose PWA and offline behavior."

@@ -91,6 +91,7 @@ src/
 - [🧩 Компоненты](./docs/COMPONENTS.md) - документация UI компонентов
 - [🔄 Хуки](./docs/HOOKS.md) - кастомные React хуки
 - [🔌 API](./docs/API.md) - сервисы и API
+- [🤖 AI-assisted разработка](./docs/AI_ASSISTED_DEVELOPMENT.md) - OpenSpec, агенты и проверки
 - [🎨 Стилизация](./docs/STYLING.md) - работа со стилями
 - [🧪 Тестирование](./docs/TESTING.md) - тестирование приложения
 

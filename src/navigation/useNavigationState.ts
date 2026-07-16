@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useProfileStore } from '@stores/profile.store'
 import { useI18nStore } from '@stores/i18n.store'
+import type { Profile } from '@/types/models'
 
 export type NavigationState = 'loading' | 'language-selection' | 'onboarding' | 'main-app'
 
@@ -11,14 +12,62 @@ export interface NavigationStateResult {
   isLanguageSet: boolean
 }
 
+interface ResolveNavigationStateInput {
+  isLoading: boolean
+  isFirstLaunch: boolean
+  hasSelectedLanguage: boolean
+  profile: Profile | null
+}
+
+export function resolveNavigationState({
+  isLoading,
+  isFirstLaunch,
+  hasSelectedLanguage,
+  profile
+}: ResolveNavigationStateInput): NavigationState {
+  if (isLoading) {
+    return 'loading'
+  }
+
+  if (isFirstLaunch) {
+    return 'language-selection'
+  }
+
+  if (!profile) {
+    return hasSelectedLanguage
+      ? 'onboarding'
+      : 'language-selection'
+  }
+
+  if (!profile.language && !hasSelectedLanguage) {
+    return 'language-selection'
+  }
+
+  if (
+    !profile.name ||
+    !profile.age ||
+    !profile.height ||
+    !profile.weight ||
+    !profile.goal ||
+    profile.goal.trim().length === 0
+  ) {
+    return 'onboarding'
+  }
+
+  return 'main-app'
+}
+
 /**
  * Hook to determine the current navigation state based on user profile and app state
  * @returns Navigation state and related flags
  */
 export function useNavigationState(): NavigationStateResult {
   const { profile, loadProfile } = useProfileStore()
-  const { initializeLanguage, setLanguageFromProfile } = useI18nStore()
-  const [isFirstLaunch, setIsFirstLaunch] = useState(true)
+  const {
+    hasSelectedLanguage,
+    initializeLanguage,
+    setLanguageFromProfile
+  } = useI18nStore()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -28,15 +77,6 @@ export function useNavigationState(): NavigationStateResult {
           initializeLanguage(),
           loadProfile()
         ])
-        
-        // Check if this is the first launch
-        const hasLaunchedBefore = localStorage.getItem('ai-trainer:has-launched')
-        if (hasLaunchedBefore) {
-          setIsFirstLaunch(false)
-        } else {
-          // Mark as launched for future visits
-          localStorage.setItem('ai-trainer:has-launched', 'true')
-        }
       } catch (error) {
         console.error('Failed to initialize app:', error)
       } finally {
@@ -54,37 +94,13 @@ export function useNavigationState(): NavigationStateResult {
     }
   }, [profile, setLanguageFromProfile, isLoading])
 
-  // Determine navigation state
-  const getNavigationState = (): NavigationState => {
-    if (isLoading) {
-      return 'loading'
-    }
-
-    // First launch - always show language selection
-    if (isFirstLaunch) {
-      return 'language-selection'
-    }
-
-    // No profile exists - show language selection
-    if (!profile) {
-      return 'language-selection'
-    }
-
-    // Profile exists but no language - show language selection
-    if (!profile.language) {
-      return 'language-selection'
-    }
-
-    // Profile exists but incomplete - show onboarding
-    if (!profile.name || !profile.age || !profile.height || !profile.weight || !profile.goal || profile.goal.trim().length === 0) {
-      return 'onboarding'
-    }
-
-    // Profile is complete - show main app
-    return 'main-app'
-  }
-
-  const state = getNavigationState()
+  const isFirstLaunch = localStorage.getItem('ai-trainer:has-launched') !== 'true'
+  const state = resolveNavigationState({
+    isLoading,
+    isFirstLaunch,
+    hasSelectedLanguage,
+    profile
+  })
   const isProfileComplete = Boolean(
     profile?.name && 
     profile?.age && 
@@ -93,7 +109,7 @@ export function useNavigationState(): NavigationStateResult {
     profile?.goal && 
     profile.goal.trim().length > 0
   )
-  const isLanguageSet = Boolean(profile?.language)
+  const isLanguageSet = Boolean(profile?.language || hasSelectedLanguage)
 
   return {
     state,

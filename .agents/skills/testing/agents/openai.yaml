@@ -1,0 +1,4 @@
+interface:
+  display_name: "Testing"
+  short_description: "Vitest and React Testing Library regression coverage"
+  default_prompt: "Use $testing to add targeted unit, component, or integration tests."

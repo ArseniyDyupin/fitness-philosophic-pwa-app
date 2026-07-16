@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Storage & Sync"
+  short_description: "Dexie, import/export, and cloud synchronization"
+  default_prompt: "Use $data-storage-sync to work on IndexedDB, backups, imports, or Google Drive sync."

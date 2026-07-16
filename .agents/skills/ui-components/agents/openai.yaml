@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI Components"
+  short_description: "Atomic React UI, Tailwind, forms, and navigation"
+  default_prompt: "Use $ui-components to build accessible responsive UI in the fitness app."

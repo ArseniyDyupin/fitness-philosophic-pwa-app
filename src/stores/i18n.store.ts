@@ -5,6 +5,7 @@ type Language = 'en' | 'ru'
 
 interface I18nState {
   currentLanguage: Language
+  hasSelectedLanguage: boolean
   
   // Actions
   setLanguage: (lang: Language) => void
@@ -14,9 +15,13 @@ interface I18nState {
 
 export const useI18nStore = create<I18nState>((set) => ({
   currentLanguage: 'en',
+  hasSelectedLanguage: false,
 
   setLanguage: (lang: Language) => {
-    set({ currentLanguage: lang })
+    set({
+      currentLanguage: lang,
+      hasSelectedLanguage: true
+    })
     localStorage.setItem('language', lang)
     
     // Update profile language if profile exists
@@ -29,14 +34,22 @@ export const useI18nStore = create<I18nState>((set) => ({
   initializeLanguage: () => {
     const saved = localStorage.getItem('language') as Language
     if (saved && ['en', 'ru'].includes(saved)) {
-      set({ currentLanguage: saved })
+      set({
+        currentLanguage: saved,
+        hasSelectedLanguage: true
+      })
+    } else {
+      set({ hasSelectedLanguage: false })
     }
   },
 
   setLanguageFromProfile: () => {
     const profileStore = useProfileStore.getState()
     if (profileStore.profile?.language) {
-      set({ currentLanguage: profileStore.profile.language })
+      set({
+        currentLanguage: profileStore.profile.language,
+        hasSelectedLanguage: true
+      })
       localStorage.setItem('language', profileStore.profile.language)
     }
   }
@@ -1276,6 +1289,83 @@ export const translations = {
       installDescription: 'Install this app on your device for a better experience',
       serviceWorkerNotSupported: 'Service Worker not supported',
       checkUpdatesFailed: 'Failed to check for updates'
+    },
+
+    // Google Drive Sync
+    googleSync: {
+      title: 'Google Drive Sync',
+      description: 'Create a private manual backup and merge it on another device',
+      unavailableTitle: 'Google Drive sync is unavailable',
+      signIn: 'Authorize Google Drive',
+      signOut: 'Sign out',
+      authorized: 'Google Drive is authorized',
+      sessionOnly: 'Authorization is kept only for this browser session',
+      authorizing: 'Authorizing...',
+      uploading: 'Uploading...',
+      downloading: 'Downloading...',
+      checking: 'Checking...',
+      uploadData: 'Upload backup',
+      downloadData: 'Download and merge',
+      syncFileExists: 'Backup found',
+      syncFileNotFound: 'No backup found',
+      hiddenFile: 'Stored in Google Drive app data and hidden from the regular Drive file list',
+      refreshStatus: 'Refresh backup status',
+      lastModified: 'Last modified',
+      fileSize: 'File size',
+      bytes: 'bytes',
+      kb: 'KB',
+      mb: 'MB',
+      mergeHint: 'Download keeps newer local records and inserts or updates only newer remote records with the same IDs.',
+      privacyNote: 'The backup can contain sensitive fitness data and photos. The OAuth access token is kept only in memory and is never included in the backup.',
+      features: {
+        privateTitle: 'Private app data',
+        privateDescription: 'The app can access only its hidden Drive data folder',
+        manualTitle: 'Explicit actions',
+        manualDescription: 'Nothing uploads or downloads until you choose it',
+        sessionTitle: 'Short-lived access',
+        sessionDescription: 'Authorize again after reload or token expiry'
+      },
+      success: {
+        upload: 'Backup uploaded successfully',
+        download: 'Backup merged successfully',
+        noChanges: 'Backup checked; local data was already current',
+        signIn: 'Google Drive authorized',
+        signOut: 'Signed out successfully'
+      },
+      error: {
+        upload: 'Failed to create the backup',
+        download: 'Failed to merge the backup',
+        signIn: 'Google Drive authorization failed',
+        signOut: 'Failed to sign out',
+        notAuthenticated: 'Authorize Google Drive first',
+        networkError: 'A network error occurred. Check your connection and try again',
+        invalidFile: 'The Drive backup is invalid or uses an unsupported schema',
+        fileNotFound: 'No backup was found in this app’s Google Drive data',
+        notConfigured: 'Set VITE_GOOGLE_CLIENT_ID and add this site to the OAuth client’s authorized JavaScript origins.',
+        unavailable: 'Google Identity Services did not load. Check content blockers and try again',
+        cancelled: 'Google Drive authorization was cancelled',
+        sessionExpired: 'The Google Drive session expired. Authorize again',
+        offline: 'Google Drive sync is unavailable while offline',
+        timeout: 'Google Drive did not respond in time. Try again',
+        permissionDenied: 'Google Drive access was denied. Reauthorize and grant app-data access',
+        fileTooLarge: 'The backup is larger than 20 MB. Remove large photos before uploading',
+        busy: 'Another sync operation is already running',
+        provider: 'Google Drive could not complete the request. Try again later'
+      },
+      stats: {
+        title: 'Sync Statistics',
+        profile: 'Profile',
+        workouts: 'Workouts',
+        foodLogs: 'Food Logs',
+        checkins: 'Check-ins',
+        aiMessages: 'AI Messages',
+        aiPlans: 'AI Plans'
+      },
+      confirm: {
+        upload: 'Upload the current local database to the private Google Drive backup? This replaces the previous backup content.',
+        download: 'Download the Google Drive backup and merge it with local data? Newer local records will be preserved.',
+        signOut: 'End this Google Drive session?'
+      }
     }
   },
   
@@ -2511,6 +2601,83 @@ export const translations = {
       installDescription: 'Установите это приложение на ваше устройство для лучшего опыта',
       serviceWorkerNotSupported: 'Service Worker не поддерживается',
       checkUpdatesFailed: 'Не удалось проверить обновления'
+    },
+
+    // Google Drive Sync
+    googleSync: {
+      title: 'Синхронизация Google Drive',
+      description: 'Создайте приватную резервную копию вручную и объедините её на другом устройстве',
+      unavailableTitle: 'Синхронизация Google Drive недоступна',
+      signIn: 'Разрешить доступ к Google Drive',
+      signOut: 'Выйти',
+      authorized: 'Google Drive подключён',
+      sessionOnly: 'Разрешение хранится только в текущей сессии браузера',
+      authorizing: 'Подключаю...',
+      uploading: 'Загружаю...',
+      downloading: 'Скачиваю...',
+      checking: 'Проверяю...',
+      uploadData: 'Загрузить копию',
+      downloadData: 'Скачать и объединить',
+      syncFileExists: 'Резервная копия найдена',
+      syncFileNotFound: 'Резервная копия не найдена',
+      hiddenFile: 'Хранится в данных приложения Google Drive и не отображается в обычном списке файлов',
+      refreshStatus: 'Обновить статус резервной копии',
+      lastModified: 'Последнее изменение',
+      fileSize: 'Размер файла',
+      bytes: 'байт',
+      kb: 'КБ',
+      mb: 'МБ',
+      mergeHint: 'При скачивании новые локальные записи сохраняются, а удалённые записи добавляются или обновляются только при более новой дате и том же ID.',
+      privacyNote: 'Копия может содержать чувствительные данные о тренировках и фотографии. OAuth-токен хранится только в памяти и никогда не попадает в копию.',
+      features: {
+        privateTitle: 'Приватные данные приложения',
+        privateDescription: 'Приложение видит только свою скрытую папку данных Drive',
+        manualTitle: 'Только вручную',
+        manualDescription: 'Без вашего действия ничего не загружается и не скачивается',
+        sessionTitle: 'Короткая сессия',
+        sessionDescription: 'После перезагрузки или истечения токена потребуется новый доступ'
+      },
+      success: {
+        upload: 'Резервная копия успешно загружена',
+        download: 'Резервная копия успешно объединена',
+        noChanges: 'Копия проверена — локальные данные уже актуальны',
+        signIn: 'Доступ к Google Drive разрешён',
+        signOut: 'Сессия Google Drive завершена'
+      },
+      error: {
+        upload: 'Не удалось создать резервную копию',
+        download: 'Не удалось объединить резервную копию',
+        signIn: 'Не удалось разрешить доступ к Google Drive',
+        signOut: 'Не удалось выйти',
+        notAuthenticated: 'Сначала разрешите доступ к Google Drive',
+        networkError: 'Ошибка сети. Проверьте подключение и повторите попытку',
+        invalidFile: 'Резервная копия в Drive повреждена или имеет неподдерживаемую схему',
+        fileNotFound: 'В данных приложения Google Drive нет резервной копии',
+        notConfigured: 'Укажите VITE_GOOGLE_CLIENT_ID и добавьте этот сайт в разрешённые JavaScript origins OAuth-клиента.',
+        unavailable: 'Google Identity Services не загрузился. Проверьте блокировщики и повторите попытку',
+        cancelled: 'Подключение Google Drive отменено',
+        sessionExpired: 'Сессия Google Drive истекла. Разрешите доступ снова',
+        offline: 'Синхронизация Google Drive недоступна без интернета',
+        timeout: 'Google Drive не ответил вовремя. Повторите попытку',
+        permissionDenied: 'Доступ к Google Drive отклонён. Подключитесь снова и разрешите доступ к данным приложения',
+        fileTooLarge: 'Резервная копия больше 20 МБ. Удалите крупные фотографии перед загрузкой',
+        busy: 'Другая операция синхронизации уже выполняется',
+        provider: 'Google Drive не смог выполнить запрос. Повторите попытку позже'
+      },
+      stats: {
+        title: 'Статистика синхронизации',
+        profile: 'Профиль',
+        workouts: 'Тренировки',
+        foodLogs: 'Записи питания',
+        checkins: 'Проверки',
+        aiMessages: 'Сообщения ИИ',
+        aiPlans: 'Планы ИИ'
+      },
+      confirm: {
+        upload: 'Загрузить текущую локальную базу в приватную резервную копию Google Drive? Содержимое предыдущей копии будет заменено.',
+        download: 'Скачать копию Google Drive и объединить её с локальными данными? Более новые локальные записи сохранятся.',
+        signOut: 'Завершить текущую сессию Google Drive?'
+      }
     }
   }
 }

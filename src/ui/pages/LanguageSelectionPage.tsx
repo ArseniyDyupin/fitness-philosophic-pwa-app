@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useI18nStore } from '@stores/i18n.store'
 import { useProfileStore } from '@stores/profile.store'
+import { useOnboardingStore } from '@stores/onboarding.store'
 import { useTranslations } from '@stores/i18n.store'
 
 const LanguageSelectionPage: React.FC = () => {
   const navigate = useNavigate()
   const { setLanguage } = useI18nStore()
-  const { createProfile } = useProfileStore()
+  const { profile } = useProfileStore()
+  const { updateDraft } = useOnboardingStore()
   const t = useTranslations()
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'ru' | null>(null)
 
@@ -15,39 +17,13 @@ const LanguageSelectionPage: React.FC = () => {
     setSelectedLanguage(language)
   }
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (!selectedLanguage) return
 
-    try {
-      // Set language in i18n store
-      setLanguage(selectedLanguage)
-      
-      // Mark that app has been launched before and navigate first
-      localStorage.setItem('ai-trainer:has-launched', 'true')
-
-      // Navigate to entry step first
-      navigate('/entry')
-
-      // Then create basic profile with selected language
-      await createProfile({
-        name: '', // Will be updated in later steps
-        gender: 'male', // Will be updated in later steps
-        age: 0, // Will be updated in later steps
-        height: 0, // Will be updated in later steps
-        weight: 0, // Will be updated in later steps
-        goal: '', // Will be updated in later steps
-        constraints: [],
-        equipment: [],
-        frequency: 3,
-        duration: 30,
-        language: selectedLanguage,
-        goalsDetailed: ''
-      })
-
-    } catch (error) {
-      console.error('Failed to create profile:', error)
-      alert(t.error || 'Failed to create profile')
-    }
+    localStorage.setItem('ai-trainer:has-launched', 'true')
+    updateDraft({ language: selectedLanguage })
+    setLanguage(selectedLanguage)
+    navigate(profile ? '/' : '/entry', { replace: true })
   }
 
   return (
@@ -63,7 +39,9 @@ const LanguageSelectionPage: React.FC = () => {
           
           <div className="space-y-4 mb-8">
             <button
+              type="button"
               onClick={() => handleLanguageSelect('en')}
+              aria-pressed={selectedLanguage === 'en'}
               className={`w-full py-3 px-4 border rounded-lg hover:bg-gray-50 transition-colors text-left ${
                 selectedLanguage === 'en' 
                   ? 'border-blue-500 bg-blue-50' 
@@ -80,7 +58,9 @@ const LanguageSelectionPage: React.FC = () => {
             </button>
             
             <button
+              type="button"
               onClick={() => handleLanguageSelect('ru')}
+              aria-pressed={selectedLanguage === 'ru'}
               className={`w-full py-3 px-4 border rounded-lg hover:bg-gray-50 transition-colors text-left ${
                 selectedLanguage === 'ru' 
                   ? 'border-blue-500 bg-blue-50' 
@@ -99,6 +79,7 @@ const LanguageSelectionPage: React.FC = () => {
 
           {/* Continue Button */}
           <button
+            type="button"
             onClick={handleContinue}
             disabled={!selectedLanguage}
             className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${

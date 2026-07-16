@@ -18,3 +18,6 @@ export * from './onboarding'
 
 // Shared components (used across multiple pages)
 export * from './shared'
+
+// Google Drive Sync components
+export { GoogleDriveSync } from './GoogleDriveSync'

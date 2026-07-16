@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workout Domain"
+  short_description: "Workout plans, metrics, RPE, and calculations"
+  default_prompt: "Use $workout-domain to change workout, plan, exercise, or fitness-metric behavior."

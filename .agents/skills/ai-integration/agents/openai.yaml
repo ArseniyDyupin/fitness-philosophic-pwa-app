@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Integration"
+  short_description: "OpenAI prompts, responses, keys, and rate limits"
+  default_prompt: "Use $ai-integration to implement or review the fitness app's OpenAI integration safely."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Internationalization"
+  short_description: "Russian and English translations and persistence"
+  default_prompt: "Use $i18n to add or review localized behavior for Russian and English."

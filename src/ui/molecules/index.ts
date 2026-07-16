@@ -9,3 +9,7 @@ export * from './workouts'
 
 // Shared molecules (used across multiple pages)
 export * from './shared'
+
+// Google Drive Sync molecules
+export { GoogleSignInButton } from './GoogleSignInButton'
+export { SyncButtons } from './SyncButtons'
