@@ -11,5 +11,6 @@ export * from './workouts'
 export * from './shared'
 
 // Google Drive Sync molecules
+export { GoogleOAuthConfig } from './GoogleOAuthConfig'
 export { GoogleSignInButton } from './GoogleSignInButton'
 export { SyncButtons } from './SyncButtons'

@@ -32,11 +32,21 @@ fitness data and user-provided photos.
 
 6. The popup token model does not use an application redirect endpoint, so an authorized redirect
    URI is not required for this implementation.
-7. Set the client ID in the environment:
+7. Configure the client ID using either:
 
-```env
-VITE_GOOGLE_CLIENT_ID=123456789-example.apps.googleusercontent.com
-```
+   - **Settings → Google Drive Sync → Google OAuth setup**. The value is validated and stored
+     only in that browser. It takes effect immediately, without rebuilding the application.
+   - The optional deployment environment default:
+
+   ```env
+   VITE_GOOGLE_CLIENT_ID=123456789-example.apps.googleusercontent.com
+   ```
+
+The browser-local value takes precedence over `VITE_GOOGLE_CLIENT_ID`. Choosing
+**Use deployment default** removes the local override. Changing the effective value ends the
+current in-memory Drive authorization session. The Client ID is a public OAuth application
+identifier, but it remains local configuration and is never added to Dexie exports or Drive
+backups.
 
 The Google Identity Services script is loaded from `index.html`:
 
@@ -186,8 +196,10 @@ unexpected sensitive data after the original user gesture.
 
 Use a dedicated test OAuth client and non-production Google account.
 
-1. Start the app with a valid `VITE_GOOGLE_CLIENT_ID`.
-2. Open Settings and authorize Google Drive.
+1. Start the app and configure a valid Google OAuth Client ID in Settings (or provide
+   `VITE_GOOGLE_CLIENT_ID` at build time).
+2. Confirm that the current origin shown in Settings exists in the OAuth client's Authorized
+   JavaScript origins, then authorize Google Drive.
 3. Cancel the popup and verify the app remains unauthorized with a recoverable message.
 4. Authorize, upload an empty/small database, and verify backup metadata appears.
 5. Change local data, upload again, and verify the same Drive file ID is updated.

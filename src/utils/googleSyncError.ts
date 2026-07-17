@@ -2,6 +2,7 @@ import type { DataSyncErrorCode } from '@/services/dataSync'
 
 export interface GoogleSyncErrorMessages {
   notConfigured: string
+  invalidClientId: string
   unavailable: string
   cancelled: string
   signIn: string
@@ -28,6 +29,8 @@ export function getGoogleSyncErrorMessage(
   switch (code) {
     case 'NOT_CONFIGURED':
       return messages.notConfigured
+    case 'INVALID_CLIENT_ID':
+      return messages.invalidClientId
     case 'GIS_UNAVAILABLE':
       return messages.unavailable
     case 'AUTH_CANCELLED':

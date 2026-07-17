@@ -60,6 +60,13 @@ sync therefore crosses authentication, network, persistence, privacy, and UI bou
    code. Components translate known codes and use a generic fallback without embedding remote
    response bodies or user backup content.
 
+9. **Support a local Client ID override.** `VITE_GOOGLE_CLIENT_ID` remains an optional deployment
+   default. A validated Settings value takes precedence and is stored under a dedicated
+   localStorage key. The OAuth Client ID is a public identifier, but it remains local
+   configuration and is excluded from Dexie exports and Drive backups. Replacing it ends any
+   in-memory authorization session so a token issued for the previous OAuth client is never
+   reused.
+
 ## Risks / Trade-offs
 
 - [Browser token model requires reauthorization after reload/expiry] → explain the session
@@ -73,6 +80,8 @@ sync therefore crosses authentication, network, persistence, privacy, and UI bou
   fallback; equal or missing timestamps preserve local records.
 - [Live OAuth cannot be automated without credentials/account state] → cover provider boundaries
   with mocks and report live Drive verification separately.
+- [A user can paste a Client ID whose origin is not authorized] → show the exact current origin
+  beside setup guidance and preserve the provider's recoverable authorization error.
 
 ## Migration Plan
 
@@ -87,4 +96,3 @@ sync therefore crosses authentication, network, persistence, privacy, and UI bou
 - A backend authorization-code model may be considered later if silent refresh or scheduled sync
   becomes a requirement.
 - Resumable uploads may be needed if the product intentionally supports backups above 20 MB.
-

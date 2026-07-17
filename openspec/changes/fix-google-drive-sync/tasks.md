@@ -18,6 +18,8 @@
   offline checks, and store reload after merge.
 - [x] 3.2 Update auth/sync stores and English/Russian UI for accurate session, privacy, progress,
   confirmation, and error states.
+- [x] 3.3 Add validated runtime OAuth Client ID save/reset controls, local-only persistence, and
+  safe authorization reset when the configured client changes.
 
 ## 4. Regression Coverage and Verification
 
@@ -26,6 +28,8 @@
 - [x] 4.2 Run agent/OpenSpec validation, targeted tests, targeted lint, typecheck, build, and local
   server smoke; record unavailable visual/live-provider checks and whether OAuth/Drive used mocks
   or a real account.
+- [x] 4.4 Add service and Settings UI regression coverage for runtime Client ID configuration and
+  rerun the relevant verification matrix.
 - [ ] 4.3 Run independent Claude cross-review and address blocker findings before handoff.
 
 ## Verification Record
@@ -38,3 +42,10 @@
   ESLint config; targeted TypeScript/React hooks lint for changed files passed.
 - Independent cross-review: attempted with `cross-review.sh --working-tree --tool claude`, but
   Claude Code returned HTTP 401 for its configured credentials.
+- Runtime Client ID coverage: service and Settings component tests cover validation, local
+  persistence, environment fallback, token revocation on change, and reset.
+- Current verification: `npm run verify` passed with 15 test files / 47 tests, production build,
+  build budget, and agent checks. Browser smoke passed save/reload/reset at the default viewport
+  and at 320 px with no horizontal overflow.
+- Live Google OAuth/Drive account flow remains pending; browser verification used a syntactically
+  valid test Client ID only and did not open the provider popup.

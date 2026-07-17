@@ -11,6 +11,8 @@ replace stable IDs. This risks failed sync, duplicate records, and silent loss o
   minimum `drive.appdata` scope.
 - Keep short-lived OAuth access tokens in memory only and require a user gesture to authorize
   again after expiry.
+- Allow the user to configure a public Google OAuth web Client ID from Settings at runtime, with
+  a build-time environment value remaining as the optional deployment default.
 - Store one versioned JSON backup in the hidden Google Drive application-data folder and use the
   Drive media upload endpoints for create and update.
 - Reuse the canonical Dexie export/import bundle so every persisted table participates in sync.
@@ -35,7 +37,7 @@ None. No living specifications exist yet.
 ## Impact
 
 - Affected code: Google auth/Drive services, data export/import and sync orchestration, Zustand
-  sync/auth stores, settings sync UI, translations, and Google Drive documentation.
+  sync/auth stores, runtime OAuth settings UI, translations, and Google Drive documentation.
 - External systems: Google Identity Services and Google Drive API; a configured OAuth web client,
   authorized JavaScript origin, and enabled Drive API remain required.
 - Privacy: fitness history, metrics, AI feedback, and user-provided photos are uploaded only after
@@ -44,4 +46,3 @@ None. No living specifications exist yet.
 - Offline/compatibility: sync is explicitly unavailable offline; local-only application behavior
   and schema version 1 backup compatibility remain unchanged.
 - Specialists: `data-storage-sync`, `testing`, `i18n`, `ui-components`, and `code-reviewer`.
-

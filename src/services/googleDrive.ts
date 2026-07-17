@@ -5,6 +5,8 @@ const GOOGLE_DRIVE_API_BASE = 'https://www.googleapis.com/drive/v3'
 const GOOGLE_DRIVE_UPLOAD_BASE = 'https://www.googleapis.com/upload/drive/v3'
 const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata'
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+const GOOGLE_CLIENT_ID_STORAGE_KEY = 'ai-trainer:google-client-id'
+const GOOGLE_CLIENT_ID_PATTERN = /^[a-z0-9-]+\.apps\.googleusercontent\.com$/i
 const SYNC_FILE_NAME = 'ai-trainer-sync.json'
 const MAX_SYNC_FILE_SIZE = 20 * 1024 * 1024
 const TOKEN_EXPIRY_SKEW_MS = 30_000
@@ -46,6 +48,7 @@ declare global {
 
 export type GoogleDriveErrorCode =
   | 'NOT_CONFIGURED'
+  | 'INVALID_CLIENT_ID'
   | 'GIS_UNAVAILABLE'
   | 'AUTH_CANCELLED'
   | 'AUTH_FAILED'
@@ -86,6 +89,8 @@ export interface GoogleDriveFile {
 
 interface GoogleDriveServiceOptions {
   clientId?: string
+  environmentClientId?: string
+  storage?: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> | null
   requestTimeoutMs?: number
   authTimeoutMs?: number
   now?: () => number
@@ -93,6 +98,31 @@ interface GoogleDriveServiceOptions {
 }
 
 type AuthStateListener = (state: GoogleDriveAuthState) => void
+
+export type GoogleClientIdSource = 'local' | 'environment' | 'none'
+
+function normalizeClientId(value: string): string {
+  return value.trim()
+}
+
+export function isValidGoogleClientId(value: string): boolean {
+  const normalized = normalizeClientId(value)
+  return (
+    GOOGLE_CLIENT_ID_PATTERN.test(normalized) &&
+    normalized !== 'your_google_client_id_here.apps.googleusercontent.com'
+  )
+}
+
+function getBrowserStorage(): Pick<
+  Storage,
+  'getItem' | 'setItem' | 'removeItem'
+> | null {
+  try {
+    return typeof window === 'undefined' ? null : window.localStorage
+  } catch {
+    return null
+  }
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
@@ -120,7 +150,13 @@ function parseDriveFile(value: unknown): GoogleDriveFile {
 }
 
 export class GoogleDriveService {
-  private readonly clientId: string
+  private clientId: string
+  private readonly environmentClientId: string
+  private readonly storage: Pick<
+    Storage,
+    'getItem' | 'setItem' | 'removeItem'
+  > | null
+  private hasLocalClientId: boolean
   private readonly requestTimeoutMs: number
   private readonly authTimeoutMs: number
   private readonly now: () => number
@@ -130,7 +166,19 @@ export class GoogleDriveService {
   private readonly authStateListeners = new Set<AuthStateListener>()
 
   constructor(options: GoogleDriveServiceOptions = {}) {
-    this.clientId = options.clientId ?? GOOGLE_CLIENT_ID
+    this.environmentClientId = normalizeClientId(
+      options.environmentClientId ?? GOOGLE_CLIENT_ID
+    )
+    this.storage = options.storage === undefined
+      ? getBrowserStorage()
+      : options.storage
+    const storedClientId = options.clientId === undefined
+      ? this.storage?.getItem(GOOGLE_CLIENT_ID_STORAGE_KEY) ?? ''
+      : ''
+    this.hasLocalClientId = Boolean(storedClientId)
+    this.clientId = normalizeClientId(
+      options.clientId ?? (storedClientId || this.environmentClientId)
+    )
     this.requestTimeoutMs = options.requestTimeoutMs ?? 30_000
     this.authTimeoutMs = options.authTimeoutMs ?? 60_000
     this.now = options.now ?? Date.now
@@ -138,10 +186,44 @@ export class GoogleDriveService {
   }
 
   isConfigured(): boolean {
-    return Boolean(
-      this.clientId &&
-      this.clientId !== 'your_google_client_id_here.apps.googleusercontent.com'
-    )
+    return isValidGoogleClientId(this.clientId)
+  }
+
+  getClientId(): string {
+    return this.clientId
+  }
+
+  getEnvironmentClientId(): string {
+    return this.environmentClientId
+  }
+
+  getClientIdSource(): GoogleClientIdSource {
+    if (this.hasLocalClientId) {
+      return 'local'
+    }
+
+    return this.isConfigured() ? 'environment' : 'none'
+  }
+
+  hasClientIdOverride(): boolean {
+    return this.hasLocalClientId
+  }
+
+  async setClientId(value: string): Promise<void> {
+    const normalized = normalizeClientId(value)
+    if (!isValidGoogleClientId(normalized)) {
+      throw new GoogleDriveError('INVALID_CLIENT_ID')
+    }
+
+    await this.replaceClientId(normalized)
+    this.storage?.setItem(GOOGLE_CLIENT_ID_STORAGE_KEY, normalized)
+    this.hasLocalClientId = true
+  }
+
+  async clearClientIdOverride(): Promise<void> {
+    await this.replaceClientId(this.environmentClientId)
+    this.storage?.removeItem(GOOGLE_CLIENT_ID_STORAGE_KEY)
+    this.hasLocalClientId = false
   }
 
   subscribeAuthState(listener: AuthStateListener): () => void {
@@ -513,6 +595,15 @@ export class GoogleDriveService {
     } catch {
       throw new GoogleDriveError('INVALID_RESPONSE')
     }
+  }
+
+  private async replaceClientId(nextClientId: string): Promise<void> {
+    if (nextClientId === this.clientId) {
+      return
+    }
+
+    await this.signOut()
+    this.clientId = nextClientId
   }
 
   private clearAuthState(): void {

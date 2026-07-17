@@ -17,6 +17,28 @@ credential as a Drive access token.
 - **WHEN** a sync operation starts after the in-memory access token has expired
 - **THEN** the system clears authorization state and asks the user to authorize again
 
+### Requirement: OAuth Client ID can be configured at runtime
+The system SHALL let the user enter a valid Google OAuth web Client ID in Settings, SHALL store
+that public identifier only in local browser configuration, and SHALL use it for subsequent GIS
+authorization without requiring an application rebuild.
+
+#### Scenario: User saves a valid Client ID
+- **WHEN** the user enters a syntactically valid Google OAuth web Client ID and saves it
+- **THEN** the system persists the local override and immediately enables Drive authorization
+
+#### Scenario: User enters an invalid Client ID
+- **WHEN** the entered value is empty or does not use the Google OAuth web Client ID format
+- **THEN** the system keeps the previous configuration and presents a localized validation error
+
+#### Scenario: User changes Client ID during an authorized session
+- **WHEN** the user confirms changing the Client ID while Drive is authorized
+- **THEN** the system revokes or clears the current access token before using the new Client ID
+
+#### Scenario: User resets the local override
+- **WHEN** the user removes the Settings override
+- **THEN** the system falls back to the optional build-time Client ID and never adds either value
+  to fitness backups
+
 ### Requirement: Sync file is private application data
 The system SHALL store a single JSON sync file in Google Drive `appDataFolder` using the
 `drive.appdata` scope and SHALL upload actual media content for both create and update operations.
@@ -99,5 +121,5 @@ claims.
 
 #### Scenario: Sync is not configured
 - **WHEN** no valid Google client ID is configured
-- **THEN** the settings page presents a localized configuration message and disables sync
-
+- **THEN** the settings page presents a localized Client ID form and keeps authorization and sync
+  controls disabled

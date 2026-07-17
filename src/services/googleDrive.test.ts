@@ -3,7 +3,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   GoogleDriveError,
-  GoogleDriveService
+  GoogleDriveService,
+  isValidGoogleClientId
 } from './googleDrive'
 import type { ExportBundle } from '@/types/export'
 
@@ -76,6 +77,81 @@ describe('GoogleDriveService', () => {
       value: true
     })
     window.google = undefined
+  })
+
+  it('prefers a browser Client ID override and can reset to the deployment default', async () => {
+    localStorage.setItem(
+      'ai-trainer:google-client-id',
+      'local-client.apps.googleusercontent.com'
+    )
+    const service = new GoogleDriveService({
+      environmentClientId: 'deployment-client.apps.googleusercontent.com',
+      storage: localStorage
+    })
+
+    expect(service.getClientId()).toBe(
+      'local-client.apps.googleusercontent.com'
+    )
+    expect(service.getClientIdSource()).toBe('local')
+
+    await service.clearClientIdOverride()
+
+    expect(service.getClientId()).toBe(
+      'deployment-client.apps.googleusercontent.com'
+    )
+    expect(service.getClientIdSource()).toBe('environment')
+    expect(localStorage.getItem('ai-trainer:google-client-id')).toBeNull()
+  })
+
+  it('rejects an invalid runtime Client ID without replacing configuration', async () => {
+    const service = new GoogleDriveService({
+      environmentClientId: 'deployment-client.apps.googleusercontent.com',
+      storage: localStorage
+    })
+
+    expect(isValidGoogleClientId('not-a-google-client')).toBe(false)
+    await expect(service.setClientId('not-a-google-client')).rejects.toMatchObject({
+      code: 'INVALID_CLIENT_ID'
+    })
+    expect(service.getClientId()).toBe(
+      'deployment-client.apps.googleusercontent.com'
+    )
+    expect(localStorage.getItem('ai-trainer:google-client-id')).toBeNull()
+  })
+
+  it('revokes the active token before applying another runtime Client ID', async () => {
+    const oauth = installGoogleOAuth(config => {
+      config.callback({
+        access_token: 'drive-access-token',
+        expires_in: 3600
+      })
+    })
+    const service = new GoogleDriveService({
+      clientId: 'first-client.apps.googleusercontent.com',
+      storage: localStorage
+    })
+    await service.signIn()
+
+    await service.setClientId('second-client.apps.googleusercontent.com')
+
+    expect(oauth.revoke).toHaveBeenCalledWith(
+      'drive-access-token',
+      expect.any(Function)
+    )
+    expect(service.isAuthenticated()).toBe(false)
+    expect(service.getClientId()).toBe(
+      'second-client.apps.googleusercontent.com'
+    )
+    expect(localStorage.getItem('ai-trainer:google-client-id')).toBe(
+      'second-client.apps.googleusercontent.com'
+    )
+
+    await service.signIn()
+    expect(oauth.initTokenClient).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        client_id: 'second-client.apps.googleusercontent.com'
+      })
+    )
   })
 
   it('authorizes with the OAuth token model and keeps the token out of storage', async () => {
