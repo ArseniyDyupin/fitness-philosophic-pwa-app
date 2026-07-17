@@ -1,4 +1,5 @@
 import type { ExportBundle } from '@/types/export'
+import { getBackupIntegrity } from '@/services/data/backupIntegrity'
 
 const GOOGLE_DRIVE_API_BASE = 'https://www.googleapis.com/drive/v3'
 const GOOGLE_DRIVE_UPLOAD_BASE = 'https://www.googleapis.com/upload/drive/v3'
@@ -80,6 +81,7 @@ export interface GoogleDriveFile {
   name: string
   modifiedTime: string
   size?: string
+  appProperties?: Record<string, string>
 }
 
 interface GoogleDriveServiceOptions {
@@ -102,7 +104,8 @@ function parseDriveFile(value: unknown): GoogleDriveFile {
     typeof value.id !== 'string' ||
     typeof value.name !== 'string' ||
     typeof value.modifiedTime !== 'string' ||
-    (value.size !== undefined && typeof value.size !== 'string')
+    (value.size !== undefined && typeof value.size !== 'string') ||
+    (value.appProperties !== undefined && !isRecord(value.appProperties))
   ) {
     throw new GoogleDriveError('INVALID_RESPONSE')
   }
@@ -111,7 +114,8 @@ function parseDriveFile(value: unknown): GoogleDriveFile {
     id: value.id,
     name: value.name,
     modifiedTime: value.modifiedTime,
-    size: value.size
+    size: value.size,
+    appProperties: value.appProperties as Record<string, string> | undefined
   }
 }
 
@@ -267,7 +271,7 @@ export class GoogleDriveService {
 
   async uploadSyncData(data: ExportBundle): Promise<GoogleDriveFile> {
     const fileContent = JSON.stringify(data)
-    const fileSize = new TextEncoder().encode(fileContent).byteLength
+    const { size: fileSize, checksum } = await getBackupIntegrity(fileContent)
 
     if (fileSize > MAX_SYNC_FILE_SIZE) {
       throw new GoogleDriveError('FILE_TOO_LARGE')
@@ -276,18 +280,37 @@ export class GoogleDriveService {
     const existingFile = await this.findSyncFile()
 
     if (existingFile) {
+      const boundary = `ai_trainer_${globalThis.crypto?.randomUUID?.() ?? this.now()}`
+      const metadata = JSON.stringify({
+        name: SYNC_FILE_NAME,
+        mimeType: 'application/json',
+        appProperties: {
+          schemaVersion: String(data.schemaVersion),
+          checksum,
+          exportedAt: data.exportedAt
+        }
+      })
+      const multipartBody = [
+        `--${boundary}`,
+        'Content-Type: application/json; charset=UTF-8',
+        '', metadata,
+        `--${boundary}`,
+        'Content-Type: application/json; charset=UTF-8',
+        '', fileContent,
+        `--${boundary}--`, ''
+      ].join('\r\n')
       const params = new URLSearchParams({
-        uploadType: 'media',
-        fields: 'id,name,modifiedTime,size'
+        uploadType: 'multipart',
+        fields: 'id,name,modifiedTime,size,appProperties'
       })
       const response = await this.makeDriveRequest(
         `${GOOGLE_DRIVE_UPLOAD_BASE}/files/${encodeURIComponent(existingFile.id)}?${params.toString()}`,
         {
           method: 'PATCH',
           headers: {
-            'Content-Type': 'application/json; charset=UTF-8'
+            'Content-Type': `multipart/related; boundary=${boundary}`
           },
-          body: fileContent
+          body: multipartBody
         }
       )
 
@@ -298,7 +321,12 @@ export class GoogleDriveService {
     const metadata = JSON.stringify({
       name: SYNC_FILE_NAME,
       mimeType: 'application/json',
-      parents: ['appDataFolder']
+      parents: ['appDataFolder'],
+      appProperties: {
+        schemaVersion: String(data.schemaVersion),
+        checksum,
+        exportedAt: data.exportedAt
+      }
     })
     const multipartBody = [
       `--${boundary}`,
@@ -314,7 +342,7 @@ export class GoogleDriveService {
     ].join('\r\n')
     const params = new URLSearchParams({
       uploadType: 'multipart',
-      fields: 'id,name,modifiedTime,size'
+      fields: 'id,name,modifiedTime,size,appProperties'
     })
     const response = await this.makeDriveRequest(
       `${GOOGLE_DRIVE_UPLOAD_BASE}/files?${params.toString()}`,
@@ -335,6 +363,9 @@ export class GoogleDriveService {
     if (!file) {
       throw new GoogleDriveError('FILE_NOT_FOUND', 404)
     }
+    if (file.size && Number(file.size) > MAX_SYNC_FILE_SIZE) {
+      throw new GoogleDriveError('FILE_TOO_LARGE')
+    }
 
     const params = new URLSearchParams({ alt: 'media' })
     const response = await this.makeDriveRequest(
@@ -342,7 +373,12 @@ export class GoogleDriveService {
     )
 
     try {
-      return JSON.parse(await response.text())
+      const content = await response.text()
+      const integrity = await getBackupIntegrity(content)
+      if (file.appProperties?.checksum && integrity.checksum !== file.appProperties.checksum) {
+        throw new GoogleDriveError('INVALID_SYNC_DATA')
+      }
+      return JSON.parse(content)
     } catch {
       throw new GoogleDriveError('INVALID_SYNC_DATA')
     }
@@ -353,7 +389,7 @@ export class GoogleDriveService {
     const params = new URLSearchParams({
       spaces: 'appDataFolder',
       q: `name = '${escapedName}' and trashed = false`,
-      fields: 'files(id,name,modifiedTime,size)',
+      fields: 'files(id,name,modifiedTime,size,appProperties)',
       orderBy: 'modifiedTime desc',
       pageSize: '1'
     })
@@ -375,6 +411,8 @@ export class GoogleDriveService {
     exists: boolean
     lastModified?: string
     size?: string
+    schemaVersion?: string
+    checksum?: string
   }> {
     const file = await this.findSyncFile()
     if (!file) {
@@ -384,7 +422,9 @@ export class GoogleDriveService {
     return {
       exists: true,
       lastModified: file.modifiedTime,
-      size: file.size
+      size: file.size,
+      schemaVersion: file.appProperties?.schemaVersion,
+      checksum: file.appProperties?.checksum
     }
   }
 

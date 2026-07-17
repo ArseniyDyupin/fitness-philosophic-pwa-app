@@ -6,6 +6,8 @@ import { Plus, Sparkles } from 'lucide-react'
 import type { Workout } from '@/types/models'
 import WorkoutCard from '@organisms/shared/WorkoutCard'
 import WeekSummary from '@organisms/shared/WeekSummary'
+import { useWorkoutStore } from '@stores/workout.store'
+import { toastError, toastSuccess } from '@lib/toast'
 
 interface WeekSectionProps {
   workouts: Workout[]
@@ -24,6 +26,7 @@ const WeekSection: React.FC<WeekSectionProps> = ({
 }) => {
   const t = useTranslations()
   const { isConfigured: isAIConfigured } = useAIStore()
+  const { deleteWorkout } = useWorkoutStore()
   const navigate = useNavigate()
 
   const handleWorkoutClick = (workoutId: string) => {
@@ -34,12 +37,23 @@ const WeekSection: React.FC<WeekSectionProps> = ({
     navigate(`/workouts/${workoutId}`)
   }
 
-  const handleDeleteWorkout = (_workoutId: string) => {
-    // This will be handled by the parent component
+  const handleDeleteWorkout = async (workoutId: string) => {
+    const confirmed = window.confirm(
+      t.workoutDetailsPage?.deleteConfirm?.message ||
+      'Are you sure you want to delete this workout? This action cannot be undone.'
+    )
+    if (!confirmed) return
+
+    try {
+      await deleteWorkout(workoutId)
+      toastSuccess(t.workoutDetailsPage?.deletedSuccessfully || 'Workout deleted successfully')
+    } catch {
+      toastError(t.workoutDetailsPage?.failedToDelete || 'Failed to delete workout')
+    }
   }
 
-  const handleUpdateAnalysis = (_workoutId: string) => {
-    // This will be handled by the parent component
+  const handleUpdateAnalysis = (workoutId: string) => {
+    navigate(`/workouts/${workoutId}`)
   }
 
   if (workouts.length === 0) {
@@ -55,7 +69,7 @@ const WeekSection: React.FC<WeekSectionProps> = ({
               {t.workoutsPage?.emptyWeek?.title || 'No workouts this week'}
             </h3>
             <p className="text-gray-500 mb-6">
-              Start your fitness journey by adding your first workout
+              {t.workoutsPage?.startFitnessJourney || 'Start your fitness journey by adding your first workout'}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button

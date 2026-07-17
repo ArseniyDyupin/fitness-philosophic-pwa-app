@@ -20,6 +20,9 @@
 - ⚡ **Высокая производительность** - lazy loading и оптимизация
 - 🔒 **Безопасность** - валидация данных и rate limiting
 - 📈 **Аналитика** - отслеживание метрик и прогресса
+- 🧭 **Итоги недели** - recovery check-in, рекомендация и явный preview изменений плана
+- ☁️ **Приватный backup** - ручная синхронизация через Google Drive AppData
+- 🚦 **Feature flags** - незавершённые поверхности скрыты из роутинга через `src/config/features.ts`
 
 ## 🚀 Быстрый старт
 
@@ -42,6 +45,8 @@ npm install
 # Запуск в режиме разработки
 npm run dev
 ```
+
+Полный локальный контур: `npm run verify:all` (включает Chromium e2e и runtime audit).
 
 ### Настройка
 
@@ -71,6 +76,10 @@ Atoms → Molecules → Organisms → Templates → Pages
 ```
 src/
 ├── app/                    # Главный компонент
+├── config/                 # Feature flags для экспериментальных поверхностей
+├── domain/                 # Доменные типы, правила и интерфейсы репозиториев
+├── application/            # Use cases для профиля, тренировок, планов и weekly review
+├── infrastructure/         # Dexie-реализации репозиториев
 ├── navigation/             # Логика навигации
 ├── ui/                     # UI компоненты
 │   ├── atoms/             # Базовые элементы
@@ -80,7 +89,7 @@ src/
 │   └── modals/            # Модальные окна
 ├── hooks/                  # Кастомные хуки
 ├── stores/                 # Управление состоянием
-├── services/               # Бизнес-логика
+├── services/               # AI gateway, импорт/экспорт, Drive, расчёты
 ├── types/                  # Типизация
 └── utils/                  # Утилиты
 ```
@@ -108,6 +117,12 @@ src/
 - Анализ техники выполнения упражнений
 - Рекомендации по улучшению
 - Оценка прогресса
+- Один конфиг/ключ и единый transport для plan, review, estimates и body-photo analysis
+
+### 🧭 Итоги недели
+- Оценка энергии, сна, soreness, настроения и выполнения плана
+- Безопасная локальная рекомендация при недоступном AI
+- Preview изменения частоты/длительности до явного применения
 
 ### 📊 Статистика и аналитика
 - Детальная статистика по тренировкам
@@ -118,7 +133,7 @@ src/
 ### 📱 PWA функции
 - Работа в офлайн режиме
 - Установка как нативное приложение
-- Push уведомления
+- Контролируемое обновление через пользовательский prompt
 - Быстрая загрузка
 
 ## 🛠️ Разработка
@@ -129,24 +144,23 @@ src/
 # Разработка
 npm run dev          # Запуск dev сервера
 npm run build        # Сборка для продакшена
+npm run build:budget # Budget размера dist и JS chunks
 npm run preview      # Предварительный просмотр сборки
 
 # Качество кода
 npm run lint         # Проверка ESLint
-npm run lint:fix     # Автоисправление ESLint
-npm run type-check   # Проверка TypeScript
+npm run typecheck    # Проверка TypeScript
 
 # Тестирование
-npm run test         # Запуск тестов
-npm run test:watch   # Тесты в watch режиме
-npm run test:coverage # Покрытие тестами
+npm test -- --run    # Unit/component/integration тесты Vitest
+npm run test:e2e     # Desktop + mobile smoke-тесты Playwright
+npm run verify       # Полный локальный quality gate
 ```
 
 ### Стандарты кода
 
 - **TypeScript** - строгая типизация
 - **ESLint** - линтинг кода
-- **Prettier** - форматирование
 - **Conventional Commits** - стандарт коммитов
 
 ### Git workflow
@@ -207,11 +221,13 @@ netlify deploy --prod --dir=dist
 
 ## 🔒 Безопасность
 
-- Валидация всех входных данных с Zod
+- Zod-валидация import/AI контрактов
 - Rate limiting для AI API
 - Локальное хранение данных
+- Редактирование секретов, токенов и фото из error logs
+- Полное удаление локальных данных из Settings
+- `npm audit --omit=dev` без известных production-уязвимостей
 - HTTPS в продакшене
-- Content Security Policy
 
 ## 🤝 Вклад в проект
 

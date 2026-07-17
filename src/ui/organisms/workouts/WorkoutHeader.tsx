@@ -57,10 +57,13 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                 {t.workoutDetailsPage?.workoutDetails || 'Workout Details'}
               </h1>
             </div>
+            {workout.name && (
+              <p className="mb-1 text-sm font-medium text-gray-800 sm:text-base">{workout.name}</p>
+            )}
             
             {/* Date below title */}
             <div className="text-xs sm:text-sm text-gray-600">
-              {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
+              {format(workout.date, 'EEEE, MMMM d, yyyy')}
             </div>
           </div>
           

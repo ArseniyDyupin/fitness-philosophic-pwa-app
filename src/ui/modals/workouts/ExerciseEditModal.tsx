@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { X, Check } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
 import type { WorkoutExercise } from '@/types/models'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 interface ExerciseEditModalProps {
   isOpen: boolean
@@ -17,6 +18,7 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
   onSave
 }) => {
   const t = useTranslations()
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen, onClose)
   const [editedExercise, setEditedExercise] = useState<WorkoutExercise>(exercise)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -62,10 +64,10 @@ const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
         />
         
         {/* Modal */}
-        <div className="relative bg-white rounded-lg shadow-xl max-w-sm sm:max-w-md w-full max-h-[95vh] overflow-y-auto mx-2 sm:mx-0">
+        <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="edit-exercise-title" tabIndex={-1} className="relative bg-white rounded-lg shadow-xl max-w-sm sm:max-w-md w-full max-h-[95vh] overflow-y-auto mx-2 sm:mx-0">
           {/* Header */}
           <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 sticky top-0 bg-white">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+            <h3 id="edit-exercise-title" className="text-base sm:text-lg font-semibold text-gray-900">
               {t.workoutDetailsPage?.editExercise || 'Edit Exercise'}
             </h3>
             <button

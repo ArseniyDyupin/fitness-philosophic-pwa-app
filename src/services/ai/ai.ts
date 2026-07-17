@@ -1,50 +1,20 @@
 import type { AIWorkoutReview, AIWorkoutPayload } from '@/types/ai'
 import type { Profile, Workout, PlanSuggestion } from '@/types/models'
-import { db } from '../data/db'
 import { z } from 'zod'
-import { aiRateLimiter } from './rateLimiter'
-import { AI_CONFIG } from '@/constants'
+import { todayLocalDate, toLocalDate } from '@/domain/date/localDate'
+import { aiGateway, aiKeyStore } from './aiGateway'
 
 export class AIService {
-  private apiKey: string = ''
-  private baseUrl = 'https://api.openai.com/v1/chat/completions'
-
-  constructor() {
-    // Initialize API key from environment variables or localStorage
-    this.initializeApiKey()
-  }
-
-  private initializeApiKey() {
-    // First, try to get API key from environment variables (for production)
-    const envApiKey = import.meta.env.VITE_OPENAI_API_KEY
-    if (envApiKey && envApiKey !== 'your_openai_api_key_here') {
-      this.apiKey = envApiKey
-      return
-    }
-
-    // Fallback to localStorage (for development/user input)
-    const storedApiKey = localStorage.getItem('ai-trainer:openai-api-key')
-    if (storedApiKey) {
-      this.apiKey = storedApiKey
-    }
-  }
-
   setApiKey(key: string) {
-    this.apiKey = key
-    // Save to localStorage for persistence
-    if (key) {
-      localStorage.setItem('ai-trainer:openai-api-key', key)
-    } else {
-      localStorage.removeItem('ai-trainer:openai-api-key')
-    }
+    aiKeyStore.set(key)
   }
 
   getApiKey(): string {
-    return this.apiKey
+    return aiKeyStore.get()
   }
 
   hasApiKey(): boolean {
-    return !!this.apiKey && this.apiKey !== 'your_openai_api_key_here'
+    return aiKeyStore.has()
   }
 
   async generateResponse(prompt: string, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<string> {
@@ -52,62 +22,19 @@ export class AIService {
   }
 
   private async makeRequest(prompt: string, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<string> {
-    if (!this.apiKey) {
-      throw new Error('API key not set')
-    }
-
-    // Check rate limit. We use a single stable key per browser session so that
-    // the sliding window in RateLimiter actually enforces AI_CONFIG.RATE_LIMIT_REQUESTS
-    // across all requests. The previous time-bucketed key created a fresh bucket
-    // every second, effectively disabling the limiter.
-    const rateLimitKey = 'ai-request'
-    if (!aiRateLimiter.isAllowed(rateLimitKey)) {
-      const remainingTime = aiRateLimiter.getTimeUntilReset(rateLimitKey)
-      throw new Error(`Rate limit exceeded. Please wait ${Math.ceil(remainingTime / 1000)} seconds before making another AI request.`)
-    }
-
     const systemPrompt = language === 'ru' 
       ? 'Ты — опытный ИИ-тренер по фитнесу с позитивным подходом. Твоя задача — мотивировать и вдохновлять пользователей, помогая им достигать своих целей. Всегда отвечай только валидным JSON. Никакого дополнительного текста.'
       : 'You are an experienced AI fitness coach with a positive approach. Your goal is to motivate and inspire users, helping them achieve their goals. Always respond with valid JSON only. No additional text.'
 
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`
-      },
-      body: JSON.stringify({
-        model: AI_CONFIG.DEFAULT_MODEL,
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000
-      }),
+    return aiGateway.complete({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.7,
+      maxTokens: 1000,
       signal: abortController?.signal
     })
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error('Invalid API key')
-      } else if (response.status === 429) {
-        throw new Error('Rate limit exceeded. Please try again later.')
-      } else if (response.status >= 500) {
-        throw new Error('AI service temporarily unavailable')
-      } else {
-        throw new Error(`AI request failed: ${response.status}`)
-      }
-    }
-
-    const data = await response.json()
-    return data.choices[0]?.message?.content || ''
   }
 
   async reviewWorkout(payload: AIWorkoutPayload, language: 'en' | 'ru' = 'en', abortController?: AbortController): Promise<AIWorkoutReview> {
@@ -363,33 +290,14 @@ Recent workouts (${recentWorkouts.length}): ${recentWorkouts.slice(0, 3).map(w =
 Create a varied, motivating workout considering progress and goals. In review, highlight achievements and provide inspiring advice.${additionalPrompt ? `\n\nAdditional requirements:\n${additionalPrompt}` : ''}`
 
     try {
-      const response = await fetch(this.baseUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
-          ],
-          temperature: 0.7,
-          max_tokens: 3000,
-        }),
+      const content = await aiGateway.complete({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+        maxTokens: 3000
       })
-
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`)
-      }
-
-      const data = await response.json()
-      const content = data.choices[0]?.message?.content
-
-      if (!content) {
-        throw new Error('No content in AI response')
-      }
 
       // Try to extract JSON from response
       let jsonContent = content.trim()
@@ -425,12 +333,15 @@ Create a varied, motivating workout considering progress and goals. In review, h
       const parsedResponse = aiResponseSchema.parse(JSON.parse(jsonContent))
 
       // Create PlanSuggestion
-      const today = new Date().toISOString().split('T')[0]
+      const today = todayLocalDate()
+      const planDate = parsedResponse.next_workout.date
+        ? toLocalDate(parsedResponse.next_workout.date)
+        : today
       const planId = `plan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       
       const workoutTemplate: Workout = {
         id: `template_${planId}`,
-        date: parsedResponse.next_workout.date || today,
+        date: planDate,
         exercises: parsedResponse.next_workout.exercises,
         rpe: parsedResponse.next_workout.rpe || undefined,
         status: 'planned', // Mark as planned when generated by AI
@@ -443,17 +354,11 @@ Create a varied, motivating workout considering progress and goals. In review, h
         type: 'workout',
         title: language === 'ru' ? 'План тренировки' : 'Workout Plan',
         description: parsedResponse.review,
-        forDate: parsedResponse.next_workout.date || today,
+        forDate: planDate,
         workoutTemplate,
         notes: `${parsedResponse.review}\n\nСоветы:\n${parsedResponse.tips.join('\n')}`,
         createdAt: new Date().toISOString()
       }
-
-      // Save to database
-      await db.plans.put(plan)
-      
-      // Also save the planned workout to workouts table
-      await db.workouts.put(workoutTemplate)
 
       return plan
 

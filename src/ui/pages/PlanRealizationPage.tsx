@@ -6,17 +6,21 @@ import { useWorkoutStore } from '@stores/workout.store'
 import { useAIStore } from '@stores/ai.store'
 import { getWorkoutTotalCalories } from '@services/fitness'
 import { getBatchEstimates, needsAIEstimation, createEstimateInput, aiService } from '@services/ai'
-import { db } from '@services/data'
+import { planService } from '@/application/plans/planService'
+import { workoutService } from '@/application/workouts/workoutService'
 import { toastSuccess, toastError } from '@lib/toast'
 import PlanSummary from '@organisms/plan/PlanSummary'
 import PlanExerciseCard from '@organisms/plan/PlanExerciseCard'
 import type { PlanSuggestion, ExerciseEdit, Workout, WorkoutExercise } from '@/types/models'
 import { ArrowLeft, Save, X, RotateCcw, Loader } from 'lucide-react'
+import { useLocalizedDate } from '@utils/dateUtils'
+import { todayLocalDate, toLocalDate } from '@/domain/date/localDate'
 
 const PlanRealizationPage: React.FC = () => {
   const { planId } = useParams<{ planId: string }>()
   const navigate = useNavigate()
   const t = useTranslations()
+  const { format } = useLocalizedDate()
   const { profile } = useProfileStore()
   const { addWorkout } = useWorkoutStore()
   const { isConfigured: isAIConfigured } = useAIStore()
@@ -38,7 +42,7 @@ const PlanRealizationPage: React.FC = () => {
 
   const loadPlan = async () => {
     try {
-      const loadedPlan = await db.plans.get(planId!)
+      const loadedPlan = await planService.getById(planId!)
       if (loadedPlan) {
         setPlan(loadedPlan)
         setRpe(loadedPlan.workoutTemplate?.rpe || 5)
@@ -128,7 +132,7 @@ const PlanRealizationPage: React.FC = () => {
               kcalEstimated: profile?.weight
                 ? getWorkoutTotalCalories({ 
                     id: 'temp',
-                    date: new Date().toISOString(),
+                    date: todayLocalDate(),
                     exercises: [exercise!], 
                     rpe,
                     createdAt: new Date().toISOString(),
@@ -144,7 +148,7 @@ const PlanRealizationPage: React.FC = () => {
             kcalEstimated: profile?.weight
               ? getWorkoutTotalCalories({
                   id: 'temp',
-                  date: new Date().toISOString(),
+                  date: todayLocalDate(),
                   exercises: [exercise!],
                   rpe,
                   createdAt: new Date().toISOString(),
@@ -160,7 +164,7 @@ const PlanRealizationPage: React.FC = () => {
           kcalEstimated: profile?.weight
             ? getWorkoutTotalCalories({
                 id: 'temp',
-                date: new Date().toISOString(),
+                date: todayLocalDate(),
                 exercises: [exercise!],
                 rpe,
                 createdAt: new Date().toISOString(),
@@ -174,7 +178,7 @@ const PlanRealizationPage: React.FC = () => {
 
       const workout: Workout = {
         id: `workout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        date: workoutDate,
+        date: toLocalDate(workoutDate),
         exercises: exercisesWithEstimates,
         rpe,
         aiReviewId: plan.id, // Link to the original plan
@@ -208,7 +212,7 @@ const PlanRealizationPage: React.FC = () => {
 
     setIsAdjusting(true)
     try {
-      const recentWorkouts = await db.workouts.orderBy('date').reverse().limit(5).toArray()
+      const recentWorkouts = (await workoutService.list()).slice(0, 5)
       
       // Generate new plan with adjustment
       const newPlan = await aiService.generateNextWorkout(
@@ -219,7 +223,7 @@ const PlanRealizationPage: React.FC = () => {
       )
 
       // Update current plan with new data
-      setPlan(newPlan)
+      setPlan(await planService.saveGeneratedPlan(newPlan))
       setRpe(newPlan.workoutTemplate?.rpe || 5)
       
       // Reset exercise edits
@@ -268,7 +272,7 @@ const PlanRealizationPage: React.FC = () => {
 
             <div className="flex items-center space-x-3">
               <span className="text-sm text-gray-600">
-                {new Date(plan.forDate).toLocaleDateString()}
+                {format(plan.forDate, 'PP')}
               </span>
               <span
                 className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${

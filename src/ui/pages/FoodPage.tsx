@@ -4,6 +4,7 @@ import { useFoodStore } from '@stores/food.store'
 import { useWorkoutStore } from '@stores/workout.store'
 import { useProfileStore } from '@stores/profile.store'
 import { Plus, Trash2 } from 'lucide-react'
+import { todayLocalDate, toLocalDate } from '@/domain/date/localDate'
 
 const FoodPage: React.FC = () => {
   const t = useTranslations()
@@ -12,7 +13,7 @@ const FoodPage: React.FC = () => {
   const { profile } = useProfileStore()
   
   const [isFormOpen, setIsFormOpen] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedDate, setSelectedDate] = useState<string>(todayLocalDate())
   const [formData, setFormData] = useState({
     calories: '',
     protein: '',
@@ -41,7 +42,7 @@ const FoodPage: React.FC = () => {
         carbs: formData.carbs ? parseFloat(formData.carbs) : undefined,
         fat: formData.fat ? parseFloat(formData.fat) : undefined,
         notes: formData.notes || undefined,
-        date: new Date(selectedDate).toISOString()
+        date: toLocalDate(selectedDate)
       })
 
       // Reset form
@@ -72,10 +73,11 @@ const FoodPage: React.FC = () => {
 
   const dailyCalories = getDailyCalories(selectedDate)
   const dailyMacros = getDailyMacros(selectedDate)
+  const selectedLogs = foodLogs.filter(log => toLocalDate(log.date) === selectedDate)
   
   // Get workout calories for the selected date
   const workoutCalories = workouts
-    .filter(w => new Date(w.date).toDateString() === new Date(selectedDate).toDateString())
+    .filter(w => toLocalDate(w.date) === selectedDate)
     .reduce((total, workout) => {
       if (profile?.weight) {
         return total + workout.exercises.reduce((sum, exercise) => {
@@ -166,17 +168,13 @@ const FoodPage: React.FC = () => {
         <div className="card">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Food Log</h3>
           
-          {foodLogs.filter(log => 
-            new Date(log.date).toDateString() === new Date(selectedDate).toDateString()
-          ).length === 0 ? (
+          {selectedLogs.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <p>{t.foodPage?.noEntries || 'No food entries for this date. Click "Add Food Log" to get started.'}</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {foodLogs
-                .filter(log => new Date(log.date).toDateString() === new Date(selectedDate).toDateString())
-                .map((log) => (
+              {selectedLogs.map((log) => (
                   <div key={log.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex-1">
                       <div className="flex items-center space-x-4">

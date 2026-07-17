@@ -11,7 +11,7 @@ interface SyncState {
   isDownloading: boolean
   isCheckingFile: boolean
   syncFileExists: boolean
-  syncFileInfo: { lastModified: string; size: number } | null
+  syncFileInfo: { lastModified: string; size: number; schemaVersion?: string; checksum?: string } | null
   lastSyncStats: SyncStats | null
   error: string | null
   errorCode: DataSyncErrorCode | null

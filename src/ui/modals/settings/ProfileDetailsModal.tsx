@@ -5,6 +5,7 @@ import { useTranslations } from '@stores/i18n.store'
 import { toastSuccess, toastError } from '@lib/toast'
 import { X, Edit, Save } from 'lucide-react'
 import type { Profile } from '@/types/models'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 interface ProfileDetailsModalProps {
   isOpen: boolean
@@ -20,6 +21,7 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
   const { profile, saveProfile } = useProfileStore()
   const { setLanguage } = useI18nStore()
   const t = useTranslations()
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen && Boolean(profile), onClose)
   
   const [isEditMode, setIsEditMode] = useState(initialEditMode)
   const [editedData, setEditedData] = useState<Partial<Profile>>({})
@@ -118,15 +120,16 @@ const ProfileDetailsModal: React.FC<ProfileDetailsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[95vh] overflow-hidden">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="profile-details-title" tabIndex={-1} className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[95vh] overflow-hidden">
         {/* Header */}
         <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+          <h2 id="profile-details-title" className="text-lg sm:text-xl font-semibold text-gray-900">
             {t.profile?.title || 'Profile Details'}
           </h2>
           <button
             onClick={onClose}
             className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors rounded-lg"
+            aria-label={t.close || 'Close'}
           >
             <X size={20} className="sm:w-6 sm:h-6" />
           </button>

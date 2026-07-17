@@ -75,10 +75,11 @@ const Header: React.FC = () => {
     }
   }
 
-  const handlePlanGenerated = (_plan: PlanSuggestion) => {
+  const handlePlanGenerated = (generatedPlan: PlanSuggestion) => {
     setIsGenerateModalOpen(false)
-    // For now, just close the modal
-    // In the future, this could save the plan or navigate to it
+    if (generatedPlan.workoutTemplate) {
+      navigate(`/workouts/${generatedPlan.workoutTemplate.id}`)
+    }
   }
 
   const handleGenerateClick = () => {
@@ -96,7 +97,7 @@ const Header: React.FC = () => {
 
   // Check if back button should be shown
   const shouldShowBackButton = () => {
-    const rootPaths = ['/', '/workouts', '/stats', '/settings'] // Removed '/food' temporarily
+    const rootPaths = ['/', '/workouts', '/weekly-review', '/stats', '/settings']
     return !rootPaths.includes(location.pathname) && !location.pathname.startsWith('/onboarding')
   }
 
@@ -176,7 +177,18 @@ const Header: React.FC = () => {
             >
               {t.header?.food || t.food}
             </Link> */}
-            <Link 
+            <Link
+              to="/weekly-review"
+              className={`px-3 py-2 rounded-md transition-colors ${
+                isActive('/weekly-review')
+                  ? 'font-semibold text-gray-900 border-b-2 border-primary-500'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+              aria-current={isActive('/weekly-review') ? 'page' : undefined}
+            >
+              {t.weeklyReview.title}
+            </Link>
+            <Link
               to="/stats" 
               className={`px-3 py-2 rounded-md transition-colors ${
                 isActive('/stats')
@@ -296,7 +308,19 @@ const Header: React.FC = () => {
                     >
                       {t.header?.workouts || t.workouts}
                     </Link>
-                    <Link 
+                    <Link
+                      to="/weekly-review"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center px-3 py-2 text-sm transition-colors pwa-touch-target ${
+                        isActive('/weekly-review')
+                          ? 'bg-primary-50 text-primary-600 font-semibold'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      }`}
+                      aria-current={isActive('/weekly-review') ? 'page' : undefined}
+                    >
+                      {t.weeklyReview.title}
+                    </Link>
+                    <Link
                       to="/stats" 
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`flex items-center px-3 py-2 text-sm transition-colors pwa-touch-target ${

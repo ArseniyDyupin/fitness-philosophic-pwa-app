@@ -1,6 +1,8 @@
 import Dexie from 'dexie'
 import type { Profile, Workout, FoodLog, WeeklyCheckin, AiMessage, PlanSuggestion, ExerciseEstimate, AIWorkoutFeedback } from '@/types/models'
 import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '@/types/body-metrics'
+import type { WeeklyReview } from '@/domain/weekly-review/types'
+import { toLocalDate } from '@/domain/date/localDate'
 
 export class AITrainerDB extends Dexie {
   profiles!: Dexie.Table<Profile, string>
@@ -15,6 +17,7 @@ export class AITrainerDB extends Dexie {
   metric_entries!: Dexie.Table<MetricEntry, string>
   photo_assets!: Dexie.Table<PhotoAsset, string>
   ai_body_evals!: Dexie.Table<AiBodyEval, string>
+  weekly_reviews!: Dexie.Table<WeeklyReview, string>
 
   constructor() {
     super('AITrainerDB')
@@ -150,6 +153,47 @@ export class AITrainerDB extends Dexie {
 
       await tx.table('metric_defs').bulkAdd(defaultMetrics)
     })
+
+    this.version(4).stores({
+      profiles: 'id',
+      workouts: 'id,date,createdAt',
+      food: 'id,date',
+      checkins: 'id,weekStart',
+      ai: 'id,createdAt',
+      plans: 'id,createdAt,forDate',
+      exercise_estimates: 'id,signature,type,createdAt',
+      ai_feedback: 'id,workoutId,createdAt',
+      metric_defs: 'id,key,isActive,createdAt',
+      metric_entries: 'id,defId,date',
+      photo_assets: 'id,date',
+      ai_body_evals: 'id,weekStart,createdAt',
+      weekly_reviews: 'id,weekStart,updatedAt'
+    }).upgrade(async transaction => {
+      await transaction.table('workouts').toCollection().modify(workout => {
+        workout.date = toLocalDate(workout.date)
+      })
+      await transaction.table('food').toCollection().modify(entry => {
+        entry.date = toLocalDate(entry.date)
+      })
+      await transaction.table('checkins').toCollection().modify(checkin => {
+        checkin.weekStart = toLocalDate(checkin.weekStart)
+      })
+      await transaction.table('plans').toCollection().modify(plan => {
+        plan.forDate = toLocalDate(plan.forDate)
+        if (plan.workoutTemplate?.date) {
+          plan.workoutTemplate.date = toLocalDate(plan.workoutTemplate.date)
+        }
+      })
+      await transaction.table('metric_entries').toCollection().modify(entry => {
+        entry.date = toLocalDate(entry.date)
+      })
+      await transaction.table('photo_assets').toCollection().modify(photo => {
+        photo.date = toLocalDate(photo.date)
+      })
+      await transaction.table('ai_body_evals').toCollection().modify(evaluation => {
+        evaluation.weekStart = toLocalDate(evaluation.weekStart)
+      })
+    })
   }
 }
 
@@ -165,6 +209,10 @@ export const dbHelpers = {
     // Ensure profile has the correct ID
     const profileWithId = { ...profile, id: 'me' }
     await db.profiles.put(profileWithId)
+  },
+
+  async deleteProfile(): Promise<void> {
+    await db.profiles.delete('me')
   },
 
   async getWorkouts(limit?: number): Promise<Workout[]> {
@@ -251,15 +299,8 @@ export const dbHelpers = {
   },
 
   async clearAllData(): Promise<void> {
-    await db.transaction('rw', [db.profiles, db.workouts, db.food, db.checkins, db.ai, db.plans, db.exercise_estimates, db.ai_feedback], async () => {
-      await db.profiles.clear()
-      await db.workouts.clear()
-      await db.food.clear()
-      await db.checkins.clear()
-      await db.ai.clear()
-      await db.plans.clear()
-      await db.exercise_estimates.clear()
-      await db.ai_feedback.clear()
+    await db.transaction('rw', db.tables, async () => {
+      await Promise.all(db.tables.map(table => table.clear()))
     })
   },
 

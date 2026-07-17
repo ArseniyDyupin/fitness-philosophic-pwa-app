@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { db } from '@services/data'
 import type { WeeklyCheckin } from '@/types/models'
+import { startOfLocalWeek, toLocalDate } from '@/domain/date/localDate'
 
 interface WeeklyState {
   checkins: WeeklyCheckin[]
@@ -41,6 +42,7 @@ export const useWeeklyStore = create<WeeklyState>((set, get) => ({
     try {
       const newCheckin: WeeklyCheckin = {
         ...checkinData,
+        weekStart: startOfLocalWeek(checkinData.weekStart),
         id: crypto.randomUUID(),
         createdAt: new Date().toISOString()
       }
@@ -96,15 +98,14 @@ export const useWeeklyStore = create<WeeklyState>((set, get) => ({
 
   getCheckinByWeek: (weekStart) => {
     return get().checkins.find(c => 
-      new Date(c.weekStart).getTime() === weekStart.getTime()
+      toLocalDate(c.weekStart) === startOfLocalWeek(weekStart)
     )
   },
 
   getCurrentWeekCheckin: () => {
-    const now = new Date()
-    const currentWeekStart = getWeekStart(now)
+    const currentWeekStart = startOfLocalWeek(new Date())
     return get().checkins.find(c => 
-      new Date(c.weekStart).getTime() === currentWeekStart.getTime()
+      toLocalDate(c.weekStart) === currentWeekStart
     )
   },
 
@@ -112,13 +113,3 @@ export const useWeeklyStore = create<WeeklyState>((set, get) => ({
     set({ checkins: [] })
   }
 }))
-
-// Helper function to get the start of a week (Monday)
-function getWeekStart(date: Date): Date {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1) // Adjust when day is Sunday
-  d.setDate(diff)
-  d.setHours(0, 0, 0, 0)
-  return d
-}

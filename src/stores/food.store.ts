@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { db } from '@services/data'
 import type { FoodLog } from '@/types/models'
+import { toLocalDate } from '@/domain/date/localDate'
 
 interface FoodState {
   foodLogs: FoodLog[]
@@ -96,30 +97,23 @@ export const useFoodStore = create<FoodState>((set, get) => ({
   },
 
   getFoodLogsByDateRange: (startDate: string, endDate: string) => {
-    return get().foodLogs.filter(f => 
-      f.date >= startDate && f.date <= endDate
-    )
+    const start = toLocalDate(startDate)
+    const end = toLocalDate(endDate)
+    return get().foodLogs.filter(f => {
+      const date = toLocalDate(f.date)
+      return date >= start && date <= end
+    })
   },
 
   getDailyCalories: (date: string) => {
-    const dayStart = new Date(date)
-    dayStart.setHours(0, 0, 0, 0)
-    const dayEnd = new Date(date)
-    dayEnd.setHours(23, 59, 59, 999)
-    
     return get().foodLogs
-      .filter(f => f.date >= dayStart.toISOString() && f.date <= dayEnd.toISOString())
+      .filter(f => toLocalDate(f.date) === toLocalDate(date))
       .reduce((total, log) => total + log.calories, 0)
   },
 
   getDailyMacros: (date: string) => {
-    const dayStart = new Date(date)
-    dayStart.setHours(0, 0, 0, 0)
-    const dayEnd = new Date(date)
-    dayEnd.setHours(23, 59, 59, 999)
-    
-    const dailyLogs = get().foodLogs.filter(f => 
-      f.date >= dayStart.toISOString() && f.date <= dayEnd.toISOString()
+    const dailyLogs = get().foodLogs.filter(f =>
+      toLocalDate(f.date) === toLocalDate(date)
     )
     
     return dailyLogs.reduce((macros, log) => ({

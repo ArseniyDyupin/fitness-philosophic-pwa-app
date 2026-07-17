@@ -5,6 +5,9 @@ import { useWorkoutStore } from '@stores/workout.store'
 import { aiService } from '@services/ai'
 import type { PlanSuggestion, Workout } from '@/types/models'
 import { X, Calendar, MessageSquare, Activity, Sparkles, Loader } from 'lucide-react'
+import { addLocalDays, localDateToDate, todayLocalDate } from '@/domain/date/localDate'
+import { planService } from '@/application/plans/planService'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 interface GenerateWorkoutModalProps {
   isOpen: boolean
@@ -17,6 +20,7 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
   onClose,
   onPlanGenerated
 }) => {
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen, onClose)
   const t = useTranslations()
   const { profile } = useProfileStore()
   const { workouts } = useWorkoutStore()
@@ -29,9 +33,7 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
   // Set default date to tomorrow
   useEffect(() => {
     if (isOpen) {
-      const tomorrow = new Date()
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      setFutureDate(tomorrow.toISOString().split('T')[0])
+      setFutureDate(addLocalDays(todayLocalDate(), 1))
       setPreferences('')
       setError(null)
     }
@@ -73,7 +75,8 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
       }
       
 
-      onPlanGenerated(updatedPlan)
+      const savedPlan = await planService.saveGeneratedPlan(updatedPlan)
+      onPlanGenerated(savedPlan)
       onClose()
     } catch (error) {
       console.error('Failed to generate plan:', error)
@@ -84,7 +87,7 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
   }
 
   const formatWorkoutDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString()
+    return localDateToDate(dateString).toLocaleDateString()
   }
 
   const formatWorkoutSummary = (workout: Workout) => {
@@ -98,15 +101,16 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4" onMouseDown={event => event.target === event.currentTarget && onClose()}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="generate-workout-title" tabIndex={-1} className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+          <h2 id="generate-workout-title" className="text-lg sm:text-xl font-semibold text-gray-900">
             {t.plan?.generateModal?.title || 'Generate New Workout'}
           </h2>
           <button
             onClick={onClose}
+            aria-label={t.close || 'Close'}
             className="hit-44 focus-visible-ring hover:bg-gray-100 rounded-lg transition-colors"
           >
             <X size={20} className="sm:w-6 sm:h-6" />
@@ -117,26 +121,28 @@ const GenerateWorkoutModal: React.FC<GenerateWorkoutModalProps> = ({
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Date Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="generate-workout-date" className="block text-sm font-medium text-gray-700 mb-2">
               <Calendar size={16} className="inline mr-2" />
               {t.plan?.generateModal?.date || 'Workout Date'}
             </label>
             <input
+              id="generate-workout-date"
               type="date"
               value={futureDate}
               onChange={(e) => setFutureDate(e.target.value)}
-              min={new Date().toISOString().split('T')[0]}
+              min={todayLocalDate()}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
 
           {/* Preferences */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="generate-workout-preferences" className="block text-sm font-medium text-gray-700 mb-2">
               <MessageSquare size={16} className="inline mr-2" />
               {t.plan?.generateModal?.preferences || 'Preferences'}
             </label>
             <textarea
+              id="generate-workout-preferences"
               value={preferences}
               onChange={(e) => setPreferences(e.target.value)}
               rows={3}

@@ -7,6 +7,7 @@ import { useAIStore } from '@stores/ai.store'
 import { Zap, Clock, Target, Calendar, Activity } from 'lucide-react'
 import GenerateWorkoutButton from '@molecules/home/GenerateWorkoutButton'
 import GenerateWorkoutModal from '../../modals/shared/GenerateWorkoutModal'
+import { todayLocalDate } from '@/domain/date/localDate'
 
 export interface DayStats {
   calories: number
@@ -45,7 +46,7 @@ const HomeKPI: React.FC<HomeKPIProps> = ({ dayStats, weekStats, isLoading = fals
   }
 
   // Get today's workouts to check if there are any
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayLocalDate()
   const todayWorkouts = getWorkoutsByDate(today)
   const hasWorkoutsToday = todayWorkouts.length > 0
 

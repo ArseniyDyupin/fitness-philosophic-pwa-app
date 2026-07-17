@@ -1,21 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-interface OnboardingDraft {
-  name: string
-  age: number
-  gender: 'male' | 'female' | 'other'
-  height: number
-  weight: number
-  goal: string                  // Workout goals (simple text)
-  constraints: string[]
-  equipment: string[]
-  sportsPreferences: string
-  frequency: number
-  duration: number
-  language: 'en' | 'ru'
-  goalsDetailed: string
-}
+import {
+  isOnboardingDraftComplete,
+  isOnboardingStepValid,
+  type OnboardingDraft
+} from '@/domain/profile/onboarding'
 
 interface OnboardingState {
   currentStep: number
@@ -69,7 +58,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       },
 
       resetOnboarding: () => {
-        set({ currentStep: 0, isComplete: false })
+        set({ draft: {}, currentStep: 0, isComplete: false })
       },
 
       nextStep: () => {
@@ -93,38 +82,11 @@ export const useOnboardingStore = create<OnboardingState>()(
       },
 
       isStepValid: (step: number) => {
-        const { draft } = get()
-        
-        switch (step) {
-          case 0: // Goals
-            return !!(draft.name && draft.goal && draft.goal.trim().length > 0)
-          case 1: // Constraints
-            return true // Optional step
-          case 2: // Equipment
-            return true // Optional step
-          case 3: // Metrics
-            return !!(draft.age && draft.height && draft.weight && draft.gender)
-          case 4: // Frequency
-            return !!(draft.frequency && draft.duration)
-          case 5: // Detailed Goals
-            return true // Optional step
-          default:
-            return false
-        }
+        return isOnboardingStepValid(get().draft, step)
       },
 
       isDraftComplete: () => {
-        const { draft } = get()
-        return !!(
-          draft.name &&
-          draft.age &&
-          draft.height &&
-          draft.weight &&
-          draft.gender &&
-          draft.goal &&
-          draft.frequency &&
-          draft.duration
-        )
+        return isOnboardingDraftComplete(get().draft)
       }
     }),
     {

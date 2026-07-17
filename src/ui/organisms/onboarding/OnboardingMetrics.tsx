@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useOnboardingStore } from '@stores/onboarding.store'
 import { useTranslations } from '@stores/i18n.store'
 import OnboardingLayout from '@templates/OnboardingLayout'
+import {
+  ONBOARDING_LIMITS,
+  isValidAge,
+  isValidHeight,
+  isValidWeight
+} from '@/domain/profile/onboarding'
 
 const OnboardingMetrics: React.FC = () => {
   const { draft, updateDraft } = useOnboardingStore()
@@ -11,6 +17,13 @@ const OnboardingMetrics: React.FC = () => {
   const [age, setAge] = useState(draft.age?.toString() || '')
   const [height, setHeight] = useState(draft.height?.toString() || '')
   const [weight, setWeight] = useState(draft.weight?.toString() || '')
+
+  const ageValue = age === '' ? undefined : Number(age)
+  const heightValue = height === '' ? undefined : Number(height)
+  const weightValue = weight === '' ? undefined : Number(weight)
+  const ageIsValid = isValidAge(ageValue)
+  const heightIsValid = isValidHeight(heightValue)
+  const weightIsValid = isValidWeight(weightValue)
 
   const genderLabels = {
     male: t.onboarding?.metrics?.male || 'Male',
@@ -22,20 +35,20 @@ const OnboardingMetrics: React.FC = () => {
     // Update draft when local state changes
     updateDraft({
       gender,
-      age: age ? parseInt(age) : undefined,
-      height: height ? parseInt(height) : undefined,
-      weight: weight ? parseFloat(weight) : undefined
+      age: ageIsValid ? ageValue : undefined,
+      height: heightIsValid ? heightValue : undefined,
+      weight: weightIsValid ? weightValue : undefined
     })
-  }, [gender, age, height, weight, updateDraft])
+  }, [gender, ageValue, heightValue, weightValue, ageIsValid, heightIsValid, weightIsValid, updateDraft])
 
-  const canProceed = age && height && weight
+  const canProceed = ageIsValid && heightIsValid && weightIsValid
 
   return (
     <OnboardingLayout
       stepNumber={3}
       stepTitle={t.onboarding?.metrics?.title || 'Basic Information'}
       stepDescription={t.onboarding?.metrics?.description || 'Help us personalize your experience'}
-      canProceed={!!canProceed}
+      canProceed={canProceed}
     >
       <div className="space-y-6">
         {/* Gender Selection */}
@@ -71,9 +84,15 @@ const OnboardingMetrics: React.FC = () => {
             onChange={(e) => setAge(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             placeholder={t.onboarding?.metrics?.agePlaceholder || 'e.g., 25'}
-            min="13"
-            max="100"
+            min={ONBOARDING_LIMITS.age.min}
+            max={ONBOARDING_LIMITS.age.max}
+            aria-invalid={age !== '' && !ageIsValid}
           />
+          {age !== '' && !ageIsValid && (
+            <p className="mt-1 text-sm text-red-600" role="alert">
+              {t.onboarding?.metrics?.ageError || 'Age must be between 13 and 100'}
+            </p>
+          )}
         </div>
 
         {/* Height */}
@@ -87,9 +106,15 @@ const OnboardingMetrics: React.FC = () => {
             onChange={(e) => setHeight(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             placeholder={t.onboarding?.metrics?.heightPlaceholder || 'e.g., 175'}
-            min="100"
-            max="250"
+            min={ONBOARDING_LIMITS.height.min}
+            max={ONBOARDING_LIMITS.height.max}
+            aria-invalid={height !== '' && !heightIsValid}
           />
+          {height !== '' && !heightIsValid && (
+            <p className="mt-1 text-sm text-red-600" role="alert">
+              {t.onboarding?.metrics?.heightError || 'Height must be between 100 and 250 cm'}
+            </p>
+          )}
         </div>
 
         {/* Weight */}
@@ -103,10 +128,16 @@ const OnboardingMetrics: React.FC = () => {
             onChange={(e) => setWeight(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             placeholder={t.onboarding?.metrics?.weightPlaceholder || 'e.g., 70'}
-            min="30"
-            max="300"
+            min={ONBOARDING_LIMITS.weight.min}
+            max={ONBOARDING_LIMITS.weight.max}
             step="0.1"
+            aria-invalid={weight !== '' && !weightIsValid}
           />
+          {weight !== '' && !weightIsValid && (
+            <p className="mt-1 text-sm text-red-600" role="alert">
+              {t.onboarding?.metrics?.weightError || 'Weight must be between 30 and 300 kg'}
+            </p>
+          )}
         </div>
       </div>
     </OnboardingLayout>

@@ -37,7 +37,9 @@ const RecentWorkouts: React.FC<RecentWorkoutsProps> = ({
           </svg>
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">{t.homeDashboard?.recent?.empty}</h3>
-        <p className="text-gray-600 mb-4">Начните свой фитнес-путь, добавив первую тренировку</p>
+        <p className="text-gray-600 mb-4">
+          {t.workoutsPage?.startFitnessJourney || 'Start your fitness journey by adding your first workout'}
+        </p>
         {onViewAll && (
           <Button onClick={onViewAll} variant="primary">
             {t.homeDashboard?.recent?.add}

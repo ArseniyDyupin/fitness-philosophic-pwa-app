@@ -10,6 +10,7 @@ import { X, Camera, Save, Sparkles, Loader } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import AiFeedbackModal from './AiFeedbackModal'
 import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '@/types/body-metrics'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 interface BodyMetricsModalProps {
   isOpen: boolean
@@ -19,6 +20,7 @@ interface BodyMetricsModalProps {
 
 const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, weekStart }) => {
   const t = useTranslations()
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen, onClose)
   const { format } = useLocalizedDate()
   const { profile } = useProfileStore()
   const { hasKey } = useAIStore()
@@ -397,11 +399,11 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="body-metrics-title" tabIndex={-1} className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+            <h2 id="body-metrics-title" className="text-lg sm:text-xl font-bold text-gray-900">
               {t.metrics?.modal?.title || 'Weekly Measurements'}
             </h2>
             <p className="text-sm text-gray-600">
@@ -411,6 +413,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
           <button
             onClick={onClose}
             className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors rounded-lg"
+            aria-label={t.close || 'Close'}
           >
             <X size={20} className="sm:w-6 sm:h-6" />
           </button>
@@ -439,7 +442,7 @@ const BodyMetricsModal: React.FC<BodyMetricsModalProps> = ({ isOpen, onClose, we
                             {t.metrics?.lastMeasurement || 'Last measurement'}: {lastMeasurements[def.key].value} {t.metrics?.units?.[def.unit as keyof typeof t.metrics.units] || def.unit}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            {format(new Date(lastMeasurements[def.key].date), 'MMM d, yyyy')}
+                            {format(lastMeasurements[def.key].date, 'MMM d, yyyy')}
                           </div>
                         </div>
                       )}

@@ -99,6 +99,10 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
               <div
+                role="progressbar"
+                aria-valuenow={stepNumber + 1}
+                aria-valuemin={1}
+                aria-valuemax={totalSteps}
                 className="bg-primary-600 h-3 rounded-full transition-all duration-300"
                 style={{ width: `${((stepNumber + 1) / totalSteps) * 100}%` }}
               ></div>
@@ -109,14 +113,18 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
           <div className="flex justify-between">
             {Array.from({ length: totalSteps }, (_, index) => (
               <button
+                type="button"
                 key={index}
                 onClick={() => handleStepClick(index)}
+                disabled={index > stepNumber}
+                aria-current={index === stepNumber ? 'step' : undefined}
+                aria-label={`Step ${index + 1}`}
                 className={`flex-1 mx-1 p-2 rounded-lg text-sm font-medium transition-colors ${
                   index === stepNumber
                     ? 'bg-primary-100 text-primary-700 border-2 border-primary-300'
                     : index < stepNumber
                       ? 'bg-green-100 text-green-700'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-500 disabled:cursor-not-allowed disabled:opacity-60'
                 }`}
               >
                 <div className="flex items-center justify-center space-x-2">

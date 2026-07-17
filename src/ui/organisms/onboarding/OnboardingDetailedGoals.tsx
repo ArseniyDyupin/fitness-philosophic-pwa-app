@@ -21,12 +21,12 @@ const OnboardingDetailedGoals: React.FC = () => {
     try {
       // Create profile from draft data
       await createProfile({
-        name: draft.name || '',
+        name: draft.name?.trim() || '',
         age: draft.age || 0,
         gender: draft.gender || 'male',
         height: draft.height || 0,
         weight: draft.weight || 0,
-        goal: draft.goal || '',
+        goal: draft.goal?.trim() || '',
         constraints: draft.constraints || [],
         equipment: draft.equipment || [],
         frequency: draft.frequency || 3,
@@ -52,7 +52,6 @@ const OnboardingDetailedGoals: React.FC = () => {
       stepTitle={t.onboarding?.detailedGoals?.title || 'Detailed Goals'}
       stepDescription={t.onboarding?.detailedGoals?.description || 'Tell us more about your specific fitness journey'}
       canProceed={true}
-      showSaveButton={true}
       onSave={handleCompleteOnboarding}
     >
       <div className="space-y-6">

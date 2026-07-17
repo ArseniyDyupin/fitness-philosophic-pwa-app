@@ -10,6 +10,7 @@ import { useSyncStore } from '@/stores/sync.store'
 import { useTranslations } from '@/stores/i18n.store'
 import { getGoogleSyncErrorMessage } from '@/utils/googleSyncError'
 import Button from '@/ui/atoms/Button'
+import { dataSyncService } from '@/services/dataSync'
 
 interface SyncButtonsProps {
   className?: string
@@ -51,11 +52,10 @@ export const SyncButtons: React.FC<SyncButtonsProps> = ({
       toast.error(t.googleSync.error.notAuthenticated)
       return
     }
-    if (!window.confirm(t.googleSync.confirm.upload)) {
-      return
-    }
-
     try {
+      const preview = await dataSyncService.getLocalBackupPreview()
+      const previewText = `${t.googleSync.confirm.upload}\n\n${t.googleSync.schemaVersion}: ${preview.schemaVersion}\n${t.googleSync.fileSize}: ${formatFileSize(preview.size)}\n${t.googleSync.checksum}: ${preview.checksum.slice(0, 16)}…`
+      if (!window.confirm(previewText)) return
       await uploadData()
       toast.success(t.googleSync.success.upload)
     } catch (caughtError) {
@@ -180,6 +180,12 @@ export const SyncButtons: React.FC<SyncButtonsProps> = ({
               <div>
                 {t.googleSync.fileSize}: {formatFileSize(syncFileInfo.size)}
               </div>
+              {syncFileInfo.schemaVersion && (
+                <div>{t.googleSync.schemaVersion}: {syncFileInfo.schemaVersion}</div>
+              )}
+              {syncFileInfo.checksum && (
+                <div className="break-all">{t.googleSync.checksum}: {syncFileInfo.checksum.slice(0, 16)}…</div>
+              )}
             </div>
           )}
         </div>

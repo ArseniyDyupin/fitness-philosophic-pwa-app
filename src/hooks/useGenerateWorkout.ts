@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useProfileStore } from '@stores/profile.store'
-import { useWorkoutStore } from '@stores/workout.store'
 import { useAIStore } from '@stores/ai.store'
 import { toastSuccess, toastError } from '@lib/toast'
 import { useTranslations } from '@stores/i18n.store'
 import { aiService } from '@services/ai'
+import { todayLocalDate } from '@/domain/date/localDate'
+import { planService } from '@/application/plans/planService'
 
 export interface GenerateWorkoutOptions {
   dateISO?: string
@@ -17,7 +18,6 @@ export interface GenerateWorkoutOptions {
 export function useGenerateWorkout() {
   const t = useTranslations()
   const profile = useProfileStore(s => s.profile)
-  const { createWorkout } = useWorkoutStore()
   const { hasKey } = useAIStore()
   const [isGenerating, setIsGenerating] = useState(false)
 
@@ -42,18 +42,15 @@ export function useGenerateWorkout() {
         throw new Error('Failed to generate workout')
       }
 
-      // Save the generated workout
-      const workoutData = {
-        name: generatedWorkout.title || 'Generated Workout',
-        description: generatedWorkout.description || '',
-        date: options.dateISO || new Date().toISOString().split('T')[0],
-        exercises: generatedWorkout.exercises || [],
-        rpe: 0,
-        notes: generatedWorkout.notes || '',
-        isPlan: true
-      }
-
-      const workoutId = await createWorkout(workoutData)
+      const workoutDate = options.dateISO || todayLocalDate()
+      const plan = await planService.saveGeneratedPlan({
+        ...generatedWorkout,
+        forDate: workoutDate,
+        workoutTemplate: generatedWorkout.workoutTemplate
+          ? { ...generatedWorkout.workoutTemplate, date: workoutDate }
+          : undefined
+      })
+      const workoutId = plan.workoutTemplate!.id
       
       toastSuccess(t.plan?.generateSuccess || 'Workout generated successfully')
       

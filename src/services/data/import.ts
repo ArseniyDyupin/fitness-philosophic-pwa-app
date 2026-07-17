@@ -10,6 +10,8 @@ import type {
   ExerciseEstimate 
 } from '@/types/models'
 import type { MetricDef, MetricEntry, PhotoAsset, AiBodyEval } from '@/types/body-metrics'
+import { toLocalDate } from '@/domain/date/localDate'
+import type { WeeklyReview } from '@/domain/weekly-review/types'
 
 const ISOStringSchema = z.string().refine(
   value => !Number.isNaN(Date.parse(value)),
@@ -146,7 +148,17 @@ const ExportBundleSchema = z.object({
   metric_entries: z.array(MetricEntrySchema).default([]),
   photo_assets: z.array(PhotoAssetSchema).default([]),
   ai_body_evals: z.array(AiBodyEvalSchema).default([]),
-  exercise_estimates: z.array(ExerciseEstimateSchema).default([])
+  exercise_estimates: z.array(ExerciseEstimateSchema).default([]),
+  weekly_reviews: z.array(EntitySchema.extend({
+    weekStart: ISOStringSchema,
+    energy: z.number().min(1).max(5),
+    sleepQuality: z.number().min(1).max(5),
+    soreness: z.number().min(1).max(5),
+    mood: z.number().min(1).max(5),
+    adherence: z.number().min(0).max(100),
+    createdAt: ISOStringSchema,
+    updatedAt: ISOStringSchema
+  })).default([])
 }).passthrough()
 
 export class ImportError extends Error {
@@ -240,25 +252,38 @@ function migrateWorkout(workout: Workout, profile?: Profile): Workout {
     return migratedExercise
   })
   
-  // Ensure dates are ISO strings
-  if (migratedWorkout.date && typeof migratedWorkout.date !== 'string') {
-    migratedWorkout.date = new Date(migratedWorkout.date).toISOString()
+  // Calendar dates intentionally stay timezone-free.
+  if (migratedWorkout.date) {
+    migratedWorkout.date = toLocalDate(
+      typeof migratedWorkout.date === 'string'
+        ? migratedWorkout.date
+        : new Date(migratedWorkout.date)
+    )
   }
   
   return migratedWorkout
 }
 
-function ensureISODates<T>(obj: T): T {
+function ensureISODates<T>(obj: T, calendarFields: string[] = []): T {
   if (!obj) return obj
   
   const result = { ...(obj as Record<string, unknown>) }
   
   // Common date fields to convert
-  const dateFields = ['date', 'weekStart', 'forDate', 'createdAt', 'updatedAt', 'exportedAt']
+  const dateFields = ['createdAt', 'updatedAt', 'exportedAt']
   
   for (const field of dateFields) {
     if (result[field] && typeof result[field] !== 'string') {
       result[field] = new Date(result[field] as string | number | Date).toISOString()
+    }
+  }
+
+  for (const field of calendarFields) {
+    if (result[field]) {
+      const value = result[field]
+      result[field] = toLocalDate(
+        typeof value === 'string' ? value : new Date(value as number | Date)
+      )
     }
   }
   
@@ -320,7 +345,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
   }
 
   try {
-    await db.transaction('rw', [db.profiles, db.workouts, db.food, db.checkins, db.ai, db.plans, db.ai_feedback, db.metric_defs, db.metric_entries, db.photo_assets, db.ai_body_evals, db.exercise_estimates], async () => {
+    await db.transaction('rw', [db.profiles, db.workouts, db.food, db.checkins, db.ai, db.plans, db.ai_feedback, db.metric_defs, db.metric_entries, db.photo_assets, db.ai_body_evals, db.exercise_estimates, db.weekly_reviews], async () => {
       if (mode === 'replace') {
         // Clear all tables
         await Promise.all([
@@ -335,7 +360,8 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
           db.metric_entries.clear(),
           db.photo_assets.clear(),
           db.ai_body_evals.clear(),
-          db.exercise_estimates.clear()
+          db.exercise_estimates.clear(),
+          db.weekly_reviews.clear()
         ])
       }
 
@@ -379,7 +405,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import food logs
       if (bundle.food?.length) {
-        const migratedFood = bundle.food.map(ensureISODates)
+        const migratedFood = bundle.food.map(food => ensureISODates(food, ['date']))
         
         if (mode === 'replace') {
           await db.food.bulkPut(migratedFood)
@@ -397,7 +423,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import checkins
       if (bundle.checkins?.length) {
-        const migratedCheckins = bundle.checkins.map(ensureISODates)
+        const migratedCheckins = bundle.checkins.map(checkin => ensureISODates(checkin, ['weekStart']))
         
         if (mode === 'replace') {
           await db.checkins.bulkPut(migratedCheckins)
@@ -415,7 +441,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import AI messages
       if (bundle.ai?.length) {
-        const migratedAi = bundle.ai.map(ensureISODates)
+        const migratedAi = bundle.ai.map(ai => ensureISODates(ai))
         
         if (mode === 'replace') {
           await db.ai.bulkPut(migratedAi)
@@ -433,7 +459,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import plans
       if (bundle.plans?.length) {
-        const migratedPlans = bundle.plans.map(ensureISODates)
+        const migratedPlans = bundle.plans.map(plan => ensureISODates(plan, ['forDate']))
         
         if (mode === 'replace') {
           await db.plans.bulkPut(migratedPlans)
@@ -451,7 +477,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import AI feedback
       if (bundle.ai_feedback?.length) {
-        const migratedAiFeedback = bundle.ai_feedback.map(ensureISODates)
+        const migratedAiFeedback = bundle.ai_feedback.map(feedback => ensureISODates(feedback))
         
         if (mode === 'replace') {
           await db.ai_feedback.bulkPut(migratedAiFeedback as AIWorkoutFeedback[])
@@ -467,7 +493,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import metric definitions
       if (bundle.metric_defs?.length) {
-        const migratedMetricDefs = bundle.metric_defs.map(ensureISODates)
+        const migratedMetricDefs = bundle.metric_defs.map(def => ensureISODates(def))
         
         if (mode === 'replace') {
           await db.metric_defs.bulkPut(migratedMetricDefs as MetricDef[])
@@ -483,7 +509,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import metric entries
       if (bundle.metric_entries?.length) {
-        const migratedMetricEntries = bundle.metric_entries.map(ensureISODates)
+        const migratedMetricEntries = bundle.metric_entries.map(entry => ensureISODates(entry, ['date']))
         
         if (mode === 'replace') {
           await db.metric_entries.bulkPut(migratedMetricEntries as MetricEntry[])
@@ -499,7 +525,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import photo assets
       if (bundle.photo_assets?.length) {
-        const migratedPhotoAssets = bundle.photo_assets.map(ensureISODates)
+        const migratedPhotoAssets = bundle.photo_assets.map(photo => ensureISODates(photo, ['date']))
         
         if (mode === 'replace') {
           await db.photo_assets.bulkPut(migratedPhotoAssets as PhotoAsset[])
@@ -515,7 +541,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import AI body evaluations
       if (bundle.ai_body_evals?.length) {
-        const migratedAiBodyEvals = bundle.ai_body_evals.map(ensureISODates)
+        const migratedAiBodyEvals = bundle.ai_body_evals.map(evaluation => ensureISODates(evaluation, ['weekStart']))
         
         if (mode === 'replace') {
           await db.ai_body_evals.bulkPut(migratedAiBodyEvals as AiBodyEval[])
@@ -531,7 +557,7 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
 
       // Import exercise estimates
       if (bundle.exercise_estimates?.length) {
-        const migratedExerciseEstimates = bundle.exercise_estimates.map(ensureISODates)
+        const migratedExerciseEstimates = bundle.exercise_estimates.map(estimate => ensureISODates(estimate))
         
         if (mode === 'replace') {
           await db.exercise_estimates.bulkPut(migratedExerciseEstimates as ExerciseEstimate[])
@@ -540,6 +566,21 @@ export async function importData(bundle: ExportBundle, mode: 'replace' | 'merge'
             const existing = await db.exercise_estimates.get((estimate as ExerciseEstimate).id)
             if (!existing || isRemoteRecordNewer(estimate, existing, ['updatedAt', 'createdAt'])) {
               await db.exercise_estimates.put(estimate as ExerciseEstimate)
+            }
+          }
+        }
+      }
+
+      if (bundle.weekly_reviews?.length) {
+        const reviews = bundle.weekly_reviews.map(review => ensureISODates(review, ['weekStart']))
+        if (mode === 'replace') {
+          await db.weekly_reviews.bulkPut(reviews as WeeklyReview[])
+        } else {
+          for (const review of reviews) {
+            const weeklyReview = review as WeeklyReview
+            const existing = await db.weekly_reviews.get(weeklyReview.id)
+            if (!existing || isRemoteRecordNewer(weeklyReview, existing, ['updatedAt', 'createdAt'])) {
+              await db.weekly_reviews.put(weeklyReview)
             }
           }
         }

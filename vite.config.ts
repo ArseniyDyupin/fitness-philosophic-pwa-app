@@ -1,19 +1,56 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { readdir, unlink } from 'node:fs/promises'
+import { resolve } from 'node:path'
+
+const runtimeIcons = new Set([
+  'favicon.ico',
+  'favicon-16x16.png',
+  'favicon-32x32.png',
+  'apple-touch-icon.png',
+  'android-chrome-192x192.png',
+  'android-chrome-512x512.png',
+  'maskable-icon-192.png',
+  'maskable-icon-512.png'
+])
+
+function pruneUnusedPublicIcons() {
+  return {
+    name: 'prune-unused-public-icons',
+    apply: 'build' as const,
+    enforce: 'post' as const,
+    async closeBundle() {
+      const iconsDirectory = resolve('dist/icons')
+      const files = await readdir(iconsDirectory)
+      await Promise.all(files
+        .filter(file => !runtimeIcons.has(file))
+        .map(file => unlink(resolve(iconsDirectory, file))))
+    }
+  }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       workbox: {
-        skipWaiting: true,      // сразу активировать новый SW
-        clientsClaim: true,     // новый SW сразу “забирает” открытые вкладки
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,woff2}']
+        skipWaiting: false,
+        clientsClaim: false,
+        globPatterns: ['**/*.{js,css,html,ico,webmanifest,woff2}']
       },
-      includeAssets: ['icons/**'],
+      includeAssets: [
+        'icons/favicon.ico',
+        'icons/favicon-16x16.png',
+        'icons/favicon-32x32.png',
+        'icons/apple-touch-icon.png',
+        'icons/android-chrome-192x192.png',
+        'icons/android-chrome-512x512.png',
+        'icons/maskable-icon-192.png',
+        'icons/maskable-icon-512.png'
+      ],
       manifest: {
         name: 'AI Тренер',
         short_name: 'AI Тренер',
@@ -49,7 +86,8 @@ export default defineConfig({
           }
         ]
       }
-    })
+    }),
+    pruneUnusedPublicIcons()
   ],
   resolve: {
     alias: {
@@ -82,28 +120,10 @@ export default defineConfig({
           'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge', 'zod'],
           'state-vendor': ['zustand'],
           'db-vendor': ['dexie'],
-          'toast-vendor': ['react-hot-toast'],
-          
-          // App chunks
-          'pages': [
-            './src/ui/pages/HomePage.tsx',
-            './src/ui/pages/WorkoutsPage.tsx',
-            './src/ui/pages/StatsPage.tsx',
-            './src/ui/pages/SettingsPage.tsx'
-          ],
-          'organisms': [
-            './src/ui/organisms/home',
-            './src/ui/organisms/stats',
-            './src/ui/organisms/workouts'
-          ],
-          'services': [
-            './src/services/ai',
-            './src/services/data',
-            './src/services/fitness'
-          ]
+          'toast-vendor': ['react-hot-toast']
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 800
   }
 })

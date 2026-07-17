@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import { useWorkoutStore } from '@stores/workout.store'
-import { isSameDay } from 'date-fns'
+import { useProfileStore } from '@stores/profile.store'
 import { sumWorkoutKcal, sumWorkoutMinutes } from '@services/fitness'
+import { toLocalDate } from '@/domain/date/localDate'
 
 export interface TodayStats {
   calories: number
@@ -13,13 +14,14 @@ export interface TodayStats {
 
 export function useTodayStats(date = new Date()) {
   const workouts = useWorkoutStore(s => s.workouts)
+  const userWeight = useProfileStore(s => s.profile?.weight ?? 70)
 
   const stats = useMemo((): TodayStats => {
     const todayWorkouts = workouts.filter(w => 
-      isSameDay(new Date(w.date), date) && !w.isPlan
+      toLocalDate(w.date) === toLocalDate(date) && !w.isPlan
     )
 
-    const calories = sumWorkoutKcal(todayWorkouts, 70)
+    const calories = sumWorkoutKcal(todayWorkouts, userWeight)
 
     const minutes = sumWorkoutMinutes(todayWorkouts)
 
@@ -41,7 +43,7 @@ export function useTodayStats(date = new Date()) {
       rpeAvg,
       workouts: todayWorkouts.length
     }
-  }, [workouts, date])
+  }, [workouts, date, userWeight])
 
   return stats
 }

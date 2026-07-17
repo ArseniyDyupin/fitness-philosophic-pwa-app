@@ -27,11 +27,12 @@ const WorkoutDetailsPage: React.FC = () => {
   const t = useTranslations()
   const { handleError, executeWithRetry } = useErrorHandler()
 
-  const { getWorkoutById, deleteWorkout, updateWorkout, getPrevNext } = useWorkoutStore()
+  const { getWorkoutById, getWorkoutByIdAsync, deleteWorkout, updateWorkout, getPrevNext } = useWorkoutStore()
   const { profile } = useProfileStore()
   const { isConfigured: isAIConfigured, hasKey } = useAIStore()
   
   const [workout, setWorkout] = useState(getWorkoutById(id!))
+  const [isLoadingWorkout, setIsLoadingWorkout] = useState(!getWorkoutById(id!))
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   
@@ -47,10 +48,42 @@ const WorkoutDetailsPage: React.FC = () => {
   const { next: nextWorkout, prev: prevWorkout } = getPrevNext(id || '')
 
   useEffect(() => {
-    if (!workout && id) {
-      setWorkout(getWorkoutById(id))
+    let isActive = true
+
+    if (!id) {
+      setWorkout(undefined)
+      setIsLoadingWorkout(false)
+      return () => {
+        isActive = false
+      }
     }
-  }, [id, workout, getWorkoutById])
+
+    const cachedWorkout = getWorkoutById(id)
+    if (cachedWorkout) {
+      setWorkout(cachedWorkout)
+      setIsLoadingWorkout(false)
+      return () => {
+        isActive = false
+      }
+    }
+
+    setWorkout(undefined)
+    setIsLoadingWorkout(true)
+    getWorkoutByIdAsync(id)
+      .then(foundWorkout => {
+        if (isActive) setWorkout(foundWorkout)
+      })
+      .catch(() => {
+        if (isActive) setWorkout(undefined)
+      })
+      .finally(() => {
+        if (isActive) setIsLoadingWorkout(false)
+      })
+
+    return () => {
+      isActive = false
+    }
+  }, [id, getWorkoutById, getWorkoutByIdAsync])
 
   useEffect(() => {
     if (id) {
@@ -83,6 +116,14 @@ const WorkoutDetailsPage: React.FC = () => {
     } finally {
       setIsLoadingFeedback(false)
     }
+  }
+
+  if (isLoadingWorkout) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-600">{t.loading || 'Loading...'}</p>
+      </div>
+    )
   }
 
   if (!workout) {

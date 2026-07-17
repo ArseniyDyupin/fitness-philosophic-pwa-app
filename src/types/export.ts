@@ -6,6 +6,7 @@ import type { FoodLog } from './models'
 import type { WeeklyCheckin } from './models'
 import type { AiMessage } from './models'
 import type { PlanSuggestion } from './models'
+import type { WeeklyReview } from '@/domain/weekly-review/types'
 
 export interface ExportBundle {
   schemaVersion: 1
@@ -23,6 +24,7 @@ export interface ExportBundle {
   photo_assets: unknown[]
   ai_body_evals: unknown[]
   exercise_estimates: unknown[]
+  weekly_reviews?: WeeklyReview[]
 }
 
 export interface ImportStats {

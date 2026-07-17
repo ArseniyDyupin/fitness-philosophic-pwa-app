@@ -10,6 +10,7 @@ const FoodPage = lazy(() => import('@pages/FoodPage'))
 const StatsPage = lazy(() => import('@pages/StatsPage'))
 const SettingsPage = lazy(() => import('@pages/SettingsPage'))
 const PlanRealizationPage = lazy(() => import('@pages/PlanRealizationPage'))
+const WeeklyReviewPage = lazy(() => import('@pages/WeeklyReviewPage'))
 const NotFound = lazy(() => import('@pages/NotFound'))
 
 // Onboarding pages (keep synchronous for better UX)
@@ -21,6 +22,7 @@ import OnboardingEquipment from '@organisms/onboarding/OnboardingEquipment'
 import OnboardingMetrics from '@organisms/onboarding/OnboardingMetrics'
 import OnboardingFrequency from '@organisms/onboarding/OnboardingFrequency'
 import EntryStep from '@pages/EntryStep'
+import { FEATURES } from '@/config/features'
 
 /**
  * Main application router with lazy loading and error boundaries
@@ -35,8 +37,9 @@ export function AppRouter() {
             <Route path="/workouts" element={<WorkoutsPage />} />
             <Route path="/workouts/:id" element={<WorkoutDetailsPage />} />
             <Route path="/plan/:planId" element={<PlanRealizationPage />} />
-            <Route path="/food" element={<FoodPage />} />
+            {FEATURES.foodTracking && <Route path="/food" element={<FoodPage />} />}
             <Route path="/stats" element={<StatsPage />} />
+            <Route path="/weekly-review" element={<WeeklyReviewPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

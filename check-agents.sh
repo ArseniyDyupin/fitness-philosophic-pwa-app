@@ -90,10 +90,10 @@ done
 section "5. Source invariants"
 invariant_issue=0
 grep -q "super('AITrainerDB')" "$ROOT/src/services/data/db.ts" || { bad "Dexie database identity changed"; invariant_issue=1; }
-grep -q "registerType: 'autoUpdate'" "$ROOT/vite.config.ts" || { bad "PWA auto-update config changed"; invariant_issue=1; }
-grep -q "ai-trainer:openai-api-key" "$ROOT/src/services/ai/ai.ts" || { bad "AI key storage contract changed"; invariant_issue=1; }
+grep -q "registerType: 'prompt'" "$ROOT/vite.config.ts" || { bad "PWA prompt-update config changed"; invariant_issue=1; }
+grep -q "ai-trainer:openai-api-key" "$ROOT/src/services/ai/aiGateway.ts" || { bad "AI gateway key storage contract changed"; invariant_issue=1; }
 grep -q "SUPPORTED_LANGUAGES: \\['en', 'ru'\\]" "$ROOT/src/constants/index.ts" || { bad "supported language contract changed"; invariant_issue=1; }
-[ "$invariant_issue" -eq 0 ] && pass "Dexie, PWA, AI key, and language contracts match guidance"
+[ "$invariant_issue" -eq 0 ] && pass "Dexie, prompt-update PWA, AI gateway key, and language contracts match guidance"
 
 printf '\n'
 if [ "$fail" -eq 0 ]; then
@@ -103,4 +103,3 @@ fi
 
 printf 'Agent-layer checks failed.\n'
 exit 1
-

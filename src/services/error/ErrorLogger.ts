@@ -4,6 +4,30 @@
 
 import { AppError, ErrorSeverity, ErrorContext } from '@/types/errors'
 
+const SENSITIVE_KEY = /api.?key|token|authorization|photo|data.?url|email|user.?id|session.?id/i
+
+function redactString(value: string): string {
+  return value
+    .replace(/data:image\/[a-z0-9.+-]+;base64,[a-z0-9+/=]+/gi, '[REDACTED_IMAGE]')
+    .replace(/\bsk-[a-z0-9_-]+\b/gi, '[REDACTED_API_KEY]')
+    .replace(/Bearer\s+[^\s"']+/gi, 'Bearer [REDACTED_TOKEN]')
+}
+
+export function redactSensitive(value: unknown, key = ''): unknown {
+  if (SENSITIVE_KEY.test(key)) return '[REDACTED]'
+  if (typeof value === 'string') return redactString(value)
+  if (Array.isArray(value)) return value.map(item => redactSensitive(item))
+  if (typeof value === 'object' && value !== null) {
+    return Object.fromEntries(
+      Object.entries(value).map(([entryKey, entryValue]) => [
+        entryKey,
+        redactSensitive(entryValue, entryKey)
+      ])
+    )
+  }
+  return value
+}
+
 export interface LogEntry {
   id: string
   timestamp: number
@@ -205,14 +229,26 @@ export class ErrorLogger {
     // Check if we should log this level
     if (!this.shouldLog(level)) return
 
+    const safeContext = context
+      ? redactSensitive({ ...context, stack: undefined }) as ErrorContext
+      : undefined
+    const safeError = error
+      ? {
+          ...error,
+          message: redactString(error.message),
+          stack: undefined,
+          originalError: undefined,
+          context: redactSensitive({ ...error.context, stack: undefined }) as ErrorContext
+        } as AppError
+      : undefined
     const logEntry: LogEntry = {
       id: this.generateLogId(),
       timestamp: Date.now(),
       level,
-      message,
-      error,
-      context,
-      metadata
+      message: redactString(message),
+      error: safeError,
+      context: safeContext,
+      metadata: redactSensitive(metadata) as Record<string, unknown> | undefined
     }
 
     // Console logging

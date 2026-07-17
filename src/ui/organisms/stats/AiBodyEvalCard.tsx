@@ -4,6 +4,7 @@ import { aiBodyService } from '@services/ai'
 import { Sparkles, TrendingUp, TrendingDown, Minus, Eye, X } from 'lucide-react'
 import { format } from 'date-fns'
 import type { AiBodyEval } from '@/types/body-metrics'
+import { localDateToDate, toLocalDate } from '@/domain/date/localDate'
 
 interface AiBodyEvalCardProps {
   weekStart?: Date
@@ -107,7 +108,7 @@ const AiBodyEvalCard: React.FC<AiBodyEvalCardProps> = () => {
             </div>
             <div className="text-right">
               <div className="text-sm text-gray-500">
-                {format(new Date(latestEval.weekStart), 'MMM d, yyyy')}
+                {format(localDateToDate(toLocalDate(latestEval.weekStart)), 'MMM d, yyyy')}
               </div>
               <div className="text-xs text-gray-400">
                 {latestEval.model}
@@ -205,7 +206,7 @@ const AiBodyEvalCard: React.FC<AiBodyEvalCardProps> = () => {
                       </div>
                       <div className="text-right">
                         <div className="text-sm text-gray-500">
-                          {format(new Date(evaluation.weekStart), 'MMM d, yyyy')}
+                          {format(localDateToDate(toLocalDate(evaluation.weekStart)), 'MMM d, yyyy')}
                         </div>
                         <div className="text-xs text-gray-400">
                           {evaluation.model}

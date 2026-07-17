@@ -1,222 +1,101 @@
-# Архитектура приложения Fitness PWA
+# Архитектура Fitness PWA
 
-## 📋 Обзор
+## Границы системы
 
-Fitness PWA - это прогрессивное веб-приложение для управления тренировками, построенное с использованием современных технологий и принципов Atomic Design.
+Приложение — local-first PWA. Профиль, тренировки, планы, метрики, фотографии и weekly reviews хранятся в IndexedDB через Dexie. Сеть используется только по явному действию пользователя для OpenAI и ручного Google Drive backup.
 
-## 🏗️ Архитектурные принципы
-
-### 1. Atomic Design
-Приложение следует методологии Atomic Design, разделяя компоненты на:
-- **Atoms** - базовые UI элементы (кнопки, инпуты, карточки)
-- **Molecules** - составные компоненты (формы, навигация)
-- **Organisms** - сложные блоки (заголовки, списки тренировок)
-- **Templates** - макеты страниц
-- **Pages** - конкретные страницы приложения
-
-### 2. Разделение ответственности
-- **UI компоненты** - только представление
-- **Хуки** - бизнес-логика и состояние
-- **Сервисы** - работа с данными и API
-- **Сторы** - глобальное состояние
-
-### 3. Типизация
-- Строгая типизация TypeScript
-- Отдельные файлы типов для каждой области
-- Типизированные API и хуки
-
-## 📁 Структура проекта
-
+```text
+React pages/components
+        ↓
+Zustand stores / hooks (реактивные UI mirrors)
+        ↓
+application use cases
+        ↓
+domain repository contracts
+        ↓
+infrastructure Dexie repositories
+        ↓
+IndexedDB
 ```
+
+UI не должен напрямую определять persistence-семантику. Новые write-flow добавляются через `src/application`, а Dexie-запросы инкапсулируются в `src/infrastructure/repositories`.
+
+## Каталоги
+
+```text
 src/
-├── app/                    # Главный компонент приложения
-│   └── App.tsx            # Точка входа
-├── navigation/             # Логика навигации
-│   ├── AppRouter.tsx      # Роутеры приложения
-│   ├── Navigation.tsx     # Главный компонент навигации
-│   ├── useNavigationState.ts # Хук состояния навигации
-│   └── index.ts           # Barrel exports
-├── ui/                     # UI компоненты (Atomic Design)
-│   ├── atoms/             # Базовые компоненты
-│   ├── molecules/         # Составные компоненты
-│   ├── organisms/         # Сложные блоки
-│   ├── pages/             # Страницы
-│   └── modals/            # Модальные окна
-├── hooks/                  # Переиспользуемая логика
-│   ├── useStats.ts        # Статистика тренировок
-│   ├── useForm.ts         # Управление формами
-│   ├── useMemoized.ts     # Мемоизация
-│   └── index.ts           # Barrel exports
-├── stores/                 # Управление состоянием (Zustand)
-│   ├── profile.store.ts   # Профиль пользователя
-│   ├── workout.store.ts   # Тренировки
-│   └── i18n.store.ts      # Интернационализация
-├── services/               # Бизнес-логика
-│   ├── ai/                # AI сервисы
-│   ├── data/              # Работа с данными
-│   └── fitness/           # Фитнес расчеты
-├── types/                  # Типизация
-│   ├── models.ts          # Модели данных
-│   ├── api.ts             # API типы
-│   └── hooks.ts           # Типы хуков
-├── utils/                  # Утилиты
-├── validation/             # Валидация (Zod)
-└── constants/              # Константы
+├── app/                    # App shell и точка входа
+├── navigation/             # Router и выбор onboarding/main-app
+├── domain/                 # LocalDate, доменные правила, модели и repository contracts
+├── application/            # Workout/profile/plan/weekly-review use cases
+├── infrastructure/         # Dexie implementations
+├── stores/                 # Zustand UI mirrors и selectors
+├── services/
+│   ├── ai/                 # Единый OpenAI gateway и feature adapters
+│   ├── data/               # Dexie schema, export/import, integrity
+│   ├── error/              # Error handling с redaction
+│   └── fitness/            # Детерминированные расчёты
+└── ui/                     # Atomic UI, pages и dialogs
 ```
 
-## 🔄 Поток данных
+## Даты
 
-### 1. Управление состоянием
-```
-Component → Hook → Store → Service → Database
-     ↑                              ↓
-     └─────────── UI Update ←────────┘
-```
+Календарные сущности используют `LocalDate` (`YYYY-MM-DD`) и не конвертируются через UTC:
 
-### 2. Навигация
-```
-App → Navigation → useNavigationState → Router
-```
+- `Workout.date`
+- `FoodLog.date`
+- `WeeklyCheckin.weekStart`
+- `PlanSuggestion.forDate`
+- даты метрик/фото/weekly review
 
-### 3. Типизация
-```
-Types → Components → Hooks → Services
-```
+`createdAt`, `updatedAt` и `exportedAt` остаются UTC timestamps. Legacy ISO calendar strings нормализуются при чтении/import через `src/domain/date/localDate.ts`.
 
-## 🎯 Ключевые особенности
+## Основные data flows
 
-### 1. PWA (Progressive Web App)
-- Service Worker для офлайн работы
-- Манифест для установки
-- Кэширование ресурсов
+### Запись тренировки
 
-### 2. Интернационализация
-- Поддержка RU/EN
-- Динамическое переключение языка
-- Локализованные компоненты
+`WorkoutForm → workout.store → WorkoutService → WorkoutRepository → Dexie`. Создание выполняется один раз; AI estimates обновляют ту же запись с сохранением `id` и `createdAt`.
 
-### 3. AI интеграция
-- Генерация тренировок
-- Анализ прогресса
-- Рекомендации
+### Генерация плана
 
-### 4. Офлайн поддержка
-- IndexedDB для локального хранения
-- Синхронизация при подключении
-- Офлайн режим работы
+`AIService.generateNextWorkout` только валидирует и возвращает предложение. После выбора даты `PlanService.saveGeneratedPlan` одной транзакцией сохраняет `PlanSuggestion` и связанный planned workout. AI не пишет в БД до подтверждённого UI-flow.
 
-## 🛠️ Технологический стек
+### Weekly review
 
-### Frontend
-- **React 18** - UI библиотека
-- **TypeScript** - типизация
-- **Vite** - сборщик
-- **Tailwind CSS** - стилизация
-- **Framer Motion** - анимации
+Форма сохраняет один review на локальную неделю. Application service строит безопасную локальную рекомендацию и, при доступном ключе, пытается заменить её валидированным AI-ответом. Изменения профиля применяются только после отображения diff и `confirm`.
 
-### State Management
-- **Zustand** - глобальное состояние
-- **React Hooks** - локальное состояние
+### Backup
 
-### Data & Storage
-- **Dexie (IndexedDB)** - локальная база данных
-- **Zod** - валидация схем
+`exportAll → SHA-256/size/schema preview → Google Drive appDataFolder`. Download проверяет размер, checksum и Zod schema, затем merge обновляет только более новые записи и перезагружает Zustand mirrors. OAuth token хранится только в памяти.
 
-### AI & External
-- **OpenAI API** - AI функциональность
-- **Rate Limiting** - ограничение запросов
+## AI
 
-### Development
-- **ESLint** - линтинг
-- **Prettier** - форматирование
-- **HMR** - горячая перезагрузка
+Все AI-функции используют `OpenAIGateway`:
 
-## 📊 Производительность
+- один источник API key;
+- единая модель и transport;
+- единый rate limit и стабильные error codes;
+- text и `image_url` content;
+- feature-specific Zod validation;
+- детерминированные fallback там, где это возможно.
 
-### Оптимизации
-- **Lazy Loading** - ленивая загрузка страниц
-- **Code Splitting** - разделение кода
-- **Memoization** - мемоизация вычислений
-- **Bundle Optimization** - оптимизация сборки
+API key хранится в browser localStorage, поэтому пользователь должен считать устройство доверенным. Ключ, bearer tokens и photo data редактируются из error logs.
 
-### Метрики
-- **First Contentful Paint** < 1.5s
-- **Largest Contentful Paint** < 2.5s
-- **Cumulative Layout Shift** < 0.1
-- **First Input Delay** < 100ms
+## PWA
 
-## 🔒 Безопасность
+Vite генерирует единственный manifest и Service Worker. Обновление применяется после пользовательского prompt. Precache ограничен runtime shell и нужными иконками; `npm run build:budget` контролирует общий `dist` и максимальный JS chunk.
 
-### Валидация
-- **Zod схемы** для всех форм
-- **TypeScript** для типизации
-- **Rate Limiting** для API
+## Проверки
 
-### Данные
-- **Локальное хранение** - IndexedDB
-- **Шифрование** чувствительных данных
-- **Валидация** на клиенте и сервере
-
-## 🧪 Тестирование
-
-### Планируемые тесты
-- **Unit тесты** - компоненты и хуки
-- **Integration тесты** - потоки данных
-- **E2E тесты** - пользовательские сценарии
-
-### Инструменты
-- **Jest** - тестовый фреймворк
-- **React Testing Library** - тестирование компонентов
-- **Playwright** - E2E тестирование
-
-## 📈 Масштабируемость
-
-### Горизонтальное масштабирование
-- **Микросервисная архитектура** (планируется)
-- **API Gateway** (планируется)
-- **CDN** для статических ресурсов
-
-### Вертикальное масштабирование
-- **Оптимизация запросов**
-- **Кэширование**
-- **Ленивая загрузка**
-
-## 🚀 Развертывание
-
-### Сборка
 ```bash
-npm run build    # Продакшен сборка
-npm run preview  # Предварительный просмотр
+npm run lint
+npm run typecheck
+npm test -- --run
+npm run test:e2e
+npm run build
+npm run build:budget
+npm run check-agents
+npx openspec validate --all
 ```
 
-### Развертывание
-- **Static Hosting** - Vercel, Netlify
-- **CDN** - Cloudflare
-- **Monitoring** - Sentry (планируется)
-
-## 📚 Дополнительная документация
-
-- [Компоненты](./COMPONENTS.md)
-- [Хуки](./HOOKS.md)
-- [API](./API.md)
-- [Стилизация](./STYLING.md)
-- [Тестирование](./TESTING.md)
-
-## 🤝 Вклад в проект
-
-### Стандарты кода
-- **ESLint** конфигурация
-- **Prettier** форматирование
-- **Conventional Commits**
-- **TypeScript** строгий режим
-
-### Процесс разработки
-1. Создание feature ветки
-2. Разработка с тестами
-3. Code review
-4. Merge в main
-5. Автоматическое развертывание
-
----
-
-*Документация обновлена: $(date)*
+`npm run verify` объединяет локальные проверки, кроме Playwright; e2e запускается отдельно, поскольку ему нужен Chromium.

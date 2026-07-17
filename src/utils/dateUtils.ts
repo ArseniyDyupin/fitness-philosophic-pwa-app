@@ -1,16 +1,13 @@
 import { format, parseISO, isValid } from 'date-fns'
 import { ru, enUS } from 'date-fns/locale'
-import { useTranslations } from '@stores/i18n.store'
+import { useI18nStore } from '@stores/i18n.store'
 
 // Типы для локализации
 type Locale = 'ru' | 'en'
 
 // Получение текущей локали из store
 export const getCurrentLocale = (): Locale => {
-  // Получаем текущий язык из store
-  const t = useTranslations()
-  // Предполагаем, что если есть русские переводы, то язык русский
-  return t.statsPage?.title ? 'ru' : 'en'
+  return useI18nStore.getState().currentLanguage
 }
 
 // Получение объекта локали для date-fns
@@ -110,7 +107,7 @@ export const dateFormats = {
 
 // Хук для использования в React компонентах
 export const useLocalizedDate = () => {
-  const locale = getCurrentLocale()
+  const locale = useI18nStore(state => state.currentLanguage)
   
   return {
     format: (date: Date | string | number, formatStr: string) => 

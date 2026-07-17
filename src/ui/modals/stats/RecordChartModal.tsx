@@ -12,6 +12,7 @@ import {
 } from 'recharts'
 import { parseISO } from 'date-fns'
 import { useLocalizedDate } from '@utils/dateUtils'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 interface RecordChartModalProps {
   isOpen: boolean
@@ -33,6 +34,7 @@ const RecordChartModal: React.FC<RecordChartModalProps> = ({
   recordLabel
 }) => {
   const t = useTranslations()
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen, onClose)
   const { format } = useLocalizedDate()
 
   if (!isOpen) return null
@@ -102,12 +104,12 @@ const RecordChartModal: React.FC<RecordChartModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="record-chart-title" tabIndex={-1} className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div className="flex items-center space-x-2">
             <TrendingUp className="w-5 h-5 text-blue-500" />
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+            <h2 id="record-chart-title" className="text-lg sm:text-xl font-semibold text-gray-900">
               {recordLabel} - {t.statsPage?.chart?.progress || 'Progress'}
             </h2>
           </div>

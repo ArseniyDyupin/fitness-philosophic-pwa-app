@@ -14,6 +14,7 @@ import {
   Legend
 } from 'recharts'
 import { getWorkoutTotalDuration } from '@services/fitness'
+import { localDateFromDate, localDateToDate, toLocalDate } from '@/domain/date/localDate'
 
 interface WeeklyActivityChartProps {
   workouts: Workout[]
@@ -61,7 +62,7 @@ const WeeklyTooltip: React.FC<any> = ({ active, payload, label }) => {
   
   if (active && payload && payload.length) {
     const data = (payload[0] as any).payload
-    const date = new Date(label || '')
+    const date = localDateToDate(toLocalDate(label || ''))
     return (
       <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg max-w-sm">
         <div className="text-sm font-semibold text-gray-900 mb-2">
@@ -135,16 +136,16 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ workouts, wee
       
       // Get workouts for the week
       const weekWorkouts = workouts.filter(w => {
-        const workoutDate = new Date(w.date)
+        const workoutDate = localDateToDate(toLocalDate(w.date))
         return workoutDate >= weekStartDate && workoutDate <= weekEndDate
       })
 
       // Create day data
       const days = eachDayOfInterval({ start: weekStartDate, end: weekEndDate })
       const dayData: DayData[] = days.map(day => {
-        const dateStr = day.toISOString().split('T')[0]
+        const dateStr = localDateFromDate(day)
         const dayWorkouts = weekWorkouts.filter(w => {
-          return w.date.split('T')[0] === dateStr
+          return toLocalDate(w.date) === dateStr
         })
         
         // Filter only completed workouts
@@ -211,8 +212,7 @@ const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ workouts, wee
                   <XAxis 
                     dataKey="date" 
                     tickFormatter={(value) => {
-                      const date = new Date(value)
-                      return format(date, 'EEE d')
+                      return format(value, 'EEE d')
                     }}
                     stroke="#666"
                     fontSize={12}

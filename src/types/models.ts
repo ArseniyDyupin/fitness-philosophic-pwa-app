@@ -1,3 +1,5 @@
+import type { WeeklyReview } from '@/domain/weekly-review/types'
+
 export interface Profile {
   id: string                    // Always "me"
   name: string                  // User's name
@@ -40,7 +42,7 @@ export interface Workout {
   id: string
   name?: string                 // Workout name
   description?: string          // Workout description
-  date: string                  // ISO string
+  date: string                  // Local calendar date (YYYY-MM-DD)
   exercises: WorkoutExercise[]
   rpe?: number // Rate of Perceived Exertion (1-10 scale) - will be filled by AI when analysis is enabled
   rpeSource?: "ai" | "manual"  // NEW: source of RPE value
@@ -63,7 +65,7 @@ export interface FoodLog {
   protein?: number // g
   carbs?: number // g
   fat?: number // g
-  date: string                   // ISO string
+  date: string                   // Local calendar date (YYYY-MM-DD)
   notes?: string
   createdAt: string             // ISO string
   updatedAt: string             // ISO string
@@ -71,7 +73,7 @@ export interface FoodLog {
 
 export interface WeeklyCheckin {
   id: string
-  weekStart: string             // ISO string (Monday of the week)
+  weekStart: string             // Local calendar date (Monday, YYYY-MM-DD)
   weight: number
   waist?: number // cm
   notes?: string
@@ -101,6 +103,7 @@ export interface ExportBundle {
   checkins: WeeklyCheckin[]
   ai: AiMessage[]
   plans: PlanSuggestion[]
+  weekly_reviews?: WeeklyReview[]
 }
 
 export interface AiMessage {
@@ -116,7 +119,7 @@ export interface PlanSuggestion {
   type: 'workout' | 'nutrition' | 'recovery'
   title: string
   description: string
-  forDate: string              // ISO string
+  forDate: string              // Local calendar date (YYYY-MM-DD)
   exercises?: WorkoutExercise[]
   workoutTemplate?: Workout    // заготовка "следующая тренировка"
   notes?: string
@@ -143,7 +146,7 @@ export interface ExerciseEdit {
 
 export interface PlanRealizationDraft {
   planId: string
-  date: string                // ISO
+  date: string                // Local calendar date (YYYY-MM-DD)
   rpe?: number
   exerciseEdits: ExerciseEdit[]
   workoutComment?: string     // общий комментарий к тренировке

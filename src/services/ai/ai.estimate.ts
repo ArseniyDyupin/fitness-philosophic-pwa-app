@@ -2,9 +2,9 @@ import { db } from '../data/db'
 import type { WorkoutType, ExerciseEstimate, WorkoutExercise } from '@/types/models'
 import { 
   errorHandler, 
-  retryService, 
-  createApiError
+  retryService
 } from '@/services/error'
+import { aiGateway } from './aiGateway'
 
 export interface EstimateInput {
   type: WorkoutType | "custom"
@@ -132,14 +132,6 @@ async function saveEstimateToCache(
 
 // Call OpenAI API for estimation
 async function callOpenAI(input: EstimateInput): Promise<EstimateResult> {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
-  if (!apiKey) {
-    throw createApiError('OpenAI API key not configured', {
-      component: 'AIEstimate',
-      action: 'callOpenAI'
-    })
-  }
-
   const aiPayload = {
     profile: {
       weightKg: input.profile.weightKg,
@@ -153,33 +145,14 @@ async function callOpenAI(input: EstimateInput): Promise<EstimateResult> {
     context: "Оцени калории и ориентировочную длительность для одной такой сессии."
   }
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      temperature: 0.2,
-      max_tokens: 200,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: JSON.stringify(aiPayload) }
-      ]
-    })
+  const content = await aiGateway.complete({
+    messages: [
+      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'user', content: JSON.stringify(aiPayload) }
+    ],
+    temperature: 0.2,
+    maxTokens: 200
   })
-
-  if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  const content = data.choices[0]?.message?.content
-
-  if (!content) {
-    throw new Error('No response from OpenAI')
-  }
 
   try {
     const result = JSON.parse(content)

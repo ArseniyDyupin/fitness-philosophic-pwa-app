@@ -21,6 +21,7 @@ export async function exportAll(): Promise<ExportBundle> {
       photo_assets: await db.photo_assets.toArray(),
       ai_body_evals: await db.ai_body_evals.toArray(),
       exercise_estimates: await db.exercise_estimates.toArray(),
+      weekly_reviews: await db.weekly_reviews.toArray(),
     }
     
     return bundle

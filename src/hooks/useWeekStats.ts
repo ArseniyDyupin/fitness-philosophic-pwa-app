@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
 import { useWorkoutStore } from '@stores/workout.store'
+import { useProfileStore } from '@stores/profile.store'
 import { endOfWeek, isWithinInterval } from 'date-fns'
 import { sumWorkoutKcal, sumWorkoutMinutes } from '@services/fitness'
+import { localDateToDate, toLocalDate } from '@/domain/date/localDate'
 
 export interface WeekStats {
   calories: number
@@ -14,15 +16,16 @@ export interface WeekStats {
 
 export function useWeekStats(weekStart: Date) {
   const workouts = useWorkoutStore(s => s.workouts)
+  const userWeight = useProfileStore(s => s.profile?.weight ?? 70)
 
   const stats = useMemo((): WeekStats => {
     const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 })
     
     const weekWorkouts = workouts.filter(w => 
-      isWithinInterval(new Date(w.date), { start: weekStart, end: weekEnd }) && !w.isPlan
+      isWithinInterval(localDateToDate(toLocalDate(w.date)), { start: weekStart, end: weekEnd }) && !w.isPlan
     )
 
-    const calories = sumWorkoutKcal(weekWorkouts, 70)
+    const calories = sumWorkoutKcal(weekWorkouts, userWeight)
 
     const minutes = sumWorkoutMinutes(weekWorkouts)
 
@@ -39,7 +42,7 @@ export function useWeekStats(weekStart: Date) {
 
     // Count unique days with workouts
     const uniqueDays = new Set(
-      weekWorkouts.map(w => new Date(w.date).toDateString())
+      weekWorkouts.map(w => toLocalDate(w.date))
     ).size
 
     return {
@@ -50,7 +53,7 @@ export function useWeekStats(weekStart: Date) {
       rpeAvg,
       daysWithWorkouts: uniqueDays
     }
-  }, [workouts, weekStart])
+  }, [workouts, weekStart, userWeight])
 
   return stats
 }

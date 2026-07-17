@@ -11,6 +11,7 @@ import {
   parseExportBundle
 } from './data'
 import type { ExportBundle, ImportStats } from '@/types/export'
+import { getBackupIntegrity } from '@/services/data/backupIntegrity'
 
 export type SyncStats = ImportStats
 
@@ -35,6 +36,8 @@ interface DriveSyncClient {
     exists: boolean
     lastModified?: string
     size?: string
+    schemaVersion?: string
+    checksum?: string
   }>
 }
 
@@ -97,6 +100,26 @@ export class DataSyncService {
     })
   }
 
+  async getLocalBackupPreview(): Promise<{
+    schemaVersion: number
+    exportedAt: string
+    size: number
+    checksum: string
+  }> {
+    let data: ExportBundle
+    try {
+      data = await this.exportData()
+    } catch {
+      throw new DataSyncError('DATA_EXPORT_FAILED')
+    }
+    const integrity = await getBackupIntegrity(JSON.stringify(data))
+    return {
+      schemaVersion: data.schemaVersion,
+      exportedAt: data.exportedAt,
+      ...integrity
+    }
+  }
+
   async downloadAndMergeData(): Promise<SyncStats> {
     return this.runExclusive('download', async () => {
       this.assertAuthenticated()
@@ -124,6 +147,25 @@ export class DataSyncService {
     })
   }
 
+  async importLocalData(data: unknown, mode: 'replace' | 'merge'): Promise<SyncStats> {
+    let validatedData: ExportBundle
+    try {
+      validatedData = this.parseData(data)
+    } catch (error) {
+      if (error instanceof ImportError) throw error
+      throw new DataSyncError('DATA_IMPORT_FAILED')
+    }
+
+    try {
+      const stats = await this.mergeData(validatedData, mode)
+      await this.reloadMirrors()
+      return stats
+    } catch (error) {
+      if (error instanceof ImportError) throw error
+      throw new DataSyncError('DATA_IMPORT_FAILED')
+    }
+  }
+
   async checkSyncFileExists(): Promise<boolean> {
     if (!this.driveService.isAuthenticated()) {
       return false
@@ -136,6 +178,8 @@ export class DataSyncService {
   async getSyncFileInfo(): Promise<{
     lastModified: string
     size: number
+    schemaVersion?: string
+    checksum?: string
   } | null> {
     if (!this.driveService.isAuthenticated()) {
       return null
@@ -152,7 +196,9 @@ export class DataSyncService {
 
     return {
       lastModified: fileInfo.lastModified,
-      size: Number.isFinite(parsedSize) ? parsedSize : 0
+      size: Number.isFinite(parsedSize) ? parsedSize : 0,
+      schemaVersion: fileInfo.schemaVersion,
+      checksum: fileInfo.checksum
     }
   }
 
@@ -192,13 +238,15 @@ export class DataSyncService {
       { useWorkoutStore },
       { useFoodStore },
       { useWeeklyStore },
-      { useI18nStore }
+      { useI18nStore },
+      { useStatsStore }
     ] = await Promise.all([
       import('@/stores/profile.store'),
       import('@/stores/workout.store'),
       import('@/stores/food.store'),
       import('@/stores/weekly.store'),
-      import('@/stores/i18n.store')
+      import('@/stores/i18n.store'),
+      import('@/stores/stats.store')
     ])
 
     const [profile, workouts, foodLogs, checkins] = await Promise.all([
@@ -224,6 +272,7 @@ export class DataSyncService {
       checkins,
       error: null
     })
+    useStatsStore.getState().clearStats()
     useI18nStore.getState().setLanguageFromProfile()
   }
 }

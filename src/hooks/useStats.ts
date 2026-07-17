@@ -1,9 +1,11 @@
 import { useMemo } from 'react'
 import { useWorkoutStore } from '@stores/workout.store'
+import { useProfileStore } from '@stores/profile.store'
 import { endOfWeek, isWithinInterval } from 'date-fns'
 import { sumWorkoutKcal, sumWorkoutMinutes } from '@services/fitness'
 import type { StatsPeriod, UseStatsOptions } from '@/types/hooks'
 import type { Workout } from '@/types/models'
+import { localDateToDate, toLocalDate } from '@/domain/date/localDate'
 
 export interface StatsResult {
   calories: number
@@ -25,8 +27,14 @@ const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
  * @param includeIncomplete - Whether to include incomplete workouts
  * @returns A unique string key for caching
  */
-function getCacheKey(period: StatsPeriod, includeIncomplete: boolean): string {
-  return `${period.type}-${period.start.getTime()}-${period.end.getTime()}-${includeIncomplete}`
+function getCacheKey(
+  workouts: Workout[],
+  period: StatsPeriod,
+  includeIncomplete: boolean,
+  userWeight: number
+): string {
+  const revision = workouts.map(workout => `${workout.id}:${workout.updatedAt}`).join('|')
+  return `${period.type}-${period.start.getTime()}-${period.end.getTime()}-${includeIncomplete}-${userWeight}-${revision}`
 }
 
 /**
@@ -52,7 +60,7 @@ function calculateStats(
   includeIncomplete: boolean = false,
   userWeight: number = 70
 ): StatsResult {
-  const cacheKey = getCacheKey(period, includeIncomplete)
+  const cacheKey = getCacheKey(workouts, period, includeIncomplete, userWeight)
   const cached = statsCache.get(cacheKey)
   
   if (cached && isCacheValid(cached.timestamp)) {
@@ -61,7 +69,7 @@ function calculateStats(
 
   // Filter workouts by period
   const filteredWorkouts = workouts.filter(w => {
-    const workoutDate = new Date(w.date)
+    const workoutDate = localDateToDate(toLocalDate(w.date))
     const isInPeriod = isWithinInterval(workoutDate, { start: period.start, end: period.end })
     const isComplete = !w.isPlan
     return isInPeriod && (includeIncomplete || isComplete)
@@ -86,7 +94,7 @@ function calculateStats(
   let daysWithWorkouts: number | undefined
   if (period.type === 'week' || period.type === 'month') {
     const uniqueDays = new Set(
-      filteredWorkouts.map(w => new Date(w.date).toDateString())
+      filteredWorkouts.map(w => toLocalDate(w.date))
     ).size
     daysWithWorkouts = uniqueDays
   }
@@ -114,6 +122,7 @@ function calculateStats(
  */
 export function useStats(options: UseStatsOptions = {}) {
   const workouts = useWorkoutStore(s => s.workouts)
+  const userWeight = useProfileStore(s => s.profile?.weight ?? 70)
   const { 
     period, 
     includeIncomplete = false
@@ -129,8 +138,8 @@ export function useStats(options: UseStatsOptions = {}) {
   const currentPeriod = period || defaultPeriod
 
   const stats = useMemo(() => {
-    return calculateStats(workouts, currentPeriod, includeIncomplete)
-  }, [workouts, currentPeriod, includeIncomplete])
+    return calculateStats(workouts, currentPeriod, includeIncomplete, userWeight)
+  }, [workouts, currentPeriod, includeIncomplete, userWeight])
 
   // Helper functions for common periods
   const getTodayStats = () => {
@@ -139,7 +148,7 @@ export function useStats(options: UseStatsOptions = {}) {
       start: today,
       end: today,
       type: 'day'
-    }, includeIncomplete)
+    }, includeIncomplete, userWeight)
   }
 
   const getWeekStats = (weekStart: Date) => {
@@ -148,7 +157,7 @@ export function useStats(options: UseStatsOptions = {}) {
       start: weekStart,
       end: weekEnd,
       type: 'week'
-    }, includeIncomplete)
+    }, includeIncomplete, userWeight)
   }
 
   const getMonthStats = (monthStart: Date) => {
@@ -157,7 +166,7 @@ export function useStats(options: UseStatsOptions = {}) {
       start: monthStart,
       end: monthEnd,
       type: 'month'
-    }, includeIncomplete)
+    }, includeIncomplete, userWeight)
   }
 
   const getYearStats = (yearStart: Date) => {
@@ -166,7 +175,7 @@ export function useStats(options: UseStatsOptions = {}) {
       start: yearStart,
       end: yearEnd,
       type: 'year'
-    }, includeIncomplete)
+    }, includeIncomplete, userWeight)
   }
 
   // Clear cache function

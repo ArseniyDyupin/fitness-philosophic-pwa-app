@@ -131,4 +131,23 @@ describe('DataSyncService', () => {
     })
     expect(mergeData).not.toHaveBeenCalled()
   })
+
+  it('validates local backup data and reloads mirrors after replace import', async () => {
+    const payload = { local: true }
+    const bundle = createBundle()
+    const stats = { ...createStats(), mode: 'replace' as const }
+    const parseData = vi.fn(() => bundle)
+    const mergeData = vi.fn(async () => stats)
+    const reloadStoreMirrors = vi.fn(async () => undefined)
+    const service = new DataSyncService({
+      parseData,
+      mergeData,
+      reloadStoreMirrors
+    })
+
+    await expect(service.importLocalData(payload, 'replace')).resolves.toEqual(stats)
+    expect(parseData).toHaveBeenCalledWith(payload)
+    expect(mergeData).toHaveBeenCalledWith(bundle, 'replace')
+    expect(reloadStoreMirrors).toHaveBeenCalledOnce()
+  })
 })

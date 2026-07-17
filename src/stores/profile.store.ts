@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import { dbHelpers } from '@services/data'
 import type { Profile } from '@/types/models'
+import { profileService } from '@/application/profile/profileService'
 
 interface ProfileState {
   profile: Profile | null
@@ -11,6 +11,7 @@ interface ProfileState {
   loadProfile: () => Promise<void>
   saveProfile: (profile: Partial<Profile>) => Promise<void>
   createProfile: (profileData: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  deleteProfile: () => Promise<void>
   importProfile: (jsonData: unknown) => Promise<void>
   exportProfile: () => Promise<{ schemaVersion: number; exportedAt: string; profile: Profile }>
   clearProfile: () => void
@@ -24,7 +25,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   loadProfile: async () => {
     set({ isLoading: true, error: null })
     try {
-      const profile = await dbHelpers.getProfile()
+      const profile = await profileService.get()
       if (profile) {
         set({ profile })
       }
@@ -43,13 +44,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
 
     set({ isLoading: true, error: null })
     try {
-      const updatedProfile: Profile = {
-        ...currentProfile,
-        ...profileData,
-        updatedAt: new Date().toISOString()
-      }
-      
-      await dbHelpers.saveProfile(updatedProfile)
+      const updatedProfile = await profileService.update(profileData)
       set({ profile: updatedProfile })
     } catch (err) {
       set({ error: err instanceof Error ? err.message : 'Failed to save profile' })
@@ -62,17 +57,23 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   createProfile: async (profileData: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>) => {
     set({ isLoading: true, error: null })
     try {
-      const newProfile: Profile = {
-        ...profileData,
-        id: 'me',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-      
-      await dbHelpers.saveProfile(newProfile)
+      const newProfile = await profileService.create(profileData)
       set({ profile: newProfile })
     } catch (err) {
       set({ error: err instanceof Error ? err.message : 'Failed to create profile' })
+      throw err
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  deleteProfile: async () => {
+    set({ isLoading: true, error: null })
+    try {
+      await profileService.delete()
+      set({ profile: null })
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : 'Failed to delete profile' })
       throw err
     } finally {
       set({ isLoading: false })
@@ -98,8 +99,8 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         updatedAt: new Date().toISOString()
       }
 
-      await dbHelpers.saveProfile(transformedProfile)
-      set({ profile: transformedProfile })
+      const profile = await profileService.import(transformedProfile)
+      set({ profile })
     } catch (err) {
       set({ error: err instanceof Error ? err.message : 'Failed to import profile' })
       throw err

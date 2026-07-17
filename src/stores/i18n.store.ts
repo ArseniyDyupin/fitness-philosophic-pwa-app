@@ -11,6 +11,7 @@ interface I18nState {
   setLanguage: (lang: Language) => void
   initializeLanguage: () => void
   setLanguageFromProfile: () => void
+  resetLanguage: () => void
 }
 
 export const useI18nStore = create<I18nState>((set) => ({
@@ -52,6 +53,11 @@ export const useI18nStore = create<I18nState>((set) => ({
       })
       localStorage.setItem('language', profileStore.profile.language)
     }
+  },
+
+  resetLanguage: () => {
+    localStorage.removeItem('language')
+    set({ currentLanguage: 'en', hasSelectedLanguage: false })
   }
 }))
 
@@ -109,6 +115,34 @@ export const translations = {
     food: 'Food',
     weekly: 'Weekly',
     settings: 'Settings',
+    weeklyReview: {
+      title: 'Weekly review',
+      description: 'Reflect on recovery and adapt next week safely.',
+      energy: 'Energy',
+      sleep: 'Sleep quality',
+      soreness: 'Muscle soreness',
+      mood: 'Mood',
+      adherence: 'Plan adherence',
+      notes: 'Notes',
+      notesPlaceholder: 'What helped or got in the way this week?',
+      summaryTitle: 'This week in numbers',
+      workoutsCompleted: 'workouts completed',
+      averageRpe: 'Average RPE',
+      saveAndRecommend: 'Save and get recommendation',
+      recommendation: 'Next-week recommendation',
+      localSource: 'On-device fallback',
+      aiSource: 'AI-assisted',
+      focus: 'Focus',
+      preview: 'Preview plan changes',
+      apply: 'Apply changes',
+      decline: 'Keep current plan',
+      applied: 'Plan settings updated',
+      accepted: 'Changes accepted',
+      declined: 'Current plan kept',
+      confirmApply: 'Apply these frequency and duration changes to your profile?',
+      workoutsPerWeek: 'workouts/week',
+      minutesPerWorkout: 'minutes/workout'
+    },
     
     // Header
     header: {
@@ -240,6 +274,7 @@ export const translations = {
         additionalDetails: 'Additional Details (Optional)',
         descriptionPlaceholder: 'Tell us more about your specific goals...',
         namePlaceholder: 'Enter your name',
+        nameRequired: 'Enter a name that is not only spaces',
         goalsPlaceholder: 'For example: I want to lose 10 kg, gain muscle mass, improve endurance, become stronger, feel better... Describe in detail what you want to achieve.',
         weightLoss: 'Weight Loss',
         muscleGain: 'Muscle Gain',
@@ -256,10 +291,13 @@ export const translations = {
         other: 'Other',
         age: 'Age (years)',
         agePlaceholder: 'e.g., 25',
+        ageError: 'Age must be between 13 and 100',
         height: 'Height (cm)',
         heightPlaceholder: 'e.g., 175',
+        heightError: 'Height must be between 100 and 250 cm',
         weight: 'Weight (kg)',
-        weightPlaceholder: 'e.g., 70'
+        weightPlaceholder: 'e.g., 70',
+        weightError: 'Weight must be between 30 and 300 kg'
       },
       constraints: {
         title: 'Physical Constraints',
@@ -380,6 +418,7 @@ export const translations = {
         tomorrow: 'Plan for Tomorrow',
         open: 'Open Plan',
         markDone: 'Mark as Done',
+        markedDone: 'Workout marked as completed',
         regenerate: 'Regenerate',
         noPlan: 'No plan created for today',
         enableAI: 'Enable AI',
@@ -453,6 +492,9 @@ export const translations = {
       onboardingDescription: 'Reset the onboarding process to start over with language selection and profile setup.',
       resetOnboarding: 'Reset Onboarding',
       resetConfirmMessage: 'Are you sure you want to reset onboarding? This will clear your profile and start over.',
+      deleteAllData: 'Delete all local data',
+      deleteAllDataDescription: 'Permanently delete your profile, workouts, photos, AI data, backups cached on this device, and settings.',
+      deleteAllDataConfirm: 'Permanently delete all local app data on this device? This cannot be undone.',
       detailedGoals: 'Detailed Goals',
       noGoalsSet: 'No goals set',
       dataManagement: 'Data Management',
@@ -1312,6 +1354,8 @@ export const translations = {
       refreshStatus: 'Refresh backup status',
       lastModified: 'Last modified',
       fileSize: 'File size',
+      schemaVersion: 'Schema version',
+      checksum: 'SHA-256 checksum',
       bytes: 'bytes',
       kb: 'KB',
       mb: 'MB',
@@ -1415,6 +1459,34 @@ export const translations = {
     food: 'Питание',
     weekly: 'Неделя',
     settings: 'Настройки',
+    weeklyReview: {
+      title: 'Итоги недели',
+      description: 'Оцените восстановление и безопасно скорректируйте следующую неделю.',
+      energy: 'Энергия',
+      sleep: 'Качество сна',
+      soreness: 'Боль в мышцах',
+      mood: 'Настроение',
+      adherence: 'Выполнение плана',
+      notes: 'Заметки',
+      notesPlaceholder: 'Что помогало или мешало на этой неделе?',
+      summaryTitle: 'Неделя в цифрах',
+      workoutsCompleted: 'тренировок выполнено',
+      averageRpe: 'Средний RPE',
+      saveAndRecommend: 'Сохранить и получить рекомендацию',
+      recommendation: 'Рекомендация на следующую неделю',
+      localSource: 'Локальная рекомендация',
+      aiSource: 'С помощью ИИ',
+      focus: 'Фокус',
+      preview: 'Посмотреть изменения плана',
+      apply: 'Применить изменения',
+      decline: 'Оставить текущий план',
+      applied: 'Параметры плана обновлены',
+      accepted: 'Изменения приняты',
+      declined: 'Текущий план сохранён',
+      confirmApply: 'Применить новую частоту и длительность к профилю?',
+      workoutsPerWeek: 'тренировок/неделю',
+      minutesPerWorkout: 'минут/тренировку'
+    },
     
     // Header
     header: {
@@ -1546,6 +1618,7 @@ export const translations = {
         additionalDetails: 'Дополнительные детали (Необязательно)',
         descriptionPlaceholder: 'Расскажите нам больше о ваших конкретных целях...',
         namePlaceholder: 'Введите ваше имя',
+        nameRequired: 'Введите имя, состоящее не только из пробелов',
         goalsPlaceholder: 'Например: я хочу потерять 10 кг, набрать мышечную массу, улучшить выносливость, стать сильнее, чувствовать себя лучше... Опишите подробно, чего вы хотите достичь.',
         weightLoss: 'Потеря веса',
         muscleGain: 'Набор мышечной массы',
@@ -1562,10 +1635,13 @@ export const translations = {
         other: 'Другой',
         age: 'Возраст (лет)',
         agePlaceholder: 'например, 25',
+        ageError: 'Возраст должен быть от 13 до 100 лет',
         height: 'Рост (см)',
         heightPlaceholder: 'например, 175',
+        heightError: 'Рост должен быть от 100 до 250 см',
         weight: 'Вес (кг)',
-        weightPlaceholder: 'например, 70'
+        weightPlaceholder: 'например, 70',
+        weightError: 'Вес должен быть от 30 до 300 кг'
       },
       constraints: {
         title: 'Физические ограничения',
@@ -1685,6 +1761,7 @@ export const translations = {
         tomorrow: 'План на завтра',
         open: 'Открыть план',
         markDone: 'Отметить выполнено',
+        markedDone: 'Тренировка отмечена выполненной',
         regenerate: 'Сгенерировать заново',
         noPlan: 'План на сегодня не создан',
         enableAI: 'Включить ИИ',
@@ -1758,6 +1835,9 @@ export const translations = {
       onboardingDescription: 'Сбросить процесс настройки, чтобы начать заново с выбора языка и настройки профиля.',
       resetOnboarding: 'Сбросить настройку',
       resetConfirmMessage: 'Вы уверены, что хотите сбросить настройку? Это очистит ваш профиль и начнет заново.',
+      deleteAllData: 'Удалить все локальные данные',
+      deleteAllDataDescription: 'Навсегда удалить профиль, тренировки, фотографии, данные ИИ, локальный кеш и настройки на этом устройстве.',
+      deleteAllDataConfirm: 'Навсегда удалить все локальные данные приложения на этом устройстве? Это действие нельзя отменить.',
       detailedGoals: 'Детальные цели',
       noGoalsSet: 'Цели не установлены',
       dataManagement: 'Управление данными',
@@ -2624,6 +2704,8 @@ export const translations = {
       refreshStatus: 'Обновить статус резервной копии',
       lastModified: 'Последнее изменение',
       fileSize: 'Размер файла',
+      schemaVersion: 'Версия схемы',
+      checksum: 'Контрольная сумма SHA-256',
       bytes: 'байт',
       kb: 'КБ',
       mb: 'МБ',

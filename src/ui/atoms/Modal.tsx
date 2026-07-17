@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { cn } from '@utils/cn'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 export interface ModalProps {
   isOpen: boolean
@@ -18,23 +19,7 @@ const Modal: React.FC<ModalProps> = ({
   size = 'md',
   className
 }) => {
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'hidden'
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen, onClose])
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen, onClose)
 
   if (!isOpen) return null
 
@@ -56,6 +41,11 @@ const Modal: React.FC<ModalProps> = ({
         
         {/* Modal */}
         <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={title ? 'shared-modal-title' : undefined}
+          tabIndex={-1}
           className={cn(
             'relative bg-white rounded-lg shadow-xl w-full',
             sizeClasses[size],
@@ -65,7 +55,7 @@ const Modal: React.FC<ModalProps> = ({
           {/* Header */}
           {title && (
             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+              <h3 id="shared-modal-title" className="text-lg font-semibold text-gray-900">{title}</h3>
               <button
                 onClick={onClose}
                 className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors rounded-lg"

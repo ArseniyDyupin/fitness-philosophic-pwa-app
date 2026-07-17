@@ -151,7 +151,7 @@ const BodyMetricsBlock: React.FC<BodyMetricsBlockProps> = () => {
     const sortedDates = Array.from(allDates).sort()
     
     return sortedDates.map(date => {
-      const dataPoint: Record<string, string | number> = { date: format(new Date(date), 'MMM d') }
+      const dataPoint: Record<string, string | number> = { date: format(date, 'MMM d') }
       
       selectedMetrics.forEach(key => {
         const trend = trends[key]

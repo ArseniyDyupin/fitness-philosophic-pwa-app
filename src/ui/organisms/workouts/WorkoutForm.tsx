@@ -9,6 +9,8 @@ import type { WorkoutExercise } from '@/types/models'
 import { X, Plus, Edit3, Bot } from 'lucide-react'
 import ExerciseCard from '@organisms/shared/ExerciseCard'
 import { calculateExerciseCalories } from '@services/fitness'
+import { todayLocalDate } from '@/domain/date/localDate'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 interface WorkoutFormProps {
   isOpen: boolean
@@ -17,14 +19,15 @@ interface WorkoutFormProps {
 }
 
 const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess }) => {
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen, onClose)
   const t = useTranslations()
   const { currentLanguage } = useI18nStore()
-  const { addWorkout } = useWorkoutStore()
+  const { addWorkout, updateWorkout } = useWorkoutStore()
   const { profile } = useProfileStore()
   const { isConfigured: isAIConfigured, hasKey } = useAIStore()
   
   const [mode, setMode] = useState<'form' | 'text'>('form')
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [date, setDate] = useState<string>(todayLocalDate())
   const [rpe, setRpe] = useState(5)
   const [durationMin, setDurationMin] = useState<number | undefined>(undefined)
   const [exercises, setExercises] = useState<WorkoutExercise[]>([])
@@ -33,11 +36,12 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
   const [isEstimating, setIsEstimating] = useState(false)
   const [enableAIAnalysis, setEnableAIAnalysis] = useState(true)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   // Reset form when opening
   useEffect(() => {
     if (isOpen) {
-      setDate(new Date().toISOString().split('T')[0])
+      setDate(todayLocalDate())
       setRpe(5)
       setDurationMin(undefined)
       setExercises([])
@@ -80,15 +84,18 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
   }
 
   const handleSave = async () => {
+    if (isSaving) return
+
     if (exercises.length === 0) {
       toastError(t.workoutForm?.addAtLeastOneExercise || 'Please add at least one exercise')
       return
     }
 
+    setIsSaving(true)
     try {
       // First, save the workout without AI estimates and analysis
       const workoutData = {
-        date: new Date(date).toISOString(),
+        date,
         exercises,
         rpe: enableAIAnalysis ? undefined : (rpe > 0 ? rpe : undefined), // Don't set RPE if AI analysis is enabled
         durationMin: durationMin && durationMin > 0 ? durationMin : undefined,
@@ -136,12 +143,7 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
             })
             
             // Update the workout with estimates
-            const updatedWorkoutData = {
-              ...workoutData,
-              exercises: updatedExercises
-            }
-            
-            await addWorkout(updatedWorkoutData)
+            await updateWorkout(savedWorkout.id, { exercises: updatedExercises })
           }
         } catch (error) {
           console.error('Failed to get AI estimates:', error)
@@ -174,6 +176,8 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
     } catch (error) {
       console.error('Failed to save workout:', error)
       toastError(t.workoutForm?.failedToSave || 'Failed to save workout')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -219,15 +223,16 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50" onMouseDown={event => event.target === event.currentTarget && onClose()}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="workout-form-title" tabIndex={-1} className="bg-white rounded-lg shadow-xl max-w-sm sm:max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200">
-          <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+          <h2 id="workout-form-title" className="text-lg sm:text-2xl font-bold text-gray-900">
             {t.addWorkout}
           </h2>
           <button
             onClick={onClose}
+            aria-label={t.close || 'Close'}
             className="hit-44 focus-visible-ring text-gray-400 hover:text-gray-600 transition-colors rounded-lg"
           >
             <X size={20} className="sm:w-6 sm:h-6" />
@@ -445,10 +450,12 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ isOpen, onClose, onSuccess })
           {mode === 'form' && (
             <button
               onClick={handleSave}
-              disabled={exercises.length === 0 || isEstimating || isAnalyzing}
+              disabled={exercises.length === 0 || isSaving || isEstimating || isAnalyzing}
               className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus-visible-ring"
             >
-              {hasKey() && isEstimating ? (
+              {isSaving && !isEstimating && !isAnalyzing ? (
+                <span>{t.saving || 'Saving...'}</span>
+              ) : hasKey() && isEstimating ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   <span>{t.workoutForm?.aiEstimationInProgress || 'AI estimation...'}</span>

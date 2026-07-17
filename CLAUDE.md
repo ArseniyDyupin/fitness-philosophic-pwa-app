@@ -33,7 +33,8 @@ with `AGENTS.md`. Current source and user instructions take precedence when this
 
 ## 4. AI Integration
 
-- AI services live under `src/services/ai/`; model/config defaults are in `src/constants/`.
+- AI services use the shared `src/services/ai/aiGateway.ts`; model/config defaults are in
+  `src/constants/`, while feature services own prompt and result validation.
 - The OpenAI API key may come from `VITE_OPENAI_API_KEY` or
   `ai-trainer:openai-api-key` in localStorage.
 - Never log, export, sync, or include API keys, OAuth tokens, authorization headers, or raw
@@ -56,7 +57,8 @@ with `AGENTS.md`. Current source and user instructions take precedence when this
 
 ## 6. PWA and Offline
 
-- `vite.config.ts` configures `vite-plugin-pwa` with auto-update and Workbox asset caching.
+- `vite.config.ts` configures `vite-plugin-pwa` with an explicit user update prompt and a
+  bounded Workbox precache.
 - `src/services/pwa.ts` registers the service worker and update/offline-ready notifications.
 - `src/hooks/useOffline.ts` exposes browser connectivity state.
 - Do not cache credentials, authorization responses, or sensitive provider payloads.
@@ -110,4 +112,3 @@ with `AGENTS.md`. Current source and user instructions take precedence when this
 - Sync living specs with `/opsx:sync`; archive only after implementation and verification.
 - Run `openspec update` after upgrading `@fission-ai/openspec`; generated workflow files are
   managed and should not be edited manually.
-

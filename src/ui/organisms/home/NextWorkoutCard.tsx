@@ -34,10 +34,11 @@ const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
     }
   }
 
-  const handlePlanGenerated = (_plan: PlanSuggestion) => {
+  const handlePlanGenerated = (generatedPlan: PlanSuggestion) => {
     setIsGenerateModalOpen(false)
-    // For now, just close the modal
-    // In the future, this could save the plan or navigate to it
+    if (generatedPlan.workoutTemplate) {
+      navigate(`/workouts/${generatedPlan.workoutTemplate.id}`)
+    }
   }
 
   const handleGenerateClick = () => {

@@ -1,10 +1,12 @@
 import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslations } from '@stores/i18n.store'
-import { validateFile, importData, ImportError, getImportPreview } from '@services/data'
+import { validateFile, ImportError, getImportPreview } from '@services/data'
 import { toastSuccess, toastError } from '@lib/toast'
 import type { ExportBundle, ImportPreview } from '@/types/export'
 import { Upload, FileText, Check, AlertCircle } from 'lucide-react'
+import { getBackupIntegrity } from '@/services/data/backupIntegrity'
+import { dataSyncService } from '@/services/dataSync'
 
 const DataImport: React.FC = () => {
   const t = useTranslations()
@@ -18,6 +20,7 @@ const DataImport: React.FC = () => {
   const [isValidating, setIsValidating] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [integrity, setIntegrity] = useState<{ size: number; checksum: string } | null>(null)
 
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,12 +31,14 @@ const DataImport: React.FC = () => {
     setBundle(null)
     setPreview(null)
     setError(null)
+    setIntegrity(null)
     setIsValidating(true)
 
     try {
       const validatedBundle = await validateFile(file)
       setBundle(validatedBundle)
       setPreview(getImportPreview(validatedBundle))
+      setIntegrity(await getBackupIntegrity(await file.text()))
     } catch (err) {
       let errorMessage = t.error || 'Error processing file'
       
@@ -66,7 +71,7 @@ const DataImport: React.FC = () => {
     setError(null)
 
     try {
-      const stats = await importData(bundle, importMode)
+      const stats = await dataSyncService.importLocalData(bundle, importMode)
       
       let message = t.importSuccess || 'Import completed'
       if (importMode === 'merge') {
@@ -82,6 +87,7 @@ const DataImport: React.FC = () => {
       setBundle(null)
       setPreview(null)
       setError(null)
+      setIntegrity(null)
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
@@ -178,10 +184,16 @@ const DataImport: React.FC = () => {
             <div className="text-sm">
               <span className="font-medium">Schema Version: {preview.schemaVersion}</span>
             </div>
+            {integrity && (
+              <>
+                <div className="text-sm"><span className="font-medium">Size: {integrity.size} bytes</span></div>
+                <div className="break-all text-sm"><span className="font-medium">SHA-256: {integrity.checksum}</span></div>
+              </>
+            )}
             
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="text-sm">
-                <span className="font-medium">{(t as any).profile || 'Profile'}: {preview.hasProfile ? '✓' : '✗'}</span>
+                <span className="font-medium">{t.settingsPage?.profileInformation || 'Profile'}: {preview.hasProfile ? '✓' : '✗'}</span>
               </div>
               <div className="text-sm">
                 <span className="font-medium">{t.workouts || 'Workouts'}: {preview.workoutsCount}</span>

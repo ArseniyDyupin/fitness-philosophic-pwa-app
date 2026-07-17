@@ -42,7 +42,7 @@ const StatsPage: React.FC = () => {
   // Load stats when range or dates change
   useEffect(() => {
     if (profile) {
-      loadStats(selectedRange, customStartDate || undefined, customEndDate || undefined)
+      loadStats(selectedRange, customStartDate || undefined, customEndDate || undefined, profile.weight)
     }
   }, [selectedRange, customStartDate, customEndDate, profile, loadStats])
 

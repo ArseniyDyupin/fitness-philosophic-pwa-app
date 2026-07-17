@@ -116,7 +116,7 @@ describe('GoogleDriveService', () => {
     expect(service.isAuthenticated()).toBe(false)
   })
 
-  it('creates multipart content once and later updates the same file with media upload', async () => {
+  it('creates and updates multipart backups with integrity metadata', async () => {
     installGoogleOAuth(config => {
       config.callback({
         access_token: 'drive-access-token',
@@ -191,9 +191,12 @@ describe('GoogleDriveService', () => {
 
     const [updateUrl, updateInit] = fetchMock.mock.calls[3]
     expect(String(updateUrl)).toContain('/files/file-1?')
-    expect(String(updateUrl)).toContain('uploadType=media')
+    expect(String(updateUrl)).toContain('uploadType=multipart')
     expect(updateInit?.method).toBe('PATCH')
-    expect(updateInit?.body).toBe(JSON.stringify(createBundle()))
+    expect(new Headers(updateInit?.headers).get('Content-Type'))
+      .toContain('multipart/related')
+    expect(String(updateInit?.body)).toContain('"checksum":"')
+    expect(String(updateInit?.body)).toContain('"schemaVersion":"1"')
   })
 
   it('clears authorization after Drive returns 401', async () => {

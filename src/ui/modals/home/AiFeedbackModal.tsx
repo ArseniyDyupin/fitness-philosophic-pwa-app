@@ -2,6 +2,7 @@ import React from 'react'
 import { useTranslations } from '@stores/i18n.store'
 import { X, TrendingUp, Target, Lightbulb, BarChart3 } from 'lucide-react'
 import type { AiBodyEval } from '@/types/body-metrics'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 interface AiFeedbackModalProps {
   isOpen: boolean
@@ -17,6 +18,7 @@ const AiFeedbackModal: React.FC<AiFeedbackModalProps> = ({
   previousEvals 
 }) => {
   const t = useTranslations()
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen && Boolean(aiEval), onClose)
 
   if (!isOpen || !aiEval) return null
 
@@ -37,11 +39,11 @@ const AiFeedbackModal: React.FC<AiFeedbackModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="ai-feedback-title" tabIndex={-1} className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 id="ai-feedback-title" className="text-xl font-bold text-gray-900">
               {t.metrics?.ai?.feedbackTitle || 'AI Analysis Results'}
             </h2>
             <p className="text-sm text-gray-600">
@@ -51,6 +53,7 @@ const AiFeedbackModal: React.FC<AiFeedbackModalProps> = ({
           <button
             onClick={onClose}
             className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label={t.close || 'Close'}
           >
             <X size={24} />
           </button>

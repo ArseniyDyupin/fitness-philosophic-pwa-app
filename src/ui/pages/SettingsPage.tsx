@@ -3,10 +3,10 @@ import { useLocation } from 'react-router-dom'
 import { useProfileStore } from '@stores/profile.store'
 import { useI18nStore } from '@stores/i18n.store'
 import { useTranslations } from '@stores/i18n.store'
+import { useOnboardingStore } from '@stores/onboarding.store'
 import { dbHelpers } from '@services/data'
 import { toastSuccess, toastError } from '@lib/toast'
 import { checkForUpdates, getPWAStatus } from '@services/pwa'
-import { ExportButton, ImportButton } from '@/ui/atoms'
 import AISettings from '@modals/settings/AISettings'
 import DataImport from '@modals/settings/DataImport'
 import ProfileDetailsModal from '@modals/settings/ProfileDetailsModal'
@@ -14,10 +14,12 @@ import SettingsBodyMetrics from '@organisms/settings/SettingsBodyMetrics'
 import { GoogleDriveSync } from '@/ui/organisms/GoogleDriveSync'
 import { Edit, Check, X, Eye, RefreshCw } from 'lucide-react'
 import type { Profile } from '@/types/models'
+import { deleteAllLocalData } from '@/application/data/deleteAllLocalData'
 
 const SettingsPage: React.FC = () => {
-  const { profile, saveProfile } = useProfileStore()
-  const { setLanguage } = useI18nStore()
+  const { profile, saveProfile, deleteProfile } = useProfileStore()
+  const { setLanguage, resetLanguage } = useI18nStore()
+  const { resetOnboarding } = useOnboardingStore()
   const t = useTranslations()
   
   // Editing states
@@ -33,10 +35,8 @@ const SettingsPage: React.FC = () => {
   const [isDebuggingDB, setIsDebuggingDB] = useState(false)
   const [isDebuggingDatabase, setIsDebuggingDatabase] = useState(false)
   const [isCheckingUpdates, setIsCheckingUpdates] = useState(false)
-  
-  // Export/Import states
-  const [isExporting, setIsExporting] = useState(false)
-  const [isImporting, setIsImporting] = useState(false)
+  const [isResettingOnboarding, setIsResettingOnboarding] = useState(false)
+  const [isDeletingAllData, setIsDeletingAllData] = useState(false)
   
   // Refs for scrolling
   const aiSettingsRef = useRef<HTMLDivElement>(null)
@@ -56,6 +56,41 @@ const SettingsPage: React.FC = () => {
 
   if (!profile) {
     return <div>{t.settingsPage?.loading || 'Loading...'}</div>
+  }
+
+  const handleResetOnboarding = async () => {
+    const confirmed = window.confirm(
+      t.settingsPage?.resetConfirmMessage ||
+      'Are you sure you want to reset onboarding? This will clear your profile and start over.'
+    )
+    if (!confirmed || isResettingOnboarding) return
+
+    setIsResettingOnboarding(true)
+    try {
+      await deleteProfile()
+      resetOnboarding()
+      resetLanguage()
+      localStorage.removeItem('ai-trainer:has-launched')
+      localStorage.removeItem('ai-trainer:onboarding-draft')
+      window.location.assign('/')
+    } catch {
+      toastError(t.error || 'Failed to reset onboarding')
+      setIsResettingOnboarding(false)
+    }
+  }
+
+  const handleDeleteAllData = async () => {
+    if (isDeletingAllData || !window.confirm(t.settingsPage.deleteAllDataConfirm)) return
+    setIsDeletingAllData(true)
+    try {
+      await deleteAllLocalData()
+      resetOnboarding()
+      resetLanguage()
+      window.location.assign('/')
+    } catch {
+      toastError(t.error || 'Failed to delete local data')
+      setIsDeletingAllData(false)
+    }
   }
 
 
@@ -197,37 +232,6 @@ const SettingsPage: React.FC = () => {
       toastError(t.pwa?.checkUpdatesFailed || 'Failed to check for updates')
     } finally {
       setIsCheckingUpdates(false)
-    }
-  }
-
-  // Export/Import functions
-  const handleExport = async () => {
-    setIsExporting(true)
-    try {
-      // Import the export function
-      const { downloadExport } = await import('@services/data')
-      await downloadExport()
-      toastSuccess(t.exportSuccess || 'Data exported successfully')
-    } catch (error) {
-      console.error('Export failed:', error)
-      toastError(t.error || 'Export failed')
-    } finally {
-      setIsExporting(false)
-    }
-  }
-
-  const handleImport = async (file: File) => {
-    setIsImporting(true)
-    try {
-      // Import the import function
-      const { importData } = await import('@services/data')
-      await importData(file as any)
-      toastSuccess(t.importSuccess || 'Data imported successfully')
-    } catch (error) {
-      console.error('Import failed:', error)
-      toastError(t.error || 'Import failed')
-    } finally {
-      setIsImporting(false)
     }
   }
 
@@ -489,18 +493,25 @@ const SettingsPage: React.FC = () => {
                 {t.settingsPage?.onboardingDescription || 'Reset the onboarding process to start over with language selection and profile setup.'}
               </p>
               <button
-                onClick={() => {
-                  if (confirm(t.settingsPage?.resetConfirmMessage || 'Are you sure you want to reset onboarding? This will clear your profile and start over.')) {
-                    localStorage.removeItem('ai-trainer:has-launched')
-                    localStorage.removeItem('ai-trainer:onboarding-draft')
-                    window.location.reload()
-                  }
-                }}
+                onClick={handleResetOnboarding}
+                disabled={isResettingOnboarding}
                 className="btn-secondary text-red-600 border-red-300 hover:bg-red-50"
               >
-                {t.settingsPage?.resetOnboarding || 'Reset Onboarding'}
+                {isResettingOnboarding ? (t.loading || 'Loading...') : (t.settingsPage?.resetOnboarding || 'Reset Onboarding')}
               </button>
             </div>
+          </div>
+
+          <div className="card border-red-200">
+            <h3 className="text-lg font-semibold text-red-800">{t.settingsPage.deleteAllData}</h3>
+            <p className="mt-2 text-sm text-gray-600">{t.settingsPage.deleteAllDataDescription}</p>
+            <button
+              onClick={handleDeleteAllData}
+              disabled={isDeletingAllData}
+              className="mt-4 rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 disabled:opacity-50"
+            >
+              {isDeletingAllData ? t.saving : t.settingsPage.deleteAllData}
+            </button>
           </div>
 
 
@@ -519,20 +530,7 @@ const SettingsPage: React.FC = () => {
             <DataImport />
           </div>
 
-          {/* Export/Import (Legacy) */}
           <div className="card">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.settingsPage?.dataManagement || 'Data Management'}</h2>
-            <div className="flex space-x-3">
-              <ExportButton 
-                onClick={handleExport}
-                loading={isExporting}
-              />
-              <ImportButton 
-                onFileSelect={handleImport}
-                loading={isImporting}
-              />
-            </div>
-            
             {/* Database Management */}
             <div className="mt-6 pt-6 border-t border-gray-200">
               <h3 className="text-md font-semibold text-gray-900 mb-3">{t.settingsPage?.databaseManagement || 'Database Management'}</h3>

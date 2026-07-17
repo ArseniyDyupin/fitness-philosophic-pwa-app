@@ -322,7 +322,7 @@ export const metricsService = {
     
     if (entries.length < 2) return null
     
-    const sorted = entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    const sorted = entries.sort((a, b) => a.date.localeCompare(b.date))
     const first = sorted[0]
     const last = sorted[sorted.length - 1]
     

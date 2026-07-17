@@ -13,6 +13,7 @@ import {
 import { parseISO } from 'date-fns'
 import { useLocalizedDate } from '@utils/dateUtils'
 import type { MetricDef } from '@/types/body-metrics'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 interface BodyMetricsChartModalProps {
   isOpen: boolean
@@ -32,6 +33,7 @@ const BodyMetricsChartModal: React.FC<BodyMetricsChartModalProps> = ({
   metricDef
 }) => {
   const t = useTranslations()
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen, onClose)
   const { format } = useLocalizedDate()
 
   if (!isOpen) return null
@@ -79,12 +81,12 @@ const BodyMetricsChartModal: React.FC<BodyMetricsChartModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="body-metrics-chart-title" tabIndex={-1} className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div className="flex items-center space-x-2">
             <TrendingUp className="w-5 h-5 text-blue-500" />
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+            <h2 id="body-metrics-chart-title" className="text-lg sm:text-xl font-semibold text-gray-900">
               {t.metrics?.default?.[metricDef.key as keyof typeof t.metrics.default] || metricDef.label} - {t.statsPage?.chart?.progress || 'Progress'}
             </h2>
           </div>

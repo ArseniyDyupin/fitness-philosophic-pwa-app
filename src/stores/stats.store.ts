@@ -4,6 +4,7 @@ import { calculateWorkoutCalories, calculateWorkoutDuration, getWorkoutTotalDura
 import { startOfYear, subDays, format, eachDayOfInterval } from 'date-fns'
 import type { Workout } from '@/types/models'
 import type { StatsData, StatsRange, StatsKPI, DisciplineStats, TrendData, PersonalRecords, ConsistencyData, BodyMetricsData } from '@/types/stats'
+import { localDateToDate, toLocalDate } from '@/domain/date/localDate'
 
 interface StatsState {
   data: StatsData | null
@@ -11,7 +12,7 @@ interface StatsState {
   error: string | null
   
   // Actions
-  loadStats: (range: StatsRange, startDate?: string, endDate?: string) => Promise<void>
+  loadStats: (range: StatsRange, startDate?: string, endDate?: string, userWeight?: number) => Promise<void>
   clearStats: () => void
 }
 
@@ -49,14 +50,16 @@ const calculateKPI = (workouts: Workout[], userWeight: number): StatsKPI => {
     ? workouts.reduce((sum, workout) => sum + (workout.rpe || 0), 0) / workouts.length 
     : undefined
   
-  const lastWorkout = workouts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+  const sortedWorkouts = [...workouts].sort((a, b) => toLocalDate(b.date).localeCompare(toLocalDate(a.date)))
+  const lastWorkout = sortedWorkouts[0]
   const lastWorkoutDate = lastWorkout?.date
   
-  const activeDays = new Set(workouts.map(w => w.date.split('T')[0])).size
+  const activeDays = new Set(workouts.map(w => toLocalDate(w.date))).size
   
   // Calculate workouts per week (rough estimate)
-  const workoutsPerWeek = totalWorkouts > 0 && lastWorkout && workouts[workouts.length - 1]
-    ? totalWorkouts / Math.max(1, Math.ceil((new Date(lastWorkout.date).getTime() - new Date(workouts[workouts.length - 1].date).getTime()) / (7 * 24 * 60 * 60 * 1000)))
+  const firstWorkout = sortedWorkouts[sortedWorkouts.length - 1]
+  const workoutsPerWeek = totalWorkouts > 0 && lastWorkout && firstWorkout
+    ? totalWorkouts / Math.max(1, Math.ceil((localDateToDate(toLocalDate(lastWorkout.date)).getTime() - localDateToDate(toLocalDate(firstWorkout.date)).getTime()) / (7 * 24 * 60 * 60 * 1000)))
     : undefined
 
   return {
@@ -137,7 +140,7 @@ const calculateTrends = (workouts: Workout[], userWeight: number): TrendData[] =
   const dailyData = new Map<string, { calories: number; minutes: number; distance: number }>()
   
   workouts.forEach(workout => {
-    const date = workout.date.split('T')[0]
+    const date = toLocalDate(workout.date)
     const calories = getWorkoutTotalCalories(workout, userWeight)
     const minutes = getWorkoutTotalDuration(workout)
     const distance = workout.exercises
@@ -160,7 +163,7 @@ const calculateTrends = (workouts: Workout[], userWeight: number): TrendData[] =
       distance: Math.round(data.distance * 100) / 100,
       pace: data.distance > 0 ? Math.round((data.minutes / data.distance) * 100) / 100 : undefined
     }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .sort((a, b) => a.date.localeCompare(b.date))
 }
 
 const calculateRecords = (workouts: Workout[]): PersonalRecords => {
@@ -244,20 +247,20 @@ const calculateRecords = (workouts: Workout[]): PersonalRecords => {
   
   // Sort all arrays by date
   Object.keys(records.dates).forEach(key => {
-    records.dates[key].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    records.dates[key].sort((a, b) => toLocalDate(a.date).localeCompare(toLocalDate(b.date)))
   })
   
   return records
 }
 
-const calculateConsistency = (workouts: Workout[], startDate: Date | null, endDate: Date | null): ConsistencyData[] => {
+const calculateConsistency = (workouts: Workout[], startDate: Date | null, endDate: Date | null, userWeight: number): ConsistencyData[] => {
   if (!startDate || !endDate) return []
   
   const dailyData = new Map<string, { calories: number; minutes: number; workouts: number }>()
   
   workouts.forEach(workout => {
-    const date = workout.date.split('T')[0]
-    const calories = getWorkoutTotalCalories(workout, 70) // Default weight
+    const date = toLocalDate(workout.date)
+    const calories = getWorkoutTotalCalories(workout, userWeight)
     const minutes = getWorkoutTotalDuration(workout)
     
     const existing = dailyData.get(date) || { calories: 0, minutes: 0, workouts: 0 }
@@ -286,22 +289,20 @@ export const useStatsStore = create<StatsState>((set) => ({
   isLoading: false,
   error: null,
 
-  loadStats: async (range: StatsRange, startDate?: string, endDate?: string) => {
+  loadStats: async (range: StatsRange, startDate?: string, endDate?: string, userWeight = 70) => {
     set({ isLoading: true, error: null })
     
     try {
       const { start, end } = getDateRange(range, startDate, endDate)
       
       // Load workouts
-      let workouts: Workout[] = []
-      if (start && end) {
-        workouts = await db.workouts
-          .where('date')
-          .between(start.toISOString(), end.toISOString())
-          .toArray()
-      } else {
-        workouts = await db.workouts.orderBy('date').toArray()
-      }
+      const allWorkouts = await db.workouts.orderBy('date').toArray()
+      const workouts = start && end
+        ? allWorkouts.filter(workout => {
+            const date = localDateToDate(toLocalDate(workout.date))
+            return date >= start && date <= end
+          })
+        : allWorkouts
       
       // Load body metrics (placeholder for now)
       const bodyMetrics: BodyMetricsData = {
@@ -312,12 +313,11 @@ export const useStatsStore = create<StatsState>((set) => ({
       }
       
       // Calculate stats
-      const userWeight = 70 // Default weight, should be from profile
       const kpi = calculateKPI(workouts, userWeight)
       const discipline = calculateDisciplineStats(workouts, userWeight)
       const trends = calculateTrends(workouts, userWeight)
       const records = calculateRecords(workouts)
-      const consistency = calculateConsistency(workouts, start, end)
+      const consistency = calculateConsistency(workouts, start, end, userWeight)
       
       const statsData: StatsData = {
         range,

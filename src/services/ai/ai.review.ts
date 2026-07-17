@@ -1,6 +1,9 @@
 import { z } from 'zod'
 import type { WorkoutExercise, AIWorkoutFeedback } from '@/types/models'
-import { db, dbHelpers } from '../data/db'
+import { dbHelpers } from '../data/db'
+import { aiGateway } from './aiGateway'
+import { workoutService } from '@/application/workouts/workoutService'
+import { profileService } from '@/application/profile/profileService'
 
 export interface AIReviewPayload {
   language: "ru" | "en"
@@ -26,83 +29,20 @@ const AIReviewResponseSchema = z.object({
 })
 
 export class AIReviewService {
-  private apiKey: string = ''
-  private baseUrl = 'https://api.openai.com/v1/chat/completions'
-
-  constructor() {
-    this.initializeApiKey()
-  }
-
-  private initializeApiKey() {
-    // First, try to get API key from environment variables (for production)
-    const envApiKey = import.meta.env.VITE_OPENAI_API_KEY
-    if (envApiKey && envApiKey !== 'your_openai_api_key_here') {
-      this.apiKey = envApiKey
-      return
-    }
-
-    // Fallback to localStorage (for development/user input)
-    const storedApiKey = localStorage.getItem('ai-trainer:openai-api-key')
-    if (storedApiKey) {
-      this.apiKey = storedApiKey
-    }
-  }
-
-  hasApiKey(): boolean {
-    return !!this.apiKey && this.apiKey !== 'your_openai_api_key_here'
-  }
-
   private async makeRequest(payload: AIReviewPayload, abortController?: AbortController): Promise<AIReviewResult> {
-    if (!this.apiKey) {
-      throw new Error('API key not set')
-    }
-
     const systemPrompt = payload.language === 'ru' 
       ? 'Ты — опытный спортивный тренер с позитивным подходом. Твоя задача — мотивировать и вдохновлять, давая конструктивную обратную связь. Оцени интенсивность тренировки по шкале RPE (1–10) и дай вдохновляющий, но честный фидбэк. Верни ТОЛЬКО JSON.\nЯзык ответа = language из payload.\nФормат ответа строго:\n{"rpe": number, "review": string}\nВ review подчеркивай достижения и давай мотивирующие советы.'
       : 'You are an experienced sports coach with a positive approach. Your goal is to motivate and inspire while giving constructive feedback. Rate the workout intensity on RPE scale (1-10) and give inspiring but honest feedback. Return ONLY JSON.\nResponse language = language from payload.\nStrict response format:\n{"rpe": number, "review": string}\nIn review, highlight achievements and provide motivating advice.'
 
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt
-          },
-          {
-            role: 'user',
-            content: JSON.stringify(payload)
-          }
-        ],
-        temperature: 0.2,
-        max_tokens: 300
-      }),
+    const content = await aiGateway.complete({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: JSON.stringify(payload) }
+      ],
+      temperature: 0.2,
+      maxTokens: 300,
       signal: abortController?.signal
     })
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error('Invalid API key')
-      } else if (response.status === 429) {
-        throw new Error('Rate limit exceeded. Please try again later.')
-      } else if (response.status >= 500) {
-        throw new Error('AI service temporarily unavailable')
-      } else {
-        throw new Error(`AI request failed: ${response.status}`)
-      }
-    }
-
-    const data = await response.json()
-    const content = data.choices[0]?.message?.content || ''
-
-    if (!content) {
-      throw new Error('No content in AI response')
-    }
 
     try {
       // Try to extract JSON from response
@@ -131,19 +71,19 @@ export class AIReviewService {
 
   async reviewWorkout(workoutId: string): Promise<AIReviewResult> {
     // 1) Get workout data
-    const workout = await db.workouts.get(workoutId)
+    const workout = await workoutService.getById(workoutId)
     if (!workout) {
       throw new Error('Workout not found')
     }
 
     // 2) Get profile data
-    const profile = await dbHelpers.getProfile()
+    const profile = await profileService.get()
     if (!profile) {
       throw new Error('Profile not found')
     }
 
     // 3) Get recent workouts (last 3-5)
-    const recentWorkouts = await dbHelpers.getWorkouts(5)
+    const recentWorkouts = (await workoutService.list()).slice(0, 5)
     const recentWorkoutsForAI = recentWorkouts
       .filter(w => w.id !== workoutId)
       .slice(0, 3)
@@ -176,18 +116,16 @@ export class AIReviewService {
     // 5) Call AI with timeout and retries
     const maxRetries = 2
     let lastError: Error | null = null
+    const feedbackId = `feedback_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
+    const feedbackCreatedAt = new Date().toISOString()
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      const abortController = new AbortController()
+      const timeoutId = setTimeout(() => abortController.abort(), 15000) // 15 second timeout
       try {
-        const abortController = new AbortController()
-        const timeoutId = setTimeout(() => abortController.abort(), 15000) // 15 second timeout
-
         const result = await this.makeRequest(payload, abortController)
-        clearTimeout(timeoutId)
 
         // 6) Save results to database
-        const feedbackId = `feedback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-        
         const feedback: AIWorkoutFeedback = {
           id: feedbackId,
           workoutId: workoutId,
@@ -195,21 +133,17 @@ export class AIReviewService {
           rpe: result.rpe,
           review: result.review,
           model: 'gpt-4o-mini',
-          createdAt: new Date().toISOString()
+          createdAt: feedbackCreatedAt
         }
 
         // Save feedback
         await dbHelpers.saveAIFeedback(feedback)
 
         // Update workout with RPE and feedback ID
-        const updatedWorkout = {
-          ...workout,
+        await workoutService.update(workout.id, {
           rpe: result.rpe,
-          aiReviewId: feedbackId,
-          updatedAt: new Date().toISOString()
-        }
-
-        await db.workouts.put(updatedWorkout)
+          aiReviewId: feedbackId
+        })
 
         return result
       } catch (error) {
@@ -228,6 +162,8 @@ export class AIReviewService {
         if (attempt < maxRetries) {
           await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)))
         }
+      } finally {
+        clearTimeout(timeoutId)
       }
     }
 

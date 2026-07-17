@@ -6,8 +6,11 @@ import { useProfileStore } from '@stores/profile.store'
 import WorkoutForm from '@organisms/workouts/WorkoutForm'
 import WeekSection from '@organisms/workouts/WeekSection'
 import WeekNavigator from '@molecules/workouts/WeekNavigator'
+import GenerateWorkoutModal from '@modals/shared/GenerateWorkoutModal'
 import { Plus } from 'lucide-react'
 import { startOfWeek, addWeeks, isSameWeek } from 'date-fns'
+import { localDateToDate, startOfLocalWeek, toLocalDate } from '@/domain/date/localDate'
+import type { PlanSuggestion } from '@/types/models'
 
 const WorkoutsPage: React.FC = () => {
   const t = useTranslations()
@@ -16,17 +19,18 @@ const WorkoutsPage: React.FC = () => {
   const { workouts, loadWorkouts, isLoading, getWorkoutsByWeek } = useWorkoutStore()
   const { profile } = useProfileStore()
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
 
   useEffect(() => {
     const week = searchParams.get('week')
     if (week == null) {
-      handleWeekChange(startOfWeek(new Date(), { weekStartsOn: 2 }))
+      handleWeekChange(startOfWeek(new Date(), { weekStartsOn: 1 }))
     }
   }, [])
 
   const weekParam = searchParams.get('week')
   const selectedWeekStart = weekParam 
-    ? new Date(weekParam) 
+    ? localDateToDate(toLocalDate(weekParam))
     : startOfWeek(new Date(), { weekStartsOn: 1 })
 
   // Get workouts for current and previous week
@@ -35,9 +39,9 @@ const WorkoutsPage: React.FC = () => {
 
   // Check if we have data for navigation
   const hasPreviousWeek = getWorkoutsByWeek(addWeeks(selectedWeekStart, -1)).length > 0 || 
-    workouts.some(w => new Date(w.date) < selectedWeekStart)
+    workouts.some(w => localDateToDate(toLocalDate(w.date)) < selectedWeekStart)
   const hasNextWeek = getWorkoutsByWeek(addWeeks(selectedWeekStart, 1)).length > 0 || 
-    workouts.some(w => new Date(w.date) > addWeeks(selectedWeekStart, 1))
+    workouts.some(w => localDateToDate(toLocalDate(w.date)) > addWeeks(selectedWeekStart, 1))
   const isCurrentWeek = isSameWeek(selectedWeekStart, new Date(), { weekStartsOn: 1 })
 
   useEffect(() => {
@@ -45,7 +49,7 @@ const WorkoutsPage: React.FC = () => {
   }, [loadWorkouts])
 
   const handleWeekChange = (weekStart: Date) => {
-    const weekString = weekStart.toISOString().split('T')[0]
+    const weekString = startOfLocalWeek(weekStart)
     setSearchParams({ week: weekString })
   }
 
@@ -61,7 +65,12 @@ const WorkoutsPage: React.FC = () => {
   }
 
   const handleGenerateWorkout = () => {
-    navigate('/workout/generate')
+    setIsGenerateModalOpen(true)
+  }
+
+  const handlePlanGenerated = (_plan: PlanSuggestion) => {
+    setIsGenerateModalOpen(false)
+    loadWorkouts()
   }
 
   if (!profile) {
@@ -127,6 +136,12 @@ const WorkoutsPage: React.FC = () => {
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         onSuccess={handleWorkoutSuccess}
+      />
+
+      <GenerateWorkoutModal
+        isOpen={isGenerateModalOpen}
+        onClose={() => setIsGenerateModalOpen(false)}
+        onPlanGenerated={handlePlanGenerated}
       />
     </div>
   )

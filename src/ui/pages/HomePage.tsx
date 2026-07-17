@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { useWorkoutStore } from '@stores/workout.store'
 import { useAIStore } from '@stores/ai.store'
 import { useProfileStore } from '@stores/profile.store'
-import { toastSuccess } from '@lib/toast'
+import { toastSuccess, toastError } from '@lib/toast'
 import { useTranslations } from '@stores/i18n.store'
 import { format, startOfWeek } from 'date-fns'
-import { Bot, Settings } from 'lucide-react'
+import { Bot, Settings, ClipboardCheck, Plus } from 'lucide-react'
 
 // Import new dashboard components
 import NextWorkoutCard from '@organisms/home/NextWorkoutCard'
@@ -15,6 +15,7 @@ import RecentWorkouts from '@organisms/home/RecentWorkouts'
 import HomeBanners from '@organisms/home/HomeBanners'
 import BodyMetricsModal from '@modals/home/BodyMetricsModal'
 import type { Workout } from '@/types/models'
+import { toLocalDate, todayLocalDate } from '@/domain/date/localDate'
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate()
@@ -25,6 +26,8 @@ const HomePage: React.FC = () => {
     getLastN, 
     getDayStats, 
     getWeekStats,
+    updateWorkout,
+    deleteWorkout,
     isLoading: workoutsLoading 
   } = useWorkoutStore()
   const { hasKey } = useAIStore()
@@ -44,7 +47,7 @@ const HomePage: React.FC = () => {
     const today = format(new Date(), 'yyyy-MM-dd')
     const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 })
     
-    setDayStats(getDayStats(today))
+    setDayStats(getDayStats(today, profile?.weight))
     setWeekStats(getWeekStats(format(weekStart, 'yyyy-MM-dd'), profile?.weight))
     setRecentWorkouts(getLastN(5))
   }, [workouts, getDayStats, getWeekStats, getLastN, profile?.weight])
@@ -52,14 +55,18 @@ const HomePage: React.FC = () => {
 
 
   const handleOpenPlan = () => {
-    // For now, navigate to workouts page
-    // In the future, this could open a specific plan
-    navigate('/workouts')
+    if (todayPlan) navigate(`/workouts/${todayPlan.id}`)
   }
 
-  const handleMarkDone = () => {
-    // This would mark the current plan as completed
-    toastSuccess(t.success || 'Plan marked as completed')
+  const handleMarkDone = async () => {
+    if (!todayPlan) return
+
+    try {
+      await updateWorkout(todayPlan.id, { status: 'completed' })
+      toastSuccess(t.homeDashboard?.nextPlan?.markedDone || 'Workout marked as completed')
+    } catch {
+      toastError(t.error || 'Failed to update workout')
+    }
   }
 
 
@@ -79,12 +86,24 @@ const HomePage: React.FC = () => {
     navigate(`/workouts/${workout.id}`)
   }
 
-  const handleDeleteWorkout = () => {
-    // This would delete the workout
-    toastSuccess(t.success || 'Workout deleted')
+  const handleDeleteWorkout = async (workout: Workout) => {
+    const confirmed = window.confirm(
+      t.workoutDetailsPage?.deleteConfirm?.message ||
+      'Are you sure you want to delete this workout? This action cannot be undone.'
+    )
+    if (!confirmed) return
+
+    try {
+      await deleteWorkout(workout.id)
+      toastSuccess(t.workoutDetailsPage?.deletedSuccessfully || 'Workout deleted successfully')
+    } catch {
+      toastError(t.workoutDetailsPage?.failedToDelete || 'Failed to delete workout')
+    }
   }
 
-  const todayPlan = recentWorkouts.find(workout => workout.date === format(new Date(), 'yyyy-MM-dd'))
+  const todayPlan = workouts.find(workout =>
+    workout.status === 'planned' && toLocalDate(workout.date) === todayLocalDate()
+  )
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -141,6 +160,15 @@ const HomePage: React.FC = () => {
               isLoading={workoutsLoading}
             />
           </div>
+        </div>
+
+        <div className="mb-6 grid gap-3 sm:grid-cols-2">
+          <button onClick={() => navigate('/workouts')} className="btn-primary flex min-h-[52px] items-center justify-center gap-2">
+            <Plus className="h-5 w-5" /> {t.addWorkout}
+          </button>
+          <button onClick={() => navigate('/weekly-review')} className="btn-secondary flex min-h-[52px] items-center justify-center gap-2">
+            <ClipboardCheck className="h-5 w-5" /> {t.weeklyReview.title}
+          </button>
         </div>
 
         {/* Recent Workouts - Full width */}

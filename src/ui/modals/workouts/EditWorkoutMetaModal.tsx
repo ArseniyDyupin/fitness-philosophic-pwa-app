@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { useTranslations } from '@stores/i18n.store'
 import type { Workout } from '@/types/models'
+import { useModalFocus } from '@/hooks/useModalFocus'
 
 interface EditWorkoutMetaModalProps {
   isOpen: boolean
@@ -17,6 +18,7 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
   onSave
 }) => {
   const t = useTranslations()
+  const dialogRef = useModalFocus<HTMLDivElement>(isOpen, onClose)
   const [editedDate, setEditedDate] = useState('')
   const [editedDurationMin, setEditedDurationMin] = useState<number | undefined>(undefined)
   const [editedRpe, setEditedRpe] = useState<number | undefined>(undefined)
@@ -36,7 +38,7 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
     setIsSaving(true)
     try {
       const updatedWorkout: Partial<Workout> = {
-        date: new Date(editedDate).toISOString(),
+        date: editedDate,
         durationOverrideMin: editedDurationMin && editedDurationMin > 0 ? editedDurationMin : undefined,
         rpe: editedRpe,
         rpeSource: editedRpe ? 'manual' as const : undefined,
@@ -70,10 +72,10 @@ const EditWorkoutMetaModal: React.FC<EditWorkoutMetaModalProps> = ({
         />
         
         {/* Modal */}
-        <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
+        <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="edit-workout-meta-title" tabIndex={-1} className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 id="edit-workout-meta-title" className="text-lg font-semibold text-gray-900">
               {t.workoutDetailsPage?.metaModal?.title || 'Change workout metadata'}
             </h3>
             <button

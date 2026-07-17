@@ -1,5 +1,7 @@
-import { aiService } from './ai'
 import type { BodyAnalysisInput, BodyAnalysisResult, AiBodyEval } from '@/types/body-metrics'
+import { aiGateway, type AIContentPart } from './aiGateway'
+import { db } from '@services/data'
+import { toLocalDate } from '@/domain/date/localDate'
 
 export const aiBodyService = {
   async evaluate(input: BodyAnalysisInput): Promise<BodyAnalysisResult> {
@@ -9,54 +11,27 @@ export const aiBodyService = {
       // Prepare the prompt
       const bodyPrompt = this.buildPrompt(profile, metricsHistory, language)
       
-      // Prepare messages for OpenAI
-      const messages: Array<{
-        role: string;
-        content: string | Array<{ type: string; text: string }>;
-      }> = [
-        {
-          role: 'system',
-          content: language === 'ru' 
-            ? 'Ты — опытный фитнес-эксперт и аналитик тела с позитивным подходом. Твоя задача — мотивировать пользователя, анализируя его прогресс. Будь поддерживающим и вдохновляющим, но честным в оценках. Подчеркивай достижения и давай конструктивные советы для дальнейшего развития.'
-            : 'You are an experienced fitness and body analysis expert with a positive approach. Your goal is to motivate the user by analyzing their progress. Be supportive and inspiring, but honest in your assessments. Highlight achievements and provide constructive advice for further development.'
-        },
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: bodyPrompt
-            }
-          ]
-        }
-      ]
+      const userContent: AIContentPart[] = [{ type: 'text', text: bodyPrompt }]
+      photos?.forEach(photo => {
+        userContent.push({
+          type: 'image_url',
+          image_url: { url: photo.dataUrl, detail: 'low' }
+        })
+      })
 
-      // Add photos if available
-      if (photos && photos.length > 0) {
-        for (const photo of photos) {
-          if (Array.isArray(messages[1].content)) {
-            (messages[1].content as any).push({
-              type: 'image_url',
-              image_url: {
-                url: photo.dataUrl,
-                detail: 'low' as any
-              }
-            })
-          }
-        }
-      }
-
-      // Call OpenAI API using generateResponse method
-      const prompt = messages.map(m => {
-        if (typeof m.content === 'string') {
-          return m.content
-        } else if (Array.isArray(m.content)) {
-          return m.content.map(c => c.type === 'text' ? c.text : '').join('\n')
-        }
-        return ''
-      }).join('\n')
-      
-      const response = await aiService.generateResponse(prompt, language === 'ru' ? 'ru' : 'en')
+      const response = await aiGateway.complete({
+        messages: [
+          {
+            role: 'system',
+            content: language === 'ru'
+              ? 'Ты — опытный фитнес-эксперт. Анализируй метрики и фото только в рамках фитнес-прогресса, не ставь диагнозы. Верни только JSON.'
+              : 'You are an experienced fitness expert. Analyze metrics and photos only for fitness progress, do not diagnose. Return JSON only.'
+          },
+          { role: 'user', content: userContent }
+        ],
+        temperature: 0.2,
+        maxTokens: 1000
+      })
 
       // Parse the response
       return this.parseResponse(response, language)
@@ -176,10 +151,12 @@ Be honest but inspiring. Highlight progress and achievements, provide practical 
     }
   },
 
-  async saveEvaluation(_evaluation: AiBodyEval): Promise<void> {
+  async saveEvaluation(evaluation: AiBodyEval): Promise<void> {
     try {
-      // This would save to the database
-      // For now, we'll use a placeholder
+      await db.ai_body_evals.put({
+        ...evaluation,
+        weekStart: toLocalDate(evaluation.weekStart)
+      })
     } catch (error) {
       console.error('Failed to save AI evaluation:', error)
       throw error
@@ -188,30 +165,34 @@ Be honest but inspiring. Highlight progress and achievements, provide practical 
 
   async getEvaluations(): Promise<AiBodyEval[]> {
     try {
-      // This would query the database
-      // For now, return empty array
-      return []
+      return await db.ai_body_evals.orderBy('createdAt').reverse().toArray()
     } catch (error) {
       console.error('Failed to get AI evaluations:', error)
       return []
     }
   },
 
-  async getEvaluationsByDateRange(_startDate: string, _endDate: string): Promise<AiBodyEval[]> {
+  async getEvaluationsByDateRange(startDate: string, endDate: string): Promise<AiBodyEval[]> {
     try {
-      // This would query the database for evaluations within date range
-      // For now, return empty array
-      return []
+      const start = toLocalDate(startDate)
+      const end = toLocalDate(endDate)
+      const evaluations = await db.ai_body_evals.toArray()
+      return evaluations.filter(evaluation => {
+        const weekStart = toLocalDate(evaluation.weekStart)
+        return weekStart >= start && weekStart <= end
+      })
     } catch (error) {
       console.error('Failed to get AI evaluations by date range:', error)
       return []
     }
   },
 
-  async importEvaluations(_evaluations: AiBodyEval[]): Promise<void> {
+  async importEvaluations(evaluations: AiBodyEval[]): Promise<void> {
     try {
-      // This would import evaluations to the database
-      // For now, just return success
+      await db.ai_body_evals.bulkPut(evaluations.map(evaluation => ({
+        ...evaluation,
+        weekStart: toLocalDate(evaluation.weekStart)
+      })))
     } catch (error) {
       console.error('Failed to import AI evaluations:', error)
       throw error
